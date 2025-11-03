@@ -25,7 +25,7 @@ const Searchbar = () => {
   const [guests, setGuests] = useState("1 guest, 1 room");
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
   return (
-    <div className="w-full mx-auto my-8  max-w-4xl">
+    <div data-aos="fade-up" className="w-full mx-auto my-8  max-w-4xl">
       {/* Mobile View */}
       <div className="md:hidden mx-8 space-y-3">
         <div className="bg-white rounded-2xl p-4 shadow-lg space-y-3">
@@ -92,7 +92,7 @@ const Searchbar = () => {
       </div>
 
       {/* Desktop View */}
-      <div className="hidden md:flex bg-white rounded-full justify-between shadow-2xl p-4 items-center gap-2">
+      <div  className="hidden md:flex bg-white rounded-full justify-between shadow-2xl p-4 items-center gap-2">
         {/* Category */}
         <div className="flex items-center gap-3">
           <ListChecks className="w-6 h-6 text-gray-600 flex-shrink-0" />

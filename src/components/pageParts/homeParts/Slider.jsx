@@ -49,7 +49,7 @@ const Slider = () => {
                     <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
                       {slide.title}
                     </h1>
-                    <p className="text-sm sm:text-base md:text-xl  text-gray-200 mb-8 leading-relaxed">
+                    <p className="text-sm sm:text-base   text-gray-200 mb-8 leading-relaxed">
                       {slide.subtitle}
                     </p>
                     <Button className="p-6 text-base" size="lg">

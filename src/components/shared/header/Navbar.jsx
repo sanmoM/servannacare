@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import TopBar from "./TopBar";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -24,6 +25,8 @@ const Navbar = () => {
   const handleCloseSidebar = () => setSidebarOpen(false);
 
   return (
+    <>
+    <TopBar/>
     <div className="border-b bg-white z-50 relative">
       <Container className="flex justify-between items-center py-3 md:py-4">
         {/* Logo */}
@@ -152,6 +155,8 @@ const Navbar = () => {
         </div>
       </div>
     </div>
+    </>
+    
   );
 };
 
