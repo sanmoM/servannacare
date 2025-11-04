@@ -12,7 +12,7 @@ import Container from "@/components/shared/Container";
 
 export default function Testimonials() {
   return (
-    <section className="w-full py-12 md:py-18 bg-[#f4fcfe]">
+    <section className="w-full py-12 md:py-16 bg-[#f4fcfe]">
 
         <Container>
           {/* Header Section */}

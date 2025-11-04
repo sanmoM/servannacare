@@ -50,7 +50,7 @@ const steps = [
  */
 export default function HowItWorks() {
   return (
-    <section className="py-12 md:py-18 bg-gray-50 ">
+    <section className="py-12 md:py-16 bg-gray-50 ">
       
 
         <Container>

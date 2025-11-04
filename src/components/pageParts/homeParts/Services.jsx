@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const Services = () => {
   return (
-    <Container className={"py-12 md:py-18"}>
+    <Container className={"py-12 md:py-16"}>
       <div className="mb-8 flex justify-between items-center md:mb-12">
         <h2 className="sectionHeading">
           Our Services

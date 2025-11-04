@@ -138,3 +138,135 @@ export const testimonials = [
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
   },
 ]
+
+
+  export const blogs = [
+  {
+    id: 1,
+    title: "The Importance of Regular Health Checkups",
+    description:
+      "Regular health checkups can help detect potential health issues before they become serious. Early detection gives you the best chance for receiving the right treatment quickly.",
+    image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1",
+    category: "Health",
+    date:"22 SEP 2025",
+    comments: [
+      {
+        userPhoto: "https://randomuser.me/api/portraits/women/1.jpg",
+        userName: "Sophia Williams",
+        comment: "Great reminder! I just booked my annual checkup after reading this.",
+      },
+      {
+        userPhoto: "https://randomuser.me/api/portraits/men/2.jpg",
+        userName: "David Johnson",
+        comment: "Very informative. Preventive care is so underrated.",
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: "5 Simple Tips for a Balanced Diet",
+    description:
+      "Maintaining a balanced diet helps keep your body strong and healthy. Here are five simple ways to improve your daily nutrition without giving up your favorite meals.",
+    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
+    category: "Nutrition",
+    date:"22 SEP 2025",
+    comments: [
+      {
+        userPhoto: "https://randomuser.me/api/portraits/women/3.jpg",
+        userName: "Emma Brown",
+        comment: "I love how easy these tips are to follow!",
+      },
+      {
+        userPhoto: "https://randomuser.me/api/portraits/men/4.jpg",
+        userName: "Michael Lee",
+        comment: "Thanks for sharing! The portion control advice really helped me.",
+      },
+    ],
+  },
+  {
+    id: 3,
+    title: "How to Improve Your Sleep Naturally",
+    description:
+      "Struggling to get a good night’s sleep? Learn natural ways to improve your sleep quality, from setting a bedtime routine to optimizing your environment.",
+    image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
+    category: "Wellness",
+    date:"22 SEP 2025",
+    comments: [
+      {
+        userPhoto: "https://randomuser.me/api/portraits/men/5.jpg",
+        userName: "Noah Davis",
+        comment: "This article helped me fix my sleep schedule. Highly recommend!",
+      },
+      {
+        userPhoto: "https://randomuser.me/api/portraits/women/6.jpg",
+        userName: "Olivia Martin",
+        comment: "I tried the no-screen rule before bed — works wonders!",
+      },
+    ],
+  },
+  {
+  id: 4,
+  title: "The Power of Morning Exercise",
+  description:
+    "Starting your day with a quick workout boosts your energy, focus, and mood. Discover how a consistent morning routine can improve both your physical and mental health.",
+  image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1",
+  category: "Fitness",
+  date: "28 SEP 2025",
+  comments: [
+    {
+      userPhoto: "https://randomuser.me/api/portraits/men/7.jpg",
+      userName: "Liam Thompson",
+      comment: "I started jogging every morning and feel more productive at work!",
+    },
+    {
+      userPhoto: "https://randomuser.me/api/portraits/women/8.jpg",
+      userName: "Ava Johnson",
+      comment: "Love this! Morning yoga changed my whole routine.",
+    },
+  ],
+},
+{
+  id: 5,
+  title: "Mindful Eating: How to Enjoy Food and Stay Healthy",
+  description:
+    "Mindful eating encourages awareness of what and how we eat. It helps reduce overeating, improves digestion, and builds a better relationship with food.",
+  image: "https://images.unsplash.com/photo-1525351484163-7529414344d8",
+  category: "Nutrition",
+  date: "30 SEP 2025",
+  comments: [
+    {
+      userPhoto: "https://randomuser.me/api/portraits/women/9.jpg",
+      userName: "Emily Carter",
+      comment: "I've stopped eating in front of the TV — what a difference!",
+    },
+    {
+      userPhoto: "https://randomuser.me/api/portraits/men/10.jpg",
+      userName: "James Rodriguez",
+      comment: "This helped me become more aware of portion sizes. Great tips!",
+    },
+  ],
+},
+{
+  id: 6,
+  title: "Managing Stress with Simple Breathing Techniques",
+  description:
+    "Breathing exercises are a powerful way to reduce stress and anxiety. Learn how to control your breath to calm your mind and improve overall well-being.",
+  image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97",
+  category: "Wellness",
+  date: "02 OCT 2025",
+  comments: [
+    {
+      userPhoto: "https://randomuser.me/api/portraits/women/11.jpg",
+      userName: "Sophia Lee",
+      comment: "I tried box breathing during exams — it really works!",
+    },
+    {
+      userPhoto: "https://randomuser.me/api/portraits/men/12.jpg",
+      userName: "Daniel Scott",
+      comment: "Helpful guide. I now use breathing breaks at work every hour.",
+    },
+  ],
+},
+
+
+];
