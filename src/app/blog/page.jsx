@@ -15,7 +15,7 @@ const page = () => {
       image='https://cdn.culture.ru/images/480cdb17-69c2-5213-bfe5-c5e8487631b7'
       />
 
-      <Container className={"grid grid-cols-1 gap-6 py-16 md:grid-cols-2"}>
+      <Container className={"grid grid-cols-1 gap-6 py-10 md:py-16 md:grid-cols-2"}>
         {/* <div className='col-span-3'>
             {blogs.map((blog,indx) => {
               return(

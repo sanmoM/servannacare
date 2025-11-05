@@ -30,10 +30,10 @@ const ServicesCard = ({ services }) => {
               {services.icon}
             </div>
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
-            {services.title}
+          <h3 className="subHeading mb-2">
+            {services.title} 
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <p className="text-sm text-gray-700 leading-relaxed">
             {services.description}
           </p>
         </div>

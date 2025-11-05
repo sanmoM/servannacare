@@ -18,6 +18,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "emhealth.org",
       },
+      {
+        protocol: "https",
+        hostname: "static.tildacdn.com",
+      },
+      {
+        protocol: "https",
+        hostname: "servannacare.com",
+      },
     ],
   },
 };

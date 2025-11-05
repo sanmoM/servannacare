@@ -50,7 +50,7 @@ const steps = [
  */
 export default function HowItWorks() {
   return (
-    <section className="py-12 md:py-16 bg-gray-50 ">
+    <section className="py-10 md:py-16 bg-gray-50 ">
       
 
         <Container>
@@ -85,12 +85,12 @@ export default function HowItWorks() {
                 </div>
                 
                 {/* Step Title */}
-                <h3 className="lg:text-lg md:text-sm font-semibold text-gray-900 mb-2">
+                <h3 className="subHeading mb-2">
                   {step.title}
                 </h3>
                 
                 {/* Step Description */}
-                <p className="text-gray-500 text-xs lg:text-sm">
+                <p className="text-gray-600 text-sm">
                   {step.description}
                 </p>
               </div>

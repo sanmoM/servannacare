@@ -12,7 +12,7 @@ import Container from "@/components/shared/Container";
 
 export default function Testimonials() {
   return (
-    <section className="w-full py-12 md:py-16 bg-[#f4fcfe]">
+    <section className="w-full py-10 md:py-16 bg-[#f4fcfe]">
 
         <Container>
           {/* Header Section */}
@@ -90,7 +90,7 @@ export default function Testimonials() {
               { number: "4.9★", label: "Average Rating" },
             ].map((stat, idx) => (
               <div data-aos="zoom-in-up" key={idx} className="text-center">
-                <p className="sm:text-2xl text-lg md:text-5xl font-bold text-foreground mb-3">
+                <p className="sm:text-2xl  md:text-5xl font-bold text-foreground mb-3">
                   {stat.number}
                 </p>
                 <p className="text-muted-foreground text-xs sm:text-sm md:text-base font-medium">
@@ -146,7 +146,7 @@ function TestimonialCard({ testimonial }) {
         </div>
 
         {/* Testimonial Content */}
-        <p className="text-card-foreground text-base leading-relaxed mb-8 flex-grow font-light italic">
+        <p className="text-card-foreground text-sm lg:text-base leading-relaxed mb-8 flex-grow font-light italic">
           “{testimonial.content}”
         </p>
 

@@ -50,7 +50,7 @@ const MissionVision = () => {
     <div className="">
 
      {/* Core Values */}
-      <div className="py-12 md:py-16">
+      <div className="py-10 lg:py-16">
         <h2 className="sectionHeading text-center mb-2">Our Core Values</h2>
         <p className="text-center text-slate-600 mb-8 lg:mb-10 text-sm lg:text-base">
           Everything we do is guided by three fundamental principles
@@ -63,10 +63,10 @@ const MissionVision = () => {
               <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-red-50 mb-4 group-hover:scale-110 transition-transform">
                 <Heart className="w-7 h-7 text-red-600" />
               </div>
-              <h3 className="text-base lg:text-xl font-semibold text-slate-900 mb-3">
+              <h3 className="subHeading mb-3">
                 Empathy
               </h3>
-              <p className="text-xs sm:text-sm md:text-base  text-gray-700">
+              <p className="text-sm   text-gray-700">
                 We listen and respond with genuine care, treating every family
                 and caregiver with dignity and respect.
               </p>
@@ -79,10 +79,10 @@ const MissionVision = () => {
               <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-blue-50 mb-4 group-hover:scale-110 transition-transform">
                 <Trophy className="w-7 h-7 text-blue-600" />
               </div>
-              <h3 className="text-base lg:text-xl font-semibold text-slate-900 mb-3">
+              <h3 className="subHeading mb-3">
                 Professionalism
               </h3>
-              <p className="text-xs sm:text-sm md:text-base   text-gray-700">
+              <p className="text-sm   text-gray-700">
                 We deliver with excellence, confidence, and responsibility,
                 setting high standards in care and home support.
               </p>
@@ -95,10 +95,10 @@ const MissionVision = () => {
               <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-cyan-50 mb-4 group-hover:scale-110 transition-transform">
                 <Handshake className="w-7 h-7 text-cyan-600" />
               </div>
-              <h3 className="text-base lg:text-xl font-semibold text-slate-900 mb-3">
+              <h3 className="subHeading mb-3">
                 Teamwork
               </h3>
-              <p className="text-xs sm:text-sm md:text-base  text-gray-700">
+              <p className="text-sm  text-gray-700">
                 We collaborate effectively to ensure every client and caregiver
                 experience is supportive and seamless.
               </p>
@@ -108,7 +108,7 @@ const MissionVision = () => {
       </div>
 
       {/* Vision & Mission Grid */}
-      <div className="py-12 md:py-16">
+      <div className="py-10 lg:py-16">
         <h4 className="text-sm md:text-base text-center text-primary font-bold">
           Our Foundation
         </h4>
@@ -141,10 +141,10 @@ const MissionVision = () => {
                     VISION
                   </span>
                 </div>
-                <h3 className="text-base md:text-lg lg:text-xl font-semibold text-slate-900 mb-4">
+                <h3 className="subHeading mb-4">
                   To Shape an Africa Where Quality Home-Based Care is a Standard
                 </h3>
-                <p className="text-slate-600 text-xs sm:text-sm md:text-base  leading-relaxed">
+                <p className="text-slate-600 text-sm  leading-relaxed">
                   We envision a future where quality home-based care is not a
                   luxury — but a standard, accessible to every family in Africa.
                 </p>
@@ -158,10 +158,10 @@ const MissionVision = () => {
                     MISSION
                   </span>
                 </div>
-                <h3 className="text-base md:text-lg lg:text-xl font-semibold text-white mb-4">
+                <h3 className="text-base lg:text-lg font-semibold text-white mb-4">
                   To Become the Leading Home Care Platform
                 </h3>
-                <p className="text-blue-50 text-xs sm:text-sm md:text-base leading-relaxed">
+                <p className="text-blue-50  text-sm leading-relaxed">
                   Were empowering families to live healthier, happier lives
                   through trusted support and compassionate, tech-driven
                   solutions.
@@ -174,7 +174,7 @@ const MissionVision = () => {
 
       
      {/* why choose us  */}
-      <div className="py-12 md:py-16">
+      <div className="py-10 lg:py-16">
         <div>
           <h2 className="sectionHeading text-center mb-2">
             WHY CHOOSE US?

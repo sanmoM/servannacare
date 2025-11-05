@@ -9,7 +9,7 @@ const Page = () => {
     <div>
       <PageBanner />
       <Container>
-        <div className="py-12 md:py-18">
+        <div className="py-10 md:py-16">
           <div className="mb-8 space-y-2 md:mb-12">
             <h4 className="md:text-sm  text-xs font-semibold text-primary">
               SERVICES
@@ -17,7 +17,7 @@ const Page = () => {
             <h2 className="sectionHeading">
               Comprehensive Home & Health Care Services
             </h2>
-            <p className="text-xs text-gray-700 md:text-sm">
+            <p className=" text-gray-700 text-sm">
               We provide a complete range of health and home care solutions
               designed to make everyday life easier, safer, and more
               comfortable.

@@ -20,6 +20,7 @@ const Navbar = () => {
     { text: "About Us", link: "/about-us" },
     { text: "FAQ", link: "/faq" },
     { text: "Event", link: "/event" },
+    { text: "Contact Us", link: "/contact-us" },
   ];
 
   const handleCloseSidebar = () => setSidebarOpen(false);

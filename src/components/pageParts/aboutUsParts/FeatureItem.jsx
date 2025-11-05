@@ -9,10 +9,10 @@ const FeatureItem = ({ feature }) => {
           <Icon width={"32"} className={"text-primary "} />
         </div>
         <div className="flex-grow">
-          <h3 className="text-base md:text-lg lg:text-xl font-semibold text-gray-900">
+          <h3 className="subHeading">
             {feature.title}
           </h3>
-          <p className="text-gray-600 sm:text-sm md:text-base">
+          <p className="text-gray-600 text-sm">
             {feature.description}
           </p>
         </div>

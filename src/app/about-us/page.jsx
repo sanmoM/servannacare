@@ -33,13 +33,13 @@ const page = () => {
         image="https://s.yimg.com/ny/api/res/1.2/OlmuAmSCKyL0px34Qwt1GA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD02NzU-/https://media.zenfs.com/en/healthcare_dive_849/ea20ce12e4f3e4194d01260415c8de49"
       />
       <Container>
-        <div className="grid grid-cols-1 py-16 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 py-10 lg:py-16 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3">
             <h4 data-aos="fade-up" className="text-sm md:text-base text-primary font-bold">ABOUT US</h4>
             <h2 data-aos="fade-up" className="sectionHeading my-4">
               Your Trusted Partner in Best Improvement.
             </h2>
-            <p data-aos="fade-up" className=" text-xs sm:text-sm md:text-base text-justify text-gray-700">
+            <p data-aos="fade-up" className="text-sm text-justify text-gray-700">
               Servana was born out of the lessons we learned building
               <span className="font-bold"> Myhauzhelp</span>. With MyHauzHelp,
               we saw firsthand the challenges working families face when looking
@@ -74,7 +74,7 @@ const page = () => {
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-sm lg:text-base font-semibold text-slate-900 mb-1">
+                      <h3 className="subHeading mb-1">
                         {feature.title}
                       </h3>
                       {/* <p className="text-sm text-slate-600 leading-relaxed">

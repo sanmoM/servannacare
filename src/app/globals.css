@@ -132,5 +132,13 @@ body {
 }
 
 .sectionHeading {
-  @apply font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl
+  @apply font-semibold text-xl md:text-2xl lg:text-3xl
 }
+
+.subHeading {
+  @apply text-base lg:text-lg font-semibold text-gray-900
+}
+
+
+
+

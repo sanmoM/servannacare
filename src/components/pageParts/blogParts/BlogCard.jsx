@@ -93,19 +93,19 @@ const BlogCard = ({ blog,slug }) => {
 
     <Link
       href={`/blog/${slug}?id=${id}`}
-      className="text-base md:text-sm lg:text-base font-semibold cursor-pointer hover:text-primary"
+      className="text-base lg:text-lg font-semibold text-gray-900 cursor-pointer hover:text-primary"
     >
       {title}
     </Link>
 
     {/* Truncated Description */}
-    <p className="text-gray-600 text-xs lg:text-sm mt-1">
+    <p className="text-gray-700 text-sm mt-1">
       {description.length > 60
         ? description.substring(0, 150) + "..."
         : description}
     </p>
 
-    <div className="flex items-center gap-2 mt-2">
+    <div className="flex items-center text-gray-600 gap-2 mt-2">
       <Calendar width={14} />
       <p className="text-xs">{date}</p>
     </div>

@@ -8,7 +8,7 @@ import Link from "next/link";
 
 const Services = () => {
   return (
-    <Container className={"py-12 md:py-16"}>
+    <Container className={" py-10 md:py-16"}>
       <div className="mb-8 flex justify-between items-center md:mb-12">
         <h2 className="sectionHeading">
           Our Services
@@ -17,7 +17,7 @@ const Services = () => {
       </div>
       <div
         data-aos="fade-up"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-6 lg:gap-8"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6 lg:gap-8"
       >
         {services.slice(0,5).map((ser) => (
           <ServicesCard key={ser.id} services={ser} />
