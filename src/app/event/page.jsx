@@ -15,7 +15,7 @@ const page = () => {
           <h2 className="sectionHeading ">TRANSFORMED FOR BETTER EVENTS</h2>
         </div>
         <div className="lg:flex gap-6">
-          <div className="flex-1">
+          <div data-aos="fade-up" className="flex-1">
             <Image
               src={"https://servannacare.com/img/11.jpg"}
               quality={100}
@@ -25,7 +25,7 @@ const page = () => {
               className="w-full rounded-xl"
             />
           </div>
-          <div className="flex-1 lg:mt-0 mt-6">
+          <div data-aos="fade-up" className="flex-1 lg:mt-0 mt-6">
             <div className="text-gray-700  text-sm">
               <p>
                 Transformed for Better is Servanna’s mission-driven initiative
@@ -66,7 +66,7 @@ const page = () => {
             A movement rooted in home transformation, empathy, and dignity.
           </p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div className="border mt-8 overflow-hidden rounded-xl">
+            <div data-aos="fade-up" className="border mt-8 overflow-hidden rounded-xl">
               <div className="h-64">
                 <Image
                   src={"https://servannacare.com/img/moja.jpg"}
@@ -87,7 +87,7 @@ const page = () => {
                 </p>
               </div>
             </div>
-            <div className="border mt-8 overflow-hidden rounded-xl">
+            <div data-aos="fade-up" className="border mt-8 overflow-hidden rounded-xl">
               <div className="h-64">
                 <Image
                   src={"https://servannacare.com/img/11.jpg"}
@@ -128,6 +128,7 @@ const page = () => {
               { name: "CDTD"},
             ].map((partner) => (
               <div
+                data-aos="fade-up"
                 key={partner.name}
                 className=" p-6 rounded-lg border border-border hover:text-white bg-white hover:shadow-2xl hover:bg-primary transition-colors duration-200"
               >
