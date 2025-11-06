@@ -1,7 +1,15 @@
 import hero1 from "@/asset/homeImages/hero1.png";
 import hero2 from "@/asset/homeImages/hero2.png";
 import hero3 from "@/asset/homeImages/hero3.png";
-import { Activity, Baby, Briefcase, BriefcaseMedical, Building2, Hospital, HouseHeart, Stethoscope, User } from "lucide-react";
+import { Activity, Baby, Briefcase, BriefcaseMedical, Building2, Cross, Hospital, HouseHeart, HousePlus, Stethoscope, User } from "lucide-react";
+import agency from "@/asset/roleImages/agency.png"
+import aide from "@/asset/roleImages/aide.png"
+import employe from "@/asset/roleImages/employe.png"
+import hospital from "@/asset/roleImages/hospital.png"
+import nurse from "@/asset/roleImages/nurse.png"
+import physiotherapist from "@/asset/roleImages/agency.png"
+import house from "@/asset/roleImages/house.png"
+import user from "@/asset/roleImages/user.png"
 export const slides = [
   {
     id: 3,
@@ -269,4 +277,78 @@ export const testimonials = [
 },
 
 
+];
+
+
+export const userRole = [
+  {
+    id: 1,
+    text: "User",
+    icon: user,
+    href: "/register",
+    role:"user"
+  },
+  {
+    id: 2,
+    text: "House Manager",
+    icon: house ,
+    href: "/register",
+    role:"house-manager"
+  },
+  {
+    id: 3,
+    text: "Nurse",
+    icon: nurse,
+    href: "/register",
+    role:"nurse"
+  },
+    {
+    id: 8,
+    text: "Agency",
+    icon: agency,
+    href: "/register",
+    role:"agency"
+  },
+  {
+    id: 4,
+    text: "Physiotherapist",
+    icon: physiotherapist,
+    href: "/register",
+    role:"physiotherapist"
+  },
+  {
+    id: 6,
+    text: "Employer",
+    icon: employe,
+    href: "/register",
+    role:"employer"
+    
+  },
+  ,
+  {
+    id: 7,
+    text: "Medical Institutions",
+    icon: hospital,
+    href: "/register",
+    role:"medical-institutions"
+  },
+   {
+    id: 5,
+    text: "Nurse Aide or Assistant",
+    icon: aide,
+    href: "/register",
+    role:"nurse-aide-or-assistant"
+  },
+
+];
+
+
+export const languages = [
+  { id: 1, value: "english", text: "English" },
+  { id: 2, value: "swahili", text: "Swahili" },
+  { id: 3, value: "french", text: "French" },
+  { id: 4, value: "german", text: "German" },
+  { id: 5, value: "arabic", text: "Arabic" },
+  { id: 6, value: "chinese", text: "Chinese" },
+  { id: 7, value: "other", text: "Other" },
 ];

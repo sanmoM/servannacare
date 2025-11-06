@@ -5,6 +5,7 @@ import {
   Search,
   ChevronRight,
   ListChecks,
+  ScrollText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,15 +26,15 @@ const Searchbar = () => {
   const [guests, setGuests] = useState("1 guest, 1 room");
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
   return (
-    <div data-aos="fade-up" className="w-full mx-auto my-8  max-w-4xl">
+    <div data-aos="fade-up" className="w-full mx-auto my-8 md:!mt-0 -translate-y-1/2 z-[20] relative -mb-30 md:-mb-14  max-w-4xl">
       {/* Mobile View */}
       <div className="md:hidden mx-8 space-y-3">
         <div className="bg-white rounded-2xl p-4 shadow-lg space-y-3">
           {/* Category  */}
           <div className="flex items-center gap-3 pb-3 border-b">
-            <ListChecks className="w-6 h-6 text-gray-600 flex-shrink-0" />
+            <ScrollText className="w-6 h-6 text-gray-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-500 uppercase tracking-wide">
+              <p className="text-xs text-gray-500  tracking-wide">
                 Category
               </p>
               <Select>
@@ -91,14 +92,15 @@ const Searchbar = () => {
         </Button>
       </div>
 
+
       {/* Desktop View */}
       <div  className="hidden md:flex bg-white rounded-full justify-between shadow-2xl p-4 items-center gap-2">
         {/* Category */}
         <div className="flex items-center gap-3">
-          <ListChecks className="w-6 h-6 text-gray-600 flex-shrink-0" />
+          <ScrollText className="w-6 h-6 text-gray-600 flex-shrink-0" />
 
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">
+            <p className="text-xs text-gray-500  tracking-wide">
               Category
             </p>
             <Select>

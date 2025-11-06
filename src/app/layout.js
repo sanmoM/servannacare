@@ -1,12 +1,11 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/shared/header/Navbar";
-import Footer from "@/components/shared/footer/Footer";
+import LayoutWrapper from "@/components/shared/LayoutWrapper";
 import AOSInit from "@/animation/AOSInit";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["100","200","300", "400", "500", "600", "700","800"], 
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800"],
   variable: "--font-poppins",
 });
 
@@ -19,10 +18,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-sans antialiased`}>
-        <AOSInit/>
-        <Navbar />
-        <div className="min-h-[60vh]">{children}</div>
-        <Footer />
+        <AOSInit />
+        <LayoutWrapper>{children}</LayoutWrapper>
       </body>
     </html>
   );

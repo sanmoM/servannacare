@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Children } from "react";
 import { cn } from "@/lib/utils";
 
 const Input = React.forwardRef(
@@ -17,6 +17,7 @@ const Input = React.forwardRef(
       ...props
     },
     ref
+    
   ) => {
     return (
       <div className="w-full">

@@ -64,7 +64,7 @@ export default function Testimonials() {
 
             {/* Navigation Buttons */}
             <button
-              className="swiper-button-prev-custom absolute -left-6 md:-left-16 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary  hover:bg-primary/10  bg-primary hover:text-primary flex items-center text-white justify-center transition-all duration-300 hover:scale-110"
+              className="swiper-button-prev-custom absolute -left-3 md:-left-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary  hover:bg-primary/10  bg-primary hover:text-primary flex items-center text-white justify-center transition-all duration-300 hover:scale-110"
               aria-label="Previous testimonial"
             >
              
@@ -72,7 +72,7 @@ export default function Testimonials() {
             </button>
 
             <button
-              className="swiper-button-next-custom absolute -right-6 md:-right-16 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary text-white bg-primary hover:bg-primary/10  hover:text-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
+              className="swiper-button-next-custom absolute -right-3 md:-right-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary text-white bg-primary hover:bg-primary/10  hover:text-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
               aria-label="Next testimonial"
             >
                <ChevronRight />
@@ -131,7 +131,7 @@ export default function Testimonials() {
 function TestimonialCard({ testimonial }) {
   return (
     <div className="h-full">
-      <div className="bg-card border border-border rounded-xl p-8 h-full flex flex-col hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:shadow-primary/5 group">
+      <div className="bg-card border border-border rounded-xl p-8  h-full flex flex-col hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:shadow-primary/5 group">
         {/* Quote Icon */}
         <Quote className="w-8 h-8 text-primary mb-6" />
 
