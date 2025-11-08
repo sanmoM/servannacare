@@ -139,6 +139,10 @@ body {
   @apply text-base lg:text-lg font-semibold text-gray-900
 }
 
+.formHeading {
+  @apply text-base md:text-lg text-gray-700 font-semibold mt-6
+}
+
 
 
 

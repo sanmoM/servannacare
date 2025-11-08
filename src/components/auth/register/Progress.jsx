@@ -2,21 +2,12 @@
 
 import React from "react";
 
-export default function Progress({
-  currentStep = 1,
-  totalSteps = 4,
-  steps = [
-    { label: "Step 1", description: "Start" },
-    { label: "Step 2", description: "Process" },
-    { label: "Step 3", description: "Review" },
-    { label: "Step 4", description: "Complete" },
-  ],
-}) {
-  const progressPercentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+export default function Progress({ currentStep = 1, totalSteps = 4 }) {
+  const progressPercentage =
+    totalSteps === 1 ? 100 : ((currentStep - 1) / (totalSteps - 1)) * 100;
 
   return (
-    <div className="w-full max-w-4xl mx-auto ">
-      {/* Steps Container */}
+    <div className="w-full max-w-4xl mx-auto">
       <div className="flex items-center justify-between relative">
         {/* Background Line */}
         <div className="absolute top-3 lg:top-4 left-0 right-0 h-1 bg-gray-200" />
@@ -27,16 +18,15 @@ export default function Progress({
           style={{ width: `${progressPercentage}%` }}
         />
 
-        {/* Steps */}
+        {/* Step Circles */}
         <div className="relative flex items-center justify-between w-full">
-          {steps.map((step, index) => {
+          {Array.from({ length: totalSteps }).map((_, index) => {
             const stepNumber = index + 1;
             const isCompleted = stepNumber < currentStep;
             const isActive = stepNumber === currentStep;
 
             return (
               <div key={index} className="flex flex-col items-center flex-1">
-                {/* Circle Step Indicator */}
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-300 ${
                     isCompleted
@@ -64,22 +54,6 @@ export default function Progress({
                     stepNumber
                   )}
                 </div>
-
-                {/* Step Label */}
-                {/* <p
-                  className={`mt-2 text-sm font-medium ${
-                    isActive ? "text-blue-600" : "text-gray-600"
-                  }`}
-                >
-                  {step.label}
-                </p> */}
-
-                {/* Step Description */}
-                {/* {step.description && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    {step.description}
-                  </p>
-                )} */}
               </div>
             );
           })}
