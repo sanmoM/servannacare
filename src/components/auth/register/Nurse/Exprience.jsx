@@ -36,7 +36,7 @@ const Exprience = () => {
         </RadioGroup>
       </div>
 
-      <div className="flex flex-col mb-12 sm:flex-row gap-4">
+      <div className="flex flex-col mb-8 sm:flex-row gap-4">
         <div className="flex-1">
           <Input
             type="number"

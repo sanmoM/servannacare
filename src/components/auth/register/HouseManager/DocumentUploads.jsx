@@ -55,12 +55,12 @@ const DocumentUploads = () => {
 
       <div className="p-3 bg-primary/20 rounded-xl flex gap-2 items-center">
         <FileText />
-        <span className="text-xs text-gray-700">
+        <span className="text-sm text-gray-700">
           Upload PDF or images (max size: 2MB each)
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
         {documents.map((doc) => {
           const file = files[doc.id];
           const isImage = file && file.type.startsWith("image/");

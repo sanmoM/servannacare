@@ -9,12 +9,12 @@ import React from "react";
 
 const NurseBasicInfo = () => {
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Section Title */}
       <h4 className="formHeading">Basic Information</h4>
 
       {/* Name + Location */}
-      <div className="flex flex-col sm:flex-row gap-5">
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
         <div className="flex-1">
           <Input label="Full Name" name="name" placeholder="Enter your name" />
         </div>
@@ -28,13 +28,13 @@ const NurseBasicInfo = () => {
       </div>
 
       {/* Age + Gender */}
-      <div className="flex flex-col sm:flex-row gap-5 ">
+      <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
         <div className="flex-1">
           <Input label="Age" name="age" placeholder="Your age" />
         </div>
 
         <div className="flex-1">
-          <Label className="mb-2 block">Gender</Label>
+          <Label className="mb-3 block">Gender</Label>
           <RadioGroup className="flex gap-4 mt-2" defaultValue="comfortable">
             <div className="flex items-center gap-2">
               <RadioGroupItem value="male" id="r1" />
@@ -54,7 +54,7 @@ const NurseBasicInfo = () => {
 
       {/* Languages */}
       <div>
-        <Label className="font-medium  text-gray-700">Languages</Label>
+        <Label className="font-medium mb-3 text-gray-700">Languages</Label>
         <div className="flex flex-wrap gap-4 mt-2">
           {languages.map((lan) => (
             <div key={lan.id} className="flex items-center gap-2">
@@ -71,7 +71,7 @@ const NurseBasicInfo = () => {
       </div>
 
       <div>
-        <Label className="mb-2 block">Can you drive?</Label>
+        <Label className="mb-3 block">Can you drive?</Label>
         <RadioGroup className="flex gap-4 " defaultValue="comfortable">
           <div className="flex items-center gap-2">
             <RadioGroupItem value="male" id="d1" />
@@ -91,7 +91,7 @@ const NurseBasicInfo = () => {
       {/* Bank Details */}
       <div className="">
         <h4 className="formHeading mb-3 mt-6">Bank Details</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
           <Input label="Bank Name" name="bname" placeholder="Your bank name" />
           <Input
             label="Account Name"

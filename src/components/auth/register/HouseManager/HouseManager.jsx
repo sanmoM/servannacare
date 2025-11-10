@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import BasicInfo from "./BasicInfo";
 import AdditionalDetails from "./AdditionalDetails";
 import DocumentUploads from "./DocumentUploads";
+import toast from "react-hot-toast";
 
 const HouseManager = () => {
   const [step, setStep] = useState(1);
@@ -25,7 +26,7 @@ const HouseManager = () => {
       setStep(step + 1);
     } else {
       console.log("Final Submitted Data:", data);
-      alert("Form successfully submitted!");
+      toast.success("Register Successfully!");
       reset();
       setStep(1);
     }
@@ -39,7 +40,7 @@ const HouseManager = () => {
     <div className="w-full flex justify-center  px-2">
       <div className="w-full  max-w-[700px] bg-white">
         {/* Header */}
-        <h2 className="text-xl mb-4 font-semibold text-center text-gray-900">
+        <h2 className="text-xl mb-6 font-semibold text-center text-gray-900">
           Continue as Nanny/Housekeeper
         </h2>
 

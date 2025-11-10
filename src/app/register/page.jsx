@@ -1,7 +1,9 @@
 "use client";
 
+import Agency from "@/components/auth/register/Agency/Agency";
 import HouseManager from "@/components/auth/register/HouseManager/HouseManager";
 import Nurse from "@/components/auth/register/Nurse/Nurse";
+import Physiotherapist from "@/components/auth/register/Physiotherapist/Physiotherapist";
 import UserForm from "@/components/auth/register/UserForm";
 import { useSearchParams } from "next/navigation";
 import React from "react";
@@ -18,6 +20,10 @@ const Page = () => {
       return <HouseManager/>;
       case "nurse":
       return <Nurse/>;
+      case "agency":
+        return <Agency/>
+      case "physiotherapist":
+        return <Physiotherapist/>
       default:
       // return <DefaultForm />;
     }
@@ -25,8 +31,8 @@ const Page = () => {
 
   return (
     <div
-      className="py-12 flex items-center bg-white justify-center w-full 
-    "
+      className={`${role === 'user'?"py-0":"py-12"} flex items-center bg-white justify-center w-full 
+    `}
     >
       <div className="px-4 w-full">{renderForm()}</div>
     </div>

@@ -1,13 +1,13 @@
 import hero1 from "@/asset/homeImages/hero1.png";
 import hero2 from "@/asset/homeImages/hero2.png";
 import hero3 from "@/asset/homeImages/hero3.png";
-import { Activity, Baby, Briefcase, BriefcaseMedical, Building2, Cross, Hospital, HouseHeart, HousePlus, Stethoscope, User } from "lucide-react";
+import { Activity, Baby, Briefcase, BriefcaseMedical, Building2, Cross, Hospital, HouseHeart, HousePlus, LucideDumbbell, Stethoscope, User } from "lucide-react";
 import agency from "@/asset/roleImages/agency.png"
 import aide from "@/asset/roleImages/aide.png"
 import employe from "@/asset/roleImages/employe.png"
 import hospital from "@/asset/roleImages/hospital.png"
 import nurse from "@/asset/roleImages/nurse.png"
-import physiotherapist from "@/asset/roleImages/agency.png"
+import physiotherapist from "@/asset/roleImages/physiotherapist.png"
 import house from "@/asset/roleImages/house.png"
 import user from "@/asset/roleImages/user.png"
 export const slides = [

@@ -104,17 +104,19 @@ const Searchbar = () => {
               Category
             </p>
             <Select>
-              <SelectTrigger className="w-[150px] cursor-pointer border-0 pl-0 shadow-none  ">
+              <SelectTrigger className="w-[150px] cursor-pointer outline-0 focus:outline-0 border-0 pl-0 shadow-none  ">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Fruits</SelectLabel>
-                  <SelectItem value="apple">Apple</SelectItem>
-                  <SelectItem value="banana">Banana</SelectItem>
-                  <SelectItem value="blueberry">Blueberry</SelectItem>
-                  <SelectItem value="grapes">Grapes</SelectItem>
-                  <SelectItem value="pineapple">Pineapple</SelectItem>
+                  <SelectItem value="house manager">House Manager</SelectItem>
+                  <SelectItem value="nurse">Nurse</SelectItem>
+                  <SelectItem value="agency">Agency</SelectItem>
+                  <SelectItem value="physiotherapist">Physiotherapist</SelectItem>
+                  <SelectItem value="employer">Employer</SelectItem>
+                  <SelectItem value="medical institutions">Medical Institutions</SelectItem>
+                  <SelectItem value="nurse aide / assistant">Nurse Aide / Assistant</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

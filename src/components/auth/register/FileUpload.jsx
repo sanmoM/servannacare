@@ -1,14 +1,18 @@
 "use client";
 
 import { CheckCircle } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 
-const FileUpload = ({ title, accept, icon, optional = false, onFileSelect }) => {
-  const [file, setFile] = useState(null);
-
+const FileUpload = ({
+  title,
+  accept,
+  icon,
+  optional = false,
+  file, 
+  onFileSelect,
+}) => {
   const handleChange = (e) => {
     const selectedFile = e.target.files?.[0] || null;
-    setFile(selectedFile);
     if (onFileSelect) onFileSelect(selectedFile);
   };
 
@@ -41,7 +45,10 @@ const FileUpload = ({ title, accept, icon, optional = false, onFileSelect }) => 
         </div>
 
         <h3 className="text-gray-700 text-sm font-medium">
-          {title} {optional && <span className="text-gray-400 text-xs">(Optional)</span>}
+          {title}{" "}
+          {optional && (
+            <span className="text-gray-400 text-xs">(Optional)</span>
+          )}
         </h3>
 
         {file && !isImage && (
@@ -51,7 +58,14 @@ const FileUpload = ({ title, accept, icon, optional = false, onFileSelect }) => 
           </div>
         )}
 
-        {!file && <p className="text-xs text-gray-500">No file selected</p>}
+        {!file && (
+          <p className="text-xs text-gray-500">
+            {accept === "application/pdf,image/*"
+              ? "PDF or Image"
+              : "Image"}{" "}
+            Click to select file
+          </p>
+        )}
       </div>
     </label>
   );

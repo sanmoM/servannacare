@@ -13,8 +13,8 @@ const Education = () => {
 
       {/* education level */}
       <div>
-        <Label className="mb-2 block">Level of Education</Label>
-        <RadioGroup className="flex gap-4 mt-2" defaultValue="comfortable">
+        <Label className="mb-3 block">Level of Education</Label>
+        <RadioGroup className="flex flex-wrap gap-4 mt-2" defaultValue="comfortable">
           <div className="flex items-center gap-2">
             <RadioGroupItem value="diploma" id="r1" />
             <Label
@@ -57,7 +57,7 @@ const Education = () => {
       </div>
 
       <div>
-        <Label className="mb-2 block">
+        <Label className="mb-3 block">
           Are you registered with the Nursing Council of Kenya?
         </Label>
         <RadioGroup className="flex gap-4 mt-2" defaultValue="comfortable">
