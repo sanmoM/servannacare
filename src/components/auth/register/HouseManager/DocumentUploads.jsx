@@ -1,56 +1,78 @@
 "use client";
 
-import {
-  CheckCircle,
-  FileText,
-  FileCheck,
-  Image as ImageIcon,
-} from "lucide-react";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { Button } from "@/components/ui/button";
+import { FileText,  Image as ImageIcon, IdCardLanyard, IdCard, Cross } from "lucide-react";
+import FileUpload from "../FileUpload";
 
-const DocumentUploads = () => {
+
+const DocumentUploads = ({ defaultValues, onNext, onBack }) => {
   const documents = [
     {
-      id: 1,
+      id: "firstAidCertificate",
       title: "First Aid Certificate",
       accept: "application/pdf,image/*",
-      icon: <FileCheck size={32} />,
+      icon: <Cross size={32} />,
+      required: true,
     },
     {
-      id: 2,
+      id: "goodConductCertificate",
       title: "Good Conduct Certificate",
       accept: "application/pdf,image/*",
-      icon: <FileCheck size={32} />,
+      icon: <FileText size={32} />,
+      required: true,
     },
     {
-      id: 3,
+      id: "iDCopy",
       title: "ID Copy",
       accept: "application/pdf,image/*",
-      icon: <FileText size={32} />,
+      icon: <IdCardLanyard size={32} />,
+      required: true,
     },
     {
-      id: 4,
+      id: "profilePhoto",
       title: "Profile Photo",
       accept: "image/*",
       icon: <ImageIcon size={32} />,
+      required: true,
     },
     {
-      id: 5,
+      id: "drivingLicense",
       title: "Driving License (Optional)",
       accept: "application/pdf,image/*",
-      icon: <FileText size={32} />,
+      icon: <IdCard size={32} />,
+      required: false,
       optional: true,
     },
   ];
 
-  const [files, setFiles] = useState({});
+  const [files, setFiles] = useState({
+    firstAidCertificate: defaultValues.firstAidCertificate || null,
+    goodConductCertificate: defaultValues.goodConductCertificate || null,
+    iDCopy: defaultValues.iDCopy || null,
+    profilePhoto: defaultValues.profilePhoto || null,
+    drivingLicense: defaultValues.drivingLicense || null,
+  });
 
-  const handleFileChange = (id, file) => {
+  const handleFileSelect = (id, file) => {
     setFiles((prev) => ({ ...prev, [id]: file }));
   };
 
+  const handleSubmit = () => {
+    // Validation
+    for (const doc of documents) {
+      if (doc.required && !files[doc.id]) {
+        toast.error(`Please upload ${doc.title}`);
+        return;
+      }
+    }
+
+    onNext(files); // Pass all selected files to parent
+  };
+
   return (
-    <div className="w-full space-y-6">
+    <div className="space-y-6 w-full">
       <h4 className="formHeading">Document Uploads</h4>
 
       <div className="p-3 bg-primary/20 rounded-xl flex gap-2 items-center">
@@ -60,56 +82,28 @@ const DocumentUploads = () => {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
-        {documents.map((doc) => {
-          const file = files[doc.id];
-          const isImage = file && file.type.startsWith("image/");
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {documents.map((doc) => (
+          <FileUpload
+            key={doc.id}
+            title={doc.title}
+            accept={doc.accept}
+            icon={doc.icon}
+            optional={doc.optional}
+            file={files[doc.id]}
+            onFileSelect={(file) => handleFileSelect(doc.id, file)}
+          />
+        ))}
+      </div>
 
-          return (
-            <label
-              key={doc.id}
-              className={`flex flex-col hover:bg-gray-50 items-center justify-center p-6 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary/50 transition-colors relative ${
-                file ? "border-green-500" : "border-border"
-              }`}
-            >
-              <input
-                type="file"
-                accept={doc.accept}
-                onChange={(e) =>
-                  handleFileChange(doc.id, e.target.files?.[0] || null)
-                }
-                className="hidden"
-              />
+      <div className="flex justify-between pt-6">
+        <Button type="button" size="lg" variant="outline" onClick={onBack}>
+          Back
+        </Button>
 
-              <div className="text-center space-y-3 w-full">
-                <div className="flex justify-center">
-                  {isImage ? (
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={doc.title}
-                      className="h-24 w-24 object-cover rounded-md"
-                    />
-                  ) : (
-                    doc.icon
-                  )}
-                </div>
-
-                <h3 className="text-gray-700 text-sm font-medium ">{doc.title}</h3>
-
-                {file && !isImage && (
-                  <div className="flex text-xs text-gray-600 items-center justify-center gap-2 text-green-600 font-medium">
-                    <CheckCircle />
-                    <span>{file.name} is selected</span>
-                  </div>
-                )}
-
-                {!file && (
-                  <p className="text-xs text-gray-500">No file selected</p>
-                )}
-              </div>
-            </label>
-          );
-        })}
+        <Button type="button" size="lg" onClick={handleSubmit}>
+          Next
+        </Button>
       </div>
     </div>
   );

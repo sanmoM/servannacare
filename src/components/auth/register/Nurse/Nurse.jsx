@@ -1,14 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import Progress from "../Progress";
-import { useForm } from "react-hook-form";
 import NurseBasicInfo from "./NurseBasicInfo";
 import Education from "./Education";
 import Exprience from "./Exprience";
 import SkillServices from "./SkillServices";
-import FileUpload from "../FileUpload";
 import DocumentUploads from "./DocumentUploads";
 import ContactAgreement from "./ContactAgreement";
 import toast from "react-hot-toast";
@@ -16,18 +13,41 @@ import toast from "react-hot-toast";
 const Nurse = () => {
   const [step, setStep] = useState(1);
   const totalSteps = 6;
+  const [formData, setFormData] = useState({
+    basicInfo: {},
+    education: {},
+    exprience: {},
+    skillsServices: {},
+    documents: {},
+    constactAgrement: {},
+  });
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const handleNext = (dataForStep) => {
+    if(step === 1)
+      setFormData((prev) => ({...prev, basicInfo:dataForStep}));
+    
+    if(step === 2)
+      setFormData((prev) => ({...prev, education:dataForStep}));
 
-  const onSubmit = (data) => {
-    if (step < totalSteps) {
-      setStep(step + 1);
-    } else {
-      console.log("Final Submitted Data:", data);
-      toast.success("Register Successfully!");
-      reset();
-      setStep(1);
-    }
+    if(step === 3)
+      setFormData((prev) => ({...prev,exprience:dataForStep}));
+
+    if(step === 4)
+      setFormData((prev) => ({...prev,skillsServices:dataForStep}));
+
+    if(step === 5)
+      setFormData((prev) => ({...prev,documents:dataForStep}));
+
+    if(step === 6)
+      setFormData((prev) => ({...prev,constactAgrement:dataForStep}));
+
+   if (step < totalSteps){
+    setStep(step+1);
+   }else{
+    toast.success("Register Sucessfully!")
+    setStep(1);
+    setFormData({basicInfo:{}, education:{}, exprience:{},skillsServices:{},documents:{}, constactAgrement:{} })
+   }
   };
 
   const handleBack = () => {
@@ -44,15 +64,15 @@ const Nurse = () => {
 
         <Progress currentStep={step} totalSteps={totalSteps} />
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 mt-6">
-          {step === 1 && <NurseBasicInfo />}
+        <div  className="space-y-8 mt-6">
+          {step === 1 && <NurseBasicInfo defaultValues={formData.basicInfo} onNext={handleNext} />}
           {step === 2 && <Education />}
           {step === 3 && <Exprience />}
           {step === 4 && <SkillServices />}
           {step === 5 && <DocumentUploads />}
           {step === 6 && <ContactAgreement />}
 
-          <div className="flex justify-between mt-6">
+          {/* <div className="flex justify-between mt-6">
             {step > 1 ? (
               <Button
                 type="button"
@@ -68,8 +88,8 @@ const Nurse = () => {
             <Button type="submit" size="lg">
               {step === totalSteps ? "Submit" : "Next"}
             </Button>
-          </div>
-        </form>
+          </div> */}
+        </div>
       </div>
     </div>
   );

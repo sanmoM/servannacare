@@ -1,11 +1,11 @@
-import Input from "@/components/shared/Input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { languages } from "@/utilities/data";
-import React from "react";
+import Input from '@/components/shared/Input'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { languages } from '@/utilities/data'
+import React from 'react'
 
-const PhysiotherapistBasigInfo = () => {
+const BasicInfo = () => {
   return (
     <div>
       <h2 className="formHeading">Basic Information</h2>
@@ -101,7 +101,7 @@ const PhysiotherapistBasigInfo = () => {
         </RadioGroup>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default PhysiotherapistBasigInfo;
+export default BasicInfo

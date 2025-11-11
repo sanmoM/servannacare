@@ -4,31 +4,36 @@ import { Button } from "@/components/ui/button";
 
 import React, { useState } from "react";
 import Progress from "../Progress";
-import { useForm } from "react-hook-form";
 import BasicInfo from "./BasicInfo";
 import AdditionalDetails from "./AdditionalDetails";
 import DocumentUploads from "./DocumentUploads";
 import toast from "react-hot-toast";
+import Review from "./Review";
 
 const HouseManager = () => {
   const [step, setStep] = useState(1);
-  const totalSteps = 5;
+  const totalSteps = 4;
+  const [formData, setFormData] = useState({
+    basicInfo: {},
+    additionalDetails: {},
+    documents: {},
+  });
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
+  const handleNext = (dataForStep) => {
+    if (step === 1)
+      setFormData((prev) => ({ ...prev, basicInfo: dataForStep }));
+    if (step === 2)
+      setFormData((prev) => ({ ...prev, additionalDetails: dataForStep }));
+    if (step === 3)
+      setFormData((prev) => ({ ...prev, documents: dataForStep }));
 
-  const onSubmit = (data) => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      console.log("Final Submitted Data:", data);
       toast.success("Register Successfully!");
-      reset();
+      console.log("Final Collected Data : ", formData);
       setStep(1);
+      setFormData({ basicInfo: {}, additionalDetails: {}, documents: {} });
     }
   };
 
@@ -46,12 +51,29 @@ const HouseManager = () => {
 
         <Progress currentStep={step} totalSteps={totalSteps} />
 
-        <form  onSubmit={handleSubmit(onSubmit)} className="space-y-7 mt-6">
-          {step === 1 && <BasicInfo  />}
-          {step === 2 && <AdditionalDetails />}
-          {step === 3 && <DocumentUploads  />}
+        <div className="space-y-7 mt-6">
+          {step === 1 && (
+            <BasicInfo defaultValues={formData.basicInfo} onNext={handleNext} />
+          )}
+          {step === 2 && (
+            <AdditionalDetails
+              defaultValues={formData.additionalDetails}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          )}
+          {step === 3 && (
+            <DocumentUploads
+              defaultValues={formData.documents}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          )}
+          {step === 4 && (
+            <Review data={formData} onNext={handleNext} onBack={handleBack} />
+          )}
 
-          {/* Submit */}
+          {/* Submit
           <div className="flex justify-between mt-8">
             {step > 1 ? (
               <Button
@@ -68,8 +90,8 @@ const HouseManager = () => {
             <Button type="submit" size="lg">
               {step === totalSteps ? "Submit" : "Next"}
             </Button>
-          </div>
-        </form>
+          </div> */}
+        </div>
       </div>
     </div>
   );

@@ -1,15 +1,30 @@
 "use client";
 
 import Input from "@/components/shared/Input";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { languages } from "@/utilities/data";
-import React from "react";
+import React, { useState } from "react";
 
-const NurseBasicInfo = () => {
+const NurseBasicInfo = ({defaultValue,onNext}) => {
+  const [data,setData] = useState({
+    
+  })
+
+  const handleChange = (e) => {
+    const {name,value} = e.target;
+    setData((prev) => ({...prev,[name]:value}));
+  };
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  }
+
   return (
-    <div className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Section Title */}
       <h4 className="formHeading">Basic Information</h4>
 
@@ -30,7 +45,7 @@ const NurseBasicInfo = () => {
       {/* Age + Gender */}
       <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
         <div className="flex-1">
-          <Input label="Age" name="age" placeholder="Your age" />
+          <Input type="number" label="Age" name="age" placeholder="Your age" />
         </div>
 
         <div className="flex-1">
@@ -113,7 +128,13 @@ const NurseBasicInfo = () => {
           Remember me
         </Label>
       </div>
-    </div>
+
+       <div className="flex justify-end mt-6">
+        <Button type="submit" size="lg">
+          Next
+        </Button>
+      </div>
+    </form>
   );
 };
 

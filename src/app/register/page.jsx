@@ -1,6 +1,7 @@
 "use client";
 
 import Agency from "@/components/auth/register/Agency/Agency";
+import NurseAideOrAssistant from "@/components/auth/register/AideAssistant/NurseAideOrAssistant";
 import HouseManager from "@/components/auth/register/HouseManager/HouseManager";
 import Nurse from "@/components/auth/register/Nurse/Nurse";
 import Physiotherapist from "@/components/auth/register/Physiotherapist/Physiotherapist";
@@ -24,6 +25,8 @@ const Page = () => {
         return <Agency/>
       case "physiotherapist":
         return <Physiotherapist/>
+      case "nurse-aide-or-assistant":
+        return <NurseAideOrAssistant/>
       default:
       // return <DefaultForm />;
     }
