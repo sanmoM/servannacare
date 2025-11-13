@@ -68,7 +68,7 @@ const DocumentUploads = ({ defaultValues, onNext, onBack }) => {
       }
     }
 
-    onNext(files); // Pass all selected files to parent
+    onNext(files); 
   };
 
   return (

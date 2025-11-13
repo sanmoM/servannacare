@@ -1,11 +1,34 @@
+"use client";
+
 import Input from "@/components/shared/Input";
 import { Label } from "@/components/ui/label";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FileUpload from "../FileUpload";
 import { FileText } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
-const AgencyBasicInfo = ({ onChange, values = {} }) => {
+const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
+  const [data, setData] = useState({
+    companyName: defaultValues.companyName || "",
+    kraPin: defaultValues.kraPin || "",
+    bankName: defaultValues.bankName || "",
+    bankAccountName: defaultValues.bankAccountName || "",
+    bankAccountNumber: defaultValues.bankAccountNumber || "",
+    emergencyContactName: defaultValues.emergencyContactName || "",
+    emergencyContactPhoneNumber:
+      defaultValues.emergencyContactPhoneNumber || "",
+    emergencyContactEmail: defaultValues.emergencyContactEmail || "",
+    companyRegistrationNumber: defaultValues.companyRegistrationNumber || "",
+    businessLocation: defaultValues.businessLocation || "",
+    numberOfReplacement: defaultValues.numberOfReplacement || "",
+    replacementWindow: defaultValues.replacementWindow || "",
+    placementFee: defaultValues.placementFee || "",
+    trainingAreas: defaultValues.trainingAreas || [],
+    registrationDocument: defaultValues.registrationDocument || null,
+  });
+
   const train = [
     "Cooking",
     "House Keeping",
@@ -14,31 +37,79 @@ const AgencyBasicInfo = ({ onChange, values = {} }) => {
     "Communication",
     "None",
   ];
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    onChange({ [name]: value });
-  };
 
-  const handleCheckboxChange = (item) => {
-    const currentSelections = values.trainings || [];
-    let updated;
-
-    if (currentSelections.includes(item)) {
-      updated = currentSelections.filter((i) => i !== item);
-    } else {
-      updated = [...currentSelections, item];
+  useEffect(() => {
+    if (defaultValues && Object.keys(defaultValues).length > 0) {
+      setData((prev) => ({ ...prev, ...defaultValues }));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }
-    onChange({ trainings: updated });
+  }, [defaultValues]);
+
+  // Handle Input Changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle Checkbox Toggle
+  const toggleTraining = (item) => {
+    setData((prev) => {
+      const alreadySelected = prev.trainingAreas.includes(item);
+      return {
+        ...prev,
+        trainingAreas: alreadySelected
+          ? prev.trainingAreas.filter((t) => t !== item)
+          : [...prev.trainingAreas, item],
+      };
+    });
+  };
+
+  // Handle File Upload
   const handleFileSelect = (file) => {
-    onChange({ companyRegistrationFile: file });
+    setData((prev) => ({ ...prev, registrationDocument: file }));
+  };
+
+  // Validation + Submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const requiredFields = [
+      "companyName",
+      "kraPin",
+      "bankName",
+      "bankAccountName",
+      "bankAccountNumber",
+      "emergencyContactName",
+      "emergencyContactPhoneNumber",
+      "emergencyContactEmail",
+      "companyRegistrationNumber",
+      "businessLocation",
+      "registrationDocument",
+      "trainingAreas",
+      "placementFee",
+      "replacementWindow",
+      "numberOfReplacement",
+    ];
+
+    for (let field of requiredFields) {
+      if (!data[field] || (Array.isArray(data[field]) && data[field].length === 0)) {
+        const formattedField = field
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase());
+        toast.error(`${formattedField} is required!`);
+        return;
+      }
+    }
+
+    console.log("Agency Data:", data);
+    onNext(data);
   };
 
   return (
-    <div>
+    <form onSubmit={handleSubmit}>
+      {/* Agency Details */}
       <div>
-        <h2 className="formHeading ">Agency Details</h2>
+        <h2 className="formHeading">Agency Details</h2>
 
         <div className="flex py-6 flex-col sm:flex-row gap-6 sm:gap-4">
           <Input
@@ -46,125 +117,122 @@ const AgencyBasicInfo = ({ onChange, values = {} }) => {
             label="Company/Business Name"
             name="companyName"
             placeholder="Company name"
-            value={values.companyName || ""}
-            onChange={handleInputChange}
+            value={data.companyName}
+            onChange={handleChange}
           />
-
           <Input
             label="KRA PIN Number"
-            name="kraPIN"
+            name="kraPin"
             placeholder="PIN number"
-            value={values.kraPIN || ""}
-            onChange={handleInputChange}
+            value={data.kraPin}
+            onChange={handleChange}
           />
         </div>
 
         <div className="flex flex-col gap-6 sm:gap-4 sm:flex-row">
           <div className="flex-1 space-y-4">
             <div>
-              <Label className={"mb-2"}>Bank Details</Label>
+              <Label className="mb-2">Bank Details</Label>
               <Input
                 name="bankName"
                 placeholder="Your bank name"
-                value={values.bankName || ""}
-                onChange={handleInputChange}
+                value={data.bankName}
+                onChange={handleChange}
               />
             </div>
             <Input
               name="bankAccountName"
               placeholder="Your account name"
-              value={values.bankAccountName || ""}
-              onChange={handleInputChange}
+              value={data.bankAccountName}
+              onChange={handleChange}
             />
             <Input
               name="bankAccountNumber"
-              placeholder="Your account Number"
-              value={values.bankAccountNumber || ""}
-              onChange={handleInputChange}
+              placeholder="Your account number"
+              value={data.bankAccountNumber}
+              onChange={handleChange}
             />
           </div>
+
           <div className="flex-1 space-y-4">
             <div>
-              <Label className={"mb-2"}>Emergency Contact Details</Label>
+              <Label className="mb-2">Emergency Contact Details</Label>
               <Input
                 name="emergencyContactName"
-                placeholder="Your emergency contact name"
-                value={values.emergencyContactName || ""}
-                onChange={handleInputChange}
+                placeholder="Emergency contact name"
+                value={data.emergencyContactName}
+                onChange={handleChange}
               />
             </div>
             <Input
               name="emergencyContactPhoneNumber"
-              placeholder="Your emergency contact phone number"
-              value={values.emergencyContactPhoneNumber || ""}
-              onChange={handleInputChange}
+              placeholder="Emergency contact phone number"
+              value={data.emergencyContactPhoneNumber}
+              onChange={handleChange}
             />
             <Input
-              type="emial"
+              type="email"
               name="emergencyContactEmail"
-              placeholder="Your emergency contact email"
-              value={values.emergencyContactEmail || ""}
-              onChange={handleInputChange}
+              placeholder="Emergency contact email"
+              value={data.emergencyContactEmail}
+              onChange={handleChange}
             />
           </div>
         </div>
 
         <div className="flex flex-col py-6 sm:flex-row gap-6 sm:gap-4">
-          <div className="flex-1">
-            <Input
-              label="Company Registration Number"
-              name="companyRegistrationNumber"
-              placeholder="Company registration number"
-              value={values.companyRegistrationNumber || ""}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="flex-1">
-            <Input
-              label="Business Location"
-              name="buisnessLocation"
-              placeholder="Business location"
-              value={values.buisnessLocation || ""}
-              onChange={handleInputChange}
-            />
-          </div>
+          <Input
+            label="Company Registration Number"
+            name="companyRegistrationNumber"
+            placeholder="Company registration number"
+            value={data.companyRegistrationNumber}
+            onChange={handleChange}
+          />
+          <Input
+            label="Business Location"
+            name="businessLocation"
+            placeholder="Business location"
+            value={data.businessLocation}
+            onChange={handleChange}
+          />
         </div>
 
-        <div className="">
+        <div>
           <FileUpload
             title="Company Registration Document"
             accept="application/pdf,image/*"
             icon={<FileText size={32} />}
-            file={values.companyRegistrationFile}
-            optional=""
+            file={data.registrationDocument}
             onFileSelect={handleFileSelect}
           />
         </div>
       </div>
+
+      {/* Agency Services */}
       <div>
-        <h2 className="formHeading ">Agency Services</h2>
+        <h2 className="formHeading">Agency Services</h2>
+
         <div className="py-6">
           <Label className="mb-3">What areas do you train on?</Label>
           <div className="flex gap-x-4 gap-y-2 flex-wrap items-center">
-            {train.map((item, indx) => {
-              return (
-                <div key={item} className="flex items-center  gap-2">
-                  <Checkbox
-                    id={indx}
-                    checked={values.trainings?.includes(item) || false}
-                    onCheckedChange={() => handleCheckboxChange(item)}
-                  />
-                  <Label
-                    htmlFor={indx}
-                    className="text-gray-600 font-normal cursor-pointer"
-                  >
-                    {item}
-                  </Label>
-                </div>
-              );
-            })}
+            {train.map((item, indx) => (
+              <div key={indx} className="flex items-center gap-2">
+                <Checkbox
+                  id={`train-${indx}`}
+                  checked={data.trainingAreas.includes(item)}
+                  onCheckedChange={() => toggleTraining(item)}
+                />
+                <Label
+                  htmlFor={`train-${indx}`}
+                  className="text-gray-600 font-normal cursor-pointer"
+                >
+                  {item}
+                </Label>
+              </div>
+            ))}
           </div>
         </div>
+
         <div>
           <div className="flex gap-6 sm:gap-4 mb-6 sm:flex-row flex-col">
             <Input
@@ -172,30 +240,38 @@ const AgencyBasicInfo = ({ onChange, values = {} }) => {
               placeholder="Placement fee"
               name="placementFee"
               label="Placement Fee (KSh)"
-              value={values.placementFee || ""}
-              onChange={handleInputChange}
+              value={data.placementFee}
+              onChange={handleChange}
             />
             <Input
               type="number"
               placeholder="Replacement window"
               name="replacementWindow"
               label="Replacement Window (months)"
-              value={values.replacementWindow || ""}
-              onChange={handleInputChange}
+              value={data.replacementWindow}
+              onChange={handleChange}
             />
           </div>
+
           <Input
             type="number"
             placeholder="Number of replacements offered"
-            name="replacementOffered"
+            name="numberOfReplacement"
             label="Number of replacements"
             className="sm:w-1/2"
-            value={values.replacementOffered || ""}
-            onChange={handleInputChange}
+            value={data.numberOfReplacement}
+            onChange={handleChange}
           />
         </div>
       </div>
-    </div>
+
+      {/* Submit */}
+      <div className="flex justify-end mt-6">
+        <Button type="submit" size="lg">
+          Next
+        </Button>
+      </div>
+    </form>
   );
 };
 

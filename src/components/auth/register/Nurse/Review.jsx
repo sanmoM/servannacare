@@ -40,7 +40,7 @@ const Review = ({ data, onNext, onBack }) => {
 
         <div className="space-y-2 grid gap-4 md:grid-cols-2">
           {Object.entries(sectionData).map(([key, value]) => {
-            // 🔹 If array → render each item
+            // If array → render each item
             if (Array.isArray(value)) {
               return (
                 <div key={key} className="flex flex-wrap gap-2 items-start">
@@ -60,7 +60,7 @@ const Review = ({ data, onNext, onBack }) => {
               );
             }
 
-            // 🔹 If file → show icon/image preview
+            // If file → show icon/image preview
             else if (value instanceof File) {
               const isImage = value.type.startsWith("image/");
               return (
@@ -83,12 +83,12 @@ const Review = ({ data, onNext, onBack }) => {
               );
             }
 
-            // 🔹 If nested object → recurse
+            //  If nested object → recurse
             else if (typeof value === "object" && value !== null) {
               return renderSection(key, value);
             }
 
-            // 🔹 Default simple text field
+            // Default simple text field
             else {
               return (
                 <div key={key} className="flex gap-2 flex-wrap">
@@ -109,12 +109,12 @@ const Review = ({ data, onNext, onBack }) => {
     <div>
       <h2 className="formHeading mb-4">Review and Submit</h2>
 
-      {/* 🔹 Render all form sections */}
+      {/* Render all form sections */}
       {Object.entries(data).map(([sectionKey, sectionValue]) =>
         renderSection(sectionKey, sectionValue)
       )}
 
-      {/* 🔹 Remember Me Checkbox */}
+      {/* Remember Me Checkbox */}
       <div className="flex items-center gap-2 mt-6">
         <Checkbox
           id="remember"
@@ -129,7 +129,7 @@ const Review = ({ data, onNext, onBack }) => {
         </Label>
       </div>
 
-      {/* 🔹 Buttons */}
+      {/* Buttons */}
       <div className="flex justify-between pt-6">
         <Button type="button" size="lg" variant="outline" onClick={onBack}>
           Back

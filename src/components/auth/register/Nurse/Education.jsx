@@ -1,155 +1,134 @@
+"use client";
+
 import Input from "@/components/shared/Input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import React from "react";
+import React, { useState } from "react";
 import FileUpload from "../FileUpload";
 import { FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
-const Education = () => {
+const Education = ({ defaultValues, onNext, onBack }) => {
+  const [data, setData] = useState({
+    education: defaultValues.education || "",
+    isNursingInKenya: defaultValues.isNursingInKenya || "",
+    educationCertificate: defaultValues.educationCertificate || null,
+  });
+
+
+  const handleFileSelect = (field, file) => {
+    setData((prev) => ({ ...prev, [field]: file }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!data.education) {
+      toast.error("Education level is require!");
+      return;
+    }
+    if (!data.educationCertificate) {
+      toast.error("Education certificate is require!");
+      return;
+    }
+    if (!data.isNursingInKenya) {
+      toast.error(" Answer the nursing council question!");
+      return;
+    }
+
+    console.log("Education data:", data);
+    onNext(data);
+  };
+
   return (
-    <div className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {/* Section Title */}
       <h4 className="formHeading">Education & Registration</h4>
 
-      {/* education level */}
+      {/* Education Level */}
       <div>
         <Label className="mb-3 block">Level of Education</Label>
-        <RadioGroup className="flex flex-wrap gap-4 mt-2" defaultValue="comfortable">
+        <RadioGroup
+          className="flex flex-wrap gap-4 mt-2"
+          value={data.education}
+          onValueChange={(value) =>
+            setData((prev) => ({ ...prev, education: value }))
+          }
+        >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="diploma" id="r1" />
-            <Label
-              htmlFor="r1"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
+            <RadioGroupItem value="diploma in nursing" id="edu1" />
+            <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
               Diploma in Nursing
             </Label>
           </div>
+
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="degree" id="r2" />
-            <Label
-              htmlFor="r2"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
+            <RadioGroupItem value="degree in nursing" id="edu2" />
+            <Label htmlFor="edu2" className="text-gray-700 cursor-pointer">
               Degree in Nursing
             </Label>
           </div>
+
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="other" id="r3" />
-            <Label
-              htmlFor="r3"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
+            <RadioGroupItem value="other" id="edu3" />
+            <Label htmlFor="edu3" className="text-gray-700 cursor-pointer">
               Other
             </Label>
           </div>
         </RadioGroup>
       </div>
 
+      {/* File Upload */}
       <div>
         <FileUpload
-          key={1}
           title="Education Certificate (Compulsory)"
           accept="application/pdf,image/*"
           icon={<FileText size={32} />}
           optional=""
-          onFileSelect={(file) => handleFileSelect(1, file)}
+          file={data.educationCertificate}
+          onFileSelect={(file) => handleFileSelect("educationCertificate", file)}
         />
       </div>
 
+      {/* Nursing Council */}
       <div>
         <Label className="mb-3 block">
           Are you registered with the Nursing Council of Kenya?
         </Label>
-        <RadioGroup className="flex gap-4 mt-2" defaultValue="comfortable">
+        <RadioGroup
+          className="flex gap-4 mt-2"
+          value={data.isNursingInKenya}
+          onValueChange={(value) =>
+            setData((prev) => ({ ...prev, isNursingInKenya: value }))
+          }
+        >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="yes" id="r4" />
-            <Label
-              htmlFor="r4"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
+            <RadioGroupItem value="yes" id="kenya1" />
+            <Label htmlFor="kenya1" className="text-gray-700 cursor-pointer">
               Yes
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="no" id="r5" />
-            <Label
-              htmlFor="r5"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
+            <RadioGroupItem value="no" id="kenya2" />
+            <Label htmlFor="kenya2" className="text-gray-700 cursor-pointer">
               No
             </Label>
           </div>
         </RadioGroup>
       </div>
 
-      {/* Languages */}
-      {/* <div>
-        <Label className="font-medium  text-gray-700">Languages</Label>
-        <div className="flex flex-wrap gap-4 mt-3">
-          {languages.map((lan) => (
-            <div key={lan.id} className="flex items-center gap-2">
-              <Checkbox id={lan.value} />
-              <Label
-                htmlFor={lan.value}
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                {lan.text}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div> */}
+      {/* Navigation Buttons */}
+      <div className="flex justify-between pt-6">
+        <Button type="button" size="lg" variant="outline" onClick={onBack}>
+          Back
+        </Button>
 
-      {/* <div>
-        <Label className="mb-2 block">Can you drive?</Label>
-        <RadioGroup className="flex gap-4 mt-2" defaultValue="comfortable">
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="male" id="d1" />
-            <Label
-              htmlFor="d1"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="female" id="d2" />
-            <Label
-              htmlFor="d2"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
-          </div>
-        </RadioGroup>
-      </div> */}
-
-      {/* Bank Details */}
-      {/* <div className="space-y-4">
-        <h4 className="formHeading mt-6">Bank Details</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Input label="Bank Name" name="bname" placeholder="Your bank name" />
-          <Input
-            label="Account Name"
-            name="aname"
-            placeholder="Your account name"
-          />
-          <Input
-            label="Account Number"
-            name="anumber"
-            placeholder="Your account number"
-          />
-        </div>
-      </div> */}
-
-      {/* Remember Me */}
-      {/* <div className="flex items-center gap-2 text-gray-700 text-sm mt-4">
-        <Checkbox id="remember" />
-        <Label htmlFor="remember" className="text-gray-700 cursor-pointer">
-          Remember me
-        </Label>
-      </div> */}
-    </div>
+        <Button type="submit" size="lg">
+          Next
+        </Button>
+      </div>
+    </form>
   );
 };
 
