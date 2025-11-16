@@ -1,18 +1,91 @@
 import Input from "@/components/shared/Input";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { languages } from "@/utilities/data";
-import React from "react";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 
-const PhysiotherapistBasigInfo = () => {
+const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
+  const [data, setData] = useState({
+    name: defaultValues.name || "",
+    location: defaultValues.location || "",
+    age: defaultValues.age || "",
+    gender: defaultValues.gender || "",
+    languages: defaultValues.languages || [],
+    canDrive: defaultValues.canDrive || "",
+    bankName: defaultValues.bankName || "",
+    bankAccountName: defaultValues.bankAccountName || "",
+    bankAccountNumber: defaultValues.bankAccountNumber || "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const toggleLanguage = (lan) => {
+    setData((prev) => {
+      const exists = prev.languages.includes(lan);
+      return {
+        ...prev,
+        languages: exists
+          ? prev.languages.filter((l) => l !== lan)
+          : [...prev.languages, lan],
+      };
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const requiredFields = [
+      "name",
+      "age",
+      "gender",
+      "bankName",
+      "bankAccountName",
+      "bankAccountNumber",
+      "location",
+      "canDrive",
+    ];
+
+    for (let field of requiredFields) {
+      if (!data[field]) {
+        const formattedField = field
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase());
+
+        toast.error(`${formattedField} is required!`);
+        return;
+      }
+    }
+
+    if (data.languages.length === 0) {
+      toast.error("Please select at least one language!");
+      return;
+    }
+
+    onNext(data);
+  };
+
   return (
-    <div>
+    <form onSubmit={handleSubmit}>
       <h2 className="formHeading">Basic Information</h2>
-      <div className="flex flex-col  py-6 md:flex-row md:gap-4 gap-6">
+
+      {/* Name + Age + Gender */}
+      <div className="flex flex-col py-6 md:flex-row md:gap-4 gap-6">
         <div className="flex-1">
-          <Input placeholder="Name" name="name" label="Full Name (as per ID)" />
+          <Input
+            placeholder="Name"
+            name="name"
+            label="Full Name (as per ID)"
+            value={data.name}
+            onChange={handleChange}
+          />
         </div>
+
         <div className="flex-1 flex gap-6 md:gap-4 flex-col md:flex-row">
           <div className="md:w-1/2">
             <Input
@@ -20,26 +93,30 @@ const PhysiotherapistBasigInfo = () => {
               placeholder="Age"
               name="age"
               label="Age"
+              value={data.age}
+              onChange={handleChange}
             />
           </div>
+
           <div className="md:w-1/2">
-            <Label className={"mb-2"}>Gender?</Label>
-            <RadioGroup className={"flex gap-4"} defaultValue="comfortable">
+            <Label className="mb-2">Gender?</Label>
+            <RadioGroup
+              className="flex gap-4"
+              value={data.gender}
+              onValueChange={(value) =>
+                setData((prev) => ({ ...prev, gender: value }))
+              }
+            >
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="default" id="r1" />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor="r1"
-                >
+                <RadioGroupItem value="male" id="r1" />
+                <Label htmlFor="r1" className="cursor-pointer">
                   Male
                 </Label>
               </div>
+
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="comfortable" id="r2" />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor="r2"
-                >
+                <RadioGroupItem value="female" id="r2" />
+                <Label htmlFor="r2" className="cursor-pointer">
                   Female
                 </Label>
               </div>
@@ -47,29 +124,57 @@ const PhysiotherapistBasigInfo = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
-        <div className="space-y-4 flex-1">
-          <Label className={"mb-2 sm:mb-3"}>Bank Details</Label>
-          <Input name="bankName" placeholder="Your bank name" />
 
-          <Input name="bankAccountName" placeholder="Your account name" />
-          <Input name="bankAccountNumber" placeholder="Your account number" />
+      {/* Bank Details + Location */}
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
+        <div className="space-y-4 flex-1">
+          <Label className="mb-2 sm:mb-3">Bank Details</Label>
+
+          <Input
+            name="bankName"
+            placeholder="Your bank name"
+            value={data.bankName}
+            onChange={handleChange}
+          />
+
+          <Input
+            name="bankAccountName"
+            placeholder="Your account name"
+            value={data.bankAccountName}
+            onChange={handleChange}
+          />
+
+          <Input
+            name="bankAccountNumber"
+            placeholder="Your account number"
+            value={data.bankAccountNumber}
+            onChange={handleChange}
+          />
         </div>
+
         <div className="flex-1">
-          <Input label="Location" placeholder="Location" name="location" />
+          <Input
+            label="Location"
+            placeholder="Location"
+            name="location"
+            value={data.location}
+            onChange={handleChange}
+          />
         </div>
       </div>
 
+      {/* Languages */}
       <div className="py-8">
-        <Label className={"mb-3"}>Languages Spoken</Label>
-        <div className="flex flex-wrap gap-4 ">
-          {languages.map((lan, indx) => (
-            <div key={indx} className="flex items-center gap-2">
-              <Checkbox id={lan.value} />
-              <Label
-                htmlFor={lan.value}
-                className="text-gray-700 font-normal cursor-pointer"
-              >
+        <Label className="mb-3">Languages Spoken</Label>
+        <div className="flex flex-wrap gap-4">
+          {languages.map((lan, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Checkbox
+                id={lan.value}
+                checked={data.languages.includes(lan.value)}
+                onCheckedChange={() => toggleLanguage(lan.value)}
+              />
+              <Label htmlFor={lan.value} className="cursor-pointer">
                 {lan.text}
               </Label>
             </div>
@@ -77,30 +182,39 @@ const PhysiotherapistBasigInfo = () => {
         </div>
       </div>
 
+      {/* Can Drive */}
       <div>
         <Label className="mb-3 block">Can you drive?</Label>
-        <RadioGroup className="flex gap-4 " defaultValue="comfortable">
+        <RadioGroup
+          className="flex gap-4"
+          value={data.canDrive}
+          onValueChange={(value) =>
+            setData((prev) => ({ ...prev, canDrive: value }))
+          }
+        >
           <div className="flex items-center gap-2">
             <RadioGroupItem value="yes" id="d1" />
-            <Label
-              htmlFor="d1"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
+            <Label htmlFor="d1" className="cursor-pointer">
               Yes
             </Label>
           </div>
+
           <div className="flex items-center gap-2">
             <RadioGroupItem value="no" id="d2" />
-            <Label
-              htmlFor="d2"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
+            <Label htmlFor="d2" className="cursor-pointer">
               No
             </Label>
           </div>
         </RadioGroup>
       </div>
-    </div>
+
+      {/* Submit */}
+      <div className="flex justify-end mt-6">
+        <Button type="submit" size="lg">
+          Next
+        </Button>
+      </div>
+    </form>
   );
 };
 

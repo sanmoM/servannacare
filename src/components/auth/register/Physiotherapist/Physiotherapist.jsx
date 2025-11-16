@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Progress from "../Progress";
-import { Button } from "@/components/ui/button";
 import PhysiotherapistBasigInfo from "./PhysiotherapistBasigInfo";
 import Education from "./Education";
 import Experience from "./Experience";
@@ -8,19 +7,52 @@ import SkillsServices from "./SkillsServices";
 import Document from "./Document";
 import ContactAgreement from "./ContactAgreement";
 import toast from "react-hot-toast";
+import Review from "../Nurse/Review";
 
 const Physiotherapist = () => {
   const [step, setStep] = useState(1);
-  const totalSteps = 6;
+  const totalSteps = 7;
+  const [formData, setFormData] = useState({
+    basicInfo: {},
+    education: {},
+    experience: {},
+    skillsServices: {},
+    documents: {},
+    contactAgrement: {},
+  });
 
-  const handleNext = (e) => {
-    e.preventDefault();
+  const handleNext = (dataForStep) => {
+    if (step === 1)
+      setFormData((prev) => ({ ...prev, basicInfo: dataForStep }));
+
+    if (step === 2)
+      setFormData((prev) => ({ ...prev, education: dataForStep }));
+
+    if (step === 3)
+      setFormData((prev) => ({ ...prev, experience: dataForStep }));
+
+    if (step === 4)
+      setFormData((prev) => ({ ...prev, skillsServices: dataForStep }));
+
+    if (step === 5)
+      setFormData((prev) => ({ ...prev, documents: dataForStep }));
+
+    if (step === 6)
+      setFormData((prev) => ({ ...prev, contactAgrement: dataForStep }));
+
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      console.log("Final Submitted Data:");
-      toast.success("Register Successfully!");
+      toast.success("Register Sucessfully!");
       setStep(1);
+      setFormData({
+        basicInfo: {},
+        education: {},
+        experience: {},
+        skillsServices: {},
+        documents: {},
+        contactAgrement: {},
+      });
     }
   };
 
@@ -37,15 +69,57 @@ const Physiotherapist = () => {
 
         <Progress currentStep={step} totalSteps={totalSteps} />
 
-        <form className="space-y-8 mt-6">
-          {step === 1 && <PhysiotherapistBasigInfo />}
-          {step === 2 && <Education />}
-          {step === 3 && <Experience />}
-          {step === 4 && <SkillsServices />}
-          {step === 5 && <Document />}
-          {step === 6 && <ContactAgreement />}
+        <div className="space-y-8 mt-6">
+          {step === 1 && (
+            <PhysiotherapistBasigInfo
+              defaultValues={formData.basicInfo}
+              onNext={handleNext}
+            />
+          )}
+          {step === 2 && (
+            <Education
+              defaultValues={formData.basicInfo}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          )}
+          {step === 3 && (
+            <Experience
+              defaultValues={formData.experience}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          )}
+          {step === 4 && (
+            <SkillsServices
+              defaultValues={formData.skillsServices}
+              onBack={handleBack}
+              onNext={handleNext}
+            />
+          )}
+          {step === 5 && (
+            <Document
+              defaultValues={formData.documents}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          )}
+          {step === 6 && (
+            <ContactAgreement
+              defaultValues={formData.contactAgrement}
+              onNext={handleNext}
+              onBack={handleBack}
+            />
+          )}{
+            step === 7 && 
+            <Review
+            data={formData}
+            onNext={handleNext}
+            onBack={handleBack}
+            />
+          }
 
-          <div className="flex justify-between mt-6">
+          {/* <div className="flex justify-between mt-6">
             {step > 1 ? (
               <Button
                 type="button"
@@ -61,8 +135,8 @@ const Physiotherapist = () => {
             <Button type="submit" size="lg" onClick={handleNext}>
               {step === totalSteps ? "Submit" : "Next"}
             </Button>
-          </div>
-        </form>
+          </div> */}
+        </div>
       </div>
     </div>
   );

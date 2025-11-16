@@ -43,7 +43,7 @@ const Review = ({ data, onNext, onBack }) => {
             // If array → render each item
             if (Array.isArray(value)) {
               return (
-                <div key={key} className="flex flex-wrap gap-2 items-start">
+                <div key={key} className="flex flex-wrap gap-2 items-center">
                   <Label>{formatLabel(key)}:</Label>
                   {value.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
@@ -91,7 +91,7 @@ const Review = ({ data, onNext, onBack }) => {
             // Default simple text field
             else {
               return (
-                <div key={key} className="flex gap-2 flex-wrap">
+                <div key={key} className="flex items-center gap-2 flex-wrap">
                   <Label>{formatLabel(key)}:</Label>
                   <span className="text-sm text-gray-600">
                     {value ? String(value) : "N/A"}

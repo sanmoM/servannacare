@@ -17,7 +17,7 @@ const Nurse = () => {
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
-    exprience: {},
+    experience: {},
     skillsServices: {},
     documents: {},
     contactAgrement: {},
@@ -31,7 +31,7 @@ const Nurse = () => {
       setFormData((prev) => ({ ...prev, education: dataForStep }));
 
     if (step === 3)
-      setFormData((prev) => ({ ...prev, exprience: dataForStep }));
+      setFormData((prev) => ({ ...prev, experience: dataForStep }));
 
     if (step === 4)
       setFormData((prev) => ({ ...prev, skillsServices: dataForStep }));
@@ -50,7 +50,7 @@ const Nurse = () => {
       setFormData({
         basicInfo: {},
         education: {},
-        exprience: {},
+        experience: {},
         skillsServices: {},
         documents: {},
         contactAgrement: {},
@@ -88,7 +88,7 @@ const Nurse = () => {
           )}
           {step === 3 && (
             <Exprience
-              defaultValues={formData.exprience}
+              defaultValues={formData.experience}
               onNext={handleNext}
               onBack={handleBack}
             />

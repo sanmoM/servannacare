@@ -71,8 +71,6 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
       return
     };
 
-    console.log(data)
-
     onNext(data);
   };
 

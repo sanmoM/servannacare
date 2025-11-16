@@ -128,7 +128,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
         <div>
           <Label className="mb-2 mt-4 block">
             I am interested in working in the following intervention areas –
-            tick the areas you are interested in:
+            tick the areas you are interested in :
           </Label>
           <div className="flex flex-col gap-3">
             {interestedAreas.map((area, idx) => (
