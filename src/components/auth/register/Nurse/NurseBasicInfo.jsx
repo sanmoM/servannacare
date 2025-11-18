@@ -83,7 +83,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
         <div className="flex-1">
           <Input
-            label="Full Name"
+            label="Full Name (as per ID)"
             name="name"
             placeholder="Enter your name"
             value={data.name}

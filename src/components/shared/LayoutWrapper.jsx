@@ -19,7 +19,7 @@ const LayoutWrapper = ({ children }) => {
     <>
       {!shouldHideLayout && <Navbar />}
       <div className="min-h-[60vh]">{children}</div>
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster  position="top-right"  reverseOrder={false} />
       {!shouldHideLayout && <Footer />}
     </>
   );

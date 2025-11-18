@@ -1,5 +1,6 @@
 "use client";
 
+import CountUp from "react-countup";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
@@ -13,94 +14,93 @@ import Container from "@/components/shared/Container";
 export default function Testimonials() {
   return (
     <section className="w-full py-10 md:py-16 bg-[#f4fcfe]">
+      <Container>
+        {/* Header Section */}
+        <div className="mb-8 md:mb-12">
+          <h2 className="sectionHeading">Trusted by Industry Leaders</h2>
+        </div>
 
-        <Container>
-          {/* Header Section */}
-          <div className="mb-8 md:mb-12">
-            
-            <h2 className="sectionHeading">
-              Trusted by Industry Leaders
-            </h2>
-            
-          </div>
-
-          {/* Swiper Carousel */}
-          <div className="relative">
-            <Swiper
-              modules={[Autoplay, Navigation]}
-              autoplay={{
-                delay: 5000,
-                disableOnInteraction: false,
-              }}
-              navigation={{
-                nextEl: ".swiper-button-next-custom",
-                prevEl: ".swiper-button-prev-custom",
-              }}
-              pagination={{
-                el: ".swiper-pagination-custom",
-                clickable: true,
-                type: "bullets",
-              }}
-              spaceBetween={24}
-              slidesPerView={1}
-              breakpoints={{
-                768: {
-                  slidesPerView: 2,
-                  spaceBetween: 24,
-                },
-                1024: {
-                  slidesPerView: 3,
-                  spaceBetween: 24,
-                },
-              }}
-              className="pb-24"
-            >
-              {testimonials.map((t) => (
-                <SwiperSlide key={t.id}>
-                  <TestimonialCard testimonial={t} />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-
-            {/* Navigation Buttons */}
-            <button
-              className="swiper-button-prev-custom absolute -left-3 md:-left-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary  hover:bg-primary/10  bg-primary hover:text-primary flex items-center text-white justify-center transition-all duration-300 hover:scale-110"
-              aria-label="Previous testimonial"
-            >
-             
-              <ChevronLeft />
-            </button>
-
-            <button
-              className="swiper-button-next-custom absolute -right-3 md:-right-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary text-white bg-primary hover:bg-primary/10  hover:text-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
-              aria-label="Next testimonial"
-            >
-               <ChevronRight />
-            </button>
-
-            {/* Pagination Dots */}
-            {/* <div className="swiper-pagination-custom flex justify-center gap-3 mt-12" /> */}
-          </div>
-
-          {/* Stats Section */}
-          <div  className="grid grid-cols-3 lg:gap-12 gap-4 md:gap-6 lg:mt-24 mt-6  pt-16 border-t border-border">
-            {[
-              { number: "500+", label: "Happy Clients" },
-              { number: "98%", label: "Satisfaction Rate" },
-              { number: "4.9★", label: "Average Rating" },
-            ].map((stat, idx) => (
-              <div data-aos="zoom-in-up" key={idx} className="text-center">
-                <p className="sm:text-2xl  md:text-5xl font-bold text-foreground mb-3">
-                  {stat.number}
-                </p>
-                <p className="text-muted-foreground text-xs sm:text-sm md:text-base font-medium">
-                  {stat.label}
-                </p>
-              </div>
+        {/* Swiper Carousel */}
+        <div className="relative  px-6">
+          <Swiper
+            modules={[Autoplay, Navigation]}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+            }}
+            navigation={{
+              nextEl: ".swiper-button-next-custom",
+              prevEl: ".swiper-button-prev-custom",
+            }}
+            pagination={{
+              el: ".swiper-pagination-custom",
+              clickable: true,
+              type: "bullets",
+            }}
+            spaceBetween={24}
+            slidesPerView={1}
+            breakpoints={{
+              768: {
+                slidesPerView: 2,
+                spaceBetween: 24,
+              },
+              1024: {
+                slidesPerView: 3,
+                spaceBetween: 24,
+              },
+            }}
+            className="pb-24"
+          >
+            {testimonials.map((t) => (
+              <SwiperSlide key={t.id}>
+                <TestimonialCard testimonial={t} />
+              </SwiperSlide>
             ))}
-          </div>
-        </Container>
+          </Swiper>
 
+          {/* Navigation Buttons */}
+          <button
+            className="swiper-button-prev-custom absolute -left-3 md:-left-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary  hover:bg-primary/10  bg-primary hover:text-primary flex items-center text-white justify-center transition-all duration-300 hover:scale-110"
+            aria-label="Previous testimonial"
+          >
+            <ChevronLeft />
+          </button>
+
+          <button
+            className="swiper-button-next-custom absolute -right-3 md:-right-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary text-white bg-primary hover:bg-primary/10  hover:text-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
+            aria-label="Next testimonial"
+          >
+            <ChevronRight />
+          </button>
+
+          {/* Pagination Dots */}
+          {/* <div className="swiper-pagination-custom flex justify-center gap-3 mt-12" /> */}
+        </div>
+
+        {/* Stats Section */}
+        <div className="grid grid-cols-3 lg:gap-12 gap-4 md:gap-6 lg:mt-24 mt-6 pt-16 border-t border-border">
+          {[
+            { number: 500, suffix: "+", label: "Happy Clients" },
+            { number: 98, suffix: "%", label: "Satisfaction Rate" },
+            { number: 4.9, suffix: "★", label: "Average Rating" },
+          ].map((stat, idx) => (
+            <div key={idx} className="text-center">
+              <p className="sm:text-2xl text-primary md:text-5xl font-bold text-foreground mb-3">
+                <CountUp
+                  end={stat.number}
+                  duration={2}
+                  decimals={stat.number % 1 !== 0 ? 1 : 0}
+                />
+                {stat.suffix}
+              </p>
+
+              <p className="text-muted-foreground text-xs sm:text-sm md:text-base font-medium">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Container>
 
       {/* Custom Pagination Styles */}
       {/* <style jsx>{`

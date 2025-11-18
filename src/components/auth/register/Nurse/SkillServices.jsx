@@ -103,7 +103,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
       <div>
         <h2 className="formHeading mb-4">Skills & Services</h2>
         <div>
-          <Label className="mb-2 block">Do you have experience in:</Label>
+          <Label className="mb-2 block">Do you have experience in : </Label>
           <div className="flex flex-wrap gap-2">
             {skills.map((skill, index) => {
               const selected = data.skills.includes(skill);

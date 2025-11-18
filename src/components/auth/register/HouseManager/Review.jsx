@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { FileText, Image, Image as ImageIcon } from "lucide-react";
 import React, { useState } from "react";
-import toast from "react-hot-toast";
+
 
 const Review = ({ data, onNext, onBack }) => {
   const [remember, setRemember] = useState(data.remember || false);

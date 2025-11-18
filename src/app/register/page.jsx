@@ -6,7 +6,7 @@ import HouseManager from "@/components/auth/register/HouseManager/HouseManager";
 import Nurse from "@/components/auth/register/Nurse/Nurse";
 import Physiotherapist from "@/components/auth/register/Physiotherapist/Physiotherapist";
 import UserForm from "@/components/auth/register/UserForm";
-import { useSearchParams } from "next/navigation";
+import { notFound, useSearchParams } from "next/navigation";
 import React from "react";
 
 const Page = () => {
@@ -31,6 +31,10 @@ const Page = () => {
       // return <DefaultForm />;
     }
   };
+
+  if(!role){
+      return notFound()
+    }
 
   return (
     <div

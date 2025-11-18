@@ -352,3 +352,126 @@ export const languages = [
   { id: 6, value: "chinese", text: "Chinese" },
   { id: 7, value: "other", text: "Other" },
 ];
+
+
+export const fakeData = [
+  {
+    id:1,
+    rating: 4.5,
+    name: "John Doe",
+    email: "john.doe@example.com",
+    category: "Nurse",
+    status: "available",
+    education: "BSc Nursing",
+    experience: 5,
+    location: "New York, USA",
+    photo:"https://plus.unsplash.com/premium_photo-1683121366070-5ceb7e007a97?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    id:2,
+    rating: 4.2,
+    name: "Jane Smith",
+    email: "jane.smith@example.com",
+    category: "Physiotherapist",
+    status: "not available",
+    education: "MSc Physiotherapy",
+    experience: 7,
+    location: "London, UK",
+    photo:"https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?q=80&w=1335&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  { id:3,
+    rating: 4.8,
+    name: "Michael Brown",
+    email: "michael.brown@example.com",
+    category: "House Manager",
+    status: "available",
+    education: "Diploma in Hospitality",
+    experience: 10,
+    location: "Toronto, Canada",
+    photo:"https://images.unsplash.com/photo-1672843192615-5913ef88bf17?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  { id:4,
+    rating: 3.9,
+    name: "Emily Davis",
+    email: "emily.davis@example.com",
+    category: "Agency",
+    status: "available",
+    education: "BA in Management",
+    experience: 3,
+    location: "Sydney, Australia",
+    photo:"https://images.unsplash.com/photo-1726860768821-2b047459a33e?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    id:5,
+    rating: 4.6,
+    name: "Robert Wilson",
+    email: "robert.wilson@example.com",
+    category: "Employer",
+    status: "not available",
+    education: "MBA",
+    experience: 8,
+    location: "Berlin, Germany",
+    photo:"https://images.unsplash.com/photo-1528892952291-009c663ce843?q=80&w=944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    id:6,
+    rating: 4.0,
+    name: "Laura Johnson",
+    email: "laura.johnson@example.com",
+    category: "Nurse",
+    status: "available",
+    education: "BSc Nursing",
+    experience: 6,
+    location: "Paris, France",
+    photo:"https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    id:7,
+    rating: 4.3,
+    name: "Daniel Martinez",
+    email: "daniel.martinez@example.com",
+    category: "Physiotherapist",
+    status: "available",
+    education: "MSc Physiotherapy",
+    experience: 4,
+    location: "Madrid, Spain",
+    photo:"https://plus.unsplash.com/premium_photo-1669703777492-561a428bfd52?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+  {
+    id:8,
+    rating: 3.8,
+    name: "Sophia Lee",
+    email: "sophia.lee@example.com",
+    category: "House Manager",
+    status: "not available",
+    education: "Diploma in Hospitality",
+    experience: 2,
+    location: "Seoul, South Korea",
+    photo:"https://images.unsplash.com/photo-1563237023-b1e970526dcb?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzh8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
+  },
+  {
+    id:9,
+    rating: 4.7,
+    name: "James Anderson",
+    email: "james.anderson@example.com",
+    category: "Agency",
+    status: "available",
+    education: "BA in Management",
+    experience: 9,
+    location: "Amsterdam, Netherlands",
+    photo:"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDN8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
+  },
+  {
+    id:10,
+    rating: 4.1,
+    name: "Olivia Thomas",
+    email: "olivia.thomas@example.com",
+    category: "Nurse",
+    status: "available",
+    education: "MBA",
+    experience: 5,
+    location: "Dubai, UAE",
+    photo:"https://plus.unsplash.com/premium_photo-1669703777428-48a39ccfe8cb?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+  },
+];
+

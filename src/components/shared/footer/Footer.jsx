@@ -51,10 +51,10 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold text-white">Quick Links</h3>
             <ul className="mt-4 space-y-3">
-              <FooterLink href="#">Our Services</FooterLink>
+              <FooterLink href="/services">Our Services</FooterLink>
               <FooterLink href="about-us">About Us</FooterLink>
-              <FooterLink href="#">Contact Us</FooterLink>
-              <FooterLink href="#">FAQ</FooterLink>
+              <FooterLink href="contact-us">Contact Us</FooterLink>
+              <FooterLink href="faq">FAQ</FooterLink>
             </ul>
           </div>
 
