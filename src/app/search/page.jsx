@@ -4,7 +4,7 @@ import Container from "@/components/shared/Container";
 import ProfileCard from "@/components/profileCard";
 import { fakeData } from "@/utilities/data";
 import { notFound, useSearchParams } from "next/navigation";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState, Suspense } from "react";
 import {
   Select,
   SelectContent,
@@ -17,14 +17,13 @@ import PageBanner from "@/components/shared/PageBanner";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-const Search = () => {
+const SearchContent = () => {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const startDate = searchParams.get("startDate");
@@ -76,9 +75,9 @@ const Search = () => {
             </h2>
 
             <Select
-             onValueChange={(value) => {
+              onValueChange={(value) => {
                 setSortBy(value);
-                setCurrentPage(1); 
+                setCurrentPage(1);
               }}
             >
               <SelectTrigger className="w-[180px] border-primary">
@@ -106,9 +105,13 @@ const Search = () => {
           <Pagination className={"flex justify-center md:justify-end"}>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" onClick={() => goToPage(currentPage - 1)}/>
+                <PaginationPrevious
+                  href="#"
+                  onClick={() => goToPage(currentPage - 1)}
+                />
               </PaginationItem>
-               {[...Array(totalPages)].map((_, i) => (
+
+              {[...Array(totalPages)].map((_, i) => (
                 <PaginationItem key={i}>
                   <PaginationLink
                     href="#"
@@ -119,17 +122,32 @@ const Search = () => {
                   </PaginationLink>
                 </PaginationItem>
               ))}
-                
-              
-              
+
               <PaginationItem>
-                <PaginationNext href="#" onClick={() => goToPage(currentPage + 1)}/>
+                <PaginationNext
+                  href="#"
+                  onClick={() => goToPage(currentPage + 1)}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
         </div>
       </Container>
     </>
+  );
+};
+
+const Search = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full py-20 text-center text-primary font-semibold">
+          Loading search results...
+        </div>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 };
 
