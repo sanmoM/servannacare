@@ -7,9 +7,9 @@ import Nurse from "@/components/auth/register/Nurse/Nurse";
 import Physiotherapist from "@/components/auth/register/Physiotherapist/Physiotherapist";
 import UserForm from "@/components/auth/register/UserForm";
 import { notFound, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { Suspense } from "react";
 
-const Page = () => {
+const PageContent = () => {
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
 
@@ -18,31 +18,44 @@ const Page = () => {
       case "user":
         return <UserForm />;
       case "house-manager":
-      return <HouseManager/>;
+        return <HouseManager />;
       case "nurse":
-      return <Nurse/>;
+        return <Nurse />;
       case "agency":
-        return <Agency/>
+        return <Agency />;
       case "physiotherapist":
-        return <Physiotherapist/>
+        return <Physiotherapist />;
       case "nurse-aide-or-assistant":
-        return <NurseAideOrAssistant/>
+        return <NurseAideOrAssistant />;
       default:
-      // return <DefaultForm />;
+        return notFound();
     }
   };
 
-  if(!role){
-      return notFound()
-    }
+  if (!role) return notFound();
 
   return (
     <div
-      className={`${role === 'user'?"py-0":"py-12"} flex items-center bg-white justify-center w-full 
-    `}
+      className={`${
+        role === "user" ? "py-0" : "py-12"
+      } flex items-center bg-white justify-center w-full`}
     >
       <div className="px-4 w-full">{renderForm()}</div>
     </div>
+  );
+};
+
+const Page = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full py-20 text-center font-semibold text-primary">
+          Loading registration form...
+        </div>
+      }
+    >
+      <PageContent />
+    </Suspense>
   );
 };
 
