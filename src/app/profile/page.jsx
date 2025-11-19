@@ -5,14 +5,9 @@ import PageBanner from "@/components/shared/PageBanner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Building, Check, Mail, Phone } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import React from "react";
 
 const Profile = () => {
-  const searchParams = useSearchParams();
-
-  const category = searchParams.get("category");
-  const id = searchParams.get("id");
 
   return (
     <>
