@@ -164,8 +164,8 @@ const Searchbar = () => {
       {/* Desktop View */}
       <div className="hidden md:flex bg-white rounded-full justify-between shadow-2xl p-4 items-center gap-2">
         {/* Category */}
-        <div className="flex items-center gap-3">
-          <ScrollText className="w-6 h-6 text-gray-600 flex-shrink-0" />
+        <div className="pl-6">
+          
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-500 tracking-wide">CATEGORY</p>
             <Select

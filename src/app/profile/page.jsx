@@ -19,8 +19,9 @@ const Profile = () => {
       />
       <Container className={"py-16 grid md:grid-cols-6 gap-8"}>
         <div className=" md:col-span-2 ">
-          <div className="p-4 rounded-md items-center  border-t-primary justify-center  border flex flex-col border-t-4">
-            <img
+          <div className="p-4 rounded-md items-center relative border-t-primary justify-center  border flex flex-col border-t-4">
+            
+              <img
               className="object-cover h-40 w-40 lg:w-60 lg:h-60  rounded-full border-4 border-white shadow-lg"
               src={
                 "https://images.unsplash.com/photo-1672843192615-5913ef88bf17?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -33,6 +34,9 @@ const Profile = () => {
                 )}`;
               }}
             />
+            <span className="text-xs  absolute top-3 right-3  bg-green-600 p-1 rounded-full px-2 text-white">Available Now</span>
+          
+            
             <h2 className="text-2xl mt-4 lg:text-3xl text-gray-800 font-semibold">
               Jhon Doe
             </h2>

@@ -65,7 +65,7 @@ const SignUpStart = ({ onSuccess }) => {
             </div>
           </div>
           <Button size={"lg"} className={"w-full"}>
-            LOGIN
+            SIGN UP
           </Button>
         </form>
 

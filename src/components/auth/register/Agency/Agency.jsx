@@ -6,8 +6,9 @@ import toast from "react-hot-toast";
 import Progress from "../Progress";
 import AgencyBasicInfo from "./AgencyBasicInfo";
 import EmployeDetails from "./EmployeDetails";
-import { Plus, Trash } from "lucide-react";
+import { Plus } from "lucide-react";
 import Review from "./ReviewAndSubmit";
+import SignUpStart from "../SignUpStart";
 
 const validateEmployee = (data) => {
   const errors = [];
@@ -45,6 +46,7 @@ const validateEmployee = (data) => {
 };
 
 const Agency = () => {
+  const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 3;
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -54,7 +56,10 @@ const Agency = () => {
     allEmployees: [],
   });
 
-  console.log(termsAccepted);
+  const handleSignupSuccess = (accountData) => {
+    setStarted(true);
+    console.log(accountData);
+  };
 
   const handleNext = () => {
     if (step < totalSteps) {
@@ -125,113 +130,114 @@ const Agency = () => {
 
   return (
     <div className="w-full flex justify-center px-2">
-      <div className="w-full max-w-[700px] bg-white">
-        {/* Header */}
-        <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
-          Agency Registration
-        </h2>
+      <div
+        className={`w-full ${
+          !started ? "my-0" : "my-12"
+        } max-w-[700px] bg-white`}
+      >
+        {!started ? (
+          <SignUpStart onSuccess={handleSignupSuccess} />
+        ) : (
+          <>
+            {/* Header */}
+            <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
+              Agency Registration
+            </h2>
 
-        <Progress currentStep={step} totalSteps={totalSteps} />
+            <Progress currentStep={step} totalSteps={totalSteps} />
 
-        <div className="space-y-8 mt-6">
-          {/* STEP 1 — AGENCY INFO */}
-          {step === 1 && (
-            <AgencyBasicInfo
-              key="agency-step"
-              defaultValues={formData.agency}
-              onNext={(data) => {
-                handleAgencyDataChange(data);
-                handleNext();
-              }}
-            />
-          )}
+            <div className="space-y-8 mt-6">
+              {/* STEP 1 — AGENCY INFO */}
+              {step === 1 && (
+                <AgencyBasicInfo
+                  key="agency-step"
+                  defaultValues={formData.agency}
+                  onNext={(data) => {
+                    handleAgencyDataChange(data);
+                    handleNext();
+                  }}
+                />
+              )}
 
-          {step === 2 && (
-            <div className="space-y-8">
-              {employees.map((num, index) => (
-                <div key={index} className="relative">
-                  <EmployeDetails
-                    key={`employee-${index}`}
-                    employeeNumber={num}
-                    onDataChange={(data) => handleEmployeeChange(index, data)}
-                    onNext={handleNext}
-                    defaultValues={formData.allEmployees[index] || {}}
-                  />
-                  {index > 0 && (
+              {step === 2 && (
+                <div className="space-y-8">
+                  {employees.map((num, index) => (
+                    <div key={index} className="relative">
+                      <EmployeDetails
+                        key={`employee-${index}`}
+                        employeeNumber={num}
+                        onDataChange={(data) =>
+                          handleEmployeeChange(index, data)
+                        }
+                        onNext={handleNext}
+                        defaultValues={formData.allEmployees[index] || {}}
+                      />
+                      {index > 0 && (
+                        <Button
+                          type="button"
+                          className="absolute bg-red-400 hover:bg-red-500 top-2 right-2"
+                          onClick={() => handleRemoveEmployee(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* STEP 3 — REVIEW */}
+              {step === 3 && (
+                <Review
+                  data={formData}
+                  termsAccepted={termsAccepted}
+                  setTermsAccepted={setTermsAccepted}
+                />
+              )}
+
+              {/* NAVIGATION BUTTONS */}
+              <div className="flex justify-between mt-6">
+                {step > 1 ? (
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    onClick={handleBack}
+                  >
+                    Back
+                  </Button>
+                ) : (
+                  <div></div>
+                )}
+
+                {step === 2 && (
+                  <div className="flex items-center gap-4">
                     <Button
                       type="button"
-                      className="absolute bg-red-400 hover:bg-red-500 top-2 right-2"
-                      onClick={() => handleRemoveEmployee(index)}
+                      size="lg"
+                      variant="outline"
+                      onClick={handleAddEmployee}
                     >
-                      Remove
+                      <Plus /> Add Employee
                     </Button>
-                  )}
-                </div>
-              ))}
+
+                    <Button type="submit" size="lg" onClick={handleNext}>
+                      Next
+                    </Button>
+                  </div>
+                )}
+
+                {step === 3 && (
+                  <div className="flex items-center gap-4">
+                    <Button type="submit" size="lg" onClick={handleNext}>
+                      Confirm & submit
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-
-          {/* STEP 3 — REVIEW */}
-          {step === 3 && (
-            <Review
-              data={formData}
-              termsAccepted={termsAccepted}
-              setTermsAccepted={setTermsAccepted}
-            />
-          )}
-
-          {/* NAVIGATION BUTTONS */}
-          <div className="flex justify-between mt-6">
-            {step > 1 ? (
-              <Button
-                type="button"
-                size="lg"
-                variant="outline"
-                onClick={handleBack}
-              >
-                Back
-              </Button>
-            ) : (
-              <div></div>
-            )}
-
-            {step === 2 && (
-              <div className="flex items-center gap-4">
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={handleAddEmployee}
-                >
-                  <Plus /> Add Employee
-                </Button>
-
-                <Button type="submit" size="lg" onClick={handleNext}>
-                  Next
-                </Button>
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="flex items-center gap-4">
-                <Button type="submit" size="lg" onClick={handleNext}>
-                  Confirm & submit
-                </Button>
-              </div>
-            )}
-
-            {/* {step === 3 && (
-              <Button
-                type="button"
-                size="lg"
-                variant="outline"
-                onClick={handleBack}
-              >
-                Back
-              </Button>
-            )} */}
-          </div>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
