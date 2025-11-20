@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -19,18 +20,18 @@ const UserForm = () => {
     const password = form.password.value;
 
     if (!name || !email || !password) {
-      toast.error("All fields are required!")
+      toast.error("All fields are required!");
       return;
-    };
+    }
 
-    if(password.length<6){
-      toast.error("Password will be more than 6 character")
+    if (password.length < 6) {
+      toast.error("Password will be more than 6 character");
       return;
-    };
+    }
 
-    const newUser = {name,email,password}
+    const newUser = { name, email, password };
     toast.success("User Create Successfully!");
-    console.log(newUser)
+    console.log(newUser);
   };
 
   const handleShowPassword = () => {
@@ -60,17 +61,18 @@ const UserForm = () => {
             <Input
               label="Password"
               name="password"
-              type={showPass?"text":"password"}
+              type={showPass ? "text" : "password"}
               placeholder="Enter Your Password"
             />
             <div
               onClick={handleShowPassword}
               className="absolute cursor-pointer top-10 right-5"
             >
-              {
-                showPass?<EyeOff className="text-gray-600" />:<Eye className="text-gray-600"/>
-              }
-              
+              {showPass ? (
+                <EyeOff className="text-gray-600" />
+              ) : (
+                <Eye className="text-gray-600" />
+              )}
             </div>
           </div>
           <div className="flex items-center mt-6 gap-2">
@@ -86,6 +88,12 @@ const UserForm = () => {
             Register
           </Button>
         </form>
+        <div className="flex gap-2 mt-6 items-center">
+          <p className="text-sm">Already have an account?</p>
+          <Link href={"/login"}>
+            <Button variant={"link"}>LOGIN</Button>
+          </Link>
+        </div>
       </div>
     </div>
   );

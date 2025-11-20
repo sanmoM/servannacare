@@ -37,7 +37,7 @@ const PageContent = () => {
   return (
     <div
       className={`${
-        role === "user" ? "py-0" : "py-12"
+        role === "user" ? "py-0" : ""
       } flex items-center bg-white justify-center w-full`}
     >
       <div className="px-4 w-full">{renderForm()}</div>

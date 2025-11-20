@@ -65,7 +65,7 @@ const Navbar = () => {
 
           {/* Desktop Nav Links */}
           <div className="hidden md:flex">
-            <ul className="flex md:gap-4 lg:gap-6 items-center">
+            <ul className="flex md:gap-2 lg:gap-6 items-center">
               {navlinks.map((link, indx) => {
                 const isActive =
                   pathname === link.link ||
@@ -74,7 +74,7 @@ const Navbar = () => {
                   <li key={indx}>
                     <Link
                       href={link.link}
-                      className={`px-2 font-medium transition-colors duration-200 ${
+                      className={`px-2 font-medium text-xs lg:text-base transition-colors duration-200 ${
                         isActive
                           ? "text-primary"
                           : "text-gray-700 hover:text-primary"
@@ -102,10 +102,18 @@ const Navbar = () => {
           </div>
 
           {/* CTA Button */}
-          <div className="">
+          <div className="flex gap-2">
+            <Link href={"/login"}>
+              <Button
+                className={"rounded-full hidden md:flex text-xs"}
+                variant={"outline"}
+              >
+                LOGIN
+              </Button>
+            </Link>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="rounded-full text-xs">GET IN TOUCH</Button>
+                <Button className="rounded-full text-xs">GET IN TOUCH </Button>
               </DialogTrigger>
 
               <DialogContent className="sm:max-w-2xl">
@@ -119,7 +127,10 @@ const Navbar = () => {
                 <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 items-stretch">
                   {userRole.map((role, indx) => (
                     <DialogClose asChild key={indx}>
-                      <Link className="h-full" href={`/register?role=${role.role}`}>
+                      <Link
+                        className="h-full"
+                        href={`/register?role=${role.role}`}
+                      >
                         <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
                           <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full bg-cyan-100 mb-2 sm:mb-4">
                             <Image
@@ -204,7 +215,11 @@ const Navbar = () => {
             })}
           </ul>
 
-          <div className="mt-6 px-5">
+          <div className="mt-6 flex flex-col gap-4 px-5">
+            <Link href={"/login"}>
+              <Button className={"w-full rounded-full"}>LOGIN</Button>
+            </Link>
+
             <Button
               className="w-full rounded-full"
               onClick={handleCloseSidebar}
