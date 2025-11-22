@@ -1,13 +1,16 @@
 "use client";
 
 import Container from "@/components/shared/Container";
+import CustomModal from "@/components/shared/CustomModal";
 import PageBanner from "@/components/shared/PageBanner";
+import { SubscriptionPlans } from "@/components/shared/Plan";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Building, Check, Mail, Phone } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 
 const Profile = () => {
+  const [openModal, setOpenModal] = useState(false);
 
   return (
     <>
@@ -20,8 +23,7 @@ const Profile = () => {
       <Container className={"py-16 grid md:grid-cols-6 gap-8"}>
         <div className=" md:col-span-2 ">
           <div className="p-4 rounded-md items-center relative border-t-primary justify-center  border flex flex-col border-t-4">
-            
-              <img
+            <img
               className="object-cover h-40 w-40 lg:w-60 lg:h-60  rounded-full border-4 border-white shadow-lg"
               src={
                 "https://images.unsplash.com/photo-1672843192615-5913ef88bf17?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -34,9 +36,10 @@ const Profile = () => {
                 )}`;
               }}
             />
-            <span className="text-xs  absolute top-3 right-3  bg-green-600 p-1 rounded-full px-2 text-white">Available Now</span>
-          
-            
+            <span className="text-xs  absolute top-3 right-3  bg-green-600 p-1 rounded-full px-2 text-white">
+              Available Now
+            </span>
+
             <h2 className="text-2xl mt-4 lg:text-3xl text-gray-800 font-semibold">
               Jhon Doe
             </h2>
@@ -70,7 +73,9 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          <Button className={"w-full mt-6"} size={"lg"}>Book Now</Button>
+          <Button onClick={() => setOpenModal(true)} className={"w-full mt-6"} size={"lg"}>
+            Book Now
+          </Button>
         </div>
         <div className=" md:col-span-4 ">
           <h2 className="subHeading border-b border-primary mb-4">BIO</h2>
@@ -131,11 +136,9 @@ const Profile = () => {
               </p>
             </span>
 
-             <span className="flex gap-1 mt-1 flex-wrap ">
+            <span className="flex gap-1 mt-1 flex-wrap ">
               <Label>Can Drive :</Label>{" "}
-              <p className="text-sm text-gray-500">
-               Yes
-              </p>
+              <p className="text-sm text-gray-500">Yes</p>
             </span>
           </div>
 
@@ -145,9 +148,7 @@ const Profile = () => {
             </h2>
             <span className="flex gap-1 flex-wrap ">
               <Label>Years of Experience :</Label>{" "}
-              <p className="text-sm text-gray-500">
-               7
-              </p>
+              <p className="text-sm text-gray-500">7</p>
             </span>
             <span className="flex gap-1 my-1 flex-wrap ">
               <Check className="text-primary" />
@@ -157,13 +158,18 @@ const Profile = () => {
               <Check className="text-primary" />
               <Label>Hospital Based Care</Label>
             </span>
-             <span className="flex gap-1 mt-1 flex-wrap ">
+            <span className="flex gap-1 mt-1 flex-wrap ">
               <Check className="text-primary" />
               <Label>Home Based Care</Label>
             </span>
           </div>
         </div>
       </Container>
+
+      {/* Custom Modal */}
+      <CustomModal isOpen={openModal} onClose={() => setOpenModal(false)}>
+        <SubscriptionPlans />
+      </CustomModal>
     </>
   );
 };
