@@ -6,11 +6,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const UserForm = () => {
   const [showPass, setShowPass] = useState(false);
+  const router = useRouter();
 
   const handleCreateUser = (e) => {
     e.preventDefault();
@@ -29,9 +31,11 @@ const UserForm = () => {
       return;
     }
 
-    const newUser = { name, email, password };
+    const userInfo = { name, email, phoneNumber:null,location:null, joinedSince:new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"})};
+    localStorage.setItem("user", JSON.stringify(userInfo));
+    router.push("/dashboard")
     toast.success("User Create Successfully!");
-    console.log(newUser);
+
   };
 
   const handleShowPassword = () => {

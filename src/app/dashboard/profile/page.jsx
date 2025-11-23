@@ -1,63 +1,148 @@
+"use client";
+
+import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
-import { Calendar, Camera, Mail, MapPin, Phone } from "lucide-react";
-import Image from "next/image";
+import { Calendar, Camera, Mail, MapPin, Phone, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 export default function ProfilePage() {
-  const user = {
-    name: "John Doe",
-    phone: "+880 1234 567890",
-    email: "johndoe@example.com",
-    profilePic: "/profile-pic.jpg",
-    location: "New York, NY",
-    joined: "January 2025"
-  };
-    const infoItems = [
-    { icon: <Mail className="w-5 h-5 text-primary" />, label: "Email Address", value: user.email },
-    { icon: <Phone className="w-5 h-5 text-primary" />, label: "Phone Number", value: user.phone },
-    { icon: <MapPin className="w-5 h-5 text-primary" />, label: "Location", value: user.location },
-    { icon: <Calendar className="w-5 h-5 text-primary" />, label: "Joined Since", value: user.joined },
+  const [update, setUpdate] = useState(false);
+
+  const [userInfo, setUserInfo] = useState({});
+
+  // Load saved data
+  useEffect(() => {
+    // Delay to avoid cascading renders during hydration
+    const timer = setTimeout(() => {
+      try {
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+          setUserInfo(JSON.parse(savedUser));
+        }
+      } catch (error) {
+        console.error("Invalid JSON:", error);
+      }
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const infoItems = [
+    {
+      key: "name",
+      icon: <User className="w-5 h-5 text-primary" />,
+      label: "Name",
+    },
+    {
+      key: "email",
+      icon: <Mail className="w-5 h-5 text-primary" />,
+      label: "Email Address",
+    },
+    {
+      key: "phone",
+      icon: <Phone className="w-5 h-5 text-primary" />,
+      label: "Phone Number",
+    },
+    {
+      key: "location",
+      icon: <MapPin className="w-5 h-5 text-primary" />,
+      label: "Location",
+    },
   ];
+
+  const handleChange = (key, value) => {
+    setUserInfo((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSubmit = () => {
+    localStorage.setItem("user", JSON.stringify(userInfo));
+    toast.success("Profile updated!");
+    setUpdate(false);
+  };
+
   return (
-    <div className="">
+    <div>
       <h1 className="sectionHeading mb-4">My Profile</h1>
 
-      <div className="border flex flex-col gap-8 md:flex-row  lg:p-8 p-4 rounded-2xl">
+      <div className="border flex flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
+        {/* Profile Picture */}
         <div className="flex flex-col justify-center items-center">
-          <div className="relative h-36 w-36  lg:w-48 lg:h-48  rounded-full border-4 border-primary overflow-hidden shadow-lg">
+          <div className="relative h-36 w-36 lg:w-48 lg:h-48 rounded-full border-4 border-primary overflow-hidden shadow-lg">
             <img
-              className="object-cover w-full h-full  "
-              src={
-                "https://images.unsplash.com/photo-1672843192615-5913ef88bf17?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              }
-              alt={`profile`}
+              className="object-cover w-full h-full"
+              src={userInfo.profilePic || "/user.png"}
+              alt="profile"
             />
-            <div className="absolute flex justify-center text-white bottom-0 py-2 bg-gray-400/50 w-full right-0">
-              <Camera className="cursor-pointer" />
-            </div>
+
+            {/* Hidden file input */}
+            <input
+              type="file"
+              accept="image/*"
+              id="profilePicInput"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                const imageUrl = URL.createObjectURL(file);
+                setUserInfo((prev) => ({ ...prev, profilePic: imageUrl }));
+              }}
+              className="hidden"
+            />
+
+            {/* Edit button */}
+            {update && (
+              <div
+                className="absolute bottom-0 py-2 bg-gray-800/50 w-full flex justify-center cursor-pointer"
+                onClick={() =>
+                  document.getElementById("profilePicInput").click()
+                }
+              >
+                <Camera className="text-white" />
+              </div>
+            )}
           </div>
-          <h1 className="text-center text-xl text-gray-600 font-semibold mt-4">
-            Jhon Doe
+
+          <h1 className="text-center text-xl text-gray-600 font-semibold mt-4 break-words max-w-[180px]">
+            {userInfo.name}
           </h1>
         </div>
+
+        {/* Info Fields */}
         <div className="w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {infoItems.map((item, index) => (
               <div
                 key={index}
-                className="flex  space-x-3 bg-white py-4 px-4 md:px-8 rounded-lg"
+                className="flex space-x-3 bg-white p-4 rounded-lg"
               >
                 {item.icon}
-                <div>
-                  <p className="text-sm  text-gray-500">{item.label}</p>
-                  <p className="font-medium text-sm lg:text-base text-gray-900">{item.value}</p>
+
+                <div className="w-full">
+                  <p className="text-sm mb-1 text-gray-500">{item.label}</p>
+
+                  <Input
+                    className="w-full px-0 py-0"
+                    value={
+                      !update
+                        ? userInfo[item.key] || "N/A" 
+                        : userInfo[item.key] ?? "" 
+                    }
+                    readOnly={!update}
+                    onChange={(e) => handleChange(item.key, e.target.value)}
+                  />
                 </div>
               </div>
             ))}
           </div>
-          <div className="mt-8 flex justify-end">
-            <Button>
-                Update Profile
-            </Button>
+
+          {/* Buttons */}
+          <div className="mt-8 flex justify-end gap-3">
+            {!update && (
+              <Button onClick={() => setUpdate(true)}>Update Profile</Button>
+            )}
+
+            {update && <Button onClick={handleSubmit}>Save Changes</Button>}
           </div>
         </div>
       </div>
