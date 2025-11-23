@@ -1,5 +1,6 @@
 "use client";
 
+import { X } from "lucide-react";
 import React from "react";
 
 const CustomModal = ({ isOpen, onClose, children }) => {
@@ -18,6 +19,11 @@ const CustomModal = ({ isOpen, onClose, children }) => {
         "
         onClick={(e) => e.stopPropagation()}
       >
+         <div className="flex justify-end mb-4">
+        
+        <X   onClick={onClose} className="cursor-pointer"/>
+      
+      </div>
         {children}
       </div>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, Zap } from "lucide-react";
+import { Check, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const plans = [
@@ -48,14 +48,15 @@ export function SubscriptionPlans() {
   const [hoveredPlan, setHoveredPlan] = useState(null);
 
   return (
-    <div className="mx-auto max-w-7xl py-8">
+    <div className="mx-auto max-w-7xl  pb-6">
+     
       <div className="grid md:grid-cols-3 gap-12 md:gap-4 lg:gap-10">
         {plans.map((plan) => (
           <div
             key={plan.tier}
             onMouseEnter={() => setHoveredPlan(plan.tier)}
             onMouseLeave={() => setHoveredPlan(null)}
-            className={`group relative rounded-2xl bg-white border shadow-sm hover:shadow-xl transition-all duration-300 lg:p-8 p-4 cursor-pointer flex flex-col h-full ${
+            className={`group relative rounded-2xl bg-white border shadow-sm hover:shadow-xl transition-all duration-300  p-4 cursor-pointer flex flex-col h-full ${
               plan.highlighted ? "border-blue-400/60 shadow-xl scale-[1.03]" : ""
             }`}
           >
@@ -72,14 +73,14 @@ export function SubscriptionPlans() {
             {/* Content Wrapper (Pushes button down) */}
             <div className="flex-1 flex flex-col">
               {/* Header */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-gray-700">
                   {plan.tier}
                 </h3>
                 {plan.icon && <div className="text-blue-500">{plan.icon}</div>}
               </div>
 
-              <p className="text-gray-500 text-xs lg:text-sm leading-relaxed mb-6">
+              <p className="text-gray-500 text-xs leading-relaxed mb-6">
                 {plan.description}
               </p>
 
@@ -113,7 +114,7 @@ export function SubscriptionPlans() {
 
             {/* CTA Button (Always Bottom) */}
             <Button
-              size="lg"
+              size={"lg"}
               variant={plan.highlighted ? "default" : "outline"}
               className={`mt-auto w-full rounded-xl  font-semibold uppercase tracking-wide transition-all duration-300  ${
                 plan.highlighted
