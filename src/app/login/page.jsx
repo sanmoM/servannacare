@@ -3,21 +3,32 @@
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import useLocalUser from "@/hooks/useLocalUser";
 import { userRole } from "@/utilities/data";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const Page = () => {
   const [showPass, setShowPass] = useState(false);
+  const {loaded,user} = useLocalUser();
+  const router = useRouter();
+  console.log(user)
 
   const handleCreateUser = (e) => {
     e.preventDefault();
     const form = e.target;
     const email = form.email?.value;
     const password = form.password?.value;
+
+    if (user){
+      toast.success("You are already Loged In");
+      router.push("/dashboard")
+      return;
+    }
 
     if (!email || !password) {
       toast.error("All fields are required!");
@@ -29,9 +40,28 @@ const Page = () => {
       return;
     }
 
-    const newUser = { name, email, password };
-    toast.success("User created successfully!");
-    console.log(newUser);
+    let role = ""
+    if(email === "serviceprovider@gmail.com"){
+      role = "service provider"
+    }else{
+      role = "service holder"
+    }
+
+     const userInfo = {
+      name,
+      email,
+      phoneNumber: null,
+      location: null,
+      joinedSince: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      }),
+      role,
+    };
+    
+    localStorage.setItem("user", JSON.stringify(userInfo));
+    router.push("/dashboard");
+    toast.success("Login Success!");
   };
 
   const handleShowPassword = () => {

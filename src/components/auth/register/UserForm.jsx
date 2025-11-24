@@ -31,11 +31,20 @@ const UserForm = () => {
       return;
     }
 
-    const userInfo = { name, email, phoneNumber:null,location:null, joinedSince:new Date().toLocaleDateString("en-US",{month:"long",year:"numeric"})};
+    const userInfo = {
+      name,
+      email,
+      phoneNumber: null,
+      location: null,
+      joinedSince: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      }),
+      role: "service provider",
+    };
     localStorage.setItem("user", JSON.stringify(userInfo));
-    router.push("/dashboard")
+    router.push("/dashboard");
     toast.success("User Create Successfully!");
-
   };
 
   const handleShowPassword = () => {

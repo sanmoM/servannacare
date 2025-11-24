@@ -6,6 +6,7 @@ import HouseManager from "@/components/auth/register/HouseManager/HouseManager";
 import Nurse from "@/components/auth/register/Nurse/Nurse";
 import Physiotherapist from "@/components/auth/register/Physiotherapist/Physiotherapist";
 import UserForm from "@/components/auth/register/UserForm";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { notFound, useSearchParams } from "next/navigation";
 import React, { Suspense } from "react";
 
@@ -50,7 +51,7 @@ const Page = () => {
     <Suspense
       fallback={
         <div className="w-full py-20 text-center font-semibold text-primary">
-          Loading registration form...
+          <LoadingSpinner/>
         </div>
       }
     >

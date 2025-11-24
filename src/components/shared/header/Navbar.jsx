@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { Mail, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import TopBar from "./TopBar";
 import {
   Dialog,
@@ -19,11 +19,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { userRole } from "@/utilities/data";
+import useLocalUser from "@/hooks/useLocalUser";
+import LoadingSpinner from "../LoadingSpin";
 
 const Navbar = () => {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const { user, loaded } = useLocalUser();
+
+  console.log(user);
 
   const navlinks = [
     { text: "Home", link: "/" },
@@ -103,61 +108,73 @@ const Navbar = () => {
 
           {/* CTA Button */}
           <div className="flex gap-2">
-            <Link href={"/login"}>
-              <Button
-                className={"rounded-full hidden md:flex text-xs"}
-                variant={"outline"}
-              >
-                LOGIN
-              </Button>
-            </Link>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="rounded-full text-xs">GET IN TOUCH </Button>
-              </DialogTrigger>
-
-              <DialogContent className="sm:max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle className="text-center">
-                    Select Your Role
-                  </DialogTitle>
-                  <DialogDescription className="text-center" />
-                </DialogHeader>
-
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 items-stretch">
-                  {userRole.map((role, indx) => (
-                    <DialogClose asChild key={indx}>
-                      <Link
-                        className="h-full"
-                        href={`/register?role=${role.role}`}
-                      >
-                        <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
-                          <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full bg-cyan-100 mb-2 sm:mb-4">
-                            <Image
-                              src={role.icon}
-                              alt="role"
-                              quality={100}
-                              className="h-full w-full"
-                            />
-                          </div>
-                          <h3 className="text-[9px] sm:text-sm text-center font-semibold text-gray-700">
-                            {role.text}
-                          </h3>
-                        </div>
-                      </Link>
-                    </DialogClose>
-                  ))}
-                </div>
-
-                <DialogFooter className="sm:justify-start">
-                  <DialogClose asChild>
-                    <Button type="button" variant="secondary">
-                      Close
+            {!loaded ? (
+              <LoadingSpinner/>
+            ) : user ? (
+              <Link href={"/dashboard"}>
+                <Button className={"rounded-full"}>Dashboard</Button>
+              </Link>
+            ) : (
+              <>
+                <Link href={"/login"}>
+                  <Button
+                    className={"rounded-full hidden md:flex text-xs"}
+                    variant={"outline"}
+                  >
+                    LOGIN
+                  </Button>
+                </Link>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="rounded-full text-xs">
+                      GET IN TOUCH{" "}
                     </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                  </DialogTrigger>
+
+                  <DialogContent className="sm:max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle className="text-center">
+                        Select Your Role
+                      </DialogTitle>
+                      <DialogDescription className="text-center" />
+                    </DialogHeader>
+
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 items-stretch">
+                      {userRole.map((role, indx) => (
+                        <DialogClose asChild key={indx}>
+                          <Link
+                            className="h-full"
+                            href={`/register?role=${role.role}`}
+                          >
+                            <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
+                              <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full bg-cyan-100 mb-2 sm:mb-4">
+                                <Image
+                                  src={role.icon}
+                                  alt="role"
+                                  quality={100}
+                                  className="h-full w-full"
+                                />
+                              </div>
+                              <h3 className="text-[9px] sm:text-sm text-center font-semibold text-gray-700">
+                                {role.text}
+                              </h3>
+                            </div>
+                          </Link>
+                        </DialogClose>
+                      ))}
+                    </div>
+
+                    <DialogFooter className="sm:justify-start">
+                      <DialogClose asChild>
+                        <Button type="button" variant="secondary">
+                          Close
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </>
+            )}
           </div>
         </Container>
 
@@ -216,7 +233,19 @@ const Navbar = () => {
           </ul>
 
           <div className="mt-6 flex flex-col gap-4 px-5">
-            <Link href={"/login"}>
+            {
+              !loaded ? (<LoadingSpinner/>):(
+                user?(<>
+                <Link href={"/dashboard"}>
+              <Button className={"w-full rounded-full"}>Dashboard</Button>
+            </Link>
+            <Button className={"rounded-full"}>
+              Log Out
+            </Button>
+                </>
+                
+          
+          ):(<><Link href={"/login"}>
               <Button className={"w-full rounded-full"}>LOGIN</Button>
             </Link>
 
@@ -225,7 +254,10 @@ const Navbar = () => {
               onClick={handleCloseSidebar}
             >
               GET IN TOUCH
-            </Button>
+            </Button></>)
+              )
+            }
+            
           </div>
         </div>
       </div>

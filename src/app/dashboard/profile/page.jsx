@@ -102,7 +102,6 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
-
           <h1 className="text-center text-xl text-gray-600 font-semibold mt-4 break-words max-w-[180px]">
             {userInfo.name}
           </h1>
@@ -121,16 +120,19 @@ export default function ProfilePage() {
                 <div className="w-full">
                   <p className="text-sm mb-1 text-gray-500">{item.label}</p>
 
-                  <Input
-                    className="w-full px-0 py-0"
-                    value={
-                      !update
-                        ? userInfo[item.key] || "N/A" 
-                        : userInfo[item.key] ?? "" 
-                    }
-                    readOnly={!update}
-                    onChange={(e) => handleChange(item.key, e.target.value)}
-                  />
+                  {!update ? (
+                    // Show plain text when update=false
+                    <p className="text-base text-gray-700">
+                      {userInfo[item.key] || "N/A"}
+                    </p>
+                  ) : (
+                    // Show Input when update=true
+                    <Input
+                      className="w-full"
+                      value={userInfo[item.key] ?? ""}
+                      onChange={(e) => handleChange(item.key, e.target.value)}
+                    />
+                  )}
                 </div>
               </div>
             ))}

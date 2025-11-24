@@ -52,7 +52,7 @@ const Slider = () => {
                       <p className="text-xs sm:text-sm md:text-base lg:text-xl  text-gray-200 mb-8 leading-relaxed">
                         {slide.subtitle}
                       </p>
-                      <Button className="px-8 py-4 text-sm md:text-lg font-medium">
+                      <Button size={"lg"} className="text-sm md:text-lg font-medium">
                         Learn More
                       </Button>
                     </div>

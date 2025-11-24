@@ -18,11 +18,12 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import useLocalUser from "@/hooks/useLocalUser";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname(); // current route
+  const {user,loaded} = useLocalUser();
 
-  const [role] = useState("holder"); // role logic, can be dynamic
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
 
@@ -33,21 +34,21 @@ export default function DashboardLayout({ children }) {
     { name: "My Appointments", href: "#appointments", icon: Calendar },
     { name: "Book History", href: "#hook-history", icon: ClipboardClock },
     { name: "Payment History", href: "#payment-history", icon: History },
-    { name: "Messages", href: "#messages", icon: MessageSquare },
     { name: "Profile", href: "/dashboard/profile", icon: User },
   ];
 
   const serviceProviderLinks = [
+    { name: "Home", href: "/dashboard", icon: HomeIcon },
     { name: "Dashboard", href: "#dashboard", icon: Stethoscope },
     { name: "My Services", href: "#services", icon: Briefcase },
     { name: "Schedule", href: "#schedule", icon: Calendar },
     { name: "Clients", href: "#clients", icon: Users },
     { name: "Earnings", href: "#earnings", icon: DollarSign },
     { name: "Messages", href: "#messages", icon: MessageSquare },
-    { name: "Profile", href: "#profile", icon: User },
+    { name: "Profile", href: "/dashboard/profile", icon: User },
   ];
 
-  const links = role === "holder" ? serviceHolderLinks : serviceProviderLinks;
+  const links = user?.role === "service holder" ? serviceHolderLinks : serviceProviderLinks;
 
   // --- NavLink Component ---
   const NavLink = ({ link }) => {

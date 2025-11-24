@@ -2,7 +2,7 @@
 
 import Container from "@/components/shared/Container";
 import ProfileCard from "@/components/profileCard";
-import { fakeData } from "@/utilities/data";
+import { fakeData, services } from "@/utilities/data";
 import { notFound, useSearchParams } from "next/navigation";
 import React, { useMemo, useState, Suspense } from "react";
 import {
@@ -22,6 +22,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 const SearchContent = () => {
   const searchParams = useSearchParams();
@@ -58,7 +59,7 @@ const SearchContent = () => {
     }
   };
 
-  if (!category || !startDate || !endDate) {
+  if (!category) {
     return notFound();
   }
 
@@ -68,11 +69,17 @@ const SearchContent = () => {
       <Container className={"lg:py-16 py-12"}>
         <div className="pb-8">
           <div className="flex flex-col border-b sm:flex-row sm:items-center pb-2 gap-4 justify-between">
-            <h2 className="font-medium text-sm md:text-base">
+            {
+              startDate || endDate ?<h2 className="font-medium text-sm md:text-base">
               Search by <span className="text-gray-600">{category}</span> and{" "}
               <span className="text-gray-600">{startDate}</span> to{" "}
               <span className="text-gray-600">{endDate}</span>
+            </h2>:<h2 className="font-medium text-sm md:text-base">
+              Showing <span className="text-gray-600">{category}</span>  services <span className="text-gray-600">{currentData.length}</span>  of <span className="text-gray-600">{fakeData.length}</span> 
+              
             </h2>
+            }
+            
 
             <Select
               onValueChange={(value) => {
@@ -142,7 +149,7 @@ const Search = () => {
     <Suspense
       fallback={
         <div className="w-full py-20 text-center text-primary font-semibold">
-          Loading search results...
+          <LoadingSpinner/>
         </div>
       }
     >
