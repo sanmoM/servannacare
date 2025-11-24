@@ -56,7 +56,7 @@ export default function HowItWorks() {
         <Container>
           {/* Section Header */}
         <div className="mb-8 md:mb-12">
-          <h2 className="sectionHeading">
+          <h2 className="sectionHeading text-center">
             How It Works
           </h2>
         </div>
@@ -69,12 +69,12 @@ export default function HowItWorks() {
             <React.Fragment  key={step.id}>
               
               {/* Step Card */}
-              <div data-aos="fade-up" className="flex flex-col items-center text-center w-full max-w-xs lg:max-w-none lg:w-1/4 px-4">
+              <div data-aos="fade-up" className="flex flex-col items-center text-center w-full max-w-xs lg:max-w-none   lg:w-1/4 px-4">
                 
                 {/* Icon and Step Number */}
                 <div 
                   // The `bg-gradient-to-r` and color classes are applied here
-                  className={`w-20 h-20 rounded-full bg-blue-950 flex items-center justify-center mb-6 shadow-lg relative ring-4 ring-white`}
+                  className={`w-20 h-20  rounded-full bg-blue-950 flex items-center justify-center mb-6 shadow-lg relative ring-4 ring-white`}
                 >
                   <step.Icon className="w-10 h-10 text-white" />
                   

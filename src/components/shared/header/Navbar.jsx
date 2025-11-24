@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { BookAlert, BookImage, CircleQuestionMark, HandHeart, Headset, HeartPulse, Home, Info, LayoutList, Menu, X } from "lucide-react";
 import TopBar from "./TopBar";
 import {
   Dialog,
@@ -31,13 +31,13 @@ const Navbar = () => {
   console.log(user);
 
   const navlinks = [
-    { text: "Home", link: "/" },
-    { text: "Our Services", link: "/services" },
-    { text: "Blog", link: "/blog" },
-    { text: "About Us", link: "/about-us" },
-    { text: "FAQ", link: "/faq" },
-    { text: "Event", link: "/event" },
-    { text: "Contact Us", link: "/contact-us" },
+    { text: "Home", link: "/", icon:Home },
+    { text: "Our Services", link: "/services",icon:HandHeart  },
+    { text: "Blog", link: "/blog",icon:LayoutList  },
+    { text: "About Us", link: "/about-us",icon:BookAlert  },
+    { text: "FAQ", link: "/faq",icon:CircleQuestionMark  },
+    { text: "Event", link: "/event",icon:BookImage  },
+    { text: "Contact Us", link: "/contact-us",icon:Headset  },
   ];
 
   const handleCloseSidebar = () => setSidebarOpen(false);
@@ -109,7 +109,7 @@ const Navbar = () => {
           {/* CTA Button */}
           <div className="flex gap-2">
             {!loaded ? (
-              <LoadingSpinner/>
+              <LoadingSpinner />
             ) : user ? (
               <Link href={"/dashboard"}>
                 <Button className={"rounded-full"}>Dashboard</Button>
@@ -193,71 +193,81 @@ const Navbar = () => {
             sidebarOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="flex justify-between items-center p-5 border-b">
-            <Link href="/" onClick={handleCloseSidebar}>
-              <Image
-                src="/logo.png"
-                alt="logo"
-                width={60}
-                height={60}
-                quality={100}
+          <div className="flex h-full flex-col">
+            <div className="flex justify-between items-center p-5 border-b">
+              <Link href="/" onClick={handleCloseSidebar}>
+                <Image
+                  src="/logo.png"
+                  alt="logo"
+                  width={60}
+                  height={60}
+                  quality={100}
+                />
+              </Link>
+              <X
+                className="cursor-pointer w-6 h-6 text-gray-700"
+                onClick={handleCloseSidebar}
               />
-            </Link>
-            <X
-              className="cursor-pointer w-6 h-6 text-gray-700"
-              onClick={handleCloseSidebar}
-            />
-          </div>
+            </div>
 
-          <ul className="flex flex-col gap-4 p-5">
-            {navlinks.map((link, indx) => {
-              const isActive =
-                pathname === link.link ||
-                (link.link !== "/" && pathname.startsWith(link.link));
-              return (
-                <li key={indx}>
-                  <Link
-                    href={link.link}
-                    onClick={handleCloseSidebar}
-                    className={`block text-lg font-medium transition-colors ${
-                      isActive
-                        ? "text-primary"
-                        : "text-gray-700 hover:text-primary"
-                    }`}
-                  >
-                    {link.text}
+            <ul className="flex flex-grow gap-1 flex-col  p-3">
+              {navlinks.map((link, indx) => {
+                const isActive =
+                  pathname === link.link ||
+                  (link.link !== "/" && pathname.startsWith(link.link));
+                  const Icon = link.icon
+
+                return (
+                  <li className="" key={indx}>
+                    <Link
+                      href={link.link}
+                      onClick={handleCloseSidebar}
+                      className={` text-sm flex items-center rounded-xl font-medium p-3 transition-colors ${
+                        isActive
+                          ? "text-white bg-secondary"
+                          : "text-gray-700 hover:text-primary"
+                      }`}
+                    >
+                      <Icon className="w-5 h-5 mr-3" />
+                      {link.text}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="mt-6 flex flex-col gap-4 px-5">
+              {!loaded ? (
+                <LoadingSpinner />
+              ) : user ? (
+                <>
+                  <Link href={"/dashboard"}>
+                    <Button size={"lg"} className={"w-full rounded-full"}>
+                      Dashboard
+                    </Button>
                   </Link>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className="mt-6 flex flex-col gap-4 px-5">
-            {
-              !loaded ? (<LoadingSpinner/>):(
-                user?(<>
-                <Link href={"/dashboard"}>
-              <Button className={"w-full rounded-full"}>Dashboard</Button>
-            </Link>
-            <Button className={"rounded-full"}>
-              Log Out
-            </Button>
+                  <Button size={"lg"} className={"rounded-full"}>
+                    Log Out
+                  </Button>
                 </>
-                
-          
-          ):(<><Link href={"/login"}>
-              <Button className={"w-full rounded-full"}>LOGIN</Button>
-            </Link>
+              ) : (
+                <>
+                  <Link href={"/login"}>
+                    <Button size={"lg"} className={"w-full rounded-full"}>
+                      LOGIN
+                    </Button>
+                  </Link>
 
-            <Button
-              className="w-full rounded-full"
-              onClick={handleCloseSidebar}
-            >
-              GET IN TOUCH
-            </Button></>)
-              )
-            }
-            
+                  <Button
+                    size={"lg"}
+                    className="w-full rounded-full"
+                    onClick={handleCloseSidebar}
+                  >
+                    GET IN TOUCH
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

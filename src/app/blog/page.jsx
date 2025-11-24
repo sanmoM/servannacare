@@ -16,26 +16,6 @@ const page = () => {
       />
 
       <Container className={"grid grid-cols-1 gap-6 py-10 md:py-16 md:grid-cols-2"}>
-        {/* <div className='col-span-3'>
-            {blogs.map((blog,indx) => {
-              return(
-                <BlogCard blog={blog} key={indx}></BlogCard>
-              )
-            })}
-        </div>
-        <div className='col-span-2'>
-            <h4 className='sectionHeading'>Recent Posts</h4>
-            <hr />
-            <div className='space-y-8 pt-6'>
-              {
-              blogs.map((blog,indx) => {
-                return(
-                  <BlogCardSecond key={indx} blog={blog}></BlogCardSecond>
-                )
-              })
-            }
-            </div>
-        </div> */}
         {
           blogs.map((blog,indx) => {
             const slug = blog.title.toLowerCase().replace(/ /g, "-");

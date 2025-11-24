@@ -10,7 +10,7 @@ const Services = () => {
   return (
     <Container className={" py-10 md:py-16"}>
       <div className="mb-8 flex justify-between items-center md:mb-12">
-        <h2 className="sectionHeading">
+        <h2 className="sectionHeading text-center">
           Our Services
         </h2>
         <Button><Link className="flex items-center gap-2" href={"/services"}>More <ChevronRight/></Link></Button>

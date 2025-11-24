@@ -17,7 +17,9 @@ export default function Testimonials() {
       <Container>
         {/* Header Section */}
         <div className="mb-8 md:mb-12">
-          <h2 className="sectionHeading">Trusted by Industry Leaders</h2>
+          <h2 className="sectionHeading text-center">
+            Trusted by Industry Leaders
+          </h2>
         </div>
 
         {/* Swiper Carousel */}
@@ -85,7 +87,7 @@ export default function Testimonials() {
             { number: 4.9, suffix: "★", label: "Average Rating" },
           ].map((stat, idx) => (
             <div key={idx} className="text-center">
-              <p className="sm:text-2xl text-primary md:text-5xl font-bold text-foreground mb-3">
+              <p className="text-2xl  text-primary md:text-5xl font-bold text-foreground sm:mb-3 mb-1">
                 <CountUp
                   end={stat.number}
                   duration={2}
@@ -131,40 +133,39 @@ export default function Testimonials() {
 function TestimonialCard({ testimonial }) {
   return (
     <div className="h-full">
-      <div className="bg-card border border-border rounded-xl p-8  h-full flex flex-col hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:shadow-primary/5 group">
-        {/* Quote Icon */}
-        <Quote className="w-8 h-8 text-primary mb-6" />
+      <div className="bg-card border border-border rounded-xl  h-full flex flex-col hover:border-primary/30 transition-all duration-300 hover:shadow-md  hover:shadow-primary/5  group">
+        <div className="px-6 pt-8">
+          {/* Quote Icon */}
+          <Quote className="w-8 h-8 text-primary mb-6" />
 
-        {/* Rating Stars */}
-        <div className="flex items-center gap-1 mb-4">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              className="w-4 h-4 text-yellow-400 fill-yellow-400 transition-transform duration-200 group-hover:scale-110"
-            />
-          ))}
+          {/* Rating Stars */}
+          <div className="flex items-center gap-1 mb-4">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className="w-4 h-4 text-yellow-400 fill-yellow-400 transition-transform duration-200 group-hover:scale-110"
+              />
+            ))}
+          </div>
+
+          {/* Testimonial Content */}
+          <p className="text-card-foreground text-sm lg:text-base leading-relaxed mb-8 flex-grow font-light italic">
+            “{testimonial.content}”
+          </p>
         </div>
 
-        {/* Testimonial Content */}
-        <p className="text-card-foreground text-sm lg:text-base leading-relaxed mb-8 flex-grow font-light italic">
-          “{testimonial.content}”
-        </p>
-
-        {/* Divider */}
-        <div className="w-full h-px bg-border mb-6" />
-
         {/* Client Info */}
-        <div className="flex items-center gap-4">
+        <div className="flex bg-primary p-6 rounded-b-2xl items-center gap-4">
           <img
             src={testimonial.image || "/placeholder.svg"}
             alt={testimonial.name}
             className="w-12 h-12 rounded-full object-cover"
           />
-          <div>
-            <p className="font-semibold text-card-foreground text-sm">
+          <div className="">
+            <p className="font-semibold text-gray-100 text-card-foreground text-sm">
               {testimonial.name}
             </p>
-            <p className="text-xs text-muted-foreground font-light">
+            <p className="text-xs text-gray-200  font-light">
               {testimonial.role} • {testimonial.company}
             </p>
           </div>

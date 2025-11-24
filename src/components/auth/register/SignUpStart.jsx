@@ -9,17 +9,26 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 const SignUpStart = ({ onSuccess }) => {
-    const [showPass, setShowPass] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const [phone, setPhone] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    const form = e.target
+    e.preventDefault();
+    const form = e.target;
     const email = form.email.value;
-    const password = form.password.value
+    const password = form.password.value;
+    const phone = form.phone.value;
 
-    const NewUserData = {email,password}; 
+    const NewUserData = { email, password, phone };
+
+    // validate phone (Kenya)
+    if (phone.length !== 10) {
+      toast.error("Invalied phone number!");
+      return;
+    }
 
     if (!email || !password) {
+      console.log(NewUserData);
       toast.error("All fields are required");
       return;
     }
@@ -28,7 +37,7 @@ const SignUpStart = ({ onSuccess }) => {
     onSuccess(NewUserData);
   };
 
-    const handleShowPassword = () => {
+  const handleShowPassword = () => {
     setShowPass(!showPass);
   };
 
@@ -39,6 +48,19 @@ const SignUpStart = ({ onSuccess }) => {
           Create an Account!
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
+          <Input
+            label="Phone Number"
+            name="phone"
+            type="tel"
+            placeholder="07xxxxxxxx "
+            value={phone}
+            maxLength={10}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "");
+              setPhone(val);
+            }}
+          />
+
           <Input
             label="Email"
             name="email"
@@ -71,7 +93,9 @@ const SignUpStart = ({ onSuccess }) => {
 
         <div className="flex gap-2 mt-6 items-center">
           <p className="text-sm">Already have an account?</p>
-          <Link href={"/login"}><Button variant={"link"}>Login</Button></Link>
+          <Link href={"/login"}>
+            <Button variant={"link"}>Login</Button>
+          </Link>
         </div>
       </div>
     </div>

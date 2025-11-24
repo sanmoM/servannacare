@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Briefcase,
   Calendar,
@@ -10,8 +10,10 @@ import {
   History,
   HomeIcon,
   MessageSquare,
+  NotepadText,
   PanelLeft,
   Search,
+  Smile,
   Stethoscope,
   User,
   Users,
@@ -19,36 +21,48 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useLocalUser from "@/hooks/useLocalUser";
+import toast from "react-hot-toast";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname(); // current route
   const {user,loaded} = useLocalUser();
+  const router = useRouter();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
 
   // --- Links ---
   const serviceHolderLinks = [
-    { name: "Home", href: "/dashboard", icon: HomeIcon },
+    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+    { name: "Profile", href: "/dashboard/profile", icon: User },
     { name: "Find Services", href: "#search", icon: Search },
     { name: "My Appointments", href: "#appointments", icon: Calendar },
     { name: "Book History", href: "#hook-history", icon: ClipboardClock },
     { name: "Payment History", href: "#payment-history", icon: History },
-    { name: "Profile", href: "/dashboard/profile", icon: User },
+    
   ];
 
   const serviceProviderLinks = [
-    { name: "Home", href: "/dashboard", icon: HomeIcon },
-    { name: "Dashboard", href: "#dashboard", icon: Stethoscope },
-    { name: "My Services", href: "#services", icon: Briefcase },
+    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+     { name: "Profile", href: "/dashboard/profile", icon: User },
     { name: "Schedule", href: "#schedule", icon: Calendar },
     { name: "Clients", href: "#clients", icon: Users },
-    { name: "Earnings", href: "#earnings", icon: DollarSign },
+    { name: "Notes", href: "#notes", icon: NotepadText },
     { name: "Messages", href: "#messages", icon: MessageSquare },
-    { name: "Profile", href: "/dashboard/profile", icon: User },
+    { name: "Feedback", href: "#feedback", icon: Smile},
+    
+   
   ];
 
   const links = user?.role === "service holder" ? serviceHolderLinks : serviceProviderLinks;
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    router.push("/")
+    toast.success("Log Out Success!")
+  }
 
   // --- NavLink Component ---
   const NavLink = ({ link }) => {
@@ -108,13 +122,16 @@ export default function DashboardLayout({ children }) {
 
               {/* Links */}
               <nav className="flex-grow overflow-y-auto py-3">
-                {links.map((link) => (
+                {
+                  !loaded?<LoadingSpinner/>:(links.map((link) => (
                   <NavLink key={link.name} link={link} />
-                ))}
+                )))
+                }
+                
               </nav>
 
               {/* Logout Button */}
-              <Button size={"lg"} className="bg-secondary hover:bg-secondary/80 mx-3 mb-4">
+              <Button onClick={handleLogout} size={"lg"} className="bg-secondary hover:bg-secondary/80 mx-3 mb-4">
                 Log Out
               </Button>
 
