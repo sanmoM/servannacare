@@ -20,10 +20,11 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     education: defaultValues.education || "",
     experience: defaultValues.experience || "",
     salaryRange: defaultValues.salaryRange || "",
+    serviceOffered:defaultValues.serviceOffered || "",
     location: defaultValues.location || "",
-    bankName: defaultValues.bankName || "",
-    bankAccountName: defaultValues.bankAccountName || "",
-    bankAccountNumber: defaultValues.bankAccountNumber || "",
+    // bankName: defaultValues.bankName || "",
+    // bankAccountName: defaultValues.bankAccountName || "",
+    // bankAccountNumber: defaultValues.bankAccountNumber || "",
     languages: defaultValues.languages || [],
   });
 
@@ -54,9 +55,9 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       "experience",
       "salaryRange",
       "location",
-      "bankName",
-      "bankAccountName",
-      "bankAccountNumber",
+      // "bankName",
+      // "bankAccountName",
+      // "bankAccountNumber",
     ];
     for (let field of requiredFields) {
       if (
@@ -66,7 +67,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
         toast.error(
           `${field.charAt(0).toUpperCase() + field.slice(1)} is required!`
         );
-        return; 
+        return;
       }
     }
 
@@ -82,7 +83,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <h4 className="formHeading">Basic Information</h4>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-1">
           <Input
             label="Full Name (AS per ID)"
@@ -108,10 +109,10 @@ const BasicInfo = ({ defaultValues, onNext }) => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="primary">Primary</SelectItem>
-                <SelectItem value="secondary">Secondary</SelectItem>
-                <SelectItem value="college">College</SelectItem>
-                <SelectItem value="university">University</SelectItem>
+                <SelectItem value="Primary">Primary</SelectItem>
+                <SelectItem value="Secondary">Secondary</SelectItem>
+                <SelectItem value="College">College</SelectItem>
+                <SelectItem value="University">University</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -119,7 +120,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       </div>
 
       {/* Experience + Salary */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-1">
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Experience (Years)
@@ -161,25 +162,51 @@ const BasicInfo = ({ defaultValues, onNext }) => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="200-400">$200 - $400</SelectItem>
-                <SelectItem value="400-600">$400 - $600</SelectItem>
-                <SelectItem value="600-800">$600 - $800</SelectItem>
-                <SelectItem value="800-1000">$800 - $1000</SelectItem>
-                <SelectItem value="1000+">More than $1000</SelectItem>
+                <SelectItem value="$200-$400">$200 - $400</SelectItem>
+                <SelectItem value="$400-$600">$400 - $600</SelectItem>
+                <SelectItem value="$600-$800">$600 - $800</SelectItem>
+                <SelectItem value="$800-$1000">$800 - $1000</SelectItem>
+                <SelectItem value="$1000+">More than $1000</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Location */}
-      <Input
-        label="Your Location"
-        name="location"
-        placeholder="Type your location.."
-        value={data.location}
-        onChange={handleChange}
-      />
+      <div className="flex flex-col sm:flex-row gap-6">
+        <div className="flex-1">
+          {/* Location */}
+          <Input
+            label="Your Location"
+            name="location"
+            placeholder="Type your location.."
+            value={data.location}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="flex-1">
+          {/* service offered */}
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Service Offered
+          </label>
+          <Select
+            value={data.serviceOffered}
+            onValueChange={(value) =>
+              setData((prev) => ({ ...prev, serviceOffered: value }))
+            }
+          >
+            <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+              <SelectValue placeholder="Select service offered" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="Live In (month rate pay)">Live In (month rate pay)</SelectItem>
+                <SelectItem value="Dayburg (daily rate pay)">Dayburg (daily rate pay)</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {/* Languages */}
       <div>
@@ -204,7 +231,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       </div>
 
       {/* Bank Details */}
-      <h4 className="formHeading">Bank Details</h4>
+      {/* <h4 className="formHeading">Bank Details</h4>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Input
           label="Bank Name"
@@ -227,9 +254,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
           value={data.bankAccountNumber}
           onChange={handleChange}
         />
-      </div>
-
-      
+      </div> */}
 
       <div className="flex justify-end mt-6">
         <Button type="submit" size="lg">

@@ -3,10 +3,8 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Briefcase,
   Calendar,
   ClipboardClock,
-  DollarSign,
   History,
   HomeIcon,
   MessageSquare,
@@ -14,7 +12,6 @@ import {
   PanelLeft,
   Search,
   Smile,
-  Stethoscope,
   User,
   Users,
   X,
@@ -28,6 +25,8 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname(); // current route
   const {user,loaded} = useLocalUser();
   const router = useRouter();
+
+  console.log(user);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
@@ -147,7 +146,7 @@ export default function DashboardLayout({ children }) {
       {/* MAIN CONTENT */}
       <main className="flex-1 overflow-y-auto bg-gray-50 transition-all duration-300">
         {/* Top Bar */}
-        <div className="bg-primary flex  justify-between pr-4 py-5 text-white">
+        <div className="bg-primary flex  justify-between pr-2 py-3 sm:py-5 text-white">
           <button
           
             className="p-2 cursor-pointer hover:text-gray-100"
@@ -159,7 +158,10 @@ export default function DashboardLayout({ children }) {
               }
             }}
           >
-            <PanelLeft />
+            <div className="flex items-center gap-2">
+              <PanelLeft /> 
+              <span className="text-sm lg:hidden font-semibold">Dasbboard</span>
+            </div>
           </button>
           <img
             src="/user.png"

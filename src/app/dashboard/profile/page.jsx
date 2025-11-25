@@ -65,9 +65,9 @@ export default function ProfilePage() {
     <div>
       <h1 className="sectionHeading mb-4">My Profile</h1>
 
-      <div className="border flex flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
+      <div className="border flex  items-center md:items-start flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
         {/* Profile Picture */}
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center  items-center">
           <div className="relative h-36 w-36 lg:w-48 lg:h-48 rounded-full border-4 border-primary overflow-hidden shadow-lg">
             <img
               className="object-cover w-full h-full"
@@ -83,6 +83,7 @@ export default function ProfilePage() {
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
+                console.log(file)
 
                 const imageUrl = URL.createObjectURL(file);
                 setUserInfo((prev) => ({ ...prev, profilePic: imageUrl }));
@@ -113,7 +114,7 @@ export default function ProfilePage() {
             {infoItems.map((item, index) => (
               <div
                 key={index}
-                className="flex space-x-3 bg-white p-4 rounded-lg"
+                className="flex space-x-3 bg-white p-3 lg:p-4 rounded-lg"
               >
                 {item.icon}
 
@@ -122,7 +123,7 @@ export default function ProfilePage() {
 
                   {!update ? (
                     // Show plain text when update=false
-                    <p className="text-base text-gray-700">
+                    <p className="text-sm text-gray-700">
                       {userInfo[item.key] || "N/A"}
                     </p>
                   ) : (
@@ -136,6 +137,8 @@ export default function ProfilePage() {
                 </div>
               </div>
             ))}
+
+            
           </div>
 
           {/* Buttons */}

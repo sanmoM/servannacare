@@ -9,10 +9,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import OtpModal from "../OtpModal";
 
 const UserForm = () => {
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [openOTP, setOpenOTP] = useState(false);
+  const [temUser, setTemUser] = useState(null);
+  const [phone, setPhone] = useState("");
 
   const handleCreateUser = (e) => {
     e.preventDefault();
@@ -20,9 +25,16 @@ const UserForm = () => {
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
+    const phone = form.phone.value;
 
     if (!name || !email || !password) {
       toast.error("All fields are required!");
+      return;
+    }
+
+    // validate phone (Kenya)
+    if (phone.length !== 10) {
+      toast.error("Invalied phone number!");
       return;
     }
 
@@ -31,24 +43,42 @@ const UserForm = () => {
       return;
     }
 
+    if (!termsAccepted) {
+      toast.error("Please accept terms and condition!");
+      return;
+    }
+
     const userInfo = {
       name,
       email,
-      phoneNumber: null,
+      phone,
       location: null,
       joinedSince: new Date().toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
       }),
-      role: "service provider",
+      role: "service holder",
     };
-    localStorage.setItem("user", JSON.stringify(userInfo));
-    router.push("/dashboard");
-    toast.success("User Create Successfully!");
+
+    setTemUser(userInfo);
+    setOpenOTP(true);
+    toast.success(`OTP send to ${phone}!`);
   };
 
   const handleShowPassword = () => {
     setShowPass(!showPass);
+  };
+
+  const handleVerifyOTP = (otp) => {
+    if (otp !== "123456") {
+      toast.error("Invalid OTP!");
+      return;
+    }
+    setOpenOTP(false);
+
+    localStorage.setItem("user", JSON.stringify(temUser));
+    router.push("/dashboard");
+    toast.success("User Create Successfully!");
   };
 
   return (
@@ -63,6 +93,18 @@ const UserForm = () => {
             name="name"
             type="text"
             placeholder="Enter Your Name"
+          />
+          <Input
+            label="Phone Number"
+            name="phone"
+            type="tel"
+            placeholder="07xxxxxxxx "
+            value={phone}
+            maxLength={10}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "");
+              setPhone(val);
+            }}
           />
           <Input
             label="Email"
@@ -88,13 +130,18 @@ const UserForm = () => {
               )}
             </div>
           </div>
-          <div className="flex items-center mt-6 gap-2">
-            <Checkbox id="remember" />
+          {/* Terms and Conditions */}
+          <div className="flex items-center gap-2 mt-6">
+            <Checkbox
+              id="terms"
+              checked={termsAccepted}
+              onCheckedChange={() => setTermsAccepted(!termsAccepted)}
+            />
             <Label
-              htmlFor={"remember"}
               className="text-gray-700 font-normal cursor-pointer"
+              htmlFor="terms"
             >
-              Remember me
+              I agree to the terms and conditions
             </Label>
           </div>
           <Button size={"lg"} className={"w-full "}>
@@ -108,6 +155,15 @@ const UserForm = () => {
           </Link>
         </div>
       </div>
+
+      {/* OTP Modal  */}
+      {openOTP && (
+        <OtpModal
+          phone={phone}
+          onVerify={handleVerifyOTP}
+          onClose={() => setOpenOTP(false)}
+        />
+      )}
     </div>
   );
 };

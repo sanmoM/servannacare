@@ -11,6 +11,7 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
     isMother: defaultValues.isMother || "",
     ageOfKids: defaultValues.ageOfKids || [],
     isHandelingPet: defaultValues.isHandelingPet || "",
+    preferBeingA: defaultValues.preferBeingA || ""
   });
 
   const toggleageOfKids = (kid) => {
@@ -50,8 +51,9 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
     <form className="space-y-6" onSubmit={handleSubmit}>
       <h4 className="formHeading">Additional Details</h4>
 
-      {/* Mother Question */}
-      <div className="w-full flex flex-col">
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Mother Question */}
+      <div className="w-full flex-1 flex flex-col">
         <Label>Are you a mother?</Label>
         <RadioGroup
           className="flex gap-4 mt-3"
@@ -70,11 +72,11 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
       </div>
 
       {/* Age Preference */}
-      <div>
+      <div className="flex-1">
         <Label>What age of kids do you prefer working with?</Label>
-        <div className="flex mt-3 gap-4">
+        <div className="flex flex-wrap mt-3 gap-4">
           {["0-3", "4-10", "11+"].map((age) => (
-            <div key={age} className="flex gap-2">
+            <div key={age} className="flex  gap-2">
               <Checkbox
                 id={`age-${age}`}
                 checked={data.ageOfKids.includes(age)}
@@ -87,9 +89,11 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
           ))}
         </div>
       </div>
+      </div>
 
       {/* Pets */}
-      <div>
+     <div className="flex md:flex-row flex-col gap-6">
+       <div className="flex-1">
         <Label>Are you okay handling pets?</Label>
         <RadioGroup
           className="flex gap-4 mt-3"
@@ -106,6 +110,24 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
+       <div className="flex-1">
+        <Label>Prefer being a </Label>
+        <RadioGroup
+          className="flex gap-4 mt-3"
+          value={data.preferBeingA}
+          onValueChange={(value) => setData((prev) => ({ ...prev, preferBeingA: value }))}
+        >
+          <div className="flex items-center gap-3">
+            <RadioGroupItem value="Nanny" id="h1" />
+            <Label htmlFor="h1" className="text-gray-700 font-normal cursor-pointer">Nanny</Label>
+          </div>
+          <div className="flex items-center gap-3">
+            <RadioGroupItem value="House Keeper" id="h2" />
+            <Label htmlFor="h2" className="text-gray-700 font-normal cursor-pointer">House Keeper</Label>
+          </div>
+        </RadioGroup>
+      </div>
+     </div>
 
       {/* Navigation Buttons */}
       <div className="flex justify-between pt-6">

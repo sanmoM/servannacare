@@ -1,17 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { FileText, Image, Image as ImageIcon } from "lucide-react";
-import React, { useState } from "react";
-import toast from "react-hot-toast";
+import { FileText, Image as ImageIcon } from "lucide-react";
+import React from "react";
 
 const Review = ({ data, onNext, onBack }) => {
-  const [remember, setRemember] = useState(data.remember || false);
 
   const handleSubmit = () => {
-    console.log({ ...data, remember });
     if (onNext) onNext();
   };
 
@@ -115,7 +111,7 @@ const Review = ({ data, onNext, onBack }) => {
       )}
 
       {/* Remember Me Checkbox */}
-      <div className="flex items-center gap-2 mt-6">
+      {/* <div className="flex items-center gap-2 mt-6">
         <Checkbox
           id="remember"
           checked={remember}
@@ -127,7 +123,7 @@ const Review = ({ data, onNext, onBack }) => {
         >
           Remember me
         </Label>
-      </div>
+      </div> */}
 
       {/* Buttons */}
       <div className="flex justify-between pt-6">

@@ -50,13 +50,13 @@ export const services = [
     icon: <Stethoscope/>,
     image: "https://www.bain.com/contentassets/ea3ac9bcf0794dceb9ccab5526d2e4e6/1440x810.jpg"
   },
-   {
-    id: 3,
-    title: "Agency",
-    description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <Building2 />,
-    image: "https://assets.entrepreneur.com/content/3x2/2000/1598246497-shutterstock-390454498.jpg?format=pjeg&auto=webp"
-  },
+  //  {
+  //   id: 3,
+  //   title: "Agency",
+  //   description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
+  //   icon: <Building2 />,
+  //   image: "https://assets.entrepreneur.com/content/3x2/2000/1598246497-shutterstock-390454498.jpg?format=pjeg&auto=webp"
+  // },
   
   {
     id: 4,
@@ -65,13 +65,13 @@ export const services = [
     icon: <Activity />,
     image:"https://lahtaclinic.ru/wp-content/uploads/2025/01/%D1%80%D0%B5%D0%B0%D0%B1%D0%B8%D0%BB-%D0%B1%D0%BE%D0%BB.png"
   },
-  {
-    id: 5,
-    title: "Employer",
-    description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <Briefcase />,
-    image:"https://tint.creativemarket.com/oTo2uVcbVnS-15xQOV0DRpueMWZKCpIM2XO6pmkWg-I/width:6047/height:4035/gravity:ce/rt:fill-down/el:1/czM6Ly9maWxlcy5jcmVhdGl2ZW1hcmtldC5jb20vaW1hZ2VzL3NjcmVlbnNob3RzL3Byb2R1Y3RzLzQ5NTYvNDk1NjYvNDk1NjY1NDIvMTQyNDc0My5qcGctby5qcGc?1712043885"
-  },
+  // {
+  //   id: 5,
+  //   title: "Employer",
+  //   description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
+  //   icon: <Briefcase />,
+  //   image:"https://tint.creativemarket.com/oTo2uVcbVnS-15xQOV0DRpueMWZKCpIM2XO6pmkWg-I/width:6047/height:4035/gravity:ce/rt:fill-down/el:1/czM6Ly9maWxlcy5jcmVhdGl2ZW1hcmtldC5jb20vaW1hZ2VzL3NjcmVlbnNob3RzL3Byb2R1Y3RzLzQ5NTYvNDk1NjYvNDk1NjY1NDIvMTQyNDc0My5qcGctby5qcGc?1712043885"
+  // },
 
   {
     id: 6,
@@ -81,13 +81,13 @@ export const services = [
     image:"https://infinityworks-com.s3.eu-west-2.amazonaws.com/wp-content/uploads/2020/03/healthcare-featured.jpg"
   },
  
-  {
-    id: 7,
-    title: "Medical Institutions",
-    description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <Hospital />,
-    image:"https://e3.365dm.com/21/09/2048x1152/skynews-hospital-covid-19_5513559.jpg?20210915151319"
-  },
+  // {
+  //   id: 7,
+  //   title: "Medical Institutions",
+  //   description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
+  //   icon: <Hospital />,
+  //   image:"https://e3.365dm.com/21/09/2048x1152/skynews-hospital-covid-19_5513559.jpg?20210915151319"
+  // },
   {
     id: 8,
     title: "Paediatrician",
@@ -344,13 +344,13 @@ export const userRole = [
 
 
 export const languages = [
-  { id: 1, value: "english", text: "English" },
-  { id: 2, value: "swahili", text: "Swahili" },
-  { id: 3, value: "french", text: "French" },
-  { id: 4, value: "german", text: "German" },
-  { id: 5, value: "arabic", text: "Arabic" },
-  { id: 6, value: "chinese", text: "Chinese" },
-  { id: 7, value: "other", text: "Other" },
+  { id: 1, value: "English", text: "English" },
+  { id: 2, value: "Swahili", text: "Swahili" },
+  { id: 3, value: "French", text: "French" },
+  { id: 4, value: "German", text: "German" },
+  { id: 5, value: "Arabic", text: "Arabic" },
+  { id: 6, value: "Chinese", text: "Chinese" },
+  { id: 7, value: "Other", text: "Other" },
 ];
 
 

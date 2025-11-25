@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
   const [data, setData] = useState({
     skills: defaultValues.skills || [],
-    interested: defaultValues.interested || [],
+    // interested: defaultValues.interested || [],
     mobilityYears: defaultValues.mobilityYears || "",
     bathingYears: defaultValues.bathingYears || "",
     feedingYears: defaultValues.feedingYears || "",
@@ -18,22 +18,21 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
   });
 
   const skills = [
-    "Basic Patient Care (Bathing, dressing, feeding, mobility)",
-    "Vital Signs Monitoring",
-    "Medical Assistance",
-    "Communication Skills",
-    "Special Needs Children Caregiving",
-    "Elderly Caregiving",
-    "Infection Control & Hygiene Maintenance",
-    "Handling Medical Equipment",
+    "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
+    "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
+    "Medical Assistance: (assisting nurses with wound care, administering medication (in some cases)",
+    "Compassion & Communication Skills",
+    "Special needs children caregiving",
+    "Elderly caregiving",
+    "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
   ];
 
-  const interestedAreas = [
-    "ELDERLY CARE",
-    "DISABILITY SUPPORT",
-    "PRE AND POST PREGNANCY SUPPORT",
-    "POST SURGERY CARE",
-  ];
+  // const interestedAreas = [
+  //   "ELDERLY CARE",
+  //   "DISABILITY SUPPORT",
+  //   "PRE AND POST PREGNANCY SUPPORT",
+  //   "POST SURGERY CARE",
+  // ];
 
   // Toggle skill selection
   const toggleSkill = (skill) => {
@@ -49,17 +48,17 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
   };
 
   // Toggle interested area checkbox
-  const toggleInterested = (area) => {
-    setData((prev) => {
-      const alreadySelected = prev.interested.includes(area);
-      return {
-        ...prev,
-        interested: alreadySelected
-          ? prev.interested.filter((a) => a !== area)
-          : [...prev.interested, area],
-      };
-    });
-  };
+  // const toggleInterested = (area) => {
+  //   setData((prev) => {
+  //     const alreadySelected = prev.interested.includes(area);
+  //     return {
+  //       ...prev,
+  //       interested: alreadySelected
+  //         ? prev.interested.filter((a) => a !== area)
+  //         : [...prev.interested, area],
+  //     };
+  //   });
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +71,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
     // Dynamic validation
     const requiredFields = [
       "skills",
-      "interested",
+      // "interested",
       "mobilityYears",
       "bathingYears",
       "feedingYears",
@@ -92,7 +91,6 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
         return;
       }
     }
-
     console.log(data);
     onNext(data);
   };
@@ -103,29 +101,28 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
       <div>
         <h2 className="formHeading mb-4">Skills & Services</h2>
         <div>
-          <Label className="mb-2 block">Do you have experience in : </Label>
-          <div className="flex flex-wrap gap-2">
-            {skills.map((skill, index) => {
-              const selected = data.skills.includes(skill);
-              return (
-                <span
-                  key={index}
-                  onClick={() => toggleSkill(skill)}
-                  className={`px-4 py-2 text-xs rounded-full cursor-pointer transition-all ${
-                    selected
-                      ? "bg-emerald-600 text-white"
-                      : "bg-emerald-50 text-emerald-900 hover:bg-emerald-100"
-                  }`}
+          <Label className="mb-2 mt-4 block">Do you have experience in :</Label>
+          <div className="flex flex-col gap-3">
+            {skills.map((area, idx) => (
+              <div key={idx} className="flex gap-2">
+                <Checkbox
+                  id={area}
+                  checked={data.skills.includes(area)}
+                  onCheckedChange={() => toggleSkill(area)}
+                />
+                <Label
+                  htmlFor={area}
+                  className="text-gray-700 font-normal cursor-pointer"
                 >
-                  {skill}
-                </span>
-              );
-            })}
+                  {area}
+                </Label>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Interested Areas */}
-        <div>
+        {/* <div>
           <Label className="mb-2 mt-4 block">
             I am interested in working in the following intervention areas –
             tick the areas you are interested in :
@@ -147,33 +144,48 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Additional Experience */}
       <div>
-        <h2 className="formHeading mb-4 mt-6">Additional Experience</h2>
+        <h2 className="formHeading mb-4 mt-6">Years Experience</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Input
             label="Mobility Assistance (Years)"
             type="number"
             name="mobilityYears"
+            maxLength={2}
+            placeholder="00"
             value={data.mobilityYears}
-            onChange={handleChange}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({ target: { name: "mobilityYears", value: val } });
+            }}
           />
           <Input
             label="Bathing Assistance (Years)"
             type="number"
             name="bathingYears"
+            maxLength={2}
+            placeholder="00"
             value={data.bathingYears}
-            onChange={handleChange}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({ target: { name: "bathingYears", value: val } });
+            }}
           />
           <Input
             label="Feeding Assistance (Years)"
             type="number"
             name="feedingYears"
+            maxLength={2}
+            placeholder="00"
             value={data.feedingYears}
-            onChange={handleChange}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({ target: { name: "feedingYears", value: val } });
+            }}
           />
         </div>
       </div>
@@ -182,11 +194,15 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
       <div className="mt-4">
         <Input
           label="Service Fee (KSh per day/month)"
-          type="text"
+          type="number"
           name="serviceFee"
+          maxLength={5}
           placeholder="e.g., 1500 per day or 35000 per month"
           value={data.serviceFee}
-          onChange={handleChange}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+            handleChange({ target: { name: "serviceFee", value: val } });
+          }}
         />
       </div>
 

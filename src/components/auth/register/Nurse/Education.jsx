@@ -35,7 +35,6 @@ const Education = ({ defaultValues, onNext, onBack }) => {
       toast.error(" Answer the nursing council question!");
       return;
     }
-
     console.log("Education data:", data);
     onNext(data);
   };
@@ -56,25 +55,25 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="diploma in nursing" id="edu1" />
+            <RadioGroupItem value="Diploma In Nursing" id="edu1" />
             <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
-              Diploma in Nursing
+              Diploma In Nursing
             </Label>
           </div>
 
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="degree in nursing" id="edu2" />
+            <RadioGroupItem value="Degree In Nursing" id="edu2" />
             <Label htmlFor="edu2" className="text-gray-700 cursor-pointer">
-              Degree in Nursing
+              Degree In Nursing
             </Label>
           </div>
 
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="other" id="edu3" />
+          {/* <div className="flex items-center gap-2">
+            <RadioGroupItem value="Other" id="edu3" />
             <Label htmlFor="edu3" className="text-gray-700 cursor-pointer">
               Other
             </Label>
-          </div>
+          </div> */}
         </RadioGroup>
       </div>
 
@@ -103,13 +102,13 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="yes" id="kenya1" />
+            <RadioGroupItem value="Yes" id="kenya1" />
             <Label htmlFor="kenya1" className="text-gray-700 cursor-pointer">
               Yes
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="no" id="kenya2" />
+            <RadioGroupItem value="No" id="kenya2" />
             <Label htmlFor="kenya2" className="text-gray-700 cursor-pointer">
               No
             </Label>

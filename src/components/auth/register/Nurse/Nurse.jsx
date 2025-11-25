@@ -7,27 +7,29 @@ import Education from "./Education";
 import Exprience from "./Exprience";
 import SkillServices from "./SkillServices";
 import DocumentUploads from "./DocumentUploads";
-import ContactAgreement from "./ContactAgreement";
 import toast from "react-hot-toast";
 import Review from "./Review";
 import SignUpStart from "../SignUpStart";
+import { useRouter } from "next/navigation";
 
 const Nurse = () => {
   const [started, setStarted] = useState(false);
+  const router = useRouter();
   const [step, setStep] = useState(1);
-  const totalSteps = 7;
+  const [user, setUser] = useState({});
+  const totalSteps = 6;
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
     experience: {},
     skillsServices: {},
     documents: {},
-    contactAgrement: {},
+    // contactAgrement: {},
   });
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    console.log(accountData);
+    setUser(accountData);
   };
 
   const handleNext = (dataForStep) => {
@@ -46,21 +48,32 @@ const Nurse = () => {
     if (step === 5)
       setFormData((prev) => ({ ...prev, documents: dataForStep }));
 
-    if (step === 6)
-      setFormData((prev) => ({ ...prev, contactAgrement: dataForStep }));
+    // if (step === 6)
+    //   setFormData((prev) => ({ ...prev, contactAgrement: dataForStep }));
 
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          location: formData.basicInfo.location,
+          name: formData.basicInfo.name,
+          profilePic: null,
+        })
+      );
+
       toast.success("Register Sucessfully!");
-      setStep(1);
+      router.push("/dashboard");
+
       setFormData({
         basicInfo: {},
         education: {},
         experience: {},
         skillsServices: {},
         documents: {},
-        contactAgrement: {},
+        // contactAgrement: {},
       });
     }
   };
@@ -122,14 +135,14 @@ const Nurse = () => {
                   onBack={handleBack}
                 />
               )}
-              {step === 6 && (
+              {/* {step === 6 && (
                 <ContactAgreement
                   defaultValues={formData.contactAgrement}
                   onNext={handleNext}
                   onBack={handleBack}
                 />
-              )}
-              {step === 7 && (
+              )} */}
+              {step === 6 && (
                 <Review
                   data={formData}
                   onNext={handleNext}

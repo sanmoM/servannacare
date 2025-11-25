@@ -17,9 +17,9 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
     gender: defaultValues.gender || "",
     languages: defaultValues.languages || [],
     canDrive: defaultValues.canDrive || "",
-    bankName: defaultValues.bankName || "",
-    bankAccountName: defaultValues.bankAccountName || "",
-    bankAccountNumber: defaultValues.bankAccountNumber || "",
+    // bankName: defaultValues.bankName || "",
+    // bankAccountName: defaultValues.bankAccountName || "",
+    // bankAccountNumber: defaultValues.bankAccountNumber || "",
   });
 
   const handleChange = (e) => {
@@ -41,16 +41,16 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const requiredFields = [
       "name",
       "location",
       "age",
       "gender",
       "canDrive",
-      "bankName",
-      "bankAccountName",
-      "bankAccountNumber",
+      // "bankName",
+      // "bankAccountName",
+      // "bankAccountNumber",
     ];
     for (let field of requiredFields) {
       if (
@@ -58,18 +58,19 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
         (Array.isArray(data[field]) && data[field].length === 0)
       ) {
         const formattedField = field
-          .replace(/([A-Z])/g, " $1") 
-          .replace(/^./, (str) => str.toUpperCase()); 
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase());
 
         toast.error(`${formattedField} is required!`);
         return;
       }
     }
 
-    if(data.languages.length === 0){
-      toast.error("Please select at least one language!")
-      return
-    };
+    if (data.languages.length === 0) {
+      toast.error("Please select at least one language!");
+      return;
+    }
+    console.log(data)
 
     onNext(data);
   };
@@ -109,8 +110,12 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
             label="Age"
             name="age"
             placeholder="Your age"
+            maxLength={2}
             value={data.age}
-            onChange={handleChange}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({ target: { name: "age", value: val } });
+            }}
           />
         </div>
 
@@ -124,7 +129,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="male" id="r1" />
+              <RadioGroupItem value="Male" id="r1" />
               <Label
                 htmlFor="r1"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -133,7 +138,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="female" id="r2" />
+              <RadioGroupItem value="Female" id="r2" />
               <Label
                 htmlFor="r2"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -151,9 +156,10 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
         <div className="flex flex-wrap gap-4 mt-2">
           {languages.map((lan) => (
             <div key={lan.id} className="flex items-center gap-2">
-              <Checkbox id={lan.value} 
-              checked = {data.languages.includes(lan.value)}
-              onCheckedChange={() => toggleLanguage(lan.value)}
+              <Checkbox
+                id={lan.value}
+                checked={data.languages.includes(lan.value)}
+                onCheckedChange={() => toggleLanguage(lan.value)}
               />
               <Label
                 htmlFor={lan.value}
@@ -176,7 +182,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="yes" id="d1" />
+            <RadioGroupItem value="Yes" id="d1" />
             <Label
               htmlFor="d1"
               className="text-gray-700 font-normal cursor-pointer"
@@ -185,7 +191,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="no" id="d2" />
+            <RadioGroupItem value="No" id="d2" />
             <Label
               htmlFor="d2"
               className="text-gray-700 font-normal cursor-pointer"
@@ -196,7 +202,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
         </RadioGroup>
       </div>
 
-      {/* Bank Details */}
+      {/* Bank Details
       <div className="">
         <h4 className="formHeading mb-3 mt-6">Bank Details</h4>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
@@ -222,7 +228,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
             onChange={handleChange}
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Remember Me */}
       {/* <div className="flex items-center gap-2 text-gray-700 text-sm mt-4">

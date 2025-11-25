@@ -68,7 +68,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="yes" id="r1" />
+            <RadioGroupItem value="Yes" id="r1" />
             <Label
               htmlFor="r1"
               className="text-gray-700 font-normal cursor-pointer"
@@ -77,7 +77,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="no" id="r2" />
+            <RadioGroupItem value="Yo" id="r2" />
             <Label
               htmlFor="r2"
               className="text-gray-700 font-normal cursor-pointer"
@@ -91,12 +91,16 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
       <div className="flex flex-col mb-8 sm:flex-row gap-4">
         <div className="flex-1">
           <Input
-            type={"number"}
+            type="number"
             label="Years of experience"
             name="hospitalBasedYearsOfExperience"
             placeholder="Experience"
+            maxLength = {2}
             value={data.hospitalBasedYearsOfExperience}
-            onChange={handleChange}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0,2);
+              handleChange({target:{name:"hospitalBasedYearsOfExperience",value:val}})
+            }}
           />
         </div>
         <div className="flex-1">
@@ -104,11 +108,13 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             label="Reference contact"
             name="hospitalBasedReferenceContact"
             placeholder="Reference"
+            maxLength = {2}
             value={data.hospitalBasedReferenceContact}
             onChange={handleChange}
           />
         </div>
       </div>
+      
 
       {/* Home Based Care */}
       <div>
@@ -121,7 +127,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="yes" id="r3" />
+            <RadioGroupItem value="Yes" id="r3" />
             <Label
               htmlFor="r3"
               className="text-gray-700 font-normal cursor-pointer"
@@ -130,7 +136,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="no" id="r4" />
+            <RadioGroupItem value="No" id="r4" />
             <Label
               htmlFor="r4"
               className="text-gray-700 font-normal cursor-pointer"
@@ -148,8 +154,12 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             label="Years of experience"
             name="homeBasedYearsOfExperience"
             placeholder="Experience"
+            maxLength={2}
             value={data.homeBasedYearsOfExperience}
-            onChange={handleChange}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0,2);
+              handleChange({target:{name:"homeBasedYearsOfExperience",value:val}})
+            }}
           />
         </div>
         <div className="flex-1">

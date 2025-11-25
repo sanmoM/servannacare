@@ -7,10 +7,16 @@ import Input from "@/components/shared/Input";
 import { Eye, EyeOff } from "lucide-react";
 
 import Link from "next/link";
+import OtpModal from "../OtpModal";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const SignUpStart = ({ onSuccess }) => {
   const [showPass, setShowPass] = useState(false);
   const [phone, setPhone] = useState("");
+  const [openOTP, setOpenOTP] = useState(false);
+  const [temUser, setTemUser] = useState(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,8 +25,6 @@ const SignUpStart = ({ onSuccess }) => {
     const password = form.password.value;
     const phone = form.phone.value;
 
-    const NewUserData = { email, password, phone };
-
     // validate phone (Kenya)
     if (phone.length !== 10) {
       toast.error("Invalied phone number!");
@@ -28,17 +32,51 @@ const SignUpStart = ({ onSuccess }) => {
     }
 
     if (!email || !password) {
-      console.log(NewUserData);
       toast.error("All fields are required");
       return;
     }
 
-    toast.success("Account created!");
-    onSuccess(NewUserData);
+    if (password.length < 6) {
+      toast.error("Password will be more than 6 character");
+      return;
+    }
+
+    if (!termsAccepted) {
+      toast.error("Please accept terms and condition!");
+      return;
+    }
+
+    const newUserData = {
+      email,
+      phone,
+      role: "service provider",
+      joinedSince: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      }),
+    };
+
+    setTemUser(newUserData);
+
+    setOpenOTP(true);
+
+    toast.success(`OTP send to ${phone}!`);
   };
 
   const handleShowPassword = () => {
     setShowPass(!showPass);
+  };
+
+  const handleVerifyOTP = (otp) => {
+    if (otp !== "123456") {
+      toast.error("Invalid OTP!");
+      return;
+    }
+
+    toast.success("Phone number verified!");
+    setOpenOTP(false);
+
+    onSuccess(temUser);
   };
 
   return (
@@ -86,6 +124,22 @@ const SignUpStart = ({ onSuccess }) => {
               )}
             </div>
           </div>
+
+          {/* Terms and Conditions */}
+          <div className="flex items-center gap-2 mt-6">
+            <Checkbox
+              id="terms"
+              checked={termsAccepted}
+              onCheckedChange={() => setTermsAccepted(!termsAccepted)}
+            />
+            <Label
+              className="text-gray-700 font-normal cursor-pointer"
+              htmlFor="terms"
+            >
+              I agree to the terms and conditions
+            </Label>
+          </div>
+
           <Button size={"lg"} className={"w-full"}>
             SIGN UP
           </Button>
@@ -98,6 +152,15 @@ const SignUpStart = ({ onSuccess }) => {
           </Link>
         </div>
       </div>
+
+      {/* OTP Modal  */}
+      {openOTP && (
+        <OtpModal
+          phone={phone}
+          onVerify={handleVerifyOTP}
+          onClose={() => setOpenOTP(false)}
+        />
+      )}
     </div>
   );
 };
