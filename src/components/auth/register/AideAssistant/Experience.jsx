@@ -1,5 +1,6 @@
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import React, { useState } from "react";
@@ -15,12 +16,39 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
     homeBasedCare: defaultValues.homeBasedCare || "",
     homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience || "",
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact || "",
+    preferred: defaultValues.preferred || []
   });
+
+  const preferred = [
+    {
+      title:"Pre and post pregnancy care",
+    },
+    {
+      title:"Post surgery cage"
+    },
+    {
+      title:"Elderly care"
+    }
+  ]
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
+  
+  const togglepreferred = (pref) => {
+      setData((prev) => {
+        const alreadySelected = prev.preferred.includes(pref);
+        return {
+          ...prev,
+          preferred: alreadySelected
+            ? prev.preferred.filter((l) => l !== pref)
+            : [...prev.preferred, pref],
+        };
+      });
+    };
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     // Dynamic validation
@@ -46,6 +74,13 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
         return;
       }
     }
+   
+    if(data.preferred.length === 0) {
+      toast.error("Please select what you preferred");
+      return
+    }
+
+    console.log(data);
 
     onNext(data);
   };
@@ -62,7 +97,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="yes" id="d1" />
+            <RadioGroupItem value="Yes" id="d1" />
             <Label
               htmlFor="d1"
               className="text-gray-700 font-normal cursor-pointer"
@@ -71,7 +106,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="no" id="d2" />
+            <RadioGroupItem value="No" id="d2" />
             <Label
               htmlFor="d2"
               className="text-gray-700 font-normal cursor-pointer"
@@ -87,8 +122,12 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           name="hospitalBasedYearsOfExperience"
           placeholder="Years of experience"
           label="Years of Experience"
+          maxLength={2}
           value={data.hospitalBasedYearsOfExperience}
-          onChange={handleChange}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+            handleChange({ target: { name: "hospitalBasedYearsOfExperience", value: val } });
+          }}
         />
         <Input
           name="hospitalBasedReferenceContact"
@@ -109,7 +148,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="yes" id="d3" />
+            <RadioGroupItem value="Yes" id="d3" />
             <Label
               htmlFor="d3"
               className="text-gray-700 font-normal cursor-pointer"
@@ -118,7 +157,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="no" id="d4" />
+            <RadioGroupItem value="No" id="d4" />
             <Label
               htmlFor="d4"
               className="text-gray-700 font-normal cursor-pointer"
@@ -128,14 +167,20 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      <div className="flex gap-6 sm:flex-row flex-col mt-6 sm:gap-4">
+      <div className="flex gap-6 sm:flex-row flex-col my-6 sm:gap-4">
         <Input
           type="number"
           name="homeBasedYearsOfExperience"
           placeholder="Years of experience"
           label="Years of Experience"
+          maxLength={2}
           value={data.homeBasedYearsOfExperience}
-          onChange={handleChange}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+            handleChange({
+              target: { name: "homeBasedYearsOfExperience", value: val },
+            });
+          }}
         />
         <Input
           name="homeBasedReferenceContact"
@@ -145,6 +190,28 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           onChange={handleChange}
         />
       </div>
+
+      <div>
+        <Label className={"mb-3"}>What are your preferred areas of intervention</Label>
+        <div className="flex flex-wrap flex-col gap-2 ">
+          {preferred.map((lan, indx) => (
+            <div key={indx} className="flex items-center gap-2">
+              <Checkbox
+                id={lan.title}
+                checked={data.preferred.includes(lan.title)}
+                onCheckedChange={() => togglepreferred(lan.title)}
+              />
+              <Label
+                htmlFor={lan.title}
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                {lan.title}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex justify-between pt-6">
         <Button type="button" size="lg" variant="outline" onClick={onBack}>

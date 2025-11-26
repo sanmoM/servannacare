@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 const Education = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
     education: defaultValues.education || "",
-    isNursingInKenya: defaultValues.isNursingInKenya || "",
+    // isNursingInKenya: defaultValues.isNursingInKenya || "",
     educationCertificate: defaultValues.educationCertificate || null,
   });
 
@@ -28,10 +28,10 @@ const Education = ({ defaultValues, onNext, onBack }) => {
       toast.error("Education certificate is require!");
       return;
     }
-    if (!data.isNursingInKenya) {
-      toast.error(" Answer the nursing council question!");
-      return;
-    }
+    // if (!data.isNursingInKenya) {
+    //   toast.error(" Answer the nursing council question!");
+    //   return;
+    // }
     onNext(data);
   };
   return (
@@ -52,7 +52,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
               htmlFor="d1"
               className="text-gray-700 font-normal cursor-pointer"
             >
-              Diploma in Nursing
+              Diploma In Nursing
             </Label>
           </div>
           <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
               htmlFor="d2"
               className="text-gray-700 font-normal cursor-pointer"
             >
-              Degree in Nursing
+              Degree In Nursing
             </Label>
           </div>
           <div className="flex items-center gap-2">
@@ -91,7 +91,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
       </div>
 
       {/* nursing council  */}
-      <div className="pt-6">
+      {/* <div className="pt-6">
         <Label className="mb-3 block">
           Are you registered with the Nursing Council of Kenya?
         </Label>
@@ -121,7 +121,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
             </Label>
           </div>
         </RadioGroup>
-      </div>
+      </div> */}
       {/* Navigation Buttons */}
       <div className="flex justify-between pt-6">
         <Button type="button" size="lg" variant="outline" onClick={onBack}>

@@ -1,3 +1,5 @@
+"use client";
+
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import React, { useState } from "react";
@@ -9,11 +11,12 @@ import Input from "@/components/shared/Input";
 
 const Education = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
-    education: defaultValues.education || "",
+    degreeIn: defaultValues.degreeIn || "",
+    diplomaIn: defaultValues.diplomaIn || "",
     isRegisterPCK: defaultValues.isRegisterPCK || "",
     registrationNumber: defaultValues.registrationNumber || "",
     practiceLicense: defaultValues.practiceLicense || null,
-    eduCertificate: defaultValues.eduCertificate || null,
+    educationCertificate: defaultValues.educationCertificate || null,
   });
 
   const handleFileSelect = (field, file) => {
@@ -40,9 +43,15 @@ const Education = ({ defaultValues, onNext, onBack }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!data.education) return toast.error("Education level is required!");
-    if (!data.eduCertificate)
-      return toast.error("Education certificate is required!");
+   if(!data.degreeIn)
+    return toast.error("Select Degree!");
+   
+   if(!data.diplomaIn)
+    return toast.error("Select Diploma!");
+   
+   if(!data.educationCertificate)
+    return toast.error("Select file")
+    
     if (!data.isRegisterPCK)
       return toast.error("Answer the PCK registration question!");
 
@@ -61,43 +70,86 @@ const Education = ({ defaultValues, onNext, onBack }) => {
       delete finalData.practiceLicense;
     }
 
-    console.log("Education data:", finalData);
-    onNext(finalData);
+    console.log("Education data:", data);
+    onNext(data);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2 className="formHeading">Education & Registration</h2>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Section Title */}
+      <h4 className="formHeading">Education & Registration</h4>
 
-      {/* Education Level */}
-      <div className="py-6">
-        <Label className="mb-3 block">Level of Education</Label>
+      {/* degree */}
+      <div>
+        <Label className="mb-3 block">Degree In</Label>
         <RadioGroup
-          className="flex gap-x-4 flex-wrap"
-          value={data.education}
+          className="flex flex-col flex-wrap gap-2 mt-2"
+          value={data.degreeIn}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, education: value }))
+            setData((prev) => ({ ...prev, degreeIn: value }))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Diploma In Physiotherapy" id="d1" />
-            <Label htmlFor="d1">Diploma In Physiotherapy</Label>
+            <RadioGroupItem value="Special Needs Education (SNE)" id="edu1" />
+            <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
+              Special Needs Education (SNE)
+            </Label>
           </div>
+
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Degree In Physiotherapy" id="d2" />
-            <Label htmlFor="d2">Degree In Physiotherapy</Label>
+            <RadioGroupItem
+              value="Early Childhood Development (ECD) with SNE units"
+              id="edu2"
+            />
+            <Label htmlFor="edu2" className="text-gray-700 cursor-pointer">
+              Early Childhood Development (ECD) with SNE units
+            </Label>
           </div>
         </RadioGroup>
       </div>
 
-      {/* Education Certificate */}
-      <FileUpload
-        title="Education Certificate (Compulsory)"
-        accept="application/pdf,image/*"
-        icon={<FileText size={32} />}
-        file={data.eduCertificate}
-        onFileSelect={(file) => handleFileSelect("eduCertificate", file)}
-      />
+      {/* diploma  */}
+      <div>
+        <Label className="mb-3 block">Diploma In</Label>
+        <RadioGroup
+          className="flex flex-col flex-wrap gap-2 mt-2"
+          value={data.diplomaIn}
+          onValueChange={(value) =>
+            setData((prev) => ({ ...prev, diplomaIn: value }))
+          }
+        >
+          <div className="flex items-center  gap-2">
+            <RadioGroupItem value="Special Needs Education (SNE)" id="edu3" />
+            <Label htmlFor="edu3" className="text-gray-700 cursor-pointer">
+              Special Needs Education (SNE)
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <RadioGroupItem
+              value="Early Childhood Development (ECD) with SNE units"
+              id="edu4"
+            />
+            <Label htmlFor="edu4" className="text-gray-700 cursor-pointer">
+              Early Childhood Development (ECD) with SNE units
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
+
+      {/* File Upload */}
+      <div>
+        <FileUpload
+          title="Education Certificate (Compulsory)"
+          accept="application/pdf,image/*"
+          icon={<FileText size={32} />}
+          optional=""
+          file={data.educationCertificate}
+          onFileSelect={(file) =>
+            handleFileSelect("educationCertificate", file)
+          }
+        />
+      </div>
 
       {/* PCK Registration */}
       <div className="py-6">
@@ -154,10 +206,12 @@ const Education = ({ defaultValues, onNext, onBack }) => {
         </div>
       )}
 
+      {/* Navigation Buttons */}
       <div className="flex justify-between pt-6">
-        <Button type="button" variant="outline" size="lg" onClick={onBack}>
+        <Button type="button" size="lg" variant="outline" onClick={onBack}>
           Back
         </Button>
+
         <Button type="submit" size="lg">
           Next
         </Button>

@@ -23,19 +23,27 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
 
   const preferred = [
     {
-      title: "Pediatric",
+      title: "Autism Spectrum Disorder (ASD)",
     },
     {
-      title: "Orthopedic",
+      title: "Speech therapy",
     },
     {
-      title: "Rehab",
+      title: "ADHD (Attention Deficit Hyperactivity Disorder)",
     },
     {
-      title: "Sports",
+      title: "Cerebral palsy",
     },
     {
-      title: "Stroke",
+      title: "Down syndrome",
+    },
+    ,
+    {
+      title: "Blindness",
+    },
+    ,
+    {
+      title: "Dementia & Alzheimer",
     },
   ];
 
@@ -202,7 +210,7 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
         />
       </div>
 
-      <div>
+      <div className="">
         <Label className={"mb-3"}>
           What are your preferred areas of intervention
         </Label>
@@ -226,7 +234,7 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       </div>
 
       {/* Service Fee */}
-      <div className="mt-4">
+      <div className="mt-6">
         <Input
           label="Service Fee (KSh per day/month)"
           type="number"

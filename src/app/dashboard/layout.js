@@ -50,7 +50,6 @@ export default function DashboardLayout({ children }) {
     { name: "Notes", href: "#notes", icon: NotepadText },
     { name: "Messages", href: "#messages", icon: MessageSquare },
     { name: "Feedback", href: "#feedback", icon: Smile},
-    
    
   ];
 

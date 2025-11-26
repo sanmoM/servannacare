@@ -5,6 +5,7 @@ import NurseAideOrAssistant from "@/components/auth/register/AideAssistant/Nurse
 import HouseManager from "@/components/auth/register/HouseManager/HouseManager";
 import Nurse from "@/components/auth/register/Nurse/Nurse";
 import Physiotherapist from "@/components/auth/register/Physiotherapist/Physiotherapist";
+import SpecialNeedCaregivers from "@/components/auth/register/SpecialNeedCaregivers/SpecialNeedCaregivers";
 import UserForm from "@/components/auth/register/UserForm";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { notFound, useSearchParams } from "next/navigation";
@@ -28,6 +29,9 @@ const PageContent = () => {
         return <Physiotherapist />;
       case "nurse-aide-or-assistant":
         return <NurseAideOrAssistant />;
+      case "special-need-caregivers":
+        return <SpecialNeedCaregivers/>
+
       default:
         return notFound();
     }

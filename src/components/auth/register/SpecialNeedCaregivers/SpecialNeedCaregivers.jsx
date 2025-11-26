@@ -2,29 +2,26 @@
 
 import React, { useState } from "react";
 import Progress from "../Progress";
-import NurseBasicInfo from "./NurseBasicInfo";
-import Education from "./Education";
-import Exprience from "./Exprience";
-import SkillServices from "./SkillServices";
-import DocumentUploads from "./DocumentUploads";
-import toast from "react-hot-toast";
-import Review from "./Review";
+import SpecialNeedBasicInfo from "./SpecialNeedBasicInfo";
 import SignUpStart from "../SignUpStart";
+import Education from "./Education";
+import Experience from "./Exprience";
+import DocumentUploads from "./DocumentUploads";
+import Review from "../Nurse/Review";
+import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-const Nurse = () => {
+const SpecialNeedCaregivers = () => {
   const [started, setStarted] = useState(false);
-  const router = useRouter();
   const [step, setStep] = useState(1);
   const [user, setUser] = useState({});
-  const totalSteps = 6;
+  const router = useRouter()
+  const totalSteps = 5;
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
     experience: {},
-    skillsServices: {},
     documents: {},
-    // contactAgrement: {},
   });
 
   const handleSignupSuccess = (accountData) => {
@@ -43,13 +40,8 @@ const Nurse = () => {
       setFormData((prev) => ({ ...prev, experience: dataForStep }));
 
     if (step === 4)
-      setFormData((prev) => ({ ...prev, skillsServices: dataForStep }));
-
-    if (step === 5)
       setFormData((prev) => ({ ...prev, documents: dataForStep }));
 
-    // if (step === 6)
-    //   setFormData((prev) => ({ ...prev, contactAgrement: dataForStep }));
 
     if (step < totalSteps) {
       setStep(step + 1);
@@ -63,14 +55,13 @@ const Nurse = () => {
           profilePic: null,
         })
       );
-
       toast.success("Register Sucessfully!");
       router.push("/dashboard");
       setFormData({
         basicInfo: {},
         education: {},
         experience: {},
-        skillsServices: {},
+        // skillsServices: {},
         documents: {},
         // contactAgrement: {},
       });
@@ -94,14 +85,14 @@ const Nurse = () => {
           <>
             {/* Header */}
             <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
-              Nurse Registration
+              Special Need Caregivers
             </h2>
 
             <Progress currentStep={step} totalSteps={totalSteps} />
 
             <div className="space-y-8 mt-6">
               {step === 1 && (
-                <NurseBasicInfo
+                <SpecialNeedBasicInfo
                   defaultValues={formData.basicInfo}
                   onNext={handleNext}
                 />
@@ -114,20 +105,20 @@ const Nurse = () => {
                 />
               )}
               {step === 3 && (
-                <Exprience
+                <Experience
                   defaultValues={formData.experience}
                   onNext={handleNext}
                   onBack={handleBack}
                 />
               )}
-              {step === 4 && (
+              {/* {step === 4 && (
                 <SkillServices
                   defaultValues={formData.skillsServices}
                   onNext={handleNext}
                   onBack={handleBack}
                 />
-              )}
-              {step === 5 && (
+              )} */}
+              {step === 4 && (
                 <DocumentUploads
                   defaultValues={formData.documents}
                   onNext={handleNext}
@@ -141,7 +132,7 @@ const Nurse = () => {
                   onBack={handleBack}
                 />
               )} */}
-              {step === 6 && (
+              {step === 5 && (
                 <Review
                   data={formData}
                   onNext={handleNext}
@@ -156,4 +147,4 @@ const Nurse = () => {
   );
 };
 
-export default Nurse;
+export default SpecialNeedCaregivers;

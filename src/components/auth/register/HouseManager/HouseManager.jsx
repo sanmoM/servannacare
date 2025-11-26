@@ -8,11 +8,14 @@ import DocumentUploads from "./DocumentUploads";
 import toast from "react-hot-toast";
 import Review from "./Review";
 import SignUpStart from "../SignUpStart";
+import { useRouter } from "next/navigation";
 
 const HouseManager = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 4;
+  const [user, setUser] = useState({});
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     basicInfo: {},
@@ -20,10 +23,9 @@ const HouseManager = () => {
     documents: {},
   });
 
-
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    console.log(accountData)
+    setUser(accountData);
   };
 
   const handleNext = (dataForStep) => {
@@ -37,11 +39,19 @@ const HouseManager = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          location: formData.basicInfo.location,
+          name: formData.basicInfo.name,
+          profilePic: null,
+        })
+      );
+
       toast.success("Register Successfully!");
-      console.log("Final Collected Data : ", formData);
-      setStep(1);
+      router.push("/dashboard");
       setFormData({ basicInfo: {}, additionalDetails: {}, documents: {} });
-      setStarted(false);
     }
   };
 
@@ -51,7 +61,11 @@ const HouseManager = () => {
 
   return (
     <div className="w-full flex justify-center px-2">
-      <div className={`w-full ${!started?"my-0":"my-12"} max-w-[700px] bg-white`}>
+      <div
+        className={`w-full ${
+          !started ? "my-0" : "my-12"
+        } max-w-[700px] bg-white`}
+      >
         {!started ? (
           <SignUpStart onSuccess={handleSignupSuccess} />
         ) : (

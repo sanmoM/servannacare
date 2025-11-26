@@ -7,7 +7,7 @@ import { languages } from "@/utilities/data";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const BasicInfo = ({ defaultValues, onNext }) => {
+const SpecialNeedBasicInfo = ({ defaultValues, onNext }) => {
   const [data, setData] = useState({
     name: defaultValues.name || "",
     location: defaultValues.location || "",
@@ -70,7 +70,6 @@ const BasicInfo = ({ defaultValues, onNext }) => {
 
     onNext(data);
   };
-
   return (
     <form onSubmit={handleSubmit}>
       <h2 className="formHeading">Basic Information</h2>
@@ -102,27 +101,27 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       </div>
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
         {/* <div className="space-y-4 flex-1">
-          <Label className={"mb-2 sm:mb-3"}>Bank Details</Label>
-          <Input
-            name="bankName"
-            placeholder="Your bank name"
-            value={data.bankName}
-            onChange={handleChange}
-          />
-
-          <Input
-            name="bankAccountName"
-            placeholder="Your account name"
-            value={data.bankAccountName}
-            onChange={handleChange}
-          />
-          <Input
-            name="bankAccountNumber"
-            placeholder="Your account number"
-            value={data.bankAccountNumber}
-            onChange={handleChange}
-          />
-        </div> */}
+                <Label className={"mb-2 sm:mb-3"}>Bank Details</Label>
+                <Input
+                  name="bankName"
+                  placeholder="Your bank name"
+                  value={data.bankName}
+                  onChange={handleChange}
+                />
+      
+                <Input
+                  name="bankAccountName"
+                  placeholder="Your account name"
+                  value={data.bankAccountName}
+                  onChange={handleChange}
+                />
+                <Input
+                  name="bankAccountNumber"
+                  placeholder="Your account number"
+                  value={data.bankAccountNumber}
+                  onChange={handleChange}
+                />
+              </div> */}
         <div className="flex-1">
           <Input
             label="Location"
@@ -222,4 +221,4 @@ const BasicInfo = ({ defaultValues, onNext }) => {
   );
 };
 
-export default BasicInfo;
+export default SpecialNeedBasicInfo;

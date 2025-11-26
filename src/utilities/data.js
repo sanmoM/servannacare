@@ -1,15 +1,29 @@
 import hero1 from "@/asset/homeImages/hero1.png";
 import hero2 from "@/asset/homeImages/hero2.png";
 import hero3 from "@/asset/homeImages/hero3.png";
-import { Activity, Baby, Briefcase, BriefcaseMedical, Building2, Cross, Hospital, HouseHeart, HousePlus, LucideDumbbell, Stethoscope, User } from "lucide-react";
-import agency from "@/asset/roleImages/agency.png"
-import aide from "@/asset/roleImages/aide.png"
-import employe from "@/asset/roleImages/employe.png"
-import hospital from "@/asset/roleImages/hospital.png"
-import nurse from "@/asset/roleImages/nurse.png"
-import physiotherapist from "@/asset/roleImages/physiotherapist.png"
-import house from "@/asset/roleImages/house.png"
-import user from "@/asset/roleImages/user.png"
+import {
+  Activity,
+  Baby,
+  Briefcase,
+  BriefcaseMedical,
+  Building2,
+  Cross,
+  Hospital,
+  HouseHeart,
+  HousePlus,
+  LucideDumbbell,
+  Stethoscope,
+  User,
+} from "lucide-react";
+import agency from "@/asset/roleImages/agency.png";
+import aide from "@/asset/roleImages/aide.png";
+import employe from "@/asset/roleImages/employe.png";
+import hospital from "@/asset/roleImages/hospital.png";
+import nurse from "@/asset/roleImages/nurse.png";
+import physiotherapist from "@/asset/roleImages/physiotherapist.png";
+import house from "@/asset/roleImages/house.png";
+import user from "@/asset/roleImages/user.png";
+import caregivers from "@/asset/roleImages/caregivers.png"
 export const slides = [
   {
     id: 3,
@@ -34,21 +48,22 @@ export const slides = [
   },
 ];
 
-
 export const services = [
   {
     id: 1,
     title: "House Manager",
     description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
     icon: <HouseHeart />,
-    image: "https://cpcapital.ru/image/catalog/statiy/new1/bigstock-business-meeting-of-real-estat-229651999.jpg"
+    image:
+      "https://cpcapital.ru/image/catalog/statiy/new1/bigstock-business-meeting-of-real-estat-229651999.jpg",
   },
   {
     id: 2,
     title: "Nurse",
     description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <Stethoscope/>,
-    image: "https://www.bain.com/contentassets/ea3ac9bcf0794dceb9ccab5526d2e4e6/1440x810.jpg"
+    icon: <Stethoscope />,
+    image:
+      "https://www.bain.com/contentassets/ea3ac9bcf0794dceb9ccab5526d2e4e6/1440x810.jpg",
   },
   //  {
   //   id: 3,
@@ -57,13 +72,14 @@ export const services = [
   //   icon: <Building2 />,
   //   image: "https://assets.entrepreneur.com/content/3x2/2000/1598246497-shutterstock-390454498.jpg?format=pjeg&auto=webp"
   // },
-  
+
   {
     id: 4,
     title: "Physiotherapist",
     description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
     icon: <Activity />,
-    image:"https://lahtaclinic.ru/wp-content/uploads/2025/01/%D1%80%D0%B5%D0%B0%D0%B1%D0%B8%D0%BB-%D0%B1%D0%BE%D0%BB.png"
+    image:
+      "https://lahtaclinic.ru/wp-content/uploads/2025/01/%D1%80%D0%B5%D0%B0%D0%B1%D0%B8%D0%BB-%D0%B1%D0%BE%D0%BB.png",
   },
   // {
   //   id: 5,
@@ -77,10 +93,11 @@ export const services = [
     id: 6,
     title: "Nurse Aide or Assistant",
     description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <User/>,
-    image:"https://infinityworks-com.s3.eu-west-2.amazonaws.com/wp-content/uploads/2020/03/healthcare-featured.jpg"
+    icon: <User />,
+    image:
+      "https://infinityworks-com.s3.eu-west-2.amazonaws.com/wp-content/uploads/2020/03/healthcare-featured.jpg",
   },
- 
+
   // {
   //   id: 7,
   //   title: "Medical Institutions",
@@ -93,21 +110,21 @@ export const services = [
     title: "Paediatrician",
     description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
     icon: <Baby />,
-    image:"https://synergyonline.ru/_ipx/preload_true&lazy_false/https://api.synergyonline.ru/upload/iblock/a9c/qo1xvg2n66rmgvmj3ps5zkwzvs9093bi.png"
+    image:
+      "https://synergyonline.ru/_ipx/preload_true&lazy_false/https://api.synergyonline.ru/upload/iblock/a9c/qo1xvg2n66rmgvmj3ps5zkwzvs9093bi.png",
   },
 ];
 
-
-
 export const testimonials = [
-   {
+  {
     id: 1,
     name: "Lisa Thompson",
     role: "VP of Marketing",
     company: "BrandForward",
     content:
       "A game-changer for our marketing efforts. The analytics and insights provided have helped us make data-driven decisions.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
   },
   {
     id: 2,
@@ -116,7 +133,8 @@ export const testimonials = [
     company: "InnovateLabs",
     content:
       "Outstanding support and seamless integration. The team went above and beyond to ensure our implementation was successful. Highly recommended!",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
   },
   {
     id: 3,
@@ -125,7 +143,8 @@ export const testimonials = [
     company: "Global Solutions Ltd",
     content:
       "The best investment we've made this year. The ROI was evident within the first month. Customer service is exceptional and always responsive.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
   },
   {
     id: 4,
@@ -134,7 +153,8 @@ export const testimonials = [
     company: "StartupHub",
     content:
       "Simply exceptional. The platform has scaled with our business seamlessly. We've saved thousands in operational costs while improving our service quality.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop",
   },
   {
     id: 5,
@@ -143,12 +163,12 @@ export const testimonials = [
     company: "BrandForward",
     content:
       "A game-changer for our marketing efforts. The analytics and insights provided have helped us make data-driven decisions.",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
   },
-]
+];
 
-
-  export const blogs = [
+export const blogs = [
   {
     id: 1,
     title: "The Importance of Regular Health Checkups",
@@ -156,12 +176,13 @@ export const testimonials = [
       "Regular health checkups can help detect potential health issues before they become serious. Early detection gives you the best chance for receiving the right treatment quickly.",
     image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1",
     category: "Health",
-    date:"22 SEP 2025",
+    date: "22 SEP 2025",
     comments: [
       {
         userPhoto: "https://randomuser.me/api/portraits/women/1.jpg",
         userName: "Sophia Williams",
-        comment: "Great reminder! I just booked my annual checkup after reading this.",
+        comment:
+          "Great reminder! I just booked my annual checkup after reading this.",
       },
       {
         userPhoto: "https://randomuser.me/api/portraits/men/2.jpg",
@@ -177,7 +198,7 @@ export const testimonials = [
       "Maintaining a balanced diet helps keep your body strong and healthy. Here are five simple ways to improve your daily nutrition without giving up your favorite meals.",
     image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
     category: "Nutrition",
-    date:"22 SEP 2025",
+    date: "22 SEP 2025",
     comments: [
       {
         userPhoto: "https://randomuser.me/api/portraits/women/3.jpg",
@@ -187,7 +208,8 @@ export const testimonials = [
       {
         userPhoto: "https://randomuser.me/api/portraits/men/4.jpg",
         userName: "Michael Lee",
-        comment: "Thanks for sharing! The portion control advice really helped me.",
+        comment:
+          "Thanks for sharing! The portion control advice really helped me.",
       },
     ],
   },
@@ -198,12 +220,13 @@ export const testimonials = [
       "Struggling to get a good night’s sleep? Learn natural ways to improve your sleep quality, from setting a bedtime routine to optimizing your environment.",
     image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511",
     category: "Wellness",
-    date:"22 SEP 2025",
+    date: "22 SEP 2025",
     comments: [
       {
         userPhoto: "https://randomuser.me/api/portraits/men/5.jpg",
         userName: "Noah Davis",
-        comment: "This article helped me fix my sleep schedule. Highly recommend!",
+        comment:
+          "This article helped me fix my sleep schedule. Highly recommend!",
       },
       {
         userPhoto: "https://randomuser.me/api/portraits/women/6.jpg",
@@ -213,72 +236,72 @@ export const testimonials = [
     ],
   },
   {
-  id: 4,
-  title: "The Power of Morning Exercise",
-  description:
-    "Starting your day with a quick workout boosts your energy, focus, and mood. Discover how a consistent morning routine can improve both your physical and mental health.",
-  image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1",
-  category: "Fitness",
-  date: "28 SEP 2025",
-  comments: [
-    {
-      userPhoto: "https://randomuser.me/api/portraits/men/7.jpg",
-      userName: "Liam Thompson",
-      comment: "I started jogging every morning and feel more productive at work!",
-    },
-    {
-      userPhoto: "https://randomuser.me/api/portraits/women/8.jpg",
-      userName: "Ava Johnson",
-      comment: "Love this! Morning yoga changed my whole routine.",
-    },
-  ],
-},
-{
-  id: 5,
-  title: "Mindful Eating: How to Enjoy Food and Stay Healthy",
-  description:
-    "Mindful eating encourages awareness of what and how we eat. It helps reduce overeating, improves digestion, and builds a better relationship with food.",
-  image: "https://images.unsplash.com/photo-1525351484163-7529414344d8",
-  category: "Nutrition",
-  date: "30 SEP 2025",
-  comments: [
-    {
-      userPhoto: "https://randomuser.me/api/portraits/women/9.jpg",
-      userName: "Emily Carter",
-      comment: "I've stopped eating in front of the TV — what a difference!",
-    },
-    {
-      userPhoto: "https://randomuser.me/api/portraits/men/10.jpg",
-      userName: "James Rodriguez",
-      comment: "This helped me become more aware of portion sizes. Great tips!",
-    },
-  ],
-},
-{
-  id: 6,
-  title: "Managing Stress with Simple Breathing Techniques",
-  description:
-    "Breathing exercises are a powerful way to reduce stress and anxiety. Learn how to control your breath to calm your mind and improve overall well-being.",
-  image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97",
-  category: "Wellness",
-  date: "02 OCT 2025",
-  comments: [
-    {
-      userPhoto: "https://randomuser.me/api/portraits/women/11.jpg",
-      userName: "Sophia Lee",
-      comment: "I tried box breathing during exams — it really works!",
-    },
-    {
-      userPhoto: "https://randomuser.me/api/portraits/men/12.jpg",
-      userName: "Daniel Scott",
-      comment: "Helpful guide. I now use breathing breaks at work every hour.",
-    },
-  ],
-},
-
-
+    id: 4,
+    title: "The Power of Morning Exercise",
+    description:
+      "Starting your day with a quick workout boosts your energy, focus, and mood. Discover how a consistent morning routine can improve both your physical and mental health.",
+    image: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1",
+    category: "Fitness",
+    date: "28 SEP 2025",
+    comments: [
+      {
+        userPhoto: "https://randomuser.me/api/portraits/men/7.jpg",
+        userName: "Liam Thompson",
+        comment:
+          "I started jogging every morning and feel more productive at work!",
+      },
+      {
+        userPhoto: "https://randomuser.me/api/portraits/women/8.jpg",
+        userName: "Ava Johnson",
+        comment: "Love this! Morning yoga changed my whole routine.",
+      },
+    ],
+  },
+  {
+    id: 5,
+    title: "Mindful Eating: How to Enjoy Food and Stay Healthy",
+    description:
+      "Mindful eating encourages awareness of what and how we eat. It helps reduce overeating, improves digestion, and builds a better relationship with food.",
+    image: "https://images.unsplash.com/photo-1525351484163-7529414344d8",
+    category: "Nutrition",
+    date: "30 SEP 2025",
+    comments: [
+      {
+        userPhoto: "https://randomuser.me/api/portraits/women/9.jpg",
+        userName: "Emily Carter",
+        comment: "I've stopped eating in front of the TV — what a difference!",
+      },
+      {
+        userPhoto: "https://randomuser.me/api/portraits/men/10.jpg",
+        userName: "James Rodriguez",
+        comment:
+          "This helped me become more aware of portion sizes. Great tips!",
+      },
+    ],
+  },
+  {
+    id: 6,
+    title: "Managing Stress with Simple Breathing Techniques",
+    description:
+      "Breathing exercises are a powerful way to reduce stress and anxiety. Learn how to control your breath to calm your mind and improve overall well-being.",
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97",
+    category: "Wellness",
+    date: "02 OCT 2025",
+    comments: [
+      {
+        userPhoto: "https://randomuser.me/api/portraits/women/11.jpg",
+        userName: "Sophia Lee",
+        comment: "I tried box breathing during exams — it really works!",
+      },
+      {
+        userPhoto: "https://randomuser.me/api/portraits/men/12.jpg",
+        userName: "Daniel Scott",
+        comment:
+          "Helpful guide. I now use breathing breaks at work every hour.",
+      },
+    ],
+  },
 ];
-
 
 export const userRole = [
   {
@@ -286,62 +309,68 @@ export const userRole = [
     text: "User",
     icon: user,
     href: "/register",
-    role:"user"
+    role: "user",
   },
   {
     id: 2,
     text: "House Manager",
-    icon: house ,
+    icon: house,
     href: "/register",
-    role:"house-manager"
+    role: "house-manager",
   },
   {
     id: 3,
     text: "Nurse",
     icon: nurse,
     href: "/register",
-    role:"nurse"
-  },
-    {
-    id: 8,
-    text: "Agency",
-    icon: agency,
-    href: "/register",
-    role:"agency"
+    role: "nurse",
   },
   {
     id: 4,
     text: "Physiotherapist",
     icon: physiotherapist,
     href: "/register",
-    role:"physiotherapist"
+    role: "physiotherapist",
   },
   {
-    id: 6,
-    text: "Employer",
-    icon: employe,
-    href: "/register",
-    role:"employer"
-    
-  },
-  ,
-  {
-    id: 7,
-    text: "Medical Institutions",
-    icon: hospital,
-    href: "/register",
-    role:"medical-institutions"
-  },
-   {
     id: 5,
     text: "Nurse Aide or Assistant",
     icon: aide,
     href: "/register",
-    role:"nurse-aide-or-assistant"
+    role: "nurse-aide-or-assistant",
   },
-
+  {
+  id : 6,
+  text:"Special Need Caregivers",
+  icon:caregivers,
+  href:"/register",
+  role:"special-need-caregivers"
+  },
+  {
+    id: 7,
+    text: "Agency",
+    icon: agency,
+    href: "/register",
+    role: "agency",
+  },
+  
+  {
+    id: 8,
+    text: "Employer",
+    icon: employe,
+    href: "/register",
+    role: "employer",
+  },
+  ,
+  {
+    id: 9,
+    text: "Medical Institutions",
+    icon: hospital,
+    href: "/register",
+    role: "medical-institutions",
+  },
+  
 ];
-
 
 export const languages = [
   { id: 1, value: "English", text: "English" },
@@ -353,10 +382,9 @@ export const languages = [
   { id: 7, value: "Other", text: "Other" },
 ];
 
-
 export const fakeData = [
   {
-    id:1,
+    id: 1,
     rating: 4.5,
     name: "John Doe",
     email: "john.doe@example.com",
@@ -365,10 +393,11 @@ export const fakeData = [
     education: "BSc Nursing",
     experience: 5,
     location: "New York, USA",
-    photo:"https://plus.unsplash.com/premium_photo-1683121366070-5ceb7e007a97?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    photo:
+      "https://plus.unsplash.com/premium_photo-1683121366070-5ceb7e007a97?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    id:2,
+    id: 2,
     rating: 4.2,
     name: "Jane Smith",
     email: "jane.smith@example.com",
@@ -377,9 +406,11 @@ export const fakeData = [
     education: "MSc Physiotherapy",
     experience: 7,
     location: "London, UK",
-    photo:"https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?q=80&w=1335&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    photo:
+      "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?q=80&w=1335&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
-  { id:3,
+  {
+    id: 3,
     rating: 4.8,
     name: "Michael Brown",
     email: "michael.brown@example.com",
@@ -388,9 +419,11 @@ export const fakeData = [
     education: "Diploma in Hospitality",
     experience: 10,
     location: "Toronto, Canada",
-    photo:"https://images.unsplash.com/photo-1672843192615-5913ef88bf17?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    photo:
+      "https://images.unsplash.com/photo-1672843192615-5913ef88bf17?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
-  { id:4,
+  {
+    id: 4,
     rating: 3.9,
     name: "Emily Davis",
     email: "emily.davis@example.com",
@@ -399,10 +432,11 @@ export const fakeData = [
     education: "BA in Management",
     experience: 3,
     location: "Sydney, Australia",
-    photo:"https://images.unsplash.com/photo-1726860768821-2b047459a33e?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    photo:
+      "https://images.unsplash.com/photo-1726860768821-2b047459a33e?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    id:5,
+    id: 5,
     rating: 4.6,
     name: "Robert Wilson",
     email: "robert.wilson@example.com",
@@ -411,10 +445,11 @@ export const fakeData = [
     education: "MBA",
     experience: 8,
     location: "Berlin, Germany",
-    photo:"https://images.unsplash.com/photo-1528892952291-009c663ce843?q=80&w=944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    photo:
+      "https://images.unsplash.com/photo-1528892952291-009c663ce843?q=80&w=944&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    id:6,
+    id: 6,
     rating: 4.0,
     name: "Laura Johnson",
     email: "laura.johnson@example.com",
@@ -423,10 +458,11 @@ export const fakeData = [
     education: "BSc Nursing",
     experience: 6,
     location: "Paris, France",
-    photo:"https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    photo:
+      "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    id:7,
+    id: 7,
     rating: 4.3,
     name: "Daniel Martinez",
     email: "daniel.martinez@example.com",
@@ -435,10 +471,11 @@ export const fakeData = [
     education: "MSc Physiotherapy",
     experience: 4,
     location: "Madrid, Spain",
-    photo:"https://plus.unsplash.com/premium_photo-1669703777492-561a428bfd52?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    photo:
+      "https://plus.unsplash.com/premium_photo-1669703777492-561a428bfd52?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    id:8,
+    id: 8,
     rating: 3.8,
     name: "Sophia Lee",
     email: "sophia.lee@example.com",
@@ -447,10 +484,11 @@ export const fakeData = [
     education: "Diploma in Hospitality",
     experience: 2,
     location: "Seoul, South Korea",
-    photo:"https://images.unsplash.com/photo-1563237023-b1e970526dcb?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzh8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
+    photo:
+      "https://images.unsplash.com/photo-1563237023-b1e970526dcb?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzh8fHVzZXJ8ZW58MHx8MHx8fDA%3D",
   },
   {
-    id:9,
+    id: 9,
     rating: 4.7,
     name: "James Anderson",
     email: "james.anderson@example.com",
@@ -459,10 +497,11 @@ export const fakeData = [
     education: "BA in Management",
     experience: 9,
     location: "Amsterdam, Netherlands",
-    photo:"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDN8fHVzZXJ8ZW58MHx8MHx8fDA%3D"
+    photo:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=700&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDN8fHVzZXJ8ZW58MHx8MHx8fDA%3D",
   },
   {
-    id:10,
+    id: 10,
     rating: 4.1,
     name: "Olivia Thomas",
     email: "olivia.thomas@example.com",
@@ -471,7 +510,7 @@ export const fakeData = [
     education: "MBA",
     experience: 5,
     location: "Dubai, UAE",
-    photo:"https://plus.unsplash.com/premium_photo-1669703777428-48a39ccfe8cb?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    photo:
+      "https://plus.unsplash.com/premium_photo-1669703777428-48a39ccfe8cb?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
 ];
-

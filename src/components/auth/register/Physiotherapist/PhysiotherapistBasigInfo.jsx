@@ -15,9 +15,9 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
     gender: defaultValues.gender || "",
     languages: defaultValues.languages || [],
     canDrive: defaultValues.canDrive || "",
-    bankName: defaultValues.bankName || "",
-    bankAccountName: defaultValues.bankAccountName || "",
-    bankAccountNumber: defaultValues.bankAccountNumber || "",
+    // bankName: defaultValues.bankName || "",
+    // bankAccountName: defaultValues.bankAccountName || "",
+    // bankAccountNumber: defaultValues.bankAccountNumber || "",
   });
 
   const handleChange = (e) => {
@@ -27,10 +27,10 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
 
   const toggleLanguage = (lan) => {
     setData((prev) => {
-      const exists = prev.languages.includes(lan);
+      const alreadySelected = prev.languages.includes(lan);
       return {
         ...prev,
-        languages: exists
+        languages: alreadySelected
           ? prev.languages.filter((l) => l !== lan)
           : [...prev.languages, lan],
       };
@@ -39,20 +39,21 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const requiredFields = [
       "name",
       "age",
       "gender",
-      "bankName",
-      "bankAccountName",
-      "bankAccountNumber",
+      // "bankName",
+      // "bankAccountName",
+      // "bankAccountNumber",
       "location",
       "canDrive",
     ];
-
     for (let field of requiredFields) {
-      if (!data[field]) {
+      if (
+        !data[field] ||
+        (Array.isArray(data[field]) && data[field].length === 0)
+      ) {
         const formattedField = field
           .replace(/([A-Z])/g, " $1")
           .replace(/^./, (str) => str.toUpperCase());
@@ -72,149 +73,152 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2 className="formHeading">Basic Information</h2>
-
-      {/* Name + Age + Gender */}
-      <div className="flex flex-col py-6 md:flex-row md:gap-4 gap-6">
-        <div className="flex-1">
-          <Input
-            placeholder="Name"
-            name="name"
-            label="Full Name (as per ID)"
-            value={data.name}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="flex-1 flex gap-6 md:gap-4 flex-col md:flex-row">
-          <div className="md:w-1/2">
-            <Input
-              type="number"
-              placeholder="Age"
-              name="age"
-              label="Age"
-              value={data.age}
-              onChange={handleChange}
-            />
+          <h2 className="formHeading">Basic Information</h2>
+          <div className="flex flex-col  py-6 md:flex-row md:gap-4 gap-6">
+            <div className="flex-1">
+              <Input
+                placeholder="Name"
+                name="name"
+                label="Full Name (as per ID)"
+                value={data.name}
+                onChange={handleChange}
+              />
+            </div>
+    
+            <div className="flex-1">
+              <Input
+                type="number"
+                placeholder="Your age"
+                name="age"
+                label="Age"
+                maxLength={2}
+                value={data.age}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+                  handleChange({ target: { name: "age", value: val } });
+                }}
+              />
+            </div>
           </div>
-
-          <div className="md:w-1/2">
-            <Label className="mb-2">Gender?</Label>
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
+            {/* <div className="space-y-4 flex-1">
+              <Label className={"mb-2 sm:mb-3"}>Bank Details</Label>
+              <Input
+                name="bankName"
+                placeholder="Your bank name"
+                value={data.bankName}
+                onChange={handleChange}
+              />
+    
+              <Input
+                name="bankAccountName"
+                placeholder="Your account name"
+                value={data.bankAccountName}
+                onChange={handleChange}
+              />
+              <Input
+                name="bankAccountNumber"
+                placeholder="Your account number"
+                value={data.bankAccountNumber}
+                onChange={handleChange}
+              />
+            </div> */}
+            <div className="flex-1">
+              <Input
+                label="Location"
+                placeholder="Location"
+                name="location"
+                value={data.location}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="flex-1">
+              <Label className={"mb-2"}>Gender?</Label>
+              <RadioGroup
+                className={"flex gap-4"}
+                value={data.gender}
+                onValueChange={(value) =>
+                  setData((prev) => ({ ...prev, gender: value }))
+                }
+              >
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem value="Male" id="r1" />
+                  <Label
+                    className="text-gray-700 font-normal cursor-pointer"
+                    htmlFor="r1"
+                  >
+                    Male
+                  </Label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem value="Female" id="r2" />
+                  <Label
+                    className="text-gray-700 font-normal cursor-pointer"
+                    htmlFor="r2"
+                  >
+                    Female
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+    
+          <div className="py-8">
+            <Label className={"mb-3"}>Languages</Label>
+            <div className="flex flex-wrap gap-4 ">
+              {languages.map((lan, indx) => (
+                <div key={indx} className="flex items-center gap-2">
+                  <Checkbox
+                    id={lan.value}
+                    checked={data.languages.includes(lan.value)}
+                    onCheckedChange={() => toggleLanguage(lan.value)}
+                  />
+                  <Label
+                    htmlFor={lan.value}
+                    className="text-gray-700 font-normal cursor-pointer"
+                  >
+                    {lan.text}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+    
+          <div>
+            <Label className="mb-3 block">Can you drive?</Label>
             <RadioGroup
-              className="flex gap-4"
-              value={data.gender}
+              className="flex gap-4 "
+              value={data.canDrive}
               onValueChange={(value) =>
-                setData((prev) => ({ ...prev, gender: value }))
+                setData((prev) => ({ ...prev, canDrive: value }))
               }
             >
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="male" id="r1" />
-                <Label htmlFor="r1" className="cursor-pointer">
-                  Male
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="Yes" id="d1" />
+                <Label
+                  htmlFor="d1"
+                  className="text-gray-700 font-normal cursor-pointer"
+                >
+                  Yes
                 </Label>
               </div>
-
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="female" id="r2" />
-                <Label htmlFor="r2" className="cursor-pointer">
-                  Female
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="No" id="d2" />
+                <Label
+                  htmlFor="d2"
+                  className="text-gray-700 font-normal cursor-pointer"
+                >
+                  No
                 </Label>
               </div>
             </RadioGroup>
           </div>
-        </div>
-      </div>
-
-      {/* Bank Details + Location */}
-      <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
-        <div className="space-y-4 flex-1">
-          <Label className="mb-2 sm:mb-3">Bank Details</Label>
-
-          <Input
-            name="bankName"
-            placeholder="Your bank name"
-            value={data.bankName}
-            onChange={handleChange}
-          />
-
-          <Input
-            name="bankAccountName"
-            placeholder="Your account name"
-            value={data.bankAccountName}
-            onChange={handleChange}
-          />
-
-          <Input
-            name="bankAccountNumber"
-            placeholder="Your account number"
-            value={data.bankAccountNumber}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="flex-1">
-          <Input
-            label="Location"
-            placeholder="Location"
-            name="location"
-            value={data.location}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-
-      {/* Languages */}
-      <div className="py-8">
-        <Label className="mb-3">Languages Spoken</Label>
-        <div className="flex flex-wrap gap-4">
-          {languages.map((lan, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <Checkbox
-                id={lan.value}
-                checked={data.languages.includes(lan.value)}
-                onCheckedChange={() => toggleLanguage(lan.value)}
-              />
-              <Label htmlFor={lan.value} className="cursor-pointer">
-                {lan.text}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Can Drive */}
-      <div>
-        <Label className="mb-3 block">Can you drive?</Label>
-        <RadioGroup
-          className="flex gap-4"
-          value={data.canDrive}
-          onValueChange={(value) =>
-            setData((prev) => ({ ...prev, canDrive: value }))
-          }
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="yes" id="d1" />
-            <Label htmlFor="d1" className="cursor-pointer">
-              Yes
-            </Label>
+          <div className="flex justify-end mt-6">
+            <Button type="submit" size="lg">
+              Next
+            </Button>
           </div>
-
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="no" id="d2" />
-            <Label htmlFor="d2" className="cursor-pointer">
-              No
-            </Label>
-          </div>
-        </RadioGroup>
-      </div>
-
-      {/* Submit */}
-      <div className="flex justify-end mt-6">
-        <Button type="submit" size="lg">
-          Next
-        </Button>
-      </div>
-    </form>
+        </form>
   );
 };
 

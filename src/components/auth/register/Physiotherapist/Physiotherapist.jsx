@@ -9,24 +9,27 @@ import ContactAgreement from "./ContactAgreement";
 import toast from "react-hot-toast";
 import Review from "../Nurse/Review";
 import SignUpStart from "../SignUpStart";
+import { useRouter } from "next/navigation";
 
 const Physiotherapist = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
-  const totalSteps = 7;
+  const totalSteps = 5;
+  const [user, setUser] = useState({});
+  const router = useRouter()
 
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
     experience: {},
-    skillsServices: {},
+    // skillsServices: {},
     documents: {},
-    contactAgrement: {},
+    // contactAgrement: {},
   });
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    console.log(accountData);
+    setUser(accountData);
   };
 
   const handleNext = (dataForStep) => {
@@ -39,27 +42,36 @@ const Physiotherapist = () => {
     if (step === 3)
       setFormData((prev) => ({ ...prev, experience: dataForStep }));
 
-    if (step === 4)
-      setFormData((prev) => ({ ...prev, skillsServices: dataForStep }));
+    // if (step === 4)
+    //   setFormData((prev) => ({ ...prev, skillsServices: dataForStep }));
 
-    if (step === 5)
+    if (step === 4)
       setFormData((prev) => ({ ...prev, documents: dataForStep }));
 
-    if (step === 6)
-      setFormData((prev) => ({ ...prev, contactAgrement: dataForStep }));
+    // if (step === 6)
+    //   setFormData((prev) => ({ ...prev, contactAgrement: dataForStep }));
 
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          location: formData.basicInfo.location,
+          name: formData.basicInfo.name,
+          profilePic: null,
+        })
+      );
       toast.success("Register Sucessfully!");
-      setStep(1);
+      router.push("/dashboard")
       setFormData({
         basicInfo: {},
         education: {},
         experience: {},
-        skillsServices: {},
+        // skillsServices: {},
         documents: {},
-        contactAgrement: {},
+        // contactAgrement: {},
       });
     }
   };
@@ -94,7 +106,7 @@ const Physiotherapist = () => {
               )}
               {step === 2 && (
                 <Education
-                  defaultValues={formData.basicInfo}
+                  defaultValues={formData.education}
                   onNext={handleNext}
                   onBack={handleBack}
                 />
@@ -106,28 +118,28 @@ const Physiotherapist = () => {
                   onBack={handleBack}
                 />
               )}
-              {step === 4 && (
+              {/* {step === 4 && (
                 <SkillsServices
                   defaultValues={formData.skillsServices}
                   onBack={handleBack}
                   onNext={handleNext}
                 />
-              )}
-              {step === 5 && (
+              )} */}
+              {step === 4 && (
                 <Document
                   defaultValues={formData.documents}
                   onNext={handleNext}
                   onBack={handleBack}
                 />
               )}
-              {step === 6 && (
+              {/* {step === 6 && (
                 <ContactAgreement
                   defaultValues={formData.contactAgrement}
                   onNext={handleNext}
                   onBack={handleBack}
                 />
-              )}
-              {step === 7 && (
+              )} */}
+              {step === 5 && (
                 <Review
                   data={formData}
                   onNext={handleNext}
