@@ -213,6 +213,7 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
               </div>
             </RadioGroup>
           </div>
+          
           <div className="flex justify-end mt-6">
             <Button type="submit" size="lg">
               Next

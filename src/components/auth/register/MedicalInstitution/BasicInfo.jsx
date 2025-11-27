@@ -1,13 +1,13 @@
 "use client";
 
 import Input from "@/components/shared/Input";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FileUpload from "../FileUpload";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 
-const BasicInfo = ({defaultValues,onNext}) => {
+const BasicInfo = ({defaultValues = {},onNext}) => {
     const [data, setData] = useState({
     companyName: defaultValues.companyName || "",
     kraPin: defaultValues.kraPin || "",
@@ -23,7 +23,12 @@ const BasicInfo = ({defaultValues,onNext}) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-
+  useEffect(() => {
+      if (defaultValues && Object.keys(defaultValues).length > 0) {
+        setData((prev) => ({ ...prev, ...defaultValues }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }
+    }, [defaultValues]);
 
   // Handle File Upload
   const handleFileSelect = (file) => {
@@ -42,18 +47,18 @@ const BasicInfo = ({defaultValues,onNext}) => {
       "registrationDocument",
     ];
 
-    for (let field of requiredFields) {
-      if (
-        !data[field] ||
-        (Array.isArray(data[field]) && data[field].length === 0)
-      ) {
-        const formattedField = field
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (str) => str.toUpperCase());
-        toast.error(`${formattedField} is required!`);
-        return;
-      }
-    }
+    // for (let field of requiredFields) {
+    //   if (
+    //     !data[field] ||
+    //     (Array.isArray(data[field]) && data[field].length === 0)
+    //   ) {
+    //     const formattedField = field
+    //       .replace(/([A-Z])/g, " $1")
+    //       .replace(/^./, (str) => str.toUpperCase());
+    //     toast.error(`${formattedField} is required!`);
+    //     return;
+    //   }
+    // }
 
     console.log( data);
     onNext(data);
