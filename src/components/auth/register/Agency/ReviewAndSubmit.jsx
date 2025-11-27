@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { FileText, Image as ImageIcon } from "lucide-react";
 import React, { useState } from "react";
 
-const Review = ({ data, setTermsAccepted, termsAccepted }) => {
+const Review = ({ data, }) => {
   // Format labels nicely from camelCase
   const formatLabel = (key) =>
     key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
@@ -70,7 +70,7 @@ const Review = ({ data, setTermsAccepted, termsAccepted }) => {
               return renderSection(key, value);
             } else {
               return (
-                <div key={key} className="flex gap-2 flex-wrap">
+                <div key={key} className="flex items-center gap-2 flex-wrap">
                   <Label>{formatLabel(key)}:</Label>
                   <span className="text-sm text-gray-600">
                     {value ? String(value) : "N/A"}
@@ -107,7 +107,7 @@ const Review = ({ data, setTermsAccepted, termsAccepted }) => {
       </div>
 
       {/* Terms and Conditions */}
-      <div className="flex items-center gap-2 mt-6">
+      {/* <div className="flex items-center gap-2 mt-6">
         <Checkbox
           id="terms"
           checked={termsAccepted}
@@ -119,7 +119,7 @@ const Review = ({ data, setTermsAccepted, termsAccepted }) => {
         >
           I agree to the terms and conditions
         </Label>
-      </div>
+      </div> */}
 
       {/* Submit button inside Review */}
       {/* <div className="flex justify-end pt-6">

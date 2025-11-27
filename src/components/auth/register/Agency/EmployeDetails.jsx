@@ -179,12 +179,12 @@ const EmployeDetails = ({
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="primary">Primary</SelectItem>
-                <SelectItem value="secondary">Secondary</SelectItem>
-                <SelectItem value="diploma">Diploma</SelectItem>
-                <SelectItem value="bachelor">Bachelor</SelectItem>
-                <SelectItem value="master">Master</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
+                <SelectItem value="Primary">Primary</SelectItem>
+                <SelectItem value="Secondary">Secondary</SelectItem>
+                <SelectItem value="Diploma">Diploma</SelectItem>
+                <SelectItem value="Bachelor">Bachelor</SelectItem>
+                <SelectItem value="Bachelor">Bachelor</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -217,12 +217,12 @@ const EmployeDetails = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="1">1 year</SelectItem>
-                  <SelectItem value="2">2 years</SelectItem>
-                  <SelectItem value="3">3 years</SelectItem>
-                  <SelectItem value="4">4 years</SelectItem>
-                  <SelectItem value="5">5 years</SelectItem>
-                  <SelectItem value="5+">More than 5 years</SelectItem>
+                  <SelectItem value="1 year">1 year</SelectItem>
+                  <SelectItem value="2 years">2 years</SelectItem>
+                  <SelectItem value="3 years">3 years</SelectItem>
+                  <SelectItem value="4 years">4 years</SelectItem>
+                  <SelectItem value="5 years">5 years</SelectItem>
+                  <SelectItem value="More than 5+ years">More than 5 years</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -241,11 +241,11 @@ const EmployeDetails = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="10-20">10,000 - 20,000</SelectItem>
-                  <SelectItem value="20-30">20,000 - 30,000</SelectItem>
-                  <SelectItem value="30-40">30,000 - 40,000</SelectItem>
-                  <SelectItem value="40-50">40,000 - 50,000</SelectItem>
-                  <SelectItem value="50+">50,000+</SelectItem>
+                  <SelectItem value="10-20">$10,000 - $20,000</SelectItem>
+                  <SelectItem value="20-30">$20,000 - $30,000</SelectItem>
+                  <SelectItem value="30-40">$30,000 - $40,000</SelectItem>
+                  <SelectItem value="40-50">$40,000 - $50,000</SelectItem>
+                  <SelectItem value="50+">$50,000+</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -264,13 +264,13 @@ const EmployeDetails = ({
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
                 <RadioGroupItem
-                  value="yes"
+                  value="Yes"
                   id={`motherYes_${employeeNumber}`}
                 />
                 <Label htmlFor={`motherYes_${employeeNumber}`}>Yes</Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="no" id={`motherNo_${employeeNumber}`} />
+                <RadioGroupItem value="No" id={`motherNo_${employeeNumber}`} />
                 <Label htmlFor={`motherNo_${employeeNumber}`}>No</Label>
               </div>
             </div>
@@ -305,11 +305,11 @@ const EmployeDetails = ({
           >
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="yes" id={`petsYes_${employeeNumber}`} />
+                <RadioGroupItem value="Yes" id={`petsYes_${employeeNumber}`} />
                 <Label htmlFor={`petsYes_${employeeNumber}`}>Yes</Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="no" id={`petsNo_${employeeNumber}`} />
+                <RadioGroupItem value="No" id={`petsNo_${employeeNumber}`} />
                 <Label htmlFor={`petsNo_${employeeNumber}`}>No</Label>
               </div>
             </div>
@@ -325,14 +325,14 @@ const EmployeDetails = ({
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
                 <RadioGroupItem
-                  value="nanny"
+                  value="Nanny"
                   id={`roleNanny_${employeeNumber}`}
                 />
                 <Label htmlFor={`roleNanny_${employeeNumber}`}>Nanny</Label>
               </div>
               <div className="flex items-center gap-2">
                 <RadioGroupItem
-                  value="housekeeper"
+                  value="Housekeeper"
                   id={`roleHousekeeper_${employeeNumber}`}
                 />
                 <Label htmlFor={`roleHousekeeper_${employeeNumber}`}>
@@ -379,9 +379,9 @@ const EmployeDetails = ({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="strong">Strong</SelectItem>
-                    <SelectItem value="average">Average</SelectItem>
-                    <SelectItem value="weak">Weak</SelectItem>
+                    <SelectItem value="Strong">Strong</SelectItem>
+                    <SelectItem value="Average">Average</SelectItem>
+                    <SelectItem value="Weak">Weak</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -400,12 +400,12 @@ const EmployeDetails = ({
         >
           <div className="flex gap-4">
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="live-in" id={`liveIn_${employeeNumber}`} />
+              <RadioGroupItem value="Live-In" id={`liveIn_${employeeNumber}`} />
               <Label htmlFor={`liveIn_${employeeNumber}`}>Live In</Label>
             </div>
             <div className="flex items-center gap-2">
               <RadioGroupItem
-                value="dayburg"
+                value="Dayburg"
                 id={`dayburg_${employeeNumber}`}
               />
               <Label htmlFor={`dayburg_${employeeNumber}`}>Dayburg</Label>

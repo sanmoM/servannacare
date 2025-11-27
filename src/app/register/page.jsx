@@ -3,6 +3,7 @@
 import Agency from "@/components/auth/register/Agency/Agency";
 import NurseAideOrAssistant from "@/components/auth/register/AideAssistant/NurseAideOrAssistant";
 import HouseManager from "@/components/auth/register/HouseManager/HouseManager";
+import MedicalInstitution from "@/components/auth/register/MedicalInstitution/MedicalInstitution";
 import Nurse from "@/components/auth/register/Nurse/Nurse";
 import Physiotherapist from "@/components/auth/register/Physiotherapist/Physiotherapist";
 import SpecialNeedCaregivers from "@/components/auth/register/SpecialNeedCaregivers/SpecialNeedCaregivers";
@@ -31,6 +32,8 @@ const PageContent = () => {
         return <NurseAideOrAssistant />;
       case "special-need-caregivers":
         return <SpecialNeedCaregivers/>
+      case "medical-institutions":
+        return <MedicalInstitution/>  
 
       default:
         return notFound();

@@ -9,6 +9,7 @@ import EmployeDetails from "./EmployeDetails";
 import { Plus } from "lucide-react";
 import Review from "./ReviewAndSubmit";
 import SignUpStart from "../SignUpStart";
+import { useRouter } from "next/navigation";
 
 const validateEmployee = (data) => {
   const errors = [];
@@ -49,8 +50,9 @@ const Agency = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 3;
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const[user,setUser] = useState({})
   const [employees, setEmployees] = useState([1]);
+  const router = useRouter()
   const [formData, setFormData] = useState({
     agency: {},
     allEmployees: [],
@@ -58,7 +60,7 @@ const Agency = () => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    console.log(accountData);
+    setUser(accountData)
   };
 
   const handleNext = () => {
@@ -81,14 +83,17 @@ const Agency = () => {
       }
 
       setStep(step + 1);
-    } else if (step === 3 && !termsAccepted) {
-      toast.error("You must agree to the terms and conditions!");
-      return;
-    } else {
-      toast.success("Registration Submitted Successfully!");
-      console.log("Submitted data:", formData);
+    } 
+    else {
+      localStorage.setItem(
+        "user",
+        JSON.stringify(
+        user  
+        )
+      )
+      toast.success("Register Successfully!");
+      router.push("/dashboard")
       // reset form
-      setStep(1);
       setFormData({ agency: {}, allEmployees: [] });
       setEmployees([1]);
     }
@@ -190,8 +195,6 @@ const Agency = () => {
               {step === 3 && (
                 <Review
                   data={formData}
-                  termsAccepted={termsAccepted}
-                  setTermsAccepted={setTermsAccepted}
                 />
               )}
 

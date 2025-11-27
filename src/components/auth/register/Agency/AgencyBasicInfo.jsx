@@ -13,20 +13,20 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
   const [data, setData] = useState({
     companyName: defaultValues.companyName || "",
     kraPin: defaultValues.kraPin || "",
-    bankName: defaultValues.bankName || "",
-    bankAccountName: defaultValues.bankAccountName || "",
-    bankAccountNumber: defaultValues.bankAccountNumber || "",
-    emergencyContactName: defaultValues.emergencyContactName || "",
-    emergencyContactPhoneNumber:
-      defaultValues.emergencyContactPhoneNumber || "",
-    emergencyContactEmail: defaultValues.emergencyContactEmail || "",
+    // bankName: defaultValues.bankName || "",
+    // bankAccountName: defaultValues.bankAccountName || "",
+    // bankAccountNumber: defaultValues.bankAccountNumber || "",
+    // emergencyContactName: defaultValues.emergencyContactName || "",
+    // emergencyContactPhoneNumber:
+    //   defaultValues.emergencyContactPhoneNumber || "",
+    // emergencyContactEmail: defaultValues.emergencyContactEmail || "",
     companyRegistrationNumber: defaultValues.companyRegistrationNumber || "",
     businessLocation: defaultValues.businessLocation || "",
-    numberOfReplacement: defaultValues.numberOfReplacement || "",
-    replacementWindow: defaultValues.replacementWindow || "",
-    placementFee: defaultValues.placementFee || "",
     trainingAreas: defaultValues.trainingAreas || [],
     registrationDocument: defaultValues.registrationDocument || null,
+    placementFee: defaultValues.placementFee || "",
+    replacementWindow: defaultValues.replacementWindow || "",
+    numberOfReplacement: defaultValues.numberOfReplacement || "",
   });
 
   const train = [
@@ -76,12 +76,12 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
     const requiredFields = [
       "companyName",
       "kraPin",
-      "bankName",
-      "bankAccountName",
-      "bankAccountNumber",
-      "emergencyContactName",
-      "emergencyContactPhoneNumber",
-      "emergencyContactEmail",
+      // "bankName",
+      // "bankAccountName",
+      // "bankAccountNumber",
+      // "emergencyContactName",
+      // "emergencyContactPhoneNumber",
+      // "emergencyContactEmail",
       "companyRegistrationNumber",
       "businessLocation",
       "registrationDocument",
@@ -92,7 +92,10 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
     ];
 
     for (let field of requiredFields) {
-      if (!data[field] || (Array.isArray(data[field]) && data[field].length === 0)) {
+      if (
+        !data[field] ||
+        (Array.isArray(data[field]) && data[field].length === 0)
+      ) {
         const formattedField = field
           .replace(/([A-Z])/g, " $1")
           .replace(/^./, (str) => str.toUpperCase());
@@ -111,7 +114,7 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
       <div>
         <h2 className="formHeading">Agency Details</h2>
 
-        <div className="flex py-6 flex-col sm:flex-row gap-6 sm:gap-4">
+        <div className="flex pt-6 flex-col sm:flex-row gap-6 sm:gap-4">
           <Input
             type="text"
             label="Company/Business Name"
@@ -129,8 +132,8 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
           />
         </div>
 
-        <div className="flex flex-col gap-6 sm:gap-4 sm:flex-row">
-          <div className="flex-1 space-y-4">
+        {/* <div className="flex flex-col gap-6 sm:gap-4 sm:flex-row"> */}
+          {/* <div className="flex-1 space-y-4">
             <div>
               <Label className="mb-2">Bank Details</Label>
               <Input
@@ -152,9 +155,9 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
               value={data.bankAccountNumber}
               onChange={handleChange}
             />
-          </div>
+          </div> */}
 
-          <div className="flex-1 space-y-4">
+          {/* <div className="flex-1 space-y-4">
             <div>
               <Label className="mb-2">Emergency Contact Details</Label>
               <Input
@@ -177,8 +180,8 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
               value={data.emergencyContactEmail}
               onChange={handleChange}
             />
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
 
         <div className="flex flex-col py-6 sm:flex-row gap-6 sm:gap-4">
           <Input

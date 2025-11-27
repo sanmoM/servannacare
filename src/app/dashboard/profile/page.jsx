@@ -63,8 +63,13 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1 className="sectionHeading mb-4">My Profile</h1>
-
+      <div className="flex justify-between">
+        <h1 className="sectionHeading mb-4">My Profile</h1>
+        <div className="text-xs text-gray-700 font-semibold gap-2 flex items-center">
+          <Calendar size={16} />
+          <span>Joined {userInfo.joinedSince}</span>
+        </div>
+      </div>
       <div className="border flex  items-center md:items-start flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
         {/* Profile Picture */}
         <div className="flex flex-col justify-center  items-center">
@@ -83,7 +88,7 @@ export default function ProfilePage() {
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
-                console.log(file)
+                console.log(file);
 
                 const imageUrl = URL.createObjectURL(file);
                 setUserInfo((prev) => ({ ...prev, profilePic: imageUrl }));
@@ -137,8 +142,6 @@ export default function ProfilePage() {
                 </div>
               </div>
             ))}
-
-            
           </div>
 
           {/* Buttons */}
