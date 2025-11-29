@@ -47,18 +47,18 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
       "registrationDocument",
     ];
 
-    // for (let field of requiredFields) {
-    //   if (
-    //     !data[field] ||
-    //     (Array.isArray(data[field]) && data[field].length === 0)
-    //   ) {
-    //     const formattedField = field
-    //       .replace(/([A-Z])/g, " $1")
-    //       .replace(/^./, (str) => str.toUpperCase());
-    //     toast.error(`${formattedField} is required!`);
-    //     return;
-    //   }
-    // }
+    for (let field of requiredFields) {
+      if (
+        !data[field] ||
+        (Array.isArray(data[field]) && data[field].length === 0)
+      ) {
+        const formattedField = field
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase());
+        toast.error(`${formattedField} is required!`);
+        return;
+      }
+    }
 
     console.log( data);
     onNext(data);

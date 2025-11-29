@@ -1,5 +1,6 @@
 import BlogCard from "@/components/pageParts/blogParts/BlogCard";
 import HowItWorks from "@/components/pageParts/homeParts/HowItWorks";
+import OurSpecialist from "@/components/pageParts/homeParts/OurSpecialist";
 import Services from "@/components/pageParts/homeParts/Services";
 import Slider from "@/components/pageParts/homeParts/Slider";
 import Testimonials from "@/components/pageParts/homeParts/Testimonials";
@@ -12,6 +13,8 @@ export default function Home() {
       <Slider />
       <Services />
       <HowItWorks />
+      <OurSpecialist/>
+
       {/* from our blog section  */}
       <div className="py-10  bg-[#f7f7ff] md:py-16">
         <h2 className="text-center sectionHeading">From Our Blog</h2>

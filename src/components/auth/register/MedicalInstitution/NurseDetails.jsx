@@ -8,6 +8,10 @@ import { languages } from "@/utilities/data";
 import { Camera, FileText, IdCardLanyard } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import FileUpload from "../FileUpload";
+import {
+  blockInvalidKeys,
+  numericInputFilter,
+} from "@/utilities/helperFunction";
 
 const NurseDetails = ({
   nurseNumber = 1,
@@ -136,9 +140,16 @@ const NurseDetails = ({
           placeholder="Your age"
           name="age"
           label="Age"
-          maxLength={2}
           value={data.age}
-          onChange={handleChange}
+          onKeyDown={blockInvalidKeys}
+          onChange={(e) => {
+            handleChange({
+              target: {
+                name: "age",
+                value: numericInputFilter(e.target.value, 2),
+              },
+            });
+          }}
         />
       </div>
 
@@ -251,7 +262,9 @@ const NurseDetails = ({
 
       {/* Nursing Council */}
       <div className="my-6">
-        <Label className={"mb-2"}>Are you registered with the Nursing Council of Kenya?</Label>
+        <Label className={"mb-2"}>
+          Are you registered with the Nursing Council of Kenya?
+        </Label>
         <RadioGroup
           value={data.isNursingInKenya}
           onValueChange={(val) =>
@@ -291,12 +304,22 @@ const NurseDetails = ({
           type="number"
           label="Years of experience"
           name="hospitalBasedYearsOfExperience"
+          placeholder="Hospital based experience"
           value={data.hospitalBasedYearsOfExperience}
-          onChange={handleChange}
+          onKeyDown={blockInvalidKeys}
+          onChange={(e) => {
+            handleChange({
+              target: {
+                name: "hospitalBasedYearsOfExperience",
+                value: numericInputFilter(e.target.value, 2),
+              },
+            });
+          }}
         />
         <Input
           label="Reference contact"
           name="hospitalBasedReferenceContact"
+          placeholder="Hospital based ref"
           value={data.hospitalBasedReferenceContact}
           onChange={handleChange}
         />
@@ -325,12 +348,22 @@ const NurseDetails = ({
           type="number"
           label="Years of experience"
           name="homeBasedYearsOfExperience"
+          placeholder="Home based experience"
           value={data.homeBasedYearsOfExperience}
-          onChange={handleChange}
+          onKeyDown={blockInvalidKeys}
+          onChange={(e) => {
+            handleChange({
+              target: {
+                name: "homeBasedYearsOfExperience",
+                value: numericInputFilter(e.target.value, 2),
+              },
+            });
+          }}
         />
         <Input
           label="Reference contact"
           name="homeBasedReferenceContact"
+          placeholder="Home based ref"
           value={data.homeBasedReferenceContact}
           onChange={handleChange}
         />
@@ -361,7 +394,15 @@ const NurseDetails = ({
             type="number"
             name="mobilityYears"
             value={data.mobilityYears}
-            onChange={handleChange}
+            onKeyDown={blockInvalidKeys}
+            onChange={(e) => {
+              handleChange({
+                target: {
+                  name: "mobilityYears",
+                  value: numericInputFilter(e.target.value, 2),
+                },
+              });
+            }}
           />
 
           <Input
@@ -369,7 +410,15 @@ const NurseDetails = ({
             type="number"
             name="bathingYears"
             value={data.bathingYears}
-            onChange={handleChange}
+            onKeyDown={blockInvalidKeys}
+            onChange={(e) => {
+              handleChange({
+                target: {
+                  name: "bathingYears",
+                  value: numericInputFilter(e.target.value, 2),
+                },
+              });
+            }}
           />
 
           <Input
@@ -377,7 +426,15 @@ const NurseDetails = ({
             type="number"
             name="feedingYears"
             value={data.feedingYears}
-            onChange={handleChange}
+            onKeyDown={blockInvalidKeys}
+            onChange={(e) => {
+              handleChange({
+                target: {
+                  name: "feedingYears",
+                  value: numericInputFilter(e.target.value, 2),
+                },
+              });
+            }}
           />
         </div>
       </div>
@@ -389,7 +446,15 @@ const NurseDetails = ({
         name="serviceFee"
         placeholder="1500 per day or 35000 per month"
         value={data.serviceFee}
-        onChange={handleChange}
+         onKeyDown = {blockInvalidKeys}
+          onChange={(e) => {
+            handleChange({
+              target:{
+                name:"serviceFee",
+                value:numericInputFilter(e.target.value,5)
+              }
+            })
+          }}
       />
 
       {/* Document Uploads */}
