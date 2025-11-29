@@ -4,521 +4,414 @@ import Input from "@/components/shared/Input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { languages } from "@/utilities/data";
-import {
-  Camera,
-  ClipboardPlus,
-  Cross,
-  FileText,
-  IdCard,
-  IdCardLanyard,
-} from "lucide-react";
+import { Camera, FileText, IdCardLanyard } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import FileUpload from "../FileUpload";
-import { Button } from "@/components/ui/button";
 
 const NurseDetails = ({
   nurseNumber = 1,
   onDataChange,
   defaultValues = {},
 }) => {
-  //   document types
+  // Document Types
   const documents = [
     {
       id: 1,
-      title: "First Aid Certificate",
-      accept: "application/pdf,image/*",
-      icon: <Cross size={32} />,
-    },
-    {
-      id: 2,
-      title: "Good Conduct Certificate / Letter from Chief",
-      accept: "application/pdf,image/*",
-      icon: <FileText size={32} />,
-    },
-    {
-      id: 3,
       title: "ID Copy",
       accept: "application/pdf,image/*",
       icon: <IdCardLanyard size={32} />,
     },
     {
-      id: 4,
+      id: 2,
       title: "Profile Photo",
       accept: "image/*",
       icon: <Camera size={32} />,
     },
-    {
-      id: 5,
-      title: "Driving License (Optional)",
-      accept: "application/pdf,image/*",
-      icon: <IdCard size={32} />,
-      optional: true,
-    },
   ];
 
-  const skills = [
-    "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
-    "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
-    "Medical Assistance: (assisting nurses with wound care, administering medication (in some cases)",
+  const skillsList = [
+    "Basic Patient Care",
+    "Vital Signs Monitoring",
+    "Medical Assistance",
     "Compassion & Communication Skills",
-    "Special needs children caregiving",
-    "Elderly caregiving",
-    "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
+    "Special Needs Care",
+    "Elderly Caregiving",
+    "Handling Medical Equipment",
   ];
 
-  //   // local nurse data
+  // Local state
   const [data, setData] = useState({
     name: "",
-    educationLevel: "",
+    age: "",
+    gender: "",
     location: "",
-    experience: "",
-    salaryRange: "",
-    isMother: null,
-    kidAges: [],
-    handlePets: null,
-    preferredRole: "",
+    education: "",
     languages: [],
-    skills: { cooking: "", housekeeping: "", childcare: "" },
-    liveType: "",
+    canDrive: "",
+    role: "",
+    educationCertificate: null,
+    isNursingInKenya: "",
+    hospitalBasedCare: "",
+    hospitalBasedYearsOfExperience: "",
+    hospitalBasedReferenceContact: "",
+    homeBasedCare: "",
+    homeBasedYearsOfExperience: "",
+    homeBasedReferenceContact: "",
+    skills: [],
+    mobilityYears: "",
+    bathingYears: "",
+    feedingYears: "",
+    serviceFee: "",
     documents: {},
     ...defaultValues,
   });
 
+  // Load initial data on mount
   useEffect(() => {
     setData((prev) => ({ ...prev, ...defaultValues }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //   // send up on change
-  //   useEffect(() => {
-  //     onDataChange && onDataChange(data);
-  //   }, [data]);
+  // Send up to change
+  useEffect(() => {
+    onDataChange && onDataChange(data);
+  }, [data]);
 
-  //   useEffect(() => {
-  //     if (onDataChange) {
-  //       onDataChange(data);
-  //     }
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   }, [JSON.stringify(data)]);
+  useEffect(() => {
+    if (onDataChange) {
+      onDataChange(data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(data)]);
 
-  //   // generic input handler
+  // Generic handler for text inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  //   // select change
-  //   const handleSelect = (name, value) => {
-  //     setData((prev) => ({ ...prev, [name]: value }));
-  //   };
+  // Toggle array fields (skills, languages)
+  const toggleArray = (name, value) => {
+    setData((prev) => {
+      const exists = prev[name].includes(value);
+      return {
+        ...prev,
+        [name]: exists
+          ? prev[name].filter((v) => v !== value)
+          : [...prev[name], value],
+      };
+    });
+  };
 
-  //   // radio change
-  //   const handleRadio = (name, value) => {
-  //     setData((prev) => ({ ...prev, [name]: value }));
-  //   };
-
-  //   // checkbox toggle for arrays
-  //   const toggleArray = (name, value) => {
-  //     setData((prev) => {
-  //       const exists = prev[name].includes(value);
-  //       return {
-  //         ...prev,
-  //         [name]: exists
-  //           ? prev[name].filter((v) => v !== value)
-  //           : [...prev[name], value],
-  //       };
-  //     });
-  //   };
-
-  //   // file upload
-  //   const handleFileSelect = (id, file) => {
-  //     setData((prev) => ({
-  //       ...prev,
-  //       documents: {
-  //         ...prev.documents,
-  //         [id]: file,
-  //       },
-  //     }));
-  //   };
-
-  //   // skill change
-  //   const handleSkillChange = (skill, value) => {
-  //     setData((prev) => ({
-  //       ...prev,
-  //       skills: { ...prev.skills, [skill]: value },
-  //     }));
-  //   };
+  // Handle file uploads
+  const handleFileSelect = (id, file) => {
+    setData((prev) => ({
+      ...prev,
+      documents: {
+        ...prev.documents,
+        [id]: file,
+      },
+    }));
+  };
 
   return (
     <div>
       <h2 className="formHeading mb-4">Nurse Details</h2>
-
       <h2 className="text-base font-semibold text-gray-700 border-primary border-b mb-6">
         Nurse #{nurseNumber}
       </h2>
 
-      <div className="flex flex-col pb-6  md:flex-row md:gap-4 gap-6">
-        <div className="flex-1">
-          <Input
-            placeholder="Name"
-            name="name"
-            label="Full Name (as per ID)"
-            // value={data.name}
-            // onChange={handleChange}
-          />
-        </div>
+      {/* Name + Age */}
+      <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
+        <Input
+          placeholder="Name"
+          name="name"
+          label="Full Name (as per ID)"
+          value={data.name}
+          onChange={handleChange}
+        />
 
-        <div className="flex-1">
-          <Input
-            type="number"
-            placeholder="Your age"
-            name="age"
-            label="Age"
-            maxLength={2}
-            // value={data.age}
-            // onChange={(e) => {
-            //   const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-            //   handleChange({ target: { name: "age", value: val } });
-            // }}
-          />
-        </div>
+        <Input
+          type="number"
+          placeholder="Your age"
+          name="age"
+          label="Age"
+          maxLength={2}
+          value={data.age}
+          onChange={handleChange}
+        />
       </div>
-      <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
-        <div className="flex-1">
-          <Input
-            label="Location"
-            placeholder="Location"
-            name="location"
-            // value={data.location}
-            // onChange={handleChange}
-          />
-        </div>
+
+      {/* Location + Gender */}
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
+        <Input
+          label="Location"
+          placeholder="Location"
+          name="location"
+          value={data.location}
+          onChange={handleChange}
+        />
+
         <div className="flex-1">
           <Label className={"mb-2"}>Gender?</Label>
           <RadioGroup
-            className={"flex gap-4"}
-            // value={data.gender}
-            // onValueChange={(value) =>
-            //   setData((prev) => ({ ...prev, gender: value }))
-            // }
+            value={data.gender}
+            onValueChange={(val) => setData((p) => ({ ...p, gender: val }))}
+            className="flex gap-4"
           >
             <div className="flex items-center gap-3">
-              <RadioGroupItem value="Male" id="r1" />
-              <Label
-                className="text-gray-700 font-normal cursor-pointer"
-                htmlFor="r1"
-              >
-                Male
-              </Label>
+              <RadioGroupItem value="Male" id="g1" />
+              <Label htmlFor="g1">Male</Label>
             </div>
+
             <div className="flex items-center gap-3">
-              <RadioGroupItem value="Female" id="r2" />
-              <Label
-                className="text-gray-700 font-normal cursor-pointer"
-                htmlFor="r2"
-              >
-                Female
-              </Label>
+              <RadioGroupItem value="Female" id="g2" />
+              <Label htmlFor="g2">Female</Label>
             </div>
           </RadioGroup>
         </div>
       </div>
 
+      {/* Languages */}
       <div className="py-8">
         <Label className={"mb-3"}>Languages</Label>
-        <div className="flex flex-wrap gap-4 ">
-          {languages.map((lan, indx) => (
-            <div key={indx} className="flex items-center gap-2">
+        <div className="flex flex-wrap gap-4">
+          {languages.map((lan, idx) => (
+            <div key={idx} className="flex items-center gap-2">
               <Checkbox
-                id={lan.value}
-                // checked={data.languages.includes(lan.value)}
-                // onCheckedChange={() => toggleLanguage(lan.value)}
+                checked={data.languages.includes(lan.value)}
+                onCheckedChange={() => toggleArray("languages", lan.value)}
               />
-              <Label
-                htmlFor={lan.value}
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                {lan.text}
-              </Label>
+              <Label>{lan.text}</Label>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Driving */}
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
         <div className="flex-1">
-          <Label className="mb-3 block">Can you drive?</Label>
+          <Label className={"mb-2"}>Can you drive?</Label>
           <RadioGroup
-            className="flex gap-4 "
-            //   value={data.canDrive}
-            //   onValueChange={(value) =>
-            //     setData((prev) => ({ ...prev, canDrive: value }))
-            //   }
+            value={data.canDrive}
+            onValueChange={(val) => setData((p) => ({ ...p, canDrive: val }))}
+            className="flex gap-4"
           >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="d1" />
-              <Label
-                htmlFor="d1"
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                Yes
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="d2" />
-              <Label
-                htmlFor="d2"
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                No
-              </Label>
-            </div>
+            <RadioGroupItem value="Yes" id="d1" />
+            <Label htmlFor="d1">Yes</Label>
+
+            <RadioGroupItem value="No" id="d2" />
+            <Label htmlFor="d2">No</Label>
           </RadioGroup>
         </div>
 
+        {/* Role */}
         <div className="flex-1">
-          <Label className="mb-3 block">Your Role?</Label>
+          <Label className={"mb-2"}>Your Role?</Label>
           <RadioGroup
-            className="flex gap-4 "
-            //   value={data.canDrive}
-            //   onValueChange={(value) =>
-            //     setData((prev) => ({ ...prev, canDrive: value }))
-            //   }
+            value={data.role}
+            onValueChange={(val) => setData((p) => ({ ...p, role: val }))}
+            className="flex gap-4"
           >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="Medical Nurse" id="d3" />
-              <Label
-                htmlFor="d3"
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                Medical Nurse
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="Nurse Aide " id="d4" />
-              <Label
-                htmlFor="d4"
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                Nurse AIde
-              </Label>
-            </div>
+            <RadioGroupItem value="Medical Nurse" id="r3" />
+            <Label htmlFor="r3">Medical Nurse</Label>
+
+            <RadioGroupItem value="Nurse Aide" id="r4" />
+            <Label htmlFor="r4">Nurse Aide</Label>
           </RadioGroup>
         </div>
       </div>
 
       {/* Education Level */}
       <div className="my-6">
-        <Label className="mb-3 block">Level of Education</Label>
+        <Label className="mb-3">Level of Education</Label>
         <RadioGroup
-          className="flex flex-wrap gap-4 mt-2"
-          //   value={data.education}
-          //   onValueChange={(value) =>
-          //     setData((prev) => ({ ...prev, education: value }))
-          //   }
+          value={data.education}
+          onValueChange={(val) => setData((p) => ({ ...p, education: val }))}
+          className="flex flex-wrap gap-4"
         >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="Diploma In Nursing" id="edu1" />
-            <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
-              Diploma In Nursing
-            </Label>
-          </div>
+          <RadioGroupItem value="Diploma In Nursing" id="edu1" />
+          <Label htmlFor="edu1">Diploma In Nursing</Label>
 
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="Degree In Nursing" id="edu2" />
-            <Label htmlFor="edu2" className="text-gray-700 cursor-pointer">
-              Degree In Nursing
-            </Label>
-          </div>
+          <RadioGroupItem value="Degree In Nursing" id="edu2" />
+          <Label htmlFor="edu2">Degree In Nursing</Label>
         </RadioGroup>
       </div>
 
-      {/* File Upload */}
-      <div>
-        <FileUpload
-          title="Education Certificate (Compulsory)"
-          accept="application/pdf,image/*"
-          icon={<FileText size={32} />}
-          optional=""
-          file={data.educationCertificate}
-          onFileSelect={(file) =>
-            handleFileSelect("educationCertificate", file)
-          }
-        />
-      </div>
+      {/* Education Certificate Upload */}
+      <FileUpload
+        title="Education Certificate (Compulsory)"
+        accept="application/pdf,image/*"
+        icon={<FileText size={32} />}
+        file={data.educationCertificate}
+        onFileSelect={(file) =>
+          setData((p) => ({ ...p, educationCertificate: file }))
+        }
+      />
 
       {/* Nursing Council */}
       <div className="my-6">
-        <Label className="mb-3 block">
-          Are you registered with the Nursing Council of Kenya?
-        </Label>
+        <Label className={"mb-2"}>Are you registered with the Nursing Council of Kenya?</Label>
         <RadioGroup
-          className="flex gap-4 mt-2"
           value={data.isNursingInKenya}
-          onValueChange={(value) =>
-            setData((prev) => ({ ...prev, isNursingInKenya: value }))
+          onValueChange={(val) =>
+            setData((p) => ({ ...p, isNursingInKenya: val }))
           }
+          className="flex gap-4"
         >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="kenya1" />
-            <Label htmlFor="kenya1" className="text-gray-700 cursor-pointer">
-              Yes
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="kenya2" />
-            <Label htmlFor="kenya2" className="text-gray-700 cursor-pointer">
-              No
-            </Label>
-          </div>
+          <RadioGroupItem value="Yes" id="n1" />
+          <Label htmlFor="n1">Yes</Label>
+
+          <RadioGroupItem value="No" id="n2" />
+          <Label htmlFor="n2">No</Label>
         </RadioGroup>
       </div>
 
       {/* Hospital Based Care */}
       <div>
-        <Label className="mb-2 block">Hospital Based Care</Label>
+        <Label className={"mb-2"}>Hospital Based Care</Label>
         <RadioGroup
-          className="flex gap-4 mt-2"
           value={data.hospitalBasedCare}
-          onValueChange={(value) =>
-            setData((prev) => ({ ...prev, hospitalBasedCare: value }))
+          onValueChange={(val) =>
+            setData((p) => ({ ...p, hospitalBasedCare: val }))
           }
+          className="flex gap-4"
         >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="r1" />
-            <Label
-              htmlFor="r1"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yo" id="r2" />
-            <Label
-              htmlFor="r2"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
-          </div>
+          <RadioGroupItem value="Yes" id="hb1" />
+          <Label htmlFor="hb1">Yes</Label>
+
+          <RadioGroupItem value="No" id="hb2" />
+          <Label htmlFor="hb2">No</Label>
         </RadioGroup>
       </div>
 
+      {/* Hospital experience fields */}
       <div className="flex flex-col mb-8 mt-6 sm:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            type="number"
-            label="Years of experience"
-            name="hospitalBasedYearsOfExperience"
-            placeholder="Experience"
-            maxLength={2}
-            // value={data.hospitalBasedYearsOfExperience}
-            // onChange={(e) => {
-            //   const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-            //   handleChange({
-            //     target: { name: "hospitalBasedYearsOfExperience", value: val },
-            //   });
-            // }}
-          />
-        </div>
-        <div className="flex-1">
-          <Input
-            label="Reference contact"
-            name="hospitalBasedReferenceContact"
-            placeholder="Reference"
-            maxLength={2}
-            // value={data.hospitalBasedReferenceContact}
-            // onChange={handleChange}
-          />
-        </div>
+        <Input
+          type="number"
+          label="Years of experience"
+          name="hospitalBasedYearsOfExperience"
+          value={data.hospitalBasedYearsOfExperience}
+          onChange={handleChange}
+        />
+        <Input
+          label="Reference contact"
+          name="hospitalBasedReferenceContact"
+          value={data.hospitalBasedReferenceContact}
+          onChange={handleChange}
+        />
       </div>
 
       {/* Home Based Care */}
       <div>
-        <Label className="mb-2 block">Home Based Care</Label>
+        <Label className={"mb-2"}>Home Based Care</Label>
         <RadioGroup
-          className="flex gap-4 mt-2"
-          //   value={data.homeBasedCare}
-          //   onValueChange={(value) =>
-          //     setData((prev) => ({ ...prev, homeBasedCare: value }))
-          //   }
+          value={data.homeBasedCare}
+          onValueChange={(val) =>
+            setData((p) => ({ ...p, homeBasedCare: val }))
+          }
+          className="flex gap-4"
         >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="r3" />
-            <Label
-              htmlFor="r3"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="r4" />
-            <Label
-              htmlFor="r4"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
-          </div>
+          <RadioGroupItem value="Yes" id="hb3" />
+          <Label htmlFor="hb3">Yes</Label>
+
+          <RadioGroupItem value="No" id="hb4" />
+          <Label htmlFor="hb4">No</Label>
         </RadioGroup>
       </div>
 
       <div className="flex flex-col mt-6 sm:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            type={"number"}
-            label="Years of experience"
-            name="homeBasedYearsOfExperience"
-            placeholder="Experience"
-            maxLength={2}
-            // value={data.homeBasedYearsOfExperience}
-            // onChange={(e) => {
-            //   const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-            //   handleChange({
-            //     target: { name: "homeBasedYearsOfExperience", value: val },
-            //   });
-            // }}
-          />
+        <Input
+          type="number"
+          label="Years of experience"
+          name="homeBasedYearsOfExperience"
+          value={data.homeBasedYearsOfExperience}
+          onChange={handleChange}
+        />
+        <Input
+          label="Reference contact"
+          name="homeBasedReferenceContact"
+          value={data.homeBasedReferenceContact}
+          onChange={handleChange}
+        />
+      </div>
+
+      {/* Skills */}
+      <div>
+        <Label className="mb-2 mt-4 block">Do you have experience in:</Label>
+        <div className="flex flex-col gap-3">
+          {skillsList.map((skill, idx) => (
+            <div key={idx} className="flex gap-2">
+              <Checkbox
+                checked={data.skills.includes(skill)}
+                onCheckedChange={() => toggleArray("skills", skill)}
+              />
+              <Label>{skill}</Label>
+            </div>
+          ))}
         </div>
-        <div className="flex-1">
+      </div>
+
+      {/* Years of Experience */}
+      <div>
+        <h2 className="formHeading mt-6">Years Experience</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 pb-6">
           <Input
-            label="Reference contact"
-            name="homeBasedReferenceContact"
-            placeholder="Reference"
-            // value={data.homeBasedReferenceContact}
-            // onChange={handleChange}
+            label="Mobility Assistance (Years)"
+            type="number"
+            name="mobilityYears"
+            value={data.mobilityYears}
+            onChange={handleChange}
+          />
+
+          <Input
+            label="Bathing Assistance (Years)"
+            type="number"
+            name="bathingYears"
+            value={data.bathingYears}
+            onChange={handleChange}
+          />
+
+          <Input
+            label="Feeding Assistance (Years)"
+            type="number"
+            name="feedingYears"
+            value={data.feedingYears}
+            onChange={handleChange}
           />
         </div>
       </div>
 
+      {/* Salary Range */}
+      <Input
+        label="Salary Range (KSh per day/month)"
+        type="text"
+        name="serviceFee"
+        placeholder="1500 per day or 35000 per month"
+        value={data.serviceFee}
+        onChange={handleChange}
+      />
+
+      {/* Document Uploads */}
       <div>
-        <Label className="mb-2 mt-4 block">Do you have experience in :</Label>
-        <div className="flex flex-col gap-3">
-          {skills.map((area, idx) => (
-            <div key={idx} className="flex gap-2">
-              <Checkbox
-                id={area}
-                // checked={data.skills.includes(area)}
-                // onCheckedChange={() => toggleSkill(area)}
-              />
-              <Label
-                htmlFor={area}
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                {area}
-              </Label>
-            </div>
+        <h2 className="formHeading mt-6">Document Uploads</h2>
+        <div className="p-3 bg-primary/20 my-6 rounded-xl flex gap-2 items-center">
+          <FileText />
+          <span className="text-sm text-gray-700">
+            Upload PDF or images (max size: 2MB each)
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
+          {documents.map((item) => (
+            <FileUpload
+              key={item.id}
+              title={item.title}
+              accept={item.accept}
+              icon={item.icon}
+              file={data.documents[item.id]}
+              onFileSelect={(file) => handleFileSelect(item.id, file)}
+            />
           ))}
         </div>
       </div>

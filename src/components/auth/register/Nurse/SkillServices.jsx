@@ -20,7 +20,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
   const skills = [
     "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
     "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
-    "Medical Assistance: (assisting nurses with wound care, administering medication (in some cases)",
+    "Medical Assistance: Aassisting nurses with wound care, administering medication (in some cases)",
     "Compassion & Communication Skills",
     "Special needs children caregiving",
     "Elderly caregiving",

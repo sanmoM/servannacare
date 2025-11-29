@@ -26,25 +26,25 @@ const SignUpStart = ({ onSuccess }) => {
     const phone = form.phone.value;
 
     // validate phone (Kenya)
-    // if (phone.length !== 10) {
-    //   toast.error("Invalied phone number!");
-    //   return;
-    // }
+    if (phone.length !== 10) {
+      toast.error("Invalied phone number!");
+      return;
+    }
 
-    // if (!email || !password) {
-    //   toast.error("All fields are required");
-    //   return;
-    // }
+    if (!email || !password) {
+      toast.error("All fields are required");
+      return;
+    }
 
-    // if (password.length < 6) {
-    //   toast.error("Password will be more than 6 character");
-    //   return;
-    // }
+    if (password.length < 6) {
+      toast.error("Password will be more than 6 character");
+      return;
+    }
 
-    // if (!termsAccepted) {
-    //   toast.error("Please accept terms and condition!");
-    //   return;
-    // }
+    if (!termsAccepted) {
+      toast.error("Please accept terms and condition!");
+      return;
+    }
 
     const newUserData = {
       email,

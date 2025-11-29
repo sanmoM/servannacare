@@ -97,11 +97,11 @@ const Review = ({ data, }) => {
 
       {/* Employees Summary */}
       <div className="p-4 border rounded-xl">
-        <h2 className="font-semibold pb-4 text-gray-600">Employees Details</h2>
+        <h2 className="font-semibold pb-4 text-gray-600">Nurse Details</h2>
         <div className="flex gap-2 flex-wrap">
-          <Label>Number of employees added:</Label>
+          <Label>Number of Nurse added:</Label>
           <span className="text-sm text-gray-600">
-            {data.allEmployees.length}
+            {data.nurses.length}
           </span>
         </div>
       </div>
