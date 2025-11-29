@@ -35,8 +35,8 @@ export default function DashboardLayout({ children }) {
   const serviceHolderLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/profile", icon: User },
-    { name: "Find Services", href: "#search", icon: Search },
-    { name: "My Appointments", href: "#appointments", icon: Calendar },
+    { name: "Find Services", href: "/search?category=all", icon: Search },
+    { name: "My Appointments", href: "/dashboard/my-appointment", icon: Calendar },
     { name: "Book History", href: "#hook-history", icon: ClipboardClock },
     { name: "Payment History", href: "#payment-history", icon: History },
     
