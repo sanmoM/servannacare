@@ -1,73 +1,96 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import React from "react";
-import toast from "react-hot-toast";
 
 const page = () => {
-  const appointments = [
+  const bookingHistory = [
     {
       id: 1,
       serviceName: "Nurse Care",
       specialist: "Jassy Jea",
+      bookingDate: "15 Jan 2024",
       startDate: "23 Jan 2024",
       endDate: "10 Feb 2024",
-      totalDays: "18 Days",
+      totalDays: 18,
       status: "Pending",
+      amountPaid: "KSh 25,000",
     },
     {
       id: 2,
       serviceName: "Elderly Assistance",
       specialist: "Maria Simon",
+      bookingDate: "25 Jan 2024",
       startDate: "01 Feb 2024",
       endDate: "12 Feb 2024",
-      totalDays: "11 Days",
+      totalDays: 11,
       status: "Completed",
+      amountPaid: "KSh 15,000",
     },
     {
       id: 3,
       serviceName: "Medical Nurse",
       specialist: "Kelvin Mark",
+      bookingDate: "05 Jan 2024",
       startDate: "10 Jan 2024",
       endDate: "20 Jan 2024",
-      totalDays: "10 Days",
+      totalDays: 10,
       status: "Ongoing",
+      amountPaid: "KSh 20,000",
     },
     {
       id: 4,
       serviceName: "Home Care Support",
       specialist: "Sofia Rahman",
+      bookingDate: "30 Jan 2024",
       startDate: "05 Feb 2024",
       endDate: "15 Feb 2024",
-      totalDays: "10 Days",
+      totalDays: 10,
       status: "Cancelled",
+      amountPaid: "KSh 0",
+    },
+    {
+      id: 5,
+      serviceName: "Post-Surgery Assistance",
+      specialist: "David Kim",
+      bookingDate: "10 Mar 2024",
+      startDate: "12 Mar 2024",
+      endDate: "22 Mar 2024",
+      totalDays: 10,
+      status: "Pending",
+      amountPaid: "KSh 30,000",
+    },
+    {
+      id: 6,
+      serviceName: "Pediatric Care",
+      specialist: "Anna Lee",
+      bookingDate: "15 Mar 2024",
+      startDate: "18 Mar 2024",
+      endDate: "25 Mar 2024",
+      totalDays: 7,
+      status: "Completed",
+      amountPaid: "KSh 18,000",
+    },
+    {
+      id: 7,
+      serviceName: "Physiotherapy",
+      specialist: "Mark Anthony",
+      bookingDate: "20 Mar 2024",
+      startDate: "01 Apr 2024",
+      endDate: "10 Apr 2024",
+      totalDays: 9,
+      status: "Pending",
+      amountPaid: "KSh 22,000",
     },
   ];
 
-  const statusColors = {
+   const statusColors = {
     Pending: "bg-amber-300",
     Completed: "bg-green-300",
     Ongoing: "bg-blue-300",
     Cancelled: "bg-red-300",
   };
 
-  const handleCancel = (id) => {
-    toast.error(`Appointment cancelled with ${id}`);
-  };
-
   return (
     <div>
-      <h1 className="sectionHeading">Your Appointment</h1>
+      <h1 className="sectionHeading">Booking History</h1>
 
       <div className="mt-6 overflow-x-auto w-full">
         <table className="min-w-[700px] w-full text-sm text-left text-gray-700 border rounded-xl shadow">
@@ -80,6 +103,9 @@ const page = () => {
                 Specialist Name
               </th>
               <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
+                Booked At
+              </th>
+              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
                 Start Date
               </th>
               <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
@@ -89,16 +115,16 @@ const page = () => {
                 Total Days
               </th>
               <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Status
+                Amount (KSh)
               </th>
               <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Action
+                Status
               </th>
             </tr>
           </thead>
 
           <tbody>
-            {appointments.map((row) => (
+            {bookingHistory.map((row) => (
               <tr
                 key={row.id}
                 className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"
@@ -110,6 +136,9 @@ const page = () => {
                   {row.specialist}
                 </td>
                 <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
+                  {row.bookingDate}
+                </td>
+                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
                   {row.startDate}
                 </td>
                 <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
@@ -119,6 +148,10 @@ const page = () => {
                   {row.totalDays}
                 </td>
                 <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
+                  {row.amountPaid}
+                </td>
+
+                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
                   <span
                     className={`${
                       statusColors[row.status]
@@ -127,48 +160,8 @@ const page = () => {
                     {row.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.status === "Pending" || row.status === "Ongoing" ? (
-                    <>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <button
-                           
-                            className="px-4 py-1 text-sm bg-red-500 cursor-pointer hover:bg-red-400 text-white rounded-md transition"
-                          >
-                            Cancel
-                          </button>
-                        </DialogTrigger>
-
-                        <DialogContent className="sm:max-w-md">
-                          <DialogHeader>
-                            <DialogTitle className="text-center">
-                              Are you sure?
-                            </DialogTitle>
-                            <DialogDescription className="text-center" />
-                          </DialogHeader>
-                          <h2 className="text-sm text-gray-700 font-semibold">
-                            Do you want cancel Appointment with{" "}
-                            <span>{row.specialist}?</span>
-                          </h2>
-
-                          <DialogFooter className="mt-6">
-                            <DialogClose asChild>
-                              <Button type="button" variant="secondary">
-                                Cancel
-                              </Button>
-                            </DialogClose>
-                            <DialogClose asChild>
-                              <Button onClick ={() => handleCancel(row.id)} type="button">Confirm</Button>
-                            </DialogClose>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </>
-                  ) : (
-                    <span className="text-gray-400 italic text-sm">N/A</span>
-                  )}
-                </td>
+                
+                
               </tr>
             ))}
           </tbody>

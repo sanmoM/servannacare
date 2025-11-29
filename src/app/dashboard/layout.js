@@ -37,7 +37,7 @@ export default function DashboardLayout({ children }) {
     { name: "Profile", href: "/dashboard/profile", icon: User },
     { name: "Find Services", href: "/search?category=all", icon: Search },
     { name: "My Appointments", href: "/dashboard/my-appointment", icon: Calendar },
-    { name: "Book History", href: "#hook-history", icon: ClipboardClock },
+    { name: "Book History", href: "/dashboard/book-history", icon: ClipboardClock },
     { name: "Payment History", href: "#payment-history", icon: History },
     
   ];

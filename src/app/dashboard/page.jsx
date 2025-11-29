@@ -54,7 +54,7 @@ export default function DashboardPage() {
       <h1 className="sectionHeading">
         Hi <span className="text-primary">{user?.name || user?.email}!</span>
       </h1>
-      <p className="mt-2 text-gray-600">Welcome to your Servannacare!</p>
+      <p className="mt-2 text-gray-600">Welcome to Servannacare!</p>
 
       <div className="grid  sm:grid-cols-2 mt-10 gap-4 lg:gap-6 lg:grid-cols-4">
         {userDashboardStats.map((stats) => (
