@@ -1,6 +1,9 @@
 import ProfileCard from "@/components/profileCard";
 import Container from "@/components/shared/Container";
+import { Button } from "@/components/ui/button";
 import { fakeData } from "@/utilities/data";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 const OurSpecialist = () => {
@@ -20,6 +23,9 @@ const OurSpecialist = () => {
           <ProfileCard key={indx} profile={data} />
         ))}
       </div>
+      <Link href={"/search?category=all"} className="mt-8 flex justify-center">
+        <Button >More <ChevronRight/></Button>
+      </Link>
     </Container>
   );
 };

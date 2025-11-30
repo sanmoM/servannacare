@@ -100,7 +100,9 @@ const page = () => {
             </div>
           </div>
         </div>
+        
         <MissionVision/>
+        
       </Container>
     </div>
   );

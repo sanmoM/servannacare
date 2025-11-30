@@ -1,9 +1,11 @@
 import BlogCard from "@/components/pageParts/blogParts/BlogCard";
+import Faq from "@/components/pageParts/homeParts/Faq";
 import HowItWorks from "@/components/pageParts/homeParts/HowItWorks";
 import OurSpecialist from "@/components/pageParts/homeParts/OurSpecialist";
 import Services from "@/components/pageParts/homeParts/Services";
 import Slider from "@/components/pageParts/homeParts/Slider";
 import Testimonials from "@/components/pageParts/homeParts/Testimonials";
+import WhyChooseUs from "@/components/pageParts/homeParts/WhyChooseUs";
 import Container from "@/components/shared/Container";
 import { blogs } from "@/utilities/data";
 
@@ -27,6 +29,8 @@ export default function Home() {
           })}
         </Container>
       </div>
+      <Faq/>
+      <WhyChooseUs/>
       <Testimonials />
     </div>
   );

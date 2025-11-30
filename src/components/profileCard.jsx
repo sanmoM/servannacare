@@ -36,7 +36,7 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 const ProfileCard = ({ profile }) => {
   const [openModal, setOpenModal] = useState(false);
   return (
-    <div className="w-full max-w-2xl flex flex-col lg:flex-row overflow-hidden bg-white border border-gray-200 rounded-2xl shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl">
+    <div data-aos="fade-up" className="w-full max-w-2xl flex flex-col lg:flex-row overflow-hidden bg-white border border-gray-200 rounded-2xl  transition-all duration-300 ease-in-out hover:shadow-md">
       {/* Photo Section */}
       <div className="w-full lg:w-1/3 flex items-center justify-center p-6 lg:rounded-l-2xl relative">
         {/* Half background */}

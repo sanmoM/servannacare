@@ -1,7 +1,7 @@
 "use client";
 
 import CountUp from "react-countup";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -12,6 +12,26 @@ import { testimonials } from "@/utilities/data";
 import Container from "@/components/shared/Container";
 
 export default function Testimonials() {
+  const [startCount, setStartCount] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStartCount(true);
+        }
+      },
+      { threshold: 0.4 } // 
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className="w-full py-10 md:py-16 bg-[#f4fcfe]">
       <Container>
@@ -80,19 +100,25 @@ export default function Testimonials() {
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-3 lg:gap-12 gap-4 md:gap-6 lg:mt-24 mt-6 pt-16 border-t border-border">
+        <div
+          ref={sectionRef}
+          className="grid grid-cols-3 lg:gap-12 gap-4 md:gap-6 lg:mt-24 mt-6 pt-16 border-t border-border"
+        >
           {[
             { number: 500, suffix: "+", label: "Happy Clients" },
             { number: 98, suffix: "%", label: "Satisfaction Rate" },
             { number: 4.9, suffix: "★", label: "Average Rating" },
           ].map((stat, idx) => (
             <div key={idx} className="text-center">
-              <p className="text-2xl  text-primary md:text-5xl font-bold text-foreground sm:mb-3 mb-1">
-                <CountUp
-                  end={stat.number}
-                  duration={2}
-                  decimals={stat.number % 1 !== 0 ? 1 : 0}
-                />
+              <p className="text-2xl text-primary md:text-5xl font-bold text-foreground sm:mb-3 mb-1">
+                {startCount && (
+                  <CountUp
+                    end={stat.number}
+                    duration={2}
+                    decimals={stat.number % 1 !== 0 ? 1 : 0}
+                  />
+                )}
+                {!startCount && "0"}
                 {stat.suffix}
               </p>
 
@@ -103,36 +129,13 @@ export default function Testimonials() {
           ))}
         </div>
       </Container>
-
-      {/* Custom Pagination Styles */}
-      {/* <style jsx>{`
-        :global(.swiper-pagination-custom .swiper-pagination-bullet) {
-          background-color: var(--muted);
-          width: 8px;
-          height: 8px;
-          opacity: 0.4;
-          transition: all 0.3s ease;
-          margin: 0 6px;
-        }
-
-        :global(.swiper-pagination-custom .swiper-pagination-bullet-active) {
-          background-color: var(--primary);
-          opacity: 1;
-          width: 24px;
-          border-radius: 4px;
-        }
-
-        :global(.swiper-pagination-custom .swiper-pagination-bullet:hover) {
-          opacity: 0.7;
-        }
-      `}</style> */}
     </section>
   );
 }
 
 function TestimonialCard({ testimonial }) {
   return (
-    <div className="h-full">
+    <div data-aos="fade-up" className="h-full">
       <div className="bg-card border border-border rounded-xl  h-full flex flex-col hover:border-primary/30 transition-all duration-300 hover:shadow-md  hover:shadow-primary/5  group">
         <div className="px-6 pt-8">
           {/* Quote Icon */}

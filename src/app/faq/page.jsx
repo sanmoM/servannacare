@@ -1,5 +1,6 @@
 "use client";
 
+import Faq from "@/components/pageParts/homeParts/Faq";
 import Container from "@/components/shared/Container";
 import Input from "@/components/shared/Input";
 import PageBanner from "@/components/shared/PageBanner";
@@ -60,64 +61,17 @@ const page = () => {
         image="https://www.cumanagement.com/sites/default/files/2018-10/hand-holding-question-mark.jpg"
       />
 
-      <Container className="py-10 lg:py-16">
-        <div className="pb-6">
-          <h4 className="md:text-sm mb-3  text-xs font-semibold text-primary">
-            FAQ
-          </h4>
-          <h2 className="sectionHeading ">
-            Explore common questions about our services
-          </h2>
-          <p className="text-sm mt-2 max-w-4xl text-gray-700">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum odit
-            perspiciatis fuga labore .
-          </p>
-        </div>
-        <div className="lg:flex gap-4 ">
-          <div data-aos="fade-up" className="flex-1 hidden lg:block">
-            <Image
-              src={
-                "https://static.tildacdn.com/tild3063-3165-4532-a338-326666663139/Clip_path_group_52.png"
-              }
-              alt="image"
-              quality={100}
-              height={500}
-              width={600}
-              className="rounded-xl w-full h-full"
-            />
-          </div>
-          <div className="flex-1">
-            <Accordion
-              type="single"
-              collapsible
-              defaultValue="item-1"
-              className="space-y-4"
-            >
-              {faq.map((item) => (
-                <AccordionItem
-                data-aos="fade-up"
-                  key={item.id}
-                  value={`item-${item.id}`}
-                  className="border border-border rounded-lg"
-                >
-                  <AccordionTrigger className="py-4 hover:no-underline">
-                    <span className="text-left text-base font-medium">
-                      {item.question}
-                    </span>
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-4 text-muted-foreground">
-                    {item.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
-        </div>
-        <hr className="mt-6"/>
+      <Faq />
+
+      <Container className={"pb-10"}>
+        <hr className="mt-6" />
         <div className="pt-8  lg:pt-12">
           <h2 className="sectionHeading mb-4">Do you have any Question?</h2>
           <form action="">
-            <div data-aos="fade-up" className="flex flex-col md:flex-row items-center gap-4">
+            <div
+              data-aos="fade-up"
+              className="flex flex-col md:flex-row items-center gap-4"
+            >
               <Input
                 label="Question"
                 placeholder="Enter your Question"
@@ -131,7 +85,7 @@ const page = () => {
               />
             </div>
             <div data-aos="fade-up" className="mt-4 flex justify-end">
-                <Button size={"lg"}>Submit</Button>
+              <Button size={"lg"}>Submit</Button>
             </div>
           </form>
         </div>

@@ -44,7 +44,7 @@ const page = () => {
       endDate: "15 Feb 2024",
       totalDays: 10,
       status: "Cancelled",
-      amountPaid: "KSh 0",
+      amountPaid: "KSh 1200",
     },
     {
       id: 5,
