@@ -41,10 +41,17 @@ const Page = () => {
     }
 
     let role = ""
-    if(email === "serviceprovider@gmail.com"){
-      role = "service provider"
+    if(email === "user@gmail.com"){
+      role = "user"
+    }else if (email === "specialist@gmail.com"){
+      role = "specialist"
+    }else if (email === "agency@gmail.com"){
+      role = "agency"
+    }else if (email === "medical@gmail.com"){
+      role = "medical"
     }else{
-      role = "service holder"
+      toast.error("Incorrect Email!")
+      return;
     }
 
      const userInfo = {

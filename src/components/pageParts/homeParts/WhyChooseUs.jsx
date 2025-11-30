@@ -43,7 +43,7 @@ const WhyChooseUs = () => {
           <h2 className="sectionHeading text-center mb-2">
             WHY CHOOSE US?
           </h2>
-          <p className="text-center text-slate-600 mb-8 lg:mb-10 text-sm lg:text-base">
+          <p className="text-center text-slate-600 mb-8 lg:mb-10 text-sm ">
             Families choose Servanna because we go beyond providing help
           </p>
         </div>

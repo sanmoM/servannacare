@@ -87,7 +87,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <form className="mt-6 flex max-w-lg  rounded-lg overflow-hidden">
+        {/* <form className="mt-6 flex max-w-lg  rounded-lg overflow-hidden">
           <input
             type="email"
             placeholder="Email"
@@ -100,7 +100,9 @@ const Footer = () => {
           >
             SUBSCRIBE
           </button>
-        </form>
+        </form> */}
+
+        {/* cta section  */}
 
         {/* Bottom section: Copyright and Socials */}
         <hr className="my-10 border-primary" />

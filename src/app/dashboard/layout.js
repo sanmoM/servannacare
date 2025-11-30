@@ -20,47 +20,70 @@ import { Button } from "@/components/ui/button";
 import useLocalUser from "@/hooks/useLocalUser";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
+import Link from "next/link";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname(); // current route
-  const {user,loaded} = useLocalUser();
+  const { user, loaded } = useLocalUser();
   const router = useRouter();
 
   console.log(user);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // --- Links ---
-  const serviceHolderLinks = [
+  const userLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { name: "Profile", href: "/dashboard/profile", icon: User },
+    { name: "Profile", href: "/dashboard/user-profile", icon: User },
     { name: "Find Services", href: "/search?category=all", icon: Search },
-    { name: "My Appointments", href: "/dashboard/my-appointment", icon: Calendar },
-    { name: "Book History", href: "/dashboard/book-history", icon: ClipboardClock },
-    { name: "Payment History", href: "/dashboard/payment-history", icon: History },
-    
+    {
+      name: "My Appointments",
+      href: "/dashboard/my-appointment",
+      icon: Calendar,
+    },
+    {
+      name: "Book History",
+      href: "/dashboard/book-history",
+      icon: ClipboardClock,
+    },
+    {
+      name: "Payment History",
+      href: "/dashboard/payment-history",
+      icon: History,
+    },
   ];
 
-  const serviceProviderLinks = [
+  const specialistLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-     { name: "Profile", href: "/dashboard/profile", icon: User },
-    { name: "Schedule", href: "#schedule", icon: Calendar },
+    { name: "Profile", href: "/dashboard/specialist-profile", icon: User },
+    {
+      name: "Schedule",
+      href: "/dashboard/specialist-schedule",
+      icon: Calendar,
+    },
     { name: "Clients", href: "#clients", icon: Users },
     { name: "Notes", href: "#notes", icon: NotepadText },
     { name: "Messages", href: "#messages", icon: MessageSquare },
-    { name: "Feedback", href: "#feedback", icon: Smile},
-   
+    { name: "Feedback", href: "#feedback", icon: Smile },
   ];
 
-  const links = user?.role === "service holder" ? serviceHolderLinks : serviceProviderLinks;
-
+  let links = [];
+  if (user?.role === "user") {
+    links = userLinks;
+  } else if (user?.role === "agency") {
+    links;
+  } else if (user?.role === "medical") {
+    links;
+  } else if (user?.role === "specialist") {
+    links = specialistLinks;
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("user");
-    router.push("/")
-    toast.success("Log Out Success!")
-  }
+    router.push("/");
+    toast.success("Log Out Success!");
+  };
 
   // --- NavLink Component ---
   const NavLink = ({ link }) => {
@@ -85,7 +108,6 @@ export default function DashboardLayout({ children }) {
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-
       {/* SIDEBAR */}
       <>
         {isMobileMenuOpen && (
@@ -99,7 +121,11 @@ export default function DashboardLayout({ children }) {
           className={`bg-primary text-white fixed lg:static top-0 left-0 h-full z-50
           transition-all duration-300
           ${isSidebarOpen ? "w-72" : "w-0 lg:w-0"}
-          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          ${
+            isMobileMenuOpen
+              ? "translate-x-0"
+              : "-translate-x-full lg:translate-x-0"
+          }
         `}
         >
           {isSidebarOpen && (
@@ -107,8 +133,12 @@ export default function DashboardLayout({ children }) {
               {/* Sidebar Top */}
               <div className="p-6 flex items-center justify-between border-b border-white/20">
                 <div className="flex gap-2 items-center">
-                  <img className="w-8" src="/logo.png" alt="Logo"/>
-                  <h2 className="font-semibold text-sm lg:text-base">Dashboard</h2>
+                  <Link className="flex gap-2 items-center" href={"/"}>
+                    <img className="w-8" src="/logo.png" alt="Logo" />
+                    <h2 className="font-semibold text-sm lg:text-base">
+                      SERVANNACARE
+                    </h2>
+                  </Link>
                 </div>
                 <button
                   className="lg:hidden"
@@ -120,16 +150,19 @@ export default function DashboardLayout({ children }) {
 
               {/* Links */}
               <nav className="flex-grow overflow-y-auto py-3">
-                {
-                  !loaded?<LoadingSpinner/>:(links.map((link) => (
-                  <NavLink key={link.name} link={link} />
-                )))
-                }
-                
+                {!loaded ? (
+                  <LoadingSpinner />
+                ) : (
+                  links.map((link) => <NavLink key={link.name} link={link} />)
+                )}
               </nav>
 
               {/* Logout Button */}
-              <Button onClick={handleLogout} size={"lg"} className="bg-secondary hover:bg-secondary/80 mx-3 mb-4">
+              <Button
+                onClick={handleLogout}
+                size={"lg"}
+                className="bg-secondary hover:bg-secondary/80 mx-3 mb-4"
+              >
                 Log Out
               </Button>
 
@@ -145,9 +178,8 @@ export default function DashboardLayout({ children }) {
       {/* MAIN CONTENT */}
       <main className="flex-1 overflow-y-auto bg-gray-50 transition-all duration-300">
         {/* Top Bar */}
-        <div className="bg-primary flex  justify-between pr-2 py-3 sm:py-5 text-white">
+        <div className="bg-primary sticky top-0 z-30 flex justify-between pr-2 py-3 sm:py-5 text-white shadow-md">
           <button
-          
             className="p-2 cursor-pointer hover:text-gray-100"
             onClick={() => {
               if (window.innerWidth < 1024) {
@@ -158,14 +190,17 @@ export default function DashboardLayout({ children }) {
             }}
           >
             <div className="flex items-center gap-2">
-              <PanelLeft /> 
-              <span className="text-sm lg:hidden font-semibold">Dasbboard</span>
+              <PanelLeft />
+              <span className="text-sm lg:hidden font-semibold">Dashboard</span>
             </div>
           </button>
+
+          <Link href={`/dashboard/${user?.role}-profile`}>
           <img
             src="/user.png"
             className="h-10 w-10 border bg-white border-white rounded-full"
           />
+          </Link>
         </div>
 
         <div className="p-4 lg:p-8">{children}</div>

@@ -46,6 +46,7 @@ const HouseManager = () => {
           location: formData.basicInfo.location,
           name: formData.basicInfo.name,
           profilePic: null,
+          role:"specialist"
         })
       );
 

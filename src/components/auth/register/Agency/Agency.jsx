@@ -87,8 +87,10 @@ const Agency = () => {
     else {
       localStorage.setItem(
         "user",
-        JSON.stringify(
-        user  
+        JSON.stringify({
+          ...user,
+          role:"agency"
+        }  
         )
       )
       toast.success("Register Successfully!");

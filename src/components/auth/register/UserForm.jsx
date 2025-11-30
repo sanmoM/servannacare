@@ -57,7 +57,7 @@ const UserForm = () => {
         month: "long",
         year: "numeric",
       }),
-      role: "service holder",
+      role: "user",
     };
 
     setTemUser(userInfo);
