@@ -62,9 +62,8 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/specialist-schedule",
       icon: Calendar,
     },
-    { name: "Clients", href: "#clients", icon: Users },
-    { name: "Notes", href: "#notes", icon: NotepadText },
-    { name: "Messages", href: "#messages", icon: MessageSquare },
+    { name: "Clients", href: "/dashboard/specialist-clients", icon: Users },
+    { name: "Notes", href: "/dashboard/specialist-note", icon: NotepadText },
     { name: "Feedback", href: "#feedback", icon: Smile },
   ];
 

@@ -113,20 +113,6 @@ const Review = ({ data, onNext, onBack }) => {
         renderSection(sectionKey, sectionValue)
       )}
 
-      {/*  Remember Me Checkbox
-      <div className="flex items-center gap-2 mt-6">
-        <Checkbox
-          id="remember"
-          checked={remember}
-          onCheckedChange={setRemember}
-        />
-        <Label
-          className="text-gray-700 font-normal cursor-pointer"
-          htmlFor="remember"
-        >
-          Remember me
-        </Label>
-      </div> */}
 
       {/*  Buttons */}
       <div className="flex justify-between pt-6">

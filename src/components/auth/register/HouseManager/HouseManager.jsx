@@ -29,30 +29,35 @@ const HouseManager = () => {
   };
 
   const handleNext = (dataForStep) => {
-    if (step === 1)
-      setFormData((prev) => ({ ...prev, basicInfo: dataForStep }));
-    if (step === 2)
-      setFormData((prev) => ({ ...prev, additionalDetails: dataForStep }));
-    if (step === 3)
-      setFormData((prev) => ({ ...prev, documents: dataForStep }));
+    let updatedFormData = { ...formData };
+
+    if (step === 1) updatedFormData.basicInfo = dataForStep;
+    if (step === 2) updatedFormData.additionalDetails = dataForStep;
+    if (step === 3) updatedFormData.documents = dataForStep;
+
+    setFormData(updatedFormData);
 
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      // Save complete updated data (not outdated state)
       localStorage.setItem(
         "user",
         JSON.stringify({
           ...user,
-          location: formData.basicInfo.location,
-          name: formData.basicInfo.name,
+          location: updatedFormData.basicInfo.location,
+          name: updatedFormData.basicInfo.name,
           profilePic: null,
-          role:"specialist"
+          role: "specialist",
         })
       );
 
+      localStorage.setItem("specialist", JSON.stringify(updatedFormData));
+
+      console.log(updatedFormData);
+
       toast.success("Register Successfully!");
       router.push("/dashboard");
-      setFormData({ basicInfo: {}, additionalDetails: {}, documents: {} });
     }
   };
 

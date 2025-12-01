@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import {
@@ -36,7 +36,10 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 const ProfileCard = ({ profile }) => {
   const [openModal, setOpenModal] = useState(false);
   return (
-    <div data-aos="fade-up" className="w-full max-w-2xl flex flex-col lg:flex-row overflow-hidden bg-white border border-gray-200 rounded-2xl  transition-all duration-300 ease-in-out hover:shadow-md">
+    <div
+      data-aos="fade-up"
+      className="w-full max-w-2xl flex flex-col lg:flex-row overflow-hidden bg-white border border-gray-200 rounded-2xl  transition-all duration-300 ease-in-out hover:shadow-md"
+    >
       {/* Photo Section */}
       <div className="w-full lg:w-1/3 flex items-center justify-center p-6 lg:rounded-l-2xl relative">
         {/* Half background */}
@@ -113,22 +116,42 @@ const ProfileCard = ({ profile }) => {
           </div>
 
           <div className="flex-1">
-            <Button className="w-full" onClick={() => setOpenModal(true)}>
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Book Now
-            </Button>
+            <Dialog >
+              <DialogTrigger asChild>
+                <Button className="w-full" onClick={() => setOpenModal(true)}>
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Book Now
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-7xl">
+                <DialogHeader>
+                  <DialogTitle></DialogTitle>
+                  <DialogDescription>
+                   
+                  </DialogDescription>
+                </DialogHeader>
+                <SubscriptionPlans />
+                {/* <DialogFooter className="sm:justify-start">
+                  <DialogClose asChild>
+                    <Button type="button" variant="secondary">
+                      Close
+                    </Button>
+                  </DialogClose>
+                </DialogFooter> */}
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
 
       {/* Custom Modal */}
-      <CustomModal isOpen={openModal} onClose={() => setOpenModal(false)}>
+      {/* <CustomModal isOpen={openModal} onClose={() => setOpenModal(false)}>
         
 
         <SubscriptionPlans />
 
         
-      </CustomModal>
+      </CustomModal> */}
     </div>
   );
 };
