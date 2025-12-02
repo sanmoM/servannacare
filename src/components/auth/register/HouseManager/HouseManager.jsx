@@ -49,6 +49,8 @@ const HouseManager = () => {
           name: updatedFormData.basicInfo.name,
           profilePic: null,
           role: "specialist",
+          subRole:"housemanager",
+          status:"under review"
         })
       );
 

@@ -17,9 +17,6 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
     gender: defaultValues.gender || "",
     languages: defaultValues.languages || [],
     canDrive: defaultValues.canDrive || "",
-    // bankName: defaultValues.bankName || "",
-    // bankAccountName: defaultValues.bankAccountName || "",
-    // bankAccountNumber: defaultValues.bankAccountNumber || "",
   });
 
   const handleChange = (e) => {
@@ -201,42 +198,6 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
           </div>
         </RadioGroup>
       </div>
-
-      {/* Bank Details
-      <div className="">
-        <h4 className="formHeading mb-3 mt-6">Bank Details</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-4">
-          <Input
-            label="Bank Name"
-            name="bankName"
-            placeholder="Your bank name"
-            value={data.bankName}
-            onChange={handleChange}
-          />
-          <Input
-            label="Account Name"
-            name="bankAccountName"
-            placeholder="Your account name"
-            value={data.bankAccountName}
-            onChange={handleChange}
-          />
-          <Input
-            label="Account Number"
-            name="bankAccountNumber"
-            placeholder="Your account number"
-            value={data.bankAccountNumber}
-            onChange={handleChange}
-          />
-        </div>
-      </div> */}
-
-      {/* Remember Me */}
-      {/* <div className="flex items-center gap-2 text-gray-700 text-sm mt-4">
-        <Checkbox id="remember" />
-        <Label htmlFor="remember" className="text-gray-700 cursor-pointer">
-          Remember me
-        </Label>
-      </div> */}
 
       <div className="flex justify-end mt-6">
         <Button type="submit" size="lg">

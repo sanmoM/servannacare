@@ -1,5 +1,6 @@
 import FileUpload from "@/components/auth/register/FileUpload";
 import Input from "@/components/shared/Input";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useLocalUser from "@/hooks/useLocalUser";
 import { languages } from "@/utilities/data";
 import {
   Cross,
@@ -19,11 +21,101 @@ import {
   IdCardLanyard,
   ImageIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const HouseManager = ({ data = {} }) => {
-  const {basicInfo, documents, additionalDetails} = data;
-  console.log(basicInfo);
+  const router  = useRouter()
+  const {user}  = useLocalUser();
+
+  const [formData, setFormData] = useState({
+    basicInfo: {
+      name: data.basicInfo?.name || "",
+      education: data.basicInfo?.education || "",
+      experience: data.basicInfo?.experience || "",
+      salaryRange: data.basicInfo?.salaryRange || "",
+      location: data.basicInfo?.location || "",
+      serviceOffered: data.basicInfo?.serviceOffered || "",
+      languages: data.basicInfo?.languages || [],
+    },
+
+    additionalDetails: {
+      isMother: data.additionalDetails?.isMother || "",
+      ageOfKids: data.additionalDetails?.ageOfKids || [],
+      isHandelingPet: data.additionalDetails?.isHandelingPet || "",
+      preferBeingA: data.additionalDetails?.preferBeingA || "",
+    },
+
+    documents:{
+      firstAidCertificate:data.documents?.firstAidCertificate || null,
+      goodConductCertificate:data.documents?.goodConductCertificate || null,
+      iDCopy:data.documents?.iDCopy || null,
+      profilePhoto:data.documents?.profilePhoto || null,
+      drivingLicense:data.documents?.drivingLicense || null
+    }
+
+
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((p) => ({
+      ...p,
+      basicInfo: { ...p.basicInfo, [name]: value },
+    }));
+  };
+
+  const handleSelect = (field, value) => {
+    setFormData((p) => ({
+      ...p,
+      basicInfo: { ...p.basicInfo, [field]: value },
+    }));
+  };
+
+  const handleAdditionalSelect = (field, value) => {
+    setFormData((p) => ({
+      ...p,
+      additionalDetails: { ...p.additionalDetails, [field]: value },
+    }));
+  };
+
+  const toggleLanguage = (lan) => {
+    setFormData((p) => {
+      const exists = p.basicInfo.languages.includes(lan);
+      return {
+        ...p,
+        basicInfo: {
+          ...p.basicInfo,
+          languages: exists
+            ? p.basicInfo.languages.filter((l) => l !== lan)
+            : [...p.basicInfo.languages, lan],
+        },
+      };
+    });
+  };
+
+  const toggleageOfKids = (age) => {
+    setFormData((p) => {
+      const exists = p.additionalDetails.ageOfKids.includes(age);
+      return {
+        ...p,
+        additionalDetails: {
+          ...p.additionalDetails,
+          ageOfKids: exists
+            ? p.additionalDetails.ageOfKids.filter((a) => a !== age)
+            : [...p.additionalDetails.ageOfKids, age],
+        },
+      };
+    });
+  };
+
+  const handleFileSelect = (id, file) => {
+    setFormData((p) => ({
+      ...p,
+      documents: { ...p.documents, [id]: file },
+    }));
+  };
 
   const docs = [
     {
@@ -63,9 +155,19 @@ const HouseManager = ({ data = {} }) => {
       optional: true,
     },
   ];
+
+  const handleUpdate = (e) =>{
+      e.preventDefault()
+      localStorage.setItem("specialist", JSON.stringify(formData));
+      localStorage.setItem("user",JSON.stringify({...user,name:formData.basicInfo.name,location:formData.basicInfo.location}));
+      toast.success("Profile Updated!");
+      router.push("/dashboard")
+      
+  };
+  
   return (
     <div>
-      <form className="space-y-6">
+      <form onSubmit={handleUpdate}  className="space-y-6 relative">
         <h4 className="formHeading">Basic Information</h4>
 
         <div className="flex flex-col sm:flex-row gap-6">
@@ -74,8 +176,8 @@ const HouseManager = ({ data = {} }) => {
               label="Full Name (AS per ID)"
               name="name"
               placeholder="Enter your name"
-                value={basicInfo?.name}
-              //   onChange={handleChange}
+              value={formData.basicInfo?.name}
+              onChange={handleChange}
             />
           </div>
 
@@ -84,10 +186,8 @@ const HouseManager = ({ data = {} }) => {
               Education Level
             </label>
             <Select
-              value={basicInfo?.education}
-            //   onValueChange={(value) =>
-            //     setData((prev) => ({ ...prev, education: value }))
-            //   }
+              value={formData.basicInfo?.education}
+              onValueChange={(v) => handleSelect("education", v)}
             >
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select a category" />
@@ -111,10 +211,8 @@ const HouseManager = ({ data = {} }) => {
               Experience (Years)
             </label>
             <Select
-              value={basicInfo.experience}
-            //   onValueChange={(value) =>
-            //     setData((prev) => ({ ...prev, experience: value }))
-            //   }
+              value={formData.basicInfo.experience}
+              onValueChange={(v) => handleSelect("experience", v)}
             >
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select years of experience" />
@@ -137,10 +235,8 @@ const HouseManager = ({ data = {} }) => {
               Salary Range (USD)
             </label>
             <Select
-              value={basicInfo.salaryRange}
-            //   onValueChange={(value) =>
-            //     setData((prev) => ({ ...prev, salaryRange: value }))
-            //   }
+              value={formData.basicInfo.salaryRange}
+              onValueChange={(v) => handleSelect("salaryRange", v)}
             >
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select expected salary" />
@@ -165,8 +261,8 @@ const HouseManager = ({ data = {} }) => {
               label="Your Location"
               name="location"
               placeholder="Type your location.."
-                value={basicInfo.location}
-              //   onChange={handleChange}
+              value={formData.basicInfo.location}
+              onChange={handleChange}
             />
           </div>
           <div className="flex-1">
@@ -175,10 +271,8 @@ const HouseManager = ({ data = {} }) => {
               Service Offered
             </label>
             <Select
-              value={basicInfo?.serviceOffered}
-            //   onValueChange={(value) =>
-            //     setData((prev) => ({ ...prev, serviceOffered: value }))
-            //   }
+              value={formData.basicInfo.serviceOffered}
+              onValueChange={(v) => handleSelect("serviceOffered", v)}
             >
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select service offered" />
@@ -205,8 +299,8 @@ const HouseManager = ({ data = {} }) => {
               <div key={lan.id} className="flex items-center gap-2">
                 <Checkbox
                   id={lan.value}
-                    checked={basicInfo?.languages.includes(lan.value)}
-                  //   onCheckedChange={() => toggleLanguage(lan.value)}
+                  checked={formData.basicInfo.languages.includes(lan.value)}
+                  onCheckedChange={() => toggleLanguage(lan.value)}
                 />
                 <Label
                   className="text-gray-700 font-normal cursor-pointer"
@@ -227,8 +321,8 @@ const HouseManager = ({ data = {} }) => {
             <Label>Are you a mother?</Label>
             <RadioGroup
               className="flex gap-4 mt-3"
-                value={additionalDetails?.isMother}
-              //   onValueChange={(value) => setData((prev) => ({ ...prev, isMother: value }))}
+              value={formData.additionalDetails.isMother}
+              onValueChange={(v) => handleAdditionalSelect("isMother", v)}
             >
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="yes" id="r1" />
@@ -259,8 +353,8 @@ const HouseManager = ({ data = {} }) => {
                 <div key={age} className="flex  gap-2">
                   <Checkbox
                     id={`age-${age}`}
-                    checked={additionalDetails?.ageOfKids.includes(age)}
-                    // onCheckedChange={() => toggleageOfKids(age)}
+                    checked={formData.additionalDetails.ageOfKids.includes(age)}
+                    onCheckedChange={() => toggleageOfKids(age)}
                   />
                   <Label
                     htmlFor={`age-${age}`}
@@ -280,8 +374,8 @@ const HouseManager = ({ data = {} }) => {
             <Label>Are you okay handling pets?</Label>
             <RadioGroup
               className="flex gap-4 mt-3"
-                value={additionalDetails?.isHandelingPet}
-              //   onValueChange={(value) => setData((prev) => ({ ...prev, isHandelingPet: value }))}
+              value={formData.additionalDetails.isHandelingPet}
+              onValueChange={(v) => handleAdditionalSelect("isHandelingPet", v)}
             >
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="yes" id="p1" />
@@ -307,8 +401,8 @@ const HouseManager = ({ data = {} }) => {
             <Label>Prefer being a </Label>
             <RadioGroup
               className="flex gap-4 mt-3"
-                value={additionalDetails?.preferBeingA}
-              //   onValueChange={(value) => setData((prev) => ({ ...prev, preferBeingA: value }))}
+              value={formData.additionalDetails.preferBeingA}
+              onValueChange={(v) => handleAdditionalSelect("preferBeingA", v)}
             >
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="Nanny" id="h1" />
@@ -349,10 +443,14 @@ const HouseManager = ({ data = {} }) => {
               accept={doc.accept}
               icon={doc.icon}
               optional={doc.optional}
-                // file={documents[doc.id]}
-              //   onFileSelect={(file) => handleFileSelect(doc.id, file)}
+              // file={formData?.documents[doc.id]}
+              onFileSelect={(file) => handleFileSelect(doc.id, file)}
             />
           ))}
+        </div>
+
+        <div className="absolute mt-4 b-0">
+          <Button size={"lg"} type="submit">Submit</Button>
         </div>
       </form>
     </div>

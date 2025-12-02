@@ -2,9 +2,19 @@
 
 import BasicInfo from "@/components/auth/register/HouseManager/BasicInfo";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import HouseManager from "@/components/updateProfile/HouseManager/HouseManager";
+import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
 import {
   Calendar,
   FileText,
@@ -21,8 +31,6 @@ export default function ProfilePage() {
   const [userInfo, setUserInfo] = useState({});
   const [userDetails, setUserDetails] = useState([]);
 
-
-
   // Load saved data
   useEffect(() => {
     // Delay to avoid cascading renders during hydration
@@ -31,6 +39,7 @@ export default function ProfilePage() {
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
           setUserInfo(JSON.parse(savedUser));
+          
         }
       } catch (error) {
         console.error("Invalid JSON:", error);
@@ -165,8 +174,6 @@ export default function ProfilePage() {
     );
   };
 
-
-
   return (
     <div>
       <div className="flex justify-between">
@@ -215,37 +222,36 @@ export default function ProfilePage() {
             ))}
           </div>
           <div className="flex mt-6 justify-end">
-            <Dialog >
+            <Dialog>
               <DialogTrigger asChild>
                 <Button className={"w-full sm:w-auto"} size={"lg"}>
-              Update Profile?
-            </Button>
+                  Update Profile?
+                </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
                 <DialogHeader>
-                  <DialogTitle className={"text-center"}>Update your profile</DialogTitle>
-                  <DialogDescription>
-                    
-                  </DialogDescription>
+                  <DialogTitle className={"text-center"}>
+                    Update your profile
+                  </DialogTitle>
+                  <DialogDescription></DialogDescription>
                 </DialogHeader>
-                <div className="">
-                  <HouseManager data={userDetails}/>
+                <div>
+                  {userInfo?.subRole === "housemanager" && (
+                    <HouseManager data={userDetails} />
+                  )}
+                  {userInfo?.subRole === "nurse" && (
+                    <NurseUpdate data={userDetails} />
+                  )}
                 </div>
                 <DialogFooter className="sm:justify-end">
                   <DialogClose asChild>
-                    <Button type="button" variant="secondary">
+                    <Button className={""} size={"lg"} type="button" variant="secondary">
                       Cancel
-                    </Button>
-                  </DialogClose>
-                  <DialogClose asChild>
-                    <Button type="button" >
-                      Submit
                     </Button>
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            
           </div>
         </div>
       </div>

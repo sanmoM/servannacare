@@ -80,6 +80,7 @@ export default function DashboardLayout({ children }) {
 
   const handleLogout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("specialist");
     router.push("/");
     toast.success("Log Out Success!");
   };
