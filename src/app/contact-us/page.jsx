@@ -1,6 +1,7 @@
 import Container from "@/components/shared/Container";
 import Input from "@/components/shared/Input";
 import PageBanner from "@/components/shared/PageBanner";
+import { Button } from "@/components/ui/button";
 import { Mail, MapPin, Phone } from "lucide-react";
 import React from "react";
 
@@ -77,7 +78,7 @@ const page = () => {
         <div className="py-10 flex flex-col gap-6 lg:flex-row lg:py12">
           <div className="flex-1">
             <form
-              className="md:max-w-xl space-y-4 border p-6 shadow-xl rounded-xl lg:max-w-7xl mx-auto"
+              className="space-y-4  p-6 rounded-xl border-2 lg:max-w-7xl mx-auto"
               action=""
               data-aos="fade-up"
             >
@@ -113,6 +114,9 @@ const page = () => {
                   name=""
                   id=""
                 ></textarea>
+              </div>
+              <div className="flex justify-end">
+                <Button className={"mt-4 w-full sm:w-auto "} size={"lg"}>Submit</Button>
               </div>
             </form>
           </div>

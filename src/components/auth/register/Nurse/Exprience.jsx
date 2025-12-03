@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 
+
 const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
   const [data, setData] = useState({
     hospitalBasedCare: defaultValues.hospitalBasedCare || "",
@@ -108,7 +109,6 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             label="Reference contact"
             name="hospitalBasedReferenceContact"
             placeholder="Reference"
-            maxLength = {2}
             value={data.hospitalBasedReferenceContact}
             onChange={handleChange}
           />

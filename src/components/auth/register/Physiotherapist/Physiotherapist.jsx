@@ -61,24 +61,29 @@ const Physiotherapist = () => {
           location: formData.basicInfo.location,
           name: formData.basicInfo.name,
           profilePic: null,
+          role:"specialist",
+          subRole:"physiotherapist",
+          status:"under review"
         })
       );
+      localStorage.setItem("specialist", JSON.stringify(formData));
       toast.success("Register Sucessfully!");
       router.push("/dashboard")
-      setFormData({
-        basicInfo: {},
-        education: {},
-        experience: {},
+      // setFormData({
+        // basicInfo: {},
+        // education: {},
+        // experience: {},
         // skillsServices: {},
-        documents: {},
+        // documents: {},
         // contactAgrement: {},
-      });
+      // });
     }
   };
 
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
+  
   return (
     <div className="w-full flex justify-center  px-2">
       <div

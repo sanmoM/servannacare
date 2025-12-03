@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const NurseUpdate = ({ data = {} }) => {
+const NurseAideUpdate = ({ data = {} }) => {
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ const NurseUpdate = ({ data = {} }) => {
     },
     education: {
       education: data.education.education || "",
-      isNursingInKenya: data.education.isNursingInKenya || "",
+      //   isNursingInKenya: data.education.isNursingInKenya || "",
       educationCertificate: data.education.educationCertificate || null,
     },
     experience: {
@@ -45,6 +45,7 @@ const NurseUpdate = ({ data = {} }) => {
         data.experience.homeBasedYearsOfExperience || "",
       homeBasedReferenceContact:
         data.experience.homeBasedReferenceContact || "",
+      preferred: data.experience.preferred || "",
     },
     skillsServices: {
       skills: data.skillsServices.skills || [],
@@ -63,14 +64,16 @@ const NurseUpdate = ({ data = {} }) => {
     },
   });
 
-  const skills = [
-    "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
-    "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
-    "Medical Assistance: Aassisting nurses with wound care, administering medication (in some cases)",
-    "Compassion & Communication Skills",
-    "Special needs children caregiving",
-    "Elderly caregiving",
-    "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
+  const preferred = [
+    {
+      title: "Pre and post pregnancy care",
+    },
+    {
+      title: "Post surgery cage",
+    },
+    {
+      title: "Elderly care",
+    },
   ];
 
   const documents = [
@@ -111,6 +114,13 @@ const NurseUpdate = ({ data = {} }) => {
       required: false,
       optional: true,
     },
+  ];
+  const skills = [
+    "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
+    "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
+    "Compassion &  strong communication Skills",
+    "Special needs caregiver (name which special need you have worked with e. g. autistic, deaf, blind ",
+    "Elderly caregiving",
   ];
 
   const handleChange = (section, field, value) => {
@@ -497,6 +507,27 @@ const NurseUpdate = ({ data = {} }) => {
           </div>
         </div>
 
+        <div>
+        <Label className={"mb-3"}>What are your preferred areas of intervention</Label>
+        <div className="flex flex-wrap flex-col gap-2 ">
+          {preferred.map((lan, indx) => (
+            <div key={indx} className="flex items-center gap-2">
+              <Checkbox
+                id={lan.title}
+                checked={formData.experience.preferred.includes(lan.title)}
+                onCheckedChange={() => toggleArrayItem("experience","preferred",lan.title)}
+              />
+              <Label
+                htmlFor={lan.title}
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                {lan.title}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
         {/* skill and services  */}
 
         {/* Skills Section */}
@@ -627,4 +658,4 @@ const NurseUpdate = ({ data = {} }) => {
   );
 };
 
-export default NurseUpdate;
+export default NurseAideUpdate;

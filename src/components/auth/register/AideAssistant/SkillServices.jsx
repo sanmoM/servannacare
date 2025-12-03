@@ -138,7 +138,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
       </div> */}
       <div>
         <h2 className="formHeading mb-4 mt-6">Years Experience</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 sm:flex-row gap-6 py-6 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 space-y-6 sm:flex-row gap-6  sm:gap-4">
           <Input
             label="Mobility Assistance (Years)"
             type="number"

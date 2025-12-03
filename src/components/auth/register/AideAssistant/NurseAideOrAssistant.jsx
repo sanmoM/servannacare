@@ -59,19 +59,23 @@ const NurseAideOrAssistant = () => {
           ...user,
           location:formData.basicInfo.location,
           name:formData.basicInfo.name,
-          profilePic:null
+          profilePic:null,
+          role:"specialist",
+          subRole:"nurse aide assistant",
+          status:"under review"
         })
       )
+       localStorage.setItem("specialist", JSON.stringify(formData));
       toast.success("Register Sucessfully!");
       router.push("/dashboard")
-      setFormData({
-        basicInfo: {},
-        education: {},
-        experience: {},
-        skillsServices: {},
-        documents: {},
-        // contactAgrement: {},
-      });
+      // setFormData({
+      //   basicInfo: {},
+      //   education: {},
+      //   experience: {},
+      //   skillsServices: {},
+      //   documents: {},
+      //   // contactAgrement: {},
+      // });
     }
   };
 

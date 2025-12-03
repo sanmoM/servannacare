@@ -15,6 +15,9 @@ import {
 import { Label } from "@/components/ui/label";
 import HouseManager from "@/components/updateProfile/HouseManager/HouseManager";
 import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
+import NurseAideUpdate from "@/components/updateProfile/NurseAide/NurseAide";
+import Physiotherapist from "@/components/updateProfile/Physiotherapist/Physiotherapist";
+import SpecialNeedCaregiversUpdate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversUpdate";
 import {
   Calendar,
   FileText,
@@ -241,6 +244,15 @@ export default function ProfilePage() {
                   )}
                   {userInfo?.subRole === "nurse" && (
                     <NurseUpdate data={userDetails} />
+                  )}
+                  {userInfo?.subRole === "physiotherapist" && (
+                    <Physiotherapist data={userDetails} />
+                  )}
+                  {userInfo?.subRole === "nurse aide assistant" && (
+                    <NurseAideUpdate data={userDetails} />
+                  )}
+                  {userInfo?.subRole === "special need caregivers" && (
+                    <SpecialNeedCaregiversUpdate data={userDetails} />
                   )}
                 </div>
                 <DialogFooter className="sm:justify-end">

@@ -100,28 +100,6 @@ const SpecialNeedBasicInfo = ({ defaultValues, onNext }) => {
         </div>
       </div>
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
-        {/* <div className="space-y-4 flex-1">
-                <Label className={"mb-2 sm:mb-3"}>Bank Details</Label>
-                <Input
-                  name="bankName"
-                  placeholder="Your bank name"
-                  value={data.bankName}
-                  onChange={handleChange}
-                />
-      
-                <Input
-                  name="bankAccountName"
-                  placeholder="Your account name"
-                  value={data.bankAccountName}
-                  onChange={handleChange}
-                />
-                <Input
-                  name="bankAccountNumber"
-                  placeholder="Your account number"
-                  value={data.bankAccountNumber}
-                  onChange={handleChange}
-                />
-              </div> */}
         <div className="flex-1">
           <Input
             label="Location"

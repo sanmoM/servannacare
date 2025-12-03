@@ -91,7 +91,7 @@ export default function DashboardLayout({ children }) {
     const isActive = link.href !== "#" && pathname === link.href;
 
     return (
-      <a
+      <Link
         href={link.href}
         className={`flex items-center text-sm lg:text-base p-3 mx-2 my-1 rounded-lg transition
           ${
@@ -102,7 +102,7 @@ export default function DashboardLayout({ children }) {
       >
         <Icon className="w-5 h-5 mr-3" />
         {link.name}
-      </a>
+      </Link>
     );
   };
 
@@ -195,7 +195,7 @@ export default function DashboardLayout({ children }) {
             </div>
           </button>
 
-          <Link href={`/dashboard/${user?.role}-profile`}>
+          <Link className="md:mr-6 mr-3" href={`/dashboard/${user?.role}-profile`}>
           <img
             src="/user.png"
             className="h-10 w-10 border bg-white border-white rounded-full"
