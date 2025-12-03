@@ -17,6 +17,8 @@ const Review = ({ data, }) => {
     return kb > 1024 ? `${(kb / 1024).toFixed(2)} MB` : `${kb.toFixed(1)} KB`;
   };
 
+  console.log(data);
+
   // Recursive renderer for nested objects
   const renderSection = (sectionKey, sectionData) => {
     if (typeof sectionData !== "object" || sectionData === null) return null;
@@ -101,7 +103,7 @@ const Review = ({ data, }) => {
         <div className="flex gap-2 flex-wrap">
           <Label>Number of Nurse added:</Label>
           <span className="text-sm text-gray-600">
-            {data.nurses.length}
+            {data.allEmployees?.length}
           </span>
         </div>
       </div>

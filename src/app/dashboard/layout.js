@@ -23,7 +23,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 import Link from "next/link";
 
 export default function DashboardLayout({ children }) {
-  const pathname = usePathname(); // current route
+  const pathname = usePathname(); 
   const { user, loaded } = useLocalUser();
   const router = useRouter();
 
