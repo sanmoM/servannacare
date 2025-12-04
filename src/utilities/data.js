@@ -8,6 +8,9 @@ import {
   BriefcaseMedical,
   Building2,
   Cross,
+  HandHeart,
+  Heart,
+  HeartHandshake,
   Hospital,
   HouseHeart,
   HousePlus,
@@ -23,7 +26,7 @@ import nurse from "@/asset/roleImages/nurse.png";
 import physiotherapist from "@/asset/roleImages/physiotherapist.png";
 import house from "@/asset/roleImages/house.png";
 import user from "@/asset/roleImages/user.png";
-import caregivers from "@/asset/roleImages/caregivers.png"
+import caregivers from "@/asset/roleImages/caregivers.png";
 export const slides = [
   {
     id: 3,
@@ -51,20 +54,66 @@ export const slides = [
 export const services = [
   {
     id: 1,
-    title: "House Manager",
-    description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <HouseHeart />,
+    title: "Pre & Post Pregnancy Care",
+    description:
+      "Gentle, personalized support for mothers and babies before and after childbirth.",
+    icon: <Baby />,
     image:
-      "https://cpcapital.ru/image/catalog/statiy/new1/bigstock-business-meeting-of-real-estat-229651999.jpg",
+      "https://res-4.cloudinary.com/fieldfisher/image/upload/f_jpg,q_auto/v1/pimn/insights/medical-negligence/maternity-services_czxcrj",
   },
   {
     id: 2,
-    title: "Nurse",
-    description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <Stethoscope />,
+    title: "Post Surgery Care",
+    description:
+      "Professional home recovery support, including wound care, mobility assistance, and medication monitoring.",
+    icon: <Cross/>,
     image:
-      "https://www.bain.com/contentassets/ea3ac9bcf0794dceb9ccab5526d2e4e6/1440x810.jpg",
+      "https://img.topchinasupplier.com/file/upload/2020/04/24/Disposable-Surgical-Powder-Powder-Free-Latex-Examination-Gloves-3.jpg",
   },
+  {
+    id: 3,
+    title: "Elderly Care",
+    description:
+      "Compassionate in-home care that promotes comfort, independence, and companionship for seniors.",
+    icon: <HeartHandshake />,
+    image:
+      "https://www.nerdwallet.com/assets/blog/wp-content/uploads/2019/11/GettyImages-1092112802-1920x1152.jpg",
+  },
+  {
+    id: 4,
+    title: "Physiotherapy",
+    description:
+      "Personalized home sessions to restore mobility, relieve pain, and speed up physical recovery.",
+    icon: <Activity />,
+    image:
+      "https://lahtaclinic.ru/wp-content/uploads/2025/01/%D1%80%D0%B5%D0%B0%D0%B1%D0%B8%D0%BB-%D0%B1%D0%BE%D0%BB.png",
+  },
+  {
+    id: 5,
+    title: "Nanny and Housekeeping",
+    description:
+      "Trusted home support — caring for your children and keeping your home in perfect balance.",
+    icon: <HouseHeart />,
+    image:
+      "https://www.gulf-insider.com/wp-content/uploads/2024/12/STOCK-HOUSEMAID-MAID_1914b26381d_large.jpg",
+  },
+  {
+    id: 6,
+    title: "Special needs care",
+    description:
+      "Professional special needs caregivers in Kenya offering safe, compassionate home care for children and adults with developmental, physical, or sensory challenges.",
+    icon: <HandHeart />,
+    image:
+      "https://nchmd.org/wp-content/uploads/2022/09/2022_06_NCHPedsPediatricSpecialNeedsNavigatorHero.jpg",
+  },
+  // {
+  //   id: 2,
+  //   title: "Nurse",
+  //   description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
+  //   icon: <Stethoscope />,
+  //   image:
+  //     "https://www.bain.com/contentassets/ea3ac9bcf0794dceb9ccab5526d2e4e6/1440x810.jpg",
+  // },
   //  {
   //   id: 3,
   //   title: "Agency",
@@ -73,14 +122,6 @@ export const services = [
   //   image: "https://assets.entrepreneur.com/content/3x2/2000/1598246497-shutterstock-390454498.jpg?format=pjeg&auto=webp"
   // },
 
-  {
-    id: 4,
-    title: "Physiotherapist",
-    description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <Activity />,
-    image:
-      "https://lahtaclinic.ru/wp-content/uploads/2025/01/%D1%80%D0%B5%D0%B0%D0%B1%D0%B8%D0%BB-%D0%B1%D0%BE%D0%BB.png",
-  },
   // {
   //   id: 5,
   //   title: "Employer",
@@ -89,14 +130,14 @@ export const services = [
   //   image:"https://tint.creativemarket.com/oTo2uVcbVnS-15xQOV0DRpueMWZKCpIM2XO6pmkWg-I/width:6047/height:4035/gravity:ce/rt:fill-down/el:1/czM6Ly9maWxlcy5jcmVhdGl2ZW1hcmtldC5jb20vaW1hZ2VzL3NjcmVlbnNob3RzL3Byb2R1Y3RzLzQ5NTYvNDk1NjYvNDk1NjY1NDIvMTQyNDc0My5qcGctby5qcGc?1712043885"
   // },
 
-  {
-    id: 6,
-    title: "Nurse Aide or Assistant",
-    description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <User />,
-    image:
-      "https://infinityworks-com.s3.eu-west-2.amazonaws.com/wp-content/uploads/2020/03/healthcare-featured.jpg",
-  },
+  // {
+  //   id: 6,
+  //   title: "Nurse Aide or Assistant",
+  //   description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
+  //   icon: <User />,
+  //   image:
+  //     "https://infinityworks-com.s3.eu-west-2.amazonaws.com/wp-content/uploads/2020/03/healthcare-featured.jpg",
+  // },
 
   // {
   //   id: 7,
@@ -105,14 +146,14 @@ export const services = [
   //   icon: <Hospital />,
   //   image:"https://e3.365dm.com/21/09/2048x1152/skynews-hospital-covid-19_5513559.jpg?20210915151319"
   // },
-  {
-    id: 8,
-    title: "Paediatrician",
-    description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
-    icon: <Baby />,
-    image:
-      "https://synergyonline.ru/_ipx/preload_true&lazy_false/https://api.synergyonline.ru/upload/iblock/a9c/qo1xvg2n66rmgvmj3ps5zkwzvs9093bi.png",
-  },
+  // {
+  //   id: 8,
+  //   title: "Paediatrician",
+  //   description: "Lorem ipsum dolor sit amet conse ctetur adipiscing.",
+  //   icon: <Baby />,
+  //   image:
+  //     "https://synergyonline.ru/_ipx/preload_true&lazy_false/https://api.synergyonline.ru/upload/iblock/a9c/qo1xvg2n66rmgvmj3ps5zkwzvs9093bi.png",
+  // },
 ];
 
 export const testimonials = [
@@ -340,11 +381,11 @@ export const userRole = [
     role: "nurse-aide-or-assistant",
   },
   {
-  id : 6,
-  text:"Special Need Caregivers",
-  icon:caregivers,
-  href:"/register",
-  role:"special-need-caregivers"
+    id: 6,
+    text: "Special Need Caregivers",
+    icon: caregivers,
+    href: "/register",
+    role: "special-need-caregivers",
   },
   {
     id: 7,
@@ -353,7 +394,7 @@ export const userRole = [
     href: "/register",
     role: "agency",
   },
-  
+
   {
     id: 8,
     text: "Employer",
@@ -369,7 +410,6 @@ export const userRole = [
     href: "/register",
     role: "medical-institutions",
   },
-  
 ];
 
 export const languages = [

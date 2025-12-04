@@ -19,7 +19,7 @@ const Services = () => {
         data-aos="fade-up"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-6 lg:gap-8"
       >
-        {services.slice(0,5).map((ser) => (
+        {services.map((ser) => (
           <ServicesCard key={ser.id} services={ser} />
         ))}
       </div>
