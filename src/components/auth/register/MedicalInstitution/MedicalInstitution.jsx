@@ -9,7 +9,8 @@ import { useRouter } from "next/navigation";
 import NurseDetails from "./NurseDetails";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import Review from "../Agency/ReviewAndSubmit";
+import Review from "./Review";
+
 
 const validateNurse = (data) => {
   const errors = [];
@@ -118,14 +119,18 @@ const MedicalInstitution = () => {
       return;
     } else {
       console.log(formData);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify({
+        ...user,
+        role:"medical insttitution",
+        institution:formData.institution
+      }));
       toast.success("Registered Successfully!");
 
       router.push("/dashboard");
 
       // Reset Form
-      setFormData({ institution: {}, nurses: [] });
-      setNurses([1]);
+      // setFormData({ institution: {}, nurses: [] });
+      // setNurses([1]);
     }
   };
 

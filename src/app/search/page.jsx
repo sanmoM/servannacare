@@ -69,17 +69,20 @@ const SearchContent = () => {
       <Container className={"lg:py-16 py-12"}>
         <div className="pb-8">
           <div className="flex flex-col border-b sm:flex-row sm:items-center pb-2 gap-4 justify-between">
-            {
-              startDate || endDate ?<h2 className="font-medium text-sm md:text-base">
-              Search by <span className="text-gray-600">{category}</span> and{" "}
-              <span className="text-gray-600">{startDate}</span> to{" "}
-              <span className="text-gray-600">{endDate}</span>
-            </h2>:<h2 className="font-medium text-sm md:text-base">
-              Showing <span className="text-gray-600">{category}</span>  services <span className="text-gray-600">{currentData.length}</span>  of <span className="text-gray-600">{fakeData.length}</span> 
-              
-            </h2>
-            }
-            
+            {startDate || endDate ? (
+              <h2 className="font-medium text-sm md:text-base">
+                Search by <span className="text-gray-600">{category}</span> and{" "}
+                <span className="text-gray-600">{startDate}</span> to{" "}
+                <span className="text-gray-600">{endDate}</span>
+              </h2>
+            ) : (
+              <h2 className="font-medium text-sm md:text-base">
+                Showing <span className="text-gray-600">{category}</span>{" "}
+                services{" "}
+                <span className="text-gray-600">{currentData.length}</span> of{" "}
+                <span className="text-gray-600">{fakeData.length}</span>
+              </h2>
+            )}
 
             <Select
               onValueChange={(value) => {
@@ -92,6 +95,12 @@ const SearchContent = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
+                  {category === "house manager nanny" && (
+                    <>
+                      <SelectItem value="liveIn">Live In</SelectItem>
+                      <SelectItem value="dayburg">DAYBURG</SelectItem>
+                    </>
+                  )}
                   <SelectItem value="experience">
                     Years of Experience
                   </SelectItem>
@@ -149,7 +158,7 @@ const Search = () => {
     <Suspense
       fallback={
         <div className="w-full py-20 text-center text-primary font-semibold">
-          <LoadingSpinner/>
+          <LoadingSpinner />
         </div>
       }
     >

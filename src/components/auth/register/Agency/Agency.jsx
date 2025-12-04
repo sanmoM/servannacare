@@ -97,8 +97,8 @@ const Agency = () => {
       toast.success("Register Successfully!");
       router.push("/dashboard")
       // reset form
-      setFormData({ agency: {}, allEmployees: [] });
-      setEmployees([1]);
+      // setFormData({ agency: {}, allEmployees: [] });
+      // setEmployees([1]);
     }
   };
 

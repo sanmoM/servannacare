@@ -22,12 +22,11 @@ import { format, addDays, isBefore, startOfDay } from "date-fns";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-
 const Searchbar = () => {
   const [category, setCategory] = useState("");
   const [checkIn, setCheckIn] = useState(new Date());
-  const [checkOut, setCheckOut] = useState(null); 
-  const router = useRouter()
+  const [checkOut, setCheckOut] = useState(null);
+  const router = useRouter();
 
   const today = startOfDay(new Date());
 
@@ -64,9 +63,16 @@ const Searchbar = () => {
 
     router.push(`/search?${query}`);
 
-    
     console.log(category, checkIn);
   };
+
+  const categories = [
+    { id: 1, value: "house manager nanny", label: "HOUSE MANAGER / NANNY" },
+    { id: 2, value: "certifie nursing assistant (C.N.A)", label: "CERTIFIED NURSING ASSISTANT (C.N.A)" },
+    { id: 3, value: "medical nurse", label: "MEDICAL NURSE" },
+    { id: 4, value: "physiotherapist", label: "PHYSIOTHERAPIST" },
+    { id: 5, value: "special-need-care-giver", label: "SPECIAL NEEDS CARE GIVER" },
+  ];
 
   return (
     <div className="w-full mx-auto my-8 md:!mt-0 -translate-y-1/2 z-[20] relative -mb-30 md:-mb-14 max-w-4xl">
@@ -78,20 +84,21 @@ const Searchbar = () => {
             <ScrollText className="w-6 h-6 text-gray-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
               <p className="text-xs text-gray-500 tracking-wide">Category</p>
-              <Select onValueChange={(value) => setCategory(value)}>
-                <SelectTrigger className="w-full cursor-pointer border-0 pl-0 shadow-none">
+              <Select
+                value={category}
+                onValueChange={(value) => setCategory(value)}
+              >
+                <SelectTrigger className="w-full cursor-pointer outline-0 focus:outline-0 border-0 pl-0 shadow-none">
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>category</SelectLabel>
-                    <SelectItem value="house-manager">House Manager</SelectItem>
-                    <SelectItem value="nurse">Nurse</SelectItem>
-                    <SelectItem value="agency">Agency</SelectItem>
-                    <SelectItem value="physiotherapist">
-                      Physiotherapist
-                    </SelectItem>
-                    <SelectItem value="employer">Employer</SelectItem>
+                    <SelectLabel>Category</SelectLabel>
+                    {categories.map((item) => (
+                      <SelectItem key={item.id} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -165,7 +172,6 @@ const Searchbar = () => {
       <div className="hidden md:flex bg-white rounded-full justify-between shadow-2xl p-4 items-center gap-2">
         {/* Category */}
         <div className="pl-6">
-          
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-500 tracking-wide">CATEGORY</p>
             <Select
@@ -177,20 +183,12 @@ const Searchbar = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>category</SelectLabel>
-                  <SelectItem value="house-manager">House Manager</SelectItem>
-                  <SelectItem value="nurse">Nurse</SelectItem>
-                  <SelectItem value="agency">Agency</SelectItem>
-                  <SelectItem value="physiotherapist">
-                    Physiotherapist
-                  </SelectItem>
-                  <SelectItem value="employer">Employer</SelectItem>
-                  <SelectItem value="medical-institutions">
-                    Medical Institutions
-                  </SelectItem>
-                  <SelectItem value="nurse-aide-assistant">
-                    Nurse Aide / Assistant
-                  </SelectItem>
+                  <SelectLabel>Category</SelectLabel>
+                  {categories.map((item) => (
+                    <SelectItem key={item.id} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>

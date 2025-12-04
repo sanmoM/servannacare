@@ -65,17 +65,26 @@ export default function DashboardLayout({ children }) {
       icon: Calendar,
     },
     { name: "Clients", href: "/dashboard/specialist-clients", icon: Users },
-    { name: "Notes", href: "/dashboard/specialist-note", icon: NotepadText },
-    { name: "Feedback", href: "#feedback", icon: Smile },
+    { name: "Notes", href: "/dashboard/note", icon: NotepadText },
+    { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
 
   const agencyLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/agency-profile", icon: User },
     { name: "Employee", href: "/dashboard/agency-employee", icon: BriefcaseBusiness },
-    { name: "Clients", href: "/dashboard/agency-Client", icon: Users2 },
-    { name: "Notes", href: "/dashboard/agency-note", icon: NotepadText },
-    { name: "Feedback", href: "/dashboard/agency-feedback", icon: Smile },
+    { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
+    { name: "Notes", href: "/dashboard/note", icon: NotepadText },
+    { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
+  ]
+
+  const medicalInstitution = [
+    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+    { name: "Profile", href: "/dashboard/medical-institution-profile", icon: User },
+    { name: "Employee", href: "/dashboard/agency-employee", icon: BriefcaseBusiness },
+    { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
+    { name: "Notes", href: "/dashboard/note", icon: NotepadText },
+    { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ]
 
   let links = [];
@@ -87,6 +96,8 @@ export default function DashboardLayout({ children }) {
     links;
   } else if (user?.role === "specialist") {
     links = specialistLinks;
+  } else if (user?.role === "medical insttitution") {
+    links = medicalInstitution;
   }
 
   const handleLogout = () => {
