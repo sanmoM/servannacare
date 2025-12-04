@@ -79,12 +79,52 @@ export default function DashboardPage() {
     color: "pink",
   },
 ];
+  const agencyDashboardStats = [
+  {
+    id: 1,
+    title: "Total Jobs Received",
+    icon: <Calendar size={28} />,
+    count: 34,
+    color: "blue",
+  },
+  {
+    id: 2,
+    title: "Jobs Completed",
+    icon: <CheckCircle size={28} />,
+    count: 27,
+    color: "green",
+  },
+  {
+    id: 3,
+    title: "Pending Jobs",
+    icon: <Clock size={28} />,
+    count: 5,
+    color: "yellow",
+  },
+  {
+    id: 4,
+    title: "Total Earnings",
+    icon: <DollarSign size={28} />,
+    count: "KSh 125,400",
+    color: "purple",
+  },
+
+  {
+    id: 5,
+    title: "Average Rating",
+    icon: <Star size={28} />,
+    count: "4.8",
+    color: "pink",
+  },
+];
 
 let renderStats = []
 if(user.role==='user'){
   renderStats= userDashboardStats
 }else if (user.role === "specialist"){
   renderStats = specialistDashboardStats
+}else if (user.role === "agency"){
+  renderStats = agencyDashboardStats
 }
 
   // Required Tailwind-safe static gradient classes

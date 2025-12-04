@@ -64,6 +64,7 @@ const Page = () => {
         year: "numeric",
       }),
       role,
+      // subRole:"nurse"
     };
     
     localStorage.setItem("user", JSON.stringify(userInfo));

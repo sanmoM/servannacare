@@ -8,12 +8,10 @@ import toast from "react-hot-toast";
 
 export default function ProfilePage() {
   const [update, setUpdate] = useState(false);
-
   const [userInfo, setUserInfo] = useState({});
 
   // Load saved data
   useEffect(() => {
-    // Delay to avoid cascading renders during hydration
     const timer = setTimeout(() => {
       try {
         const savedUser = localStorage.getItem("user");

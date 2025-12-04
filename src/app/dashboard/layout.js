@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  BriefcaseBusiness,
   Calendar,
   ClipboardClock,
   History,
@@ -14,6 +15,7 @@ import {
   Smile,
   User,
   Users,
+  Users2,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -67,11 +69,20 @@ export default function DashboardLayout({ children }) {
     { name: "Feedback", href: "#feedback", icon: Smile },
   ];
 
+  const agencyLinks = [
+    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+    { name: "Profile", href: "/dashboard/agency-profile", icon: User },
+    { name: "Employee", href: "/dashboard/agency-employee", icon: BriefcaseBusiness },
+    { name: "Clients", href: "/dashboard/agency-Client", icon: Users2 },
+    { name: "Notes", href: "/dashboard/agency-note", icon: NotepadText },
+    { name: "Feedback", href: "/dashboard/agency-feedback", icon: Smile },
+  ]
+
   let links = [];
   if (user?.role === "user") {
     links = userLinks;
   } else if (user?.role === "agency") {
-    links;
+    links = agencyLinks;
   } else if (user?.role === "medical") {
     links;
   } else if (user?.role === "specialist") {

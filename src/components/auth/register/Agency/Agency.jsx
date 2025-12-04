@@ -89,7 +89,8 @@ const Agency = () => {
         "user",
         JSON.stringify({
           ...user,
-          role:"agency"
+          role:"agency",
+          agency:formData.agency
         }  
         )
       )
