@@ -3,7 +3,16 @@
 import AgencyBasicInfo from "@/components/auth/register/Agency/AgencyBasicInfo";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import AgencyUpdate from "@/components/updateProfile/Agency/AgencyUpdate";
 import {
@@ -11,6 +20,7 @@ import {
   Camera,
   FileText,
   ImageIcon,
+  Info,
   Mail,
   MapPin,
   Phone,
@@ -134,6 +144,10 @@ export default function AgencyProfile() {
         </div>
       </div>
 
+      <p className="p-4 mb-4 text-sm flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+        <Info /> Your account is Under review .
+      </p>
+
       <div>
         {/*  Render all form sections */}
         {userInfo.agency &&
@@ -158,10 +172,9 @@ export default function AgencyProfile() {
               <DialogDescription></DialogDescription>
             </DialogHeader>
             <div>
-              <AgencyUpdate/>
+              <AgencyUpdate />
             </div>
-            <DialogFooter
-             className="sm:justify-end">
+            <DialogFooter className="sm:justify-end">
               <DialogClose asChild>
                 <Button
                   className={""}

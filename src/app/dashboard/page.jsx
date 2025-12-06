@@ -125,6 +125,8 @@ if(user.role==='user'){
   renderStats = specialistDashboardStats
 }else if (user.role === "agency"){
   renderStats = agencyDashboardStats
+}else if (user.role === "medical institution"){
+  renderStats = agencyDashboardStats
 }
 
   // Required Tailwind-safe static gradient classes

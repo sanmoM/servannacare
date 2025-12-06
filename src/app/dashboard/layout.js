@@ -6,6 +6,7 @@ import {
   BriefcaseBusiness,
   Calendar,
   ClipboardClock,
+  Cross,
   History,
   HomeIcon,
   MessageSquare,
@@ -25,7 +26,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 import Link from "next/link";
 
 export default function DashboardLayout({ children }) {
-  const pathname = usePathname(); 
+  const pathname = usePathname();
   const { user, loaded } = useLocalUser();
   const router = useRouter();
 
@@ -72,32 +73,61 @@ export default function DashboardLayout({ children }) {
   const agencyLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/agency-profile", icon: User },
-    { name: "Employee", href: "/dashboard/agency-employee", icon: BriefcaseBusiness },
+    {
+      name: "Employee",
+      href: "/dashboard/agency-employee",
+      icon: BriefcaseBusiness,
+    },
+     {
+      name: "Schedule",
+      href: "/dashboard/agency-schedule",
+      icon: Calendar,
+    },
     { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
     { name: "Notes", href: "/dashboard/note", icon: NotepadText },
     { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
-  ]
+  ];
 
   const medicalInstitution = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { name: "Profile", href: "/dashboard/medical-institution-profile", icon: User },
-    { name: "Employee", href: "/dashboard/agency-employee", icon: BriefcaseBusiness },
-    { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
+    {
+      name: "Profile",
+      href: "/dashboard/medical-institution-profile",
+      icon: User,
+    },
+    {
+      name: "Nurses",
+      href: "/dashboard/medical-institution-nurses",
+      icon: Cross,
+    },
+     {
+      name: "Schedule",
+      href: "/dashboard/medical-institution-schedule",
+      icon: Calendar,
+    },
+    {
+      name: "Clients",
+      href: "/dashboard/medical-institution-clients",
+      icon: Users2,
+    },
     { name: "Notes", href: "/dashboard/note", icon: NotepadText },
     { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
-  ]
+  ];
 
   let links = [];
+  let role = "";
   if (user?.role === "user") {
     links = userLinks;
+    role = "user";
   } else if (user?.role === "agency") {
     links = agencyLinks;
-  } else if (user?.role === "medical") {
-    links;
+    role = "agency";
   } else if (user?.role === "specialist") {
     links = specialistLinks;
-  } else if (user?.role === "medical insttitution") {
+    role = "specialist"
+  } else if (user?.role === "medical institution") {
     links = medicalInstitution;
+    role =  "medical-institution"
   }
 
   const handleLogout = () => {
@@ -153,13 +183,13 @@ export default function DashboardLayout({ children }) {
           {isSidebarOpen && (
             <div className="flex flex-col h-full">
               {/* Sidebar Top */}
-              <div className="p-6 flex items-center justify-between border-b border-white/20">
+              <div className="p-4 flex items-center justify-between border-b border-white/20">
                 <div className="flex gap-2 items-center">
                   <Link className="flex gap-2 items-center" href={"/"}>
-                    <img className="w-8" src="/logo.png" alt="Logo" />
-                    <h2 className="font-semibold text-sm lg:text-base">
+                    <img className="w-28" src="/logo2.png" alt="Logo" />
+                    {/* <h2 className="font-semibold text-sm lg:text-base">
                       SERVANNACARE
-                    </h2>
+                    </h2> */}
                   </Link>
                 </div>
                 <button
@@ -217,11 +247,14 @@ export default function DashboardLayout({ children }) {
             </div>
           </button>
 
-          <Link className="md:mr-6 mr-3" href={`/dashboard/${user?.role}-profile`}>
-          <img
-            src="/user.png"
-            className="h-10 w-10 border bg-white border-white rounded-full"
-          />
+          <Link
+            className="md:mr-6 mr-3"
+            href={`/dashboard/${role}-profile`}
+          >
+            <img
+              src="/user.png"
+              className="h-10 w-10 border bg-white border-white rounded-full"
+            />
           </Link>
         </div>
 

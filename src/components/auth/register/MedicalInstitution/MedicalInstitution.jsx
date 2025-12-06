@@ -121,7 +121,7 @@ const MedicalInstitution = () => {
       console.log(formData);
       localStorage.setItem("user", JSON.stringify({
         ...user,
-        role:"medical insttitution",
+        role:"medical institution",
         institution:formData.institution
       }));
       toast.success("Registered Successfully!");

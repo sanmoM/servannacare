@@ -3,14 +3,25 @@
 import AgencyBasicInfo from "@/components/auth/register/Agency/AgencyBasicInfo";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import AgencyUpdate from "@/components/updateProfile/Agency/AgencyUpdate";
+import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/MedicalInstitution";
 import {
   Calendar,
   Camera,
   FileText,
   ImageIcon,
+  Info,
   Mail,
   MapPin,
   Phone,
@@ -38,7 +49,7 @@ export default function MedicalInstitutionProfile() {
     return () => clearTimeout(timer);
   }, []);
 
-  console.log(userInfo)
+  console.log(userInfo);
 
   const formatLabel = (key) =>
     key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
@@ -136,6 +147,10 @@ export default function MedicalInstitutionProfile() {
         </div>
       </div>
 
+      <p className="p-4 mb-4 text-sm flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+        <Info /> Your account is Under review .
+      </p>
+
       <div>
         {/*  Render all form sections */}
         {userInfo.institution &&
@@ -155,15 +170,15 @@ export default function MedicalInstitutionProfile() {
           <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
             <DialogHeader>
               <DialogTitle className={"text-center"}>
-                Update your Agency details
+                Update your Medical Institution details
               </DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
             <div>
-              <AgencyUpdate/>
+              {/* <AgencyUpdate/> */}
+              <MedicalInstitution></MedicalInstitution>
             </div>
-            <DialogFooter
-             className="sm:justify-end">
+            <DialogFooter className="sm:justify-end">
               <DialogClose asChild>
                 <Button
                   className={""}

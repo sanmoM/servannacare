@@ -74,12 +74,12 @@ export default function HowItWorks() {
                 {/* Icon and Step Number */}
                 <div 
                   // The `bg-gradient-to-r` and color classes are applied here
-                  className={`w-20 h-20  rounded-full bg-blue-950 flex items-center justify-center mb-6 shadow-lg relative ring-4 ring-white`}
+                  className={`w-20 h-20  rounded-full bg-primary flex items-center justify-center mb-6 shadow-lg relative ring-4 ring-white`}
                 >
                   <step.Icon className="w-10 h-10 text-white" />
                   
                   {/* Step Number Badge */}
-                  <span className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-white text-gray-900 border-2 border-gray-200 flex items-center justify-center font-bold text-sm">
+                  <span className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-white text-primary border-2 border-gray-200 flex items-center justify-center font-bold text-sm">
                     {step.id}
                   </span>
                 </div>

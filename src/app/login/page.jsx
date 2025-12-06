@@ -47,8 +47,8 @@ const Page = () => {
       role = "specialist"
     }else if (email === "agency@gmail.com"){
       role = "agency"
-    }else if (email === "medical@gmail.com"){
-      role = "medical"
+    }else if (email === "medicalinstitution@gmail.com"){
+      role = "medical institution"
     }else{
       toast.error("Incorrect Email!")
       return;
@@ -81,11 +81,11 @@ const Page = () => {
       <div className="w-full max-w-[400px] px-4 bg-white">
         <div className="flex justify-center mb-2">
           <Image
-          src="/logo.png"
+          src="/logo1.png"
           alt="logo"
           quality={100}
-          width={70}
-          height={70}
+          width={120}
+          height={100}
         />
         </div>
         <h2 className="text-xl font-semibold mb-6 text-center text-gray-900">

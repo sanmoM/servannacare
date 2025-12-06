@@ -51,10 +51,10 @@ const Navbar = () => {
           <div className="md:inline-block hidden">
             <Link href="/">
               <Image
-                src="/logo.png"
+                src="/logo1.png"
                 alt="logo"
                 quality={100}
-                width={80}
+                width={120}
                 height={100}
               />
             </Link>
@@ -97,10 +97,10 @@ const Navbar = () => {
           <div className="inline-block md:hidden">
             <Link href="/">
               <Image
-                src="/logo.png"
+                src="/logo1.png"
                 alt="logo"
                 quality={100}
-                width={40}
+                width={100}
                 height={100}
               />
             </Link>
@@ -197,9 +197,9 @@ const Navbar = () => {
             <div className="flex justify-between items-center p-5 border-b">
               <Link href="/" onClick={handleCloseSidebar}>
                 <Image
-                  src="/logo.png"
+                  src="/logo1.png"
                   alt="logo"
-                  width={60}
+                  width={100}
                   height={60}
                   quality={100}
                 />

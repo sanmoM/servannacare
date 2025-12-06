@@ -32,10 +32,10 @@ const Footer = () => {
             <div className="inline-block">
               <Link href="/">
                 <Image
-                  src="/logo.png"
+                  src="/logo2.png"
                   alt="logo"
                   quality={100}
-                  width={80}
+                  width={120}
                   height={100}
                 />
               </Link>

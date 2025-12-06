@@ -73,9 +73,9 @@ const ChatBot = () => {
           <div className="px-4 py-3 bg-primary text-white flex items-center justify-between rounded-t-xl">
             <div className="flex gap-2 items-center">
               <Image
-                src="/logo.png"
-                width={28}
-                height={28}
+                src="/logo2.png"
+                width={70}
+                height={70}
                 alt="logo"
                 className="rounded-full"
               />
@@ -98,9 +98,9 @@ const ChatBot = () => {
                 {/* Bot Avatar */}
                 {msg.sender === "bot" && (
                   <Image
-                    src="/logo.png"
-                    width={24}
-                    height={24}
+                    src="/logo1.png"
+                    width={60}
+                    height={60}
                     alt="avatar"
                     className="rounded-full"
                   />

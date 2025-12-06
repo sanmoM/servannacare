@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -9,12 +8,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import AgencyEmployee from "@/components/updateProfile/Agency/AgencyEmployee";
-
+import MedicalInstitutionNurse from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionNurse";
+import { DialogClose } from "@radix-ui/react-dialog";
 import {
-  CheckCircle,
-  ClipboardList,
-  Clock,
   Edit,
   Eye,
   Plus,
@@ -27,63 +23,63 @@ import {
 import React from "react";
 
 const page = () => {
-  const employee = [
+  const Nurse = [
     {
       id: 1,
       name: "John Williams",
-      role: "Housekeeper",
+      role: "Nurse",
       location: "Dhaka",
       status: "Booked",
     },
     {
       id: 2,
       name: "Sarah Ahmed",
-      role: "Nanny",
+      role: "Aide Assistant",
       location: "Chittagong",
       status: "Available",
     },
     {
       id: 3,
       name: "Mahfuz Rahman",
-      role: "Housekeeper",
+      role: "Nurse",
       location: "Khulna",
       status: "Work",
     },
     {
       id: 4,
       name: "Ayesha Khan",
-      role: "Nanny",
+      role: "Nurse",
       location: "Sylhet",
       status: "Booked",
     },
     {
       id: 5,
       name: "Jamal Uddin",
-      role: "Housekeeper",
+      role: "Aide Assistant",
       location: "Dhaka",
       status: "Available",
     },
     {
       id: 6,
       name: "Nadia Islam",
-      role: "Nanny",
+      role: "Nurse",
       location: "Rajshahi",
       status: "Work",
     },
   ];
-
   const statusColors = {
     Booked: "bg-amber-300",
     Available: "bg-green-300",
     Work: "bg-blue-300",
   };
+
   return (
     <div>
       <div className="mb-10">
-        <h1 className="sectionHeading">All Employee</h1>
+        <h1 className="sectionHeading">All Nurses</h1>
       </div>
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="border  sm:max-w-[300px] w-full bg-purple-300 flex gap-4 overflow-hidden items-center rounded-md ">
+        <div className="border   w-full bg-purple-300 flex gap-4 overflow-hidden items-center rounded-md ">
           <div className="bg-purple-600">
             <UsersRound className="w-full text-white h-full p-4" size={"40"} />
           </div>
@@ -92,7 +88,7 @@ const page = () => {
             <span className="text-2xl  font-semibold">43</span>
           </div>
         </div>
-        <div className="border  sm:max-w-[300px] w-full bg-amber-300 flex gap-4 overflow-hidden items-center rounded-md ">
+        <div className="border   w-full bg-amber-300 flex gap-4 overflow-hidden items-center rounded-md ">
           <div className="bg-yellow-600">
             <UserLock className="w-full text-white h-full p-4" size={"40"} />
           </div>
@@ -101,7 +97,7 @@ const page = () => {
             <span className="text-2xl  font-semibold">4</span>
           </div>
         </div>
-        <div className="border sm:max-w-[300px] w-full bg-blue-300 flex gap-4 overflow-hidden items-center rounded-md ">
+        <div className="border  w-full bg-blue-300 flex gap-4 overflow-hidden items-center rounded-md ">
           <div className="bg-blue-600">
             <UserRoundCheck
               className="w-full text-white h-full p-4"
@@ -113,7 +109,7 @@ const page = () => {
             <span className="text-2xl  font-semibold">5</span>
           </div>
         </div>
-        <div className="border sm:max-w-[300px] w-full bg-green-300 flex gap-4 overflow-hidden items-center rounded-md ">
+        <div className="border  w-full bg-green-300 flex gap-4 overflow-hidden items-center rounded-md ">
           <div className="bg-green-600">
             <UserRoundCog
               className="w-full text-white h-full p-4"
@@ -134,16 +130,16 @@ const page = () => {
               className={"w-full sm:w-auto"}
               size={"lg"}
             >
-              <Plus /> Add Employee
+              <Plus /> Add Nurse
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
             <DialogHeader>
-              <DialogTitle className={"text-center"}>Upload Employee</DialogTitle>
+              <DialogTitle className={"text-center"}>Upload Nurse</DialogTitle>
               <DialogDescription></DialogDescription>
             </DialogHeader>
             <div>
-              <AgencyEmployee/>
+              <MedicalInstitutionNurse />
             </div>
             <DialogFooter className="sm:justify-end">
               <DialogClose asChild>
@@ -187,7 +183,7 @@ const page = () => {
             </thead>
 
             <tbody>
-              {employee.map((row) => (
+              {Nurse.map((row) => (
                 <tr
                   key={row.id}
                   className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"
@@ -218,6 +214,7 @@ const page = () => {
                     <Button>
                       <Eye />
                     </Button>
+                    
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button className={"bg-green-500 hover:bg-green-400"}>
@@ -227,11 +224,13 @@ const page = () => {
                       <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
                         <DialogHeader>
                           <DialogTitle className={"text-center"}>
-                            Update Employee
+                            Update Nurse
                           </DialogTitle>
                           <DialogDescription></DialogDescription>
                         </DialogHeader>
-                        <div></div>
+                        <div>
+                          <MedicalInstitutionNurse />
+                        </div>
                         <DialogFooter className="sm:justify-end">
                           <DialogClose asChild>
                             <Button
@@ -256,7 +255,7 @@ const page = () => {
                       <DialogContent className="sm:max-w-xl  ">
                         <DialogHeader>
                           <DialogTitle className={"text-center"}>
-                            Delete Employee
+                            Delete Nurse
                           </DialogTitle>
                           <DialogDescription></DialogDescription>
                         </DialogHeader>

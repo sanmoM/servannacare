@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import HouseManager from "@/components/updateProfile/HouseManager/HouseManager";
+import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/MedicalInstitution";
 import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
 import NurseAideUpdate from "@/components/updateProfile/NurseAide/NurseAide";
 import Physiotherapist from "@/components/updateProfile/Physiotherapist/Physiotherapist";
