@@ -27,11 +27,11 @@ const OtpModal = ({ phone, onVerify, onClose }) => {
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-semibold text-center mb-4">
+        <h2 className="text-lgl font-semibold text-center mb-4">
           Verify Your Phone
         </h2>
-        <p className="text-center text-sm text-gray-600 mb-4">
-          We sent a 6-digit OTP to <span className="font-semibold">{phone}</span>
+        <p className="text-center text-xs text-gray-600 mb-4">
+          We sent a 6-digit OTP to <span className="font-semibold text-sm">{phone}</span>
         </p>
 
          <OTPInputs length={6} value={otp} onChange={setOtp} />

@@ -11,20 +11,20 @@ import Image from "next/image";
 import Link from "next/link";
 
 const FooterLink = ({ href, children }) => (
-  <li>
+  <li className="flex items-center space-x-2">
+    <ChevronRight size={16} />
     <a
       href={href}
-      className="flex items-center text-sm space-x-2 text-blue-200 hover:text-white transition-colors duration-200"
+      className="text-sm text-gray-100 hover:text-white transition-colors duration-200 inline-block w-fit"
     >
-      <ChevronRight size={16} />
-      <span>{children}</span>
+      {children}
     </a>
   </li>
 );
 
 const Footer = () => {
   return (
-    <footer className="bg-secondary font-inter text-blue-200">
+    <footer className="bg-secondary font-inter text-gray-100">
       <Container className={"py-12"}>
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
           {/* Column 1: Logo, Description, Newsletter */}
@@ -63,7 +63,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-white">
               Health Consulting
             </h3>
-            <ul className="mt-4 space-y-3">
+            <ul className="mt-4 space-y-3 text-gray-100">
               <FooterLink href="#">Planning</FooterLink>
               <FooterLink href="#">Health Information</FooterLink>
               <FooterLink href="#">Regulatory</FooterLink>
@@ -77,7 +77,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-white">
               Head Office Address
             </h3>
-            <p className="mt-4 text-sm leading-relaxed">
+            <p className="mt-4 text-sm  leading-relaxed">
               Lumbung Hidup St 425 East Java
               <br />
               Madiun City Block ABC 123

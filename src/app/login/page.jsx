@@ -119,7 +119,7 @@ const Page = () => {
           </div>
 
           <div className="flex justify-end">
-            <p className="underline cursor-pointer text-sm">Forgot Password?</p>
+            <Link className="underline cursor-pointer text-sm" href={"/forgot-password"}>Forgot Password?</Link>
           </div>
 
           <Button size={"lg"} className={"w-full"}>

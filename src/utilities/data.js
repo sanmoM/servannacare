@@ -395,16 +395,16 @@ export const userRole = [
     role: "agency",
   },
 
-  {
-    id: 8,
-    text: "Employer",
-    icon: employe,
-    href: "/register",
-    role: "employer",
-  },
+  // {
+  //   id: 8,
+  //   text: "Employer",
+  //   icon: employe,
+  //   href: "/register",
+  //   role: "employer",
+  // },
   ,
   {
-    id: 9,
+    id: 8,
     text: "Medical Institutions",
     icon: hospital,
     href: "/register",

@@ -41,7 +41,7 @@ export default function OTPInputs({ length = 6, value, onChange }) {
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
           className="
-            w-12 h-14 text-center text-xl font-semibold 
+            w-10 h-12 text-center text-xl font-semibold 
             border border-gray-300 rounded-md outline-none
             focus:border-primary focus:ring-2 focus:ring-primary
             shadow-sm transition-all
