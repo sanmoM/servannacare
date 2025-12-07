@@ -1,9 +1,28 @@
 import Container from "@/components/shared/Container";
 import PageBanner from "@/components/shared/PageBanner";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const page = () => {
+  const tfbEvents = [
+    {
+      id: 1,
+      title: "Transformed for Better – Employer Edition 1 (May 2024)",
+      description:
+        "A powerful circle of mothers redefining home dynamics, parenting, and the role of domestic workers.",
+      image: "https://servannacare.com/img/moja.jpg",
+    },
+    {
+      id: 2,
+      title: "Transformed for Better Event – Nanny Edition (Nov 2024)",
+      description:
+        "A transformative workshop honoring and empowering nannies and house managers across Kenya.",
+      image: "https://servannacare.com/img/11.jpg",
+    },
+  ];
+
   return (
     <div>
       <PageBanner title="Transformed For Better Event" />
@@ -66,74 +85,68 @@ const page = () => {
             A movement rooted in home transformation, empathy, and dignity.
           </p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <div data-aos="fade-up" className="border mt-8 overflow-hidden rounded-xl">
-              <div className="h-64">
-                <Image
-                  src={"https://servannacare.com/img/moja.jpg"}
-                  quality={100}
-                  alt="event"
-                  width={400}
-                  height={300}
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="p-4 py-6">
-                <h2 className="subHeading">
-                  Transformed for Better – Employer Edition 1 (May 2024)
-                </h2>
-                <p className="text-gray-700 text-sm mt-2">
-                  A powerful circle of mothers redefining home dynamics,
-                  parenting, and the role of domestic workers.
-                </p>
-              </div>
-            </div>
-            <div data-aos="fade-up" className="border mt-8 overflow-hidden rounded-xl">
-              <div className="h-64">
-                <Image
-                  src={"https://servannacare.com/img/11.jpg"}
-                  quality={100}
-                  alt="event"
-                  width={400}
-                  height={300}
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="p-4 py-6">
-                <h2 className="subHeading">
-                  Transformed for Better Event– Nanny Edition (Nov 2024)
-                </h2>
-                <p className="text-gray-700 text-sm mt-2">
-                  A transformative workshop honoring and empowering nannies and
-                  house managers across Kenya.
-                </p>
-              </div>
-            </div>
+            {tfbEvents.map((event, indx) => {
+              const slug = event.title.toLowerCase().replace(/ /g, "-");
+              return (
+                <div
+                  key={indx}
+                  data-aos="fade-up"
+                  className="border mt-8 overflow-hidden rounded-xl"
+                >
+                  <div className="h-64">
+                    <Image
+                      src={event.image}
+                      quality={100}
+                      alt="event"
+                      width={400}
+                      height={300}
+                      className="w-full h-full"
+                    />
+                  </div>
+                  <div className="p-4 py-6">
+                    <h2 className="subHeading">
+                      {event.title}
+                    </h2>
+                    <p className="text-gray-700 text-sm mt-2">
+                      {event.description}
+                    </p>
+                    <div className="mt-8 flex justify-end">
+                         <Link href={`/event/${slug}?id=${event.id}`}>
+                         <Button>Read More</Button>
+                         </Link>
+                    </div>
+                  </div>
+
+                </div>
+              );
+            })}
+
+            
           </div>
         </div>
-        
+
         <div>
           <div className="text-center mb-10">
-            <h2 className="sectionHeading mb-3">
-              Our Event Partners
-            </h2>
+            <h2 className="sectionHeading mb-3">Our Event Partners</h2>
             <p className="text-sm  text-gray-700">
               Trusted by leading organizations
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: "Kingdom Bank"},
+              { name: "Kingdom Bank" },
               { name: "Jacaranda Maternity" },
-              { name: "DPAK SACCO"},
-              { name: "CDTD"},
+              { name: "DPAK SACCO" },
+              { name: "CDTD" },
             ].map((partner) => (
               <div
                 data-aos="fade-up"
                 key={partner.name}
-                className=" p-6 rounded-lg border border-border hover:text-white bg-white hover:shadow-2xl hover:bg-primary transition-colors duration-200"
+                className=" p-6 rounded-lg border cursor-pointer bg-gray-200 hover:text-white hover:bg-primary duration-500"
               >
-                
-                <p className="text-center font-semibold text-foreground text-sm">{partner.name}</p>
+                <p className="text-center font-semibold  text-sm">
+                  {partner.name}
+                </p>
               </div>
             ))}
           </div>

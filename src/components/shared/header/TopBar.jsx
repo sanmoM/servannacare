@@ -4,7 +4,7 @@ import Container from "../Container";
 
 const TopBar = () => {
   return (
-    <div className="bg-primary py-4 text-blue-200 hidden md:block md:text-sm">
+    <div className="bg-primary py-4 text-gray-200 hidden md:block md:text-sm">
       <Container className={"flex justify-between items-center"} >
         
           <div className="flex  gap-8">
@@ -22,28 +22,28 @@ const TopBar = () => {
             <a
               href="#"
               aria-label="Facebook"
-              className="text-blue-200 hover:text-white transition-colors duration-200"
+              className="text-gray-200 hover:text-white transition-colors duration-200"
             >
               <Facebook size={20} />
             </a>
             <a
               href="#"
               aria-label="Twitter"
-              className="text-blue-200 hover:text-white transition-colors duration-200"
+              className="text-gray-200 hover:text-white transition-colors duration-200"
             >
               <Twitter size={20} />
             </a>
             <a
               href="#"
               aria-label="Instagram"
-              className="text-blue-200 hover:text-white transition-colors duration-200"
+              className="text-gray-200 hover:text-white transition-colors duration-200"
             >
               <Instagram size={20} />
             </a>
             <a
               href="#"
               aria-label="LinkedIn"
-              className="text-blue-200 hover:text-white transition-colors duration-200"
+              className="text-gray-200 hover:text-white transition-colors duration-200"
             >
               <Linkedin size={20} />
             </a>

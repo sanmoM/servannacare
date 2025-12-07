@@ -554,3 +554,23 @@ export const fakeData = [
       "https://plus.unsplash.com/premium_photo-1669703777428-48a39ccfe8cb?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
 ];
+
+
+export const tfbEvents = [
+    {
+      id: 1,
+      title: "Transformed for Better – Employer Edition 1 (May 2024)",
+      description:
+        "A powerful circle of mothers redefining home dynamics, parenting, and the role of domestic workers.",
+      image: "https://servannacare.com/img/moja.jpg",
+      date:"1 May 2024"
+    },
+    {
+      id: 2,
+      title: "Transformed for Better Event – Nanny Edition (Nov 2024)",
+      description:
+        "A transformative workshop honoring and empowering nannies and house managers across Kenya.",
+      image: "https://servannacare.com/img/11.jpg",
+      date:"Nov 2024"
+    },
+  ];
