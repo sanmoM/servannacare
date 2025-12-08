@@ -60,6 +60,11 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
       }
     }
 
+    if (data.age < 25) {
+      toast.error("Age must be 25 or above");
+      return;
+    }
+
     if (data.languages.length === 0) {
       toast.error("Please select at least one language!");
       return;
@@ -70,35 +75,35 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-          <h2 className="formHeading">Basic Information</h2>
-          <div className="flex flex-col  py-6 md:flex-row md:gap-4 gap-6">
-            <div className="flex-1">
-              <Input
-                placeholder="Name"
-                name="name"
-                label="Full Name (as per ID)"
-                value={data.name}
-                onChange={handleChange}
-              />
-            </div>
-    
-            <div className="flex-1">
-              <Input
-                type="number"
-                placeholder="Your age"
-                name="age"
-                label="Age"
-                maxLength={2}
-                value={data.age}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-                  handleChange({ target: { name: "age", value: val } });
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
-            {/* <div className="space-y-4 flex-1">
+      <h2 className="formHeading">Basic Information</h2>
+      <div className="flex flex-col  py-6 md:flex-row md:gap-4 gap-6">
+        <div className="flex-1">
+          <Input
+            placeholder="Name"
+            name="name"
+            label="Full Name (as per ID)"
+            value={data.name}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="flex-1">
+          <Input
+            type="number"
+            placeholder="Your age"
+            name="age"
+            label="Age"
+            maxLength={2}
+            value={data.age}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({ target: { name: "age", value: val } });
+            }}
+          />
+        </div>
+      </div>
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
+        {/* <div className="space-y-4 flex-1">
               <Label className={"mb-2 sm:mb-3"}>Bank Details</Label>
               <Input
                 name="bankName"
@@ -120,103 +125,103 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
                 onChange={handleChange}
               />
             </div> */}
-            <div className="flex-1">
-              <Input
-                label="Location"
-                placeholder="Location"
-                name="location"
-                value={data.location}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="flex-1">
-              <Label className={"mb-2"}>Gender?</Label>
-              <RadioGroup
-                className={"flex gap-4"}
-                value={data.gender}
-                onValueChange={(value) =>
-                  setData((prev) => ({ ...prev, gender: value }))
-                }
+        <div className="flex-1">
+          <Input
+            label="Location"
+            placeholder="Location"
+            name="location"
+            value={data.location}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="flex-1">
+          <Label className={"mb-2"}>Gender?</Label>
+          <RadioGroup
+            className={"flex gap-4"}
+            value={data.gender}
+            onValueChange={(value) =>
+              setData((prev) => ({ ...prev, gender: value }))
+            }
+          >
+            <div className="flex items-center gap-3">
+              <RadioGroupItem value="Male" id="r1" />
+              <Label
+                className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="r1"
               >
-                <div className="flex items-center gap-3">
-                  <RadioGroupItem value="Male" id="r1" />
-                  <Label
-                    className="text-gray-700 font-normal cursor-pointer"
-                    htmlFor="r1"
-                  >
-                    Male
-                  </Label>
-                </div>
-                <div className="flex items-center gap-3">
-                  <RadioGroupItem value="Female" id="r2" />
-                  <Label
-                    className="text-gray-700 font-normal cursor-pointer"
-                    htmlFor="r2"
-                  >
-                    Female
-                  </Label>
-                </div>
-              </RadioGroup>
+                Male
+              </Label>
             </div>
-          </div>
-    
-          <div className="py-8">
-            <Label className={"mb-3"}>Languages</Label>
-            <div className="flex flex-wrap gap-4 ">
-              {languages.map((lan, indx) => (
-                <div key={indx} className="flex items-center gap-2">
-                  <Checkbox
-                    id={lan.value}
-                    checked={data.languages.includes(lan.value)}
-                    onCheckedChange={() => toggleLanguage(lan.value)}
-                  />
-                  <Label
-                    htmlFor={lan.value}
-                    className="text-gray-700 font-normal cursor-pointer"
-                  >
-                    {lan.text}
-                  </Label>
-                </div>
-              ))}
+            <div className="flex items-center gap-3">
+              <RadioGroupItem value="Female" id="r2" />
+              <Label
+                className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="r2"
+              >
+                Female
+              </Label>
             </div>
-          </div>
-    
-          <div>
-            <Label className="mb-3 block">Can you drive?</Label>
-            <RadioGroup
-              className="flex gap-4 "
-              value={data.canDrive}
-              onValueChange={(value) =>
-                setData((prev) => ({ ...prev, canDrive: value }))
-              }
+          </RadioGroup>
+        </div>
+      </div>
+
+      <div className="py-8">
+        <Label className={"mb-3"}>Languages</Label>
+        <div className="flex flex-wrap gap-4 ">
+          {languages.map((lan, indx) => (
+            <div key={indx} className="flex items-center gap-2">
+              <Checkbox
+                id={lan.value}
+                checked={data.languages.includes(lan.value)}
+                onCheckedChange={() => toggleLanguage(lan.value)}
+              />
+              <Label
+                htmlFor={lan.value}
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                {lan.text}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <Label className="mb-3 block">Can you drive?</Label>
+        <RadioGroup
+          className="flex gap-4 "
+          value={data.canDrive}
+          onValueChange={(value) =>
+            setData((prev) => ({ ...prev, canDrive: value }))
+          }
+        >
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="Yes" id="d1" />
+            <Label
+              htmlFor="d1"
+              className="text-gray-700 font-normal cursor-pointer"
             >
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="Yes" id="d1" />
-                <Label
-                  htmlFor="d1"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  Yes
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="No" id="d2" />
-                <Label
-                  htmlFor="d2"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  No
-                </Label>
-              </div>
-            </RadioGroup>
+              Yes
+            </Label>
           </div>
-          
-          <div className="flex justify-end mt-6">
-            <Button type="submit" size="lg">
-              Next
-            </Button>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="No" id="d2" />
+            <Label
+              htmlFor="d2"
+              className="text-gray-700 font-normal cursor-pointer"
+            >
+              No
+            </Label>
           </div>
-        </form>
+        </RadioGroup>
+      </div>
+
+      <div className="flex justify-end mt-6">
+        <Button type="submit" size="lg">
+          Next
+        </Button>
+      </div>
+    </form>
   );
 };
 

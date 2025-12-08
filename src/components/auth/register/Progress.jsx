@@ -14,7 +14,7 @@ export default function Progress({ currentStep = 1, totalSteps = 4 }) {
 
         {/* Progress Line */}
         <div
-          className="absolute top-3 lg:top-4 left-0 h-1 bg-blue-500 transition-all duration-500"
+          className="absolute top-3 lg:top-4 left-0 h-1 bg-[#f6ce8a] transition-all duration-500"
           style={{ width: `${progressPercentage}%` }}
         />
 
@@ -30,9 +30,9 @@ export default function Progress({ currentStep = 1, totalSteps = 4 }) {
                 <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-300 ${
                     isCompleted
-                      ? "bg-green-500 text-white"
+                      ? "bg-primary text-white"
                       : isActive
-                      ? "bg-blue-500 text-white ring-4 ring-blue-200"
+                      ? "bg-[#f9e9ce] text-primary ring-4 ring-[#f6ce8a]"
                       : "bg-gray-200 text-gray-600"
                   }`}
                 >

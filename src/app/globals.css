@@ -128,7 +128,7 @@
 }
 
 body {
-  font-family: var(--font-poppins);
+  font-family: var(--font-ibm-plex-serif), serif;
 }
 
 .sectionHeading {

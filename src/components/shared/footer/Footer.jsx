@@ -61,14 +61,15 @@ const Footer = () => {
           {/* Column 3: Health Consulting */}
           <div>
             <h3 className="text-lg font-semibold text-white">
-              Health Consulting
+              Care Consulting
             </h3>
             <ul className="mt-4 space-y-3 text-gray-100">
-              <FooterLink href="#">Planning</FooterLink>
-              <FooterLink href="#">Health Information</FooterLink>
-              <FooterLink href="#">Regulatory</FooterLink>
-              <FooterLink href="#">Health Improvement</FooterLink>
-              <FooterLink href="#">Telehealth</FooterLink>
+              <FooterLink href="/services?category=Pre & Post Pregnancy Care">Pre & Post Pregnancy Care</FooterLink>
+              <FooterLink href="#">Post Surgery Care</FooterLink>
+              <FooterLink href="#">Elderly Care</FooterLink>
+              <FooterLink href="#">Physiotherapy</FooterLink>
+              <FooterLink href="#">Nanny & Housekeeping</FooterLink>
+              <FooterLink href="#">Special Need Care</FooterLink>
             </ul>
           </div>
 
@@ -108,7 +109,7 @@ const Footer = () => {
         <hr className="my-10 border-primary" />
         <div className="flex flex-col items-center justify-between sm:flex-row">
           <p className="text-xs text-center sm:text-left">
-            ALLRIGHT RESERVED - SERVANNACARE
+            ALLRIGHT RESERVED - CERVANNA CARE
           </p>
           <div className="flex items-center space-x-5 mt-4 sm:mt-0">
             <a

@@ -29,7 +29,7 @@ const page = () => {
   return (
     <div className="bg-white">
       <PageBanner
-        title="Begin Your Healing "
+        title="Begin Your Care Journey"
         image="https://s.yimg.com/ny/api/res/1.2/OlmuAmSCKyL0px34Qwt1GA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD02NzU-/https://media.zenfs.com/en/healthcare_dive_849/ea20ce12e4f3e4194d01260415c8de49"
       />
       <Container>

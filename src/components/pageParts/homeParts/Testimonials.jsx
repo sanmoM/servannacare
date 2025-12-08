@@ -135,7 +135,7 @@ export default function Testimonials() {
         <div className="bg-gradient-to-tl rounded-2xl mt-16 from-primary to-secondary md:py-24 py-8  px-2 sm:px-6 lg:px-8">
           <div className="mx-auto text-center sm:max-w-2xl">
             <h2 className="sectionHeading  text-gray-200">
-              Try Servannacare Right Now!
+              Try Cervanna Care Right Now!
             </h2>
             <p className="text-gray-300 my-6 my:mb-8 max-w-xl mx-auto  text-xs lg:text-sm">
               Boost the traffic to your website and social media accounts. online traffic into sales, and clients into advocates.

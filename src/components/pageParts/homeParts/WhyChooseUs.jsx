@@ -11,11 +11,6 @@ const WhyChooseUs = () => {
       description: "Clear, upfront costs with no hidden fees.",
     },
     {
-      icon: Phone,
-      title: "24/7 support and emergency response",
-      description: "We are here for you anytime, day or night.",
-    },
-    {
       icon: ClipboardList,
       title: "Tailored care plans for every family",
       description: "Customized solutions that fit your unique needs.",

@@ -32,7 +32,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
     education: {
       degreeIn: data.education.degreeIn || "",
       diplomaIn: data.education.diplomaIn || "",
-      isRegisterPCK: data.education.isRegisterPCK || "",
+      // isRegisterPCK: data.education.isRegisterPCK || "",
       registrationNumber: data.education.registrationNumber || "",
       practiceLicense: data.education.practiceLicense || null,
       educationCertificate: data.education.educationCertificate || null,
@@ -155,6 +155,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
       [section]: { ...prev[section], [field]: file },
     }));
   };
+  
   const handleUpdate = (e) => {
     e.preventDefault();
     localStorage.setItem("specialist", JSON.stringify(formData));
@@ -372,7 +373,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
         </div>
 
         {/* PCK Registration */}
-        <div className="py-6">
+        {/* <div className="py-6">
           <Label className="mb-3 block">
             Are you registered with Physiotherapy Council of Kenya (PCK)?
           </Label>
@@ -393,7 +394,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
               <Label htmlFor="pckNo">No</Label>
             </div>
           </RadioGroup>
-        </div>
+        </div> */}
 
         {/* Show only when PCK = Yes */}
         {data.isRegisterPCK === "Yes" && (

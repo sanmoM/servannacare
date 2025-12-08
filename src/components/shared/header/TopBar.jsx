@@ -10,7 +10,7 @@ const TopBar = () => {
           <div className="flex  gap-8">
             <div className="flex gap-2 items-center">
             <Mail />
-            servannacare@mail.com
+            cervannacare@mail.com
           </div>
           <div className="flex gap-2 items-center">
             <Phone />

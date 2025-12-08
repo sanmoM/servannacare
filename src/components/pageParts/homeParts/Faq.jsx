@@ -66,7 +66,7 @@ const Faq = () => {
         <div data-aos="fade-up" className="flex-1 hidden lg:block">
           <Image
             src={
-              "https://static.tildacdn.com/tild3063-3165-4532-a338-326666663139/Clip_path_group_52.png"
+              "https://media.istockphoto.com/id/1153408113/photo/african-mother-holding-adopted-child.jpg?s=612x612&w=0&k=20&c=3B6IotvJdAYM430NNmhyMwagG6kJz2L23YFJcNB0rUY="
             }
             alt="image"
             quality={100}

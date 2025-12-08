@@ -63,6 +63,11 @@ const SpecialNeedBasicInfo = ({ defaultValues, onNext }) => {
       }
     }
 
+    if (data.age < 25) {
+      toast.error("Age must be 25 or above");
+      return;
+    }
+
     if (data.languages.length === 0) {
       toast.error("Please select at least one language!");
       return;

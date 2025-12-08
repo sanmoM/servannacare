@@ -25,7 +25,7 @@ const page = () => {
 
   return (
     <div>
-      <PageBanner title="Transformed For Better Event" />
+      <PageBanner image="https://www.goodwin.edu/landingpages/files/images/nursing-programs-main-header.jpg" title="Transformed For Better Event" />
       <Container className="py-10 lg:py-16">
         <div className="pb-6">
           <h4 className="md:text-sm mb-3  text-xs font-semibold text-primary">

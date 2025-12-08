@@ -52,6 +52,10 @@ const validateNurse = (data) => {
 
   // Extra Validation Rules
 
+  if(data.age<25){
+      errors.push("Age must be 25 or above")
+    }
+
   if (data.serviceFee && isNaN(data.serviceFee)) {
     errors.push("Service Fee must be a valid number");
   }

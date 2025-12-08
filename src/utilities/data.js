@@ -1,5 +1,5 @@
 import hero1 from "@/asset/homeImages/hero1.png";
-import hero2 from "@/asset/homeImages/hero2.png";
+import hero2 from "@/asset/homeImages/hero2.jpg";
 import hero3 from "@/asset/homeImages/hero3.png";
 import {
   Activity,
@@ -90,7 +90,7 @@ export const services = [
   },
   {
     id: 5,
-    title: "Nanny and Housekeeping",
+    title: "Nanny & Housekeeping",
     description:
       "Trusted home support — caring for your children and keeping your home in perfect balance.",
     icon: <HouseHeart />,
@@ -99,7 +99,7 @@ export const services = [
   },
   {
     id: 6,
-    title: "Special needs care",
+    title: "Special Needs Care",
     description:
       "Professional special needs caregivers in Kenya offering safe, compassionate home care for children and adults with developmental, physical, or sensory challenges.",
     icon: <HandHeart />,

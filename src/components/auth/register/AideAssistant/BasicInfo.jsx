@@ -56,11 +56,16 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       ) {
         const formattedField = field
           .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (str) => str.toUpperCase());
+          .replace(/^./, (str) => str.toUpperCase())
 
         toast.error(`${formattedField} is required!`);
         return;
       }
+    }
+
+    if(data.age<25){
+      toast.error("Age must be 25 or above");
+      return;
     }
 
     if (data.languages.length === 0) {
