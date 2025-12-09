@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 
-
 const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
   const [data, setData] = useState({
     hospitalBasedCare: defaultValues.hospitalBasedCare || "",
@@ -29,11 +28,11 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
     // Dynamic validation
     const requiredFields = [
       "hospitalBasedCare",
-      "hospitalBasedYearsOfExperience",
-      "hospitalBasedReferenceContact",
+      // "hospitalBasedYearsOfExperience",
+      // "hospitalBasedReferenceContact",
       "homeBasedCare",
-      "homeBasedYearsOfExperience",
-      "homeBasedReferenceContact",
+      // "homeBasedYearsOfExperience",
+      // "homeBasedReferenceContact",
     ];
 
     for (let field of requiredFields) {
@@ -42,12 +41,29 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         (Array.isArray(data[field]) && data[field].length === 0)
       ) {
         const formattedField = field
-          .replace(/([A-Z])/g, " $1") 
-          .replace(/^./, (str) => str.toUpperCase()); 
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase());
 
         toast.error(`${formattedField} is required!`);
         return;
       }
+    }
+
+    if (
+      data.hospitalBasedCare === "Yes" &&
+      (!data.hospitalBasedYearsOfExperience ||
+        !data.hospitalBasedReferenceContact)
+    ) {
+      toast.error("Please fill all Hospital Based Care fields!");
+      return;
+    }
+
+    if (
+      data.homeBasedCare === "Yes" &&
+      (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
+    ) {
+      toast.error("Please fill all Home Based Care fields!");
+      return;
     }
 
     console.log(data);
@@ -60,7 +76,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
 
       {/* Hospital Based Care */}
       <div>
-        <Label className="mb-2 block">Hospital Based Care</Label>
+        <Label className="mb-2 block">Hospital Based Care </Label>
         <RadioGroup
           className="flex gap-4 mt-2"
           value={data.hospitalBasedCare}
@@ -78,7 +94,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yo" id="r2" />
+            <RadioGroupItem value="No" id="r2" />
             <Label
               htmlFor="r2"
               className="text-gray-700 font-normal cursor-pointer"
@@ -89,32 +105,38 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         </RadioGroup>
       </div>
 
-      <div className="flex flex-col mb-8 sm:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            type="number"
-            label="Years of experience"
-            name="hospitalBasedYearsOfExperience"
-            placeholder="Experience"
-            maxLength = {2}
-            value={data.hospitalBasedYearsOfExperience}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0,2);
-              handleChange({target:{name:"hospitalBasedYearsOfExperience",value:val}})
-            }}
-          />
+      {data.hospitalBasedCare === "Yes" && (
+        <div className="flex flex-col mb-8 sm:flex-row gap-4">
+          <div className="flex-1">
+            <Input
+              type="number"
+              label="Years of experience"
+              name="hospitalBasedYearsOfExperience"
+              placeholder="Experience"
+              maxLength={2}
+              value={data.hospitalBasedYearsOfExperience}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+                handleChange({
+                  target: {
+                    name: "hospitalBasedYearsOfExperience",
+                    value: val,
+                  },
+                });
+              }}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              label="Reference contact"
+              name="hospitalBasedReferenceContact"
+              placeholder="Reference"
+              value={data.hospitalBasedReferenceContact}
+              onChange={handleChange}
+            />
+          </div>
         </div>
-        <div className="flex-1">
-          <Input
-            label="Reference contact"
-            name="hospitalBasedReferenceContact"
-            placeholder="Reference"
-            value={data.hospitalBasedReferenceContact}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
-      
+      )}
 
       {/* Home Based Care */}
       <div>
@@ -147,31 +169,35 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         </RadioGroup>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            type={"number"}
-            label="Years of experience"
-            name="homeBasedYearsOfExperience"
-            placeholder="Experience"
-            maxLength={2}
-            value={data.homeBasedYearsOfExperience}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0,2);
-              handleChange({target:{name:"homeBasedYearsOfExperience",value:val}})
-            }}
-          />
+      {data.homeBasedCare === "Yes" && (
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <Input
+              type={"number"}
+              label="Years of experience"
+              name="homeBasedYearsOfExperience"
+              placeholder="Experience"
+              maxLength={2}
+              value={data.homeBasedYearsOfExperience}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+                handleChange({
+                  target: { name: "homeBasedYearsOfExperience", value: val },
+                });
+              }}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              label="Reference contact"
+              name="homeBasedReferenceContact"
+              placeholder="Reference"
+              value={data.homeBasedReferenceContact}
+              onChange={handleChange}
+            />
+          </div>
         </div>
-        <div className="flex-1">
-          <Input
-            label="Reference contact"
-            name="homeBasedReferenceContact"
-            placeholder="Reference"
-            value={data.homeBasedReferenceContact}
-            onChange={handleChange}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Navigation */}
       <div className="flex justify-between pt-6">

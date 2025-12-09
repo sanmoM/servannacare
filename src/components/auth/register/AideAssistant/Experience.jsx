@@ -16,49 +16,48 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
     homeBasedCare: defaultValues.homeBasedCare || "",
     homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience || "",
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact || "",
-    preferred: defaultValues.preferred || []
+    preferred: defaultValues.preferred || [],
   });
 
   const preferred = [
     {
-      title:"Pre and post pregnancy care",
+      title: "Pre and post pregnancy care",
     },
     {
-      title:"Post surgery cage"
+      title: "Post surgery cage",
     },
     {
-      title:"Elderly care"
-    }
-  ]
+      title: "Elderly care",
+    },
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
-  
-  const togglepreferred = (pref) => {
-      setData((prev) => {
-        const alreadySelected = prev.preferred.includes(pref);
-        return {
-          ...prev,
-          preferred: alreadySelected
-            ? prev.preferred.filter((l) => l !== pref)
-            : [...prev.preferred, pref],
-        };
-      });
-    };
 
+  const togglepreferred = (pref) => {
+    setData((prev) => {
+      const alreadySelected = prev.preferred.includes(pref);
+      return {
+        ...prev,
+        preferred: alreadySelected
+          ? prev.preferred.filter((l) => l !== pref)
+          : [...prev.preferred, pref],
+      };
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Dynamic validation
     const requiredFields = [
       "hospitalBasedCare",
-      "hospitalBasedYearsOfExperience",
-      "hospitalBasedReferenceContact",
+      // "hospitalBasedYearsOfExperience",
+      // "hospitalBasedReferenceContact",
       "homeBasedCare",
-      "homeBasedYearsOfExperience",
-      "homeBasedReferenceContact",
+      // "homeBasedYearsOfExperience",
+      // "homeBasedReferenceContact",
     ];
 
     for (let field of requiredFields) {
@@ -74,10 +73,27 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
         return;
       }
     }
-   
-    if(data.preferred.length === 0) {
+
+    if (
+      data.hospitalBasedCare === "Yes" &&
+      (!data.hospitalBasedYearsOfExperience ||
+        !data.hospitalBasedReferenceContact)
+    ) {
+      toast.error("Please fill all Hospital Based Care fields!");
+      return;
+    }
+
+    if (
+      data.homeBasedCare === "Yes" &&
+      (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
+    ) {
+      toast.error("Please fill all Home Based Care fields!");
+      return;
+    }
+
+    if (data.preferred.length === 0) {
       toast.error("Please select what you preferred");
-      return
+      return;
     }
 
     console.log(data);
@@ -87,7 +103,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
   return (
     <form onSubmit={handleSubmit}>
       <h2 className="formHeading">Experience</h2>
-      <div className="py-6">
+      <div className="pt-6">
         <Label className="mb-3 block">Hospital Based Care</Label>
         <RadioGroup
           className="flex gap-x-4 flex-wrap "
@@ -116,30 +132,34 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      <div className="flex gap-6 sm:flex-row flex-col sm:gap-4">
-        <Input
-          type="number"
-          name="hospitalBasedYearsOfExperience"
-          placeholder="Years of experience"
-          label="Years of Experience"
-          maxLength={2}
-          value={data.hospitalBasedYearsOfExperience}
-          onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-            handleChange({ target: { name: "hospitalBasedYearsOfExperience", value: val } });
-          }}
-        />
-        <Input
-          name="hospitalBasedReferenceContact"
-          placeholder="Reference contact"
-          label="Reference Contact"
-          value={data.hospitalBasedReferenceContact}
-          onChange={handleChange}
-        />
-      </div>
+      {data.hospitalBasedCare === "Yes" && (
+        <div className="flex gap-6 sm:flex-row my-6 flex-col sm:gap-4">
+          <Input
+            type="number"
+            name="hospitalBasedYearsOfExperience"
+            placeholder="Years of experience"
+            label="Years of Experience"
+            maxLength={2}
+            value={data.hospitalBasedYearsOfExperience}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({
+                target: { name: "hospitalBasedYearsOfExperience", value: val },
+              });
+            }}
+          />
+          <Input
+            name="hospitalBasedReferenceContact"
+            placeholder="Reference contact"
+            label="Reference Contact"
+            value={data.hospitalBasedReferenceContact}
+            onChange={handleChange}
+          />
+        </div>
+      )}
 
-      <div className="mt-10">
-        <Label className="mb-3 block">Home Based Care</Label>
+      <div className="">
+        <Label className="mb-3 mt-6 block">Home Based Care</Label>
         <RadioGroup
           className="flex gap-x-4 flex-wrap "
           value={data.homeBasedCare}
@@ -167,32 +187,36 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      <div className="flex gap-6 sm:flex-row flex-col my-6 sm:gap-4">
-        <Input
-          type="number"
-          name="homeBasedYearsOfExperience"
-          placeholder="Years of experience"
-          label="Years of Experience"
-          maxLength={2}
-          value={data.homeBasedYearsOfExperience}
-          onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-            handleChange({
-              target: { name: "homeBasedYearsOfExperience", value: val },
-            });
-          }}
-        />
-        <Input
-          name="homeBasedReferenceContact"
-          placeholder="Reference contact"
-          label="Reference Contact"
-          value={data.homeBasedReferenceContact}
-          onChange={handleChange}
-        />
-      </div>
+      {data.homeBasedCare === "Yes" && (
+        <div className="flex gap-6 sm:flex-row flex-col my-6  sm:gap-4">
+          <Input
+            type="number"
+            name="homeBasedYearsOfExperience"
+            placeholder="Years of experience"
+            label="Years of Experience"
+            maxLength={2}
+            value={data.homeBasedYearsOfExperience}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({
+                target: { name: "homeBasedYearsOfExperience", value: val },
+              });
+            }}
+          />
+          <Input
+            name="homeBasedReferenceContact"
+            placeholder="Reference contact"
+            label="Reference Contact"
+            value={data.homeBasedReferenceContact}
+            onChange={handleChange}
+          />
+        </div>
+      )}
 
       <div>
-        <Label className={"mb-3"}>What are your preferred areas of intervention</Label>
+        <Label className={"mb-3 mt-6"}>
+          What are your preferred areas of intervention
+        </Label>
         <div className="flex flex-wrap flex-col gap-2 ">
           {preferred.map((lan, indx) => (
             <div key={indx} className="flex items-center gap-2">

@@ -281,7 +281,7 @@ const NurseDetails = ({
       </div>
 
       {/* Hospital Based Care */}
-      <div>
+      <div className="mb-6">
         <Label className={"mb-2"}>Hospital Based Care</Label>
         <RadioGroup
           value={data.hospitalBasedCare}
@@ -298,32 +298,35 @@ const NurseDetails = ({
         </RadioGroup>
       </div>
 
+      {data.hospitalBasedCare === "Yes" && (
+        <div className="flex flex-col mb-8 mt-6 sm:flex-row gap-4">
+          <Input
+            type="number"
+            label="Years of experience"
+            name="hospitalBasedYearsOfExperience"
+            placeholder="Hospital based experience"
+            value={data.hospitalBasedYearsOfExperience}
+            onKeyDown={blockInvalidKeys}
+            onChange={(e) => {
+              handleChange({
+                target: {
+                  name: "hospitalBasedYearsOfExperience",
+                  value: numericInputFilter(e.target.value, 2),
+                },
+              });
+            }}
+          />
+          <Input
+            label="Reference contact"
+            name="hospitalBasedReferenceContact"
+            placeholder="Hospital based ref"
+            value={data.hospitalBasedReferenceContact}
+            onChange={handleChange}
+          />
+        </div>
+      )}
+
       {/* Hospital experience fields */}
-      <div className="flex flex-col mb-8 mt-6 sm:flex-row gap-4">
-        <Input
-          type="number"
-          label="Years of experience"
-          name="hospitalBasedYearsOfExperience"
-          placeholder="Hospital based experience"
-          value={data.hospitalBasedYearsOfExperience}
-          onKeyDown={blockInvalidKeys}
-          onChange={(e) => {
-            handleChange({
-              target: {
-                name: "hospitalBasedYearsOfExperience",
-                value: numericInputFilter(e.target.value, 2),
-              },
-            });
-          }}
-        />
-        <Input
-          label="Reference contact"
-          name="hospitalBasedReferenceContact"
-          placeholder="Hospital based ref"
-          value={data.hospitalBasedReferenceContact}
-          onChange={handleChange}
-        />
-      </div>
 
       {/* Home Based Care */}
       <div>
@@ -343,31 +346,33 @@ const NurseDetails = ({
         </RadioGroup>
       </div>
 
-      <div className="flex flex-col mt-6 sm:flex-row gap-4">
-        <Input
-          type="number"
-          label="Years of experience"
-          name="homeBasedYearsOfExperience"
-          placeholder="Home based experience"
-          value={data.homeBasedYearsOfExperience}
-          onKeyDown={blockInvalidKeys}
-          onChange={(e) => {
-            handleChange({
-              target: {
-                name: "homeBasedYearsOfExperience",
-                value: numericInputFilter(e.target.value, 2),
-              },
-            });
-          }}
-        />
-        <Input
-          label="Reference contact"
-          name="homeBasedReferenceContact"
-          placeholder="Home based ref"
-          value={data.homeBasedReferenceContact}
-          onChange={handleChange}
-        />
-      </div>
+      {data.homeBasedCare === "Yes" && (
+        <div className="flex flex-col mt-6 sm:flex-row gap-4">
+          <Input
+            type="number"
+            label="Years of experience"
+            name="homeBasedYearsOfExperience"
+            placeholder="Home based experience"
+            value={data.homeBasedYearsOfExperience}
+            onKeyDown={blockInvalidKeys}
+            onChange={(e) => {
+              handleChange({
+                target: {
+                  name: "homeBasedYearsOfExperience",
+                  value: numericInputFilter(e.target.value, 2),
+                },
+              });
+            }}
+          />
+          <Input
+            label="Reference contact"
+            name="homeBasedReferenceContact"
+            placeholder="Home based ref"
+            value={data.homeBasedReferenceContact}
+            onChange={handleChange}
+          />
+        </div>
+      )}
 
       {/* Skills */}
       <div>
@@ -446,15 +451,15 @@ const NurseDetails = ({
         name="serviceFee"
         placeholder="1500 per day or 35000 per month"
         value={data.serviceFee}
-         onKeyDown = {blockInvalidKeys}
-          onChange={(e) => {
-            handleChange({
-              target:{
-                name:"serviceFee",
-                value:numericInputFilter(e.target.value,5)
-              }
-            })
-          }}
+        onKeyDown={blockInvalidKeys}
+        onChange={(e) => {
+          handleChange({
+            target: {
+              name: "serviceFee",
+              value: numericInputFilter(e.target.value, 5),
+            },
+          });
+        }}
       />
 
       {/* Document Uploads */}

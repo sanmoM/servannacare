@@ -62,11 +62,11 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
     // Dynamic validation
     const requiredFields = [
       "hospitalBasedCare",
-      "hospitalBasedYearsOfExperience",
-      "hospitalBasedReferenceContact",
+      // "hospitalBasedYearsOfExperience",
+      // "hospitalBasedReferenceContact",
       "homeBasedCare",
-      "homeBasedYearsOfExperience",
-      "homeBasedReferenceContact",
+      // "homeBasedYearsOfExperience",
+      // "homeBasedReferenceContact",
       "serviceFee",
     ];
 
@@ -84,6 +84,23 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       }
     }
 
+    if (
+      data.hospitalBasedCare === "Yes" &&
+      (!data.hospitalBasedYearsOfExperience ||
+        !data.hospitalBasedReferenceContact)
+    ) {
+      toast.error("Please fill all Hospital Based Care fields!");
+      return;
+    }
+
+    if (
+      data.homeBasedCare === "Yes" &&
+      (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
+    ) {
+      toast.error("Please fill all Home Based Care fields!");
+      return;
+    }
+
     if (data.preferred.length === 0) {
       toast.error("Please select what you preferred");
       return;
@@ -96,7 +113,7 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
   return (
     <form onSubmit={handleSubmit}>
       <h2 className="formHeading">Experience</h2>
-      <div className="py-6">
+      <div className="mt-6">
         <Label className="mb-3 block">Hospital Based Care</Label>
         <RadioGroup
           className="flex gap-x-4 flex-wrap "
@@ -125,31 +142,33 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      <div className="flex gap-6 sm:flex-row flex-col sm:gap-4">
-        <Input
-          type={"number"}
-          label="Years of experience"
-          name="hospitalBasedYearsOfExperience"
-          placeholder="Experience"
-          maxLength={2}
-          value={data.hospitalBasedYearsOfExperience}
-          onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-            handleChange({
-              target: { name: "hospitalBasedYearsOfExperience", value: val },
-            });
-          }}
-        />
-        <Input
-          label="Reference contact"
-          name="hospitalBasedReferenceContact"
-          placeholder="Reference"
-          value={data.hospitalBasedReferenceContact}
-          onChange={handleChange}
-        />
-      </div>
+      {data.hospitalBasedCare === "Yes" && (
+        <div className="flex gap-6 sm:flex-row my-6 flex-col sm:gap-4">
+          <Input
+            type={"number"}
+            label="Years of experience"
+            name="hospitalBasedYearsOfExperience"
+            placeholder="Experience"
+            maxLength={2}
+            value={data.hospitalBasedYearsOfExperience}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({
+                target: { name: "hospitalBasedYearsOfExperience", value: val },
+              });
+            }}
+          />
+          <Input
+            label="Reference contact"
+            name="hospitalBasedReferenceContact"
+            placeholder="Reference"
+            value={data.hospitalBasedReferenceContact}
+            onChange={handleChange}
+          />
+        </div>
+      )}
 
-      <div className="mt-10">
+      <div className="my-6">
         <Label className="mb-3 block">Home Based Care</Label>
         <RadioGroup
           className="flex gap-x-4 flex-wrap "
@@ -178,29 +197,32 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      <div className="flex gap-6 sm:flex-row flex-col my-6 sm:gap-4">
-        <Input
-          type={"number"}
-          label="Years of experience"
-          name="homeBasedYearsOfExperience"
-          placeholder="Experience"
-          maxLength={2}
-          value={data.homeBasedYearsOfExperience}
-          onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-            handleChange({
-              target: { name: "homeBasedYearsOfExperience", value: val },
-            });
-          }}
-        />
-        <Input
-          label="Reference contact"
-          name="homeBasedReferenceContact"
-          placeholder="Reference"
-          value={data.homeBasedReferenceContact}
-          onChange={handleChange}
-        />
-      </div>
+
+      {data.homeBasedCare === "Yes" && (
+        <div className="flex gap-6 sm:flex-row flex-col my-6 sm:gap-4">
+          <Input
+            type={"number"}
+            label="Years of experience"
+            name="homeBasedYearsOfExperience"
+            placeholder="Experience"
+            maxLength={2}
+            value={data.homeBasedYearsOfExperience}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              handleChange({
+                target: { name: "homeBasedYearsOfExperience", value: val },
+              });
+            }}
+          />
+          <Input
+            label="Reference contact"
+            name="homeBasedReferenceContact"
+            placeholder="Reference"
+            value={data.homeBasedReferenceContact}
+            onChange={handleChange}
+          />
+        </div>
+      )}
 
       <div>
         <Label className={"mb-3"}>

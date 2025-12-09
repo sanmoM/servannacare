@@ -27,11 +27,11 @@ const validateNurse = (data) => {
     "educationCertificate",
     "isNursingInKenya",
     "hospitalBasedCare",
-    "hospitalBasedYearsOfExperience",
-    "hospitalBasedReferenceContact",
+    // "hospitalBasedYearsOfExperience",
+    // "hospitalBasedReferenceContact",
     "homeBasedCare",
-    "homeBasedYearsOfExperience",
-    "homeBasedReferenceContact",
+    // "homeBasedYearsOfExperience",
+    // "homeBasedReferenceContact",
     "skills",
     "mobilityYears",
     "bathingYears",
@@ -58,6 +58,20 @@ const validateNurse = (data) => {
 
   if (data.serviceFee && isNaN(data.serviceFee)) {
     errors.push("Service Fee must be a valid number");
+  }
+
+  if(
+    data.hospitalBasedCare === "Yes" && 
+    (!data.hospitalBasedYearsOfExperience || !data.hospitalBasedReferenceContact)
+  ){
+    errors.push("Please fill all Hospital Based Care fields!")
+  }
+
+  if(
+    data.homeBasedCare === "Yes" && 
+    (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
+  ){
+    errors.push("Please fill all Hospital Based Care fields!")
   }
 
   if (
