@@ -149,7 +149,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
 
         <div className="flex-1">
           <label className="block mb-2 text-sm font-medium text-gray-700">
-            Salary Range (USD)
+            Salary Range (KSh)
           </label>
           <Select
             value={data.salaryRange}
@@ -162,11 +162,11 @@ const BasicInfo = ({ defaultValues, onNext }) => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="$200-$400">$200 - $400</SelectItem>
-                <SelectItem value="$400-$600">$400 - $600</SelectItem>
-                <SelectItem value="$600-$800">$600 - $800</SelectItem>
-                <SelectItem value="$800-$1000">$800 - $1000</SelectItem>
-                <SelectItem value="$1000+">More than $1000</SelectItem>
+                <SelectItem value="200-400">200 - 400</SelectItem>
+                <SelectItem value="400-600">400 - 600</SelectItem>
+                <SelectItem value="600-800">600 - 800</SelectItem>
+                <SelectItem value="800-1000">800 - 1000</SelectItem>
+                <SelectItem value="1000+">More than 1000</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

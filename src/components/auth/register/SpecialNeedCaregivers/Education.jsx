@@ -11,8 +11,7 @@ import Input from "@/components/shared/Input";
 
 const Education = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
-    degreeIn: defaultValues.degreeIn || "",
-    diplomaIn: defaultValues.diplomaIn || "",
+    educationLevel: defaultValues.educationLevel || "",
     isRegisterPCK: defaultValues.isRegisterPCK || "",
     registrationNumber: defaultValues.registrationNumber || "",
     practiceLicense: defaultValues.practiceLicense || null,
@@ -43,11 +42,9 @@ const Education = ({ defaultValues, onNext, onBack }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-   if(!data.degreeIn)
-    return toast.error("Select Degree!");
+   if(!data.educationLevel)
+    return toast.error("Select Education Level!");
    
-   if(!data.diplomaIn)
-    return toast.error("Select Diploma!");
    
    if(!data.educationCertificate)
     return toast.error("Select file")
@@ -81,35 +78,52 @@ const Education = ({ defaultValues, onNext, onBack }) => {
 
       {/* degree */}
       <div>
-        <Label className="mb-3 block">Degree In</Label>
+        <Label className="mb-3 block">Education Level</Label>
         <RadioGroup
           className="flex flex-col flex-wrap gap-2 mt-2"
-          value={data.degreeIn}
+          value={data.educationLevel}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, degreeIn: value }))
+            setData((prev) => ({ ...prev, educationLevel: value }))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Special Needs Education (SNE)" id="edu1" />
+            <RadioGroupItem value=" Degree In Special Needs Education (SNE)" id="edu1" />
             <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
-              Special Needs Education (SNE)
+              Degree In Special Needs Education (SNE)
             </Label>
           </div>
 
           <div className="flex items-center gap-2">
             <RadioGroupItem
-              value="Early Childhood Development (ECD) with SNE units"
+              value=" Degree In Early Childhood Development (ECD) with SNE units"
               id="edu2"
             />
             <Label htmlFor="edu2" className="text-gray-700 cursor-pointer">
-              Early Childhood Development (ECD) with SNE units
+              Degree In Early Childhood Development (ECD) with SNE units
+            </Label>
+          </div>
+
+          <div className="flex items-center  gap-2">
+            <RadioGroupItem value="Diploma In Special Needs Education (SNE)" id="edu3" />
+            <Label htmlFor="edu3" className="text-gray-700 cursor-pointer">
+             Diploma In Special Needs Education (SNE)
+            </Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <RadioGroupItem
+              value="Diploma In Early Childhood Development (ECD) with SNE units"
+              id="edu4"
+            />
+            <Label htmlFor="edu4" className="text-gray-700 cursor-pointer">
+              Diploma In Early Childhood Development (ECD) with SNE units
             </Label>
           </div>
         </RadioGroup>
       </div>
 
       {/* diploma  */}
-      <div>
+      {/* <div>
         <Label className="mb-3 block">Diploma In</Label>
         <RadioGroup
           className="flex flex-col flex-wrap gap-2 mt-2"
@@ -135,7 +149,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
             </Label>
           </div>
         </RadioGroup>
-      </div>
+      </div> */}
 
       {/* File Upload */}
       <div>
