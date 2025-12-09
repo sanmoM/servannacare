@@ -61,7 +61,7 @@ const Searchbar = () => {
       endDate: format(checkOut, "dd-MM-yyyy"),
     }).toString();
 
-    router.push(`/search?${query}`);
+    router.push(`/specialist?${query}`);
 
     console.log(category, checkIn);
   };

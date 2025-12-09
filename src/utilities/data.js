@@ -428,7 +428,7 @@ export const fakeData = [
     rating: 4.5,
     name: "John Doe",
     email: "john.doe@example.com",
-    category: "Nurse",
+    category: "HOUSE MANAGER/ NANNY",
     status: "available",
     education: "BSc Nursing",
     experience: 5,
@@ -454,7 +454,7 @@ export const fakeData = [
     rating: 4.8,
     name: "Michael Brown",
     email: "michael.brown@example.com",
-    category: "House Manager",
+    category: "HOUSE MANAGER/ NANNY",
     status: "available",
     education: "Diploma in Hospitality",
     experience: 10,
@@ -467,7 +467,7 @@ export const fakeData = [
     rating: 3.9,
     name: "Emily Davis",
     email: "emily.davis@example.com",
-    category: "Agency",
+    category: "SPECIAL NEEDS CARE GIVER",
     status: "available",
     education: "BA in Management",
     experience: 3,
@@ -480,7 +480,7 @@ export const fakeData = [
     rating: 4.6,
     name: "Robert Wilson",
     email: "robert.wilson@example.com",
-    category: "Employer",
+    category: "MEDICAL NURSE",
     status: "not available",
     education: "MBA",
     experience: 8,
@@ -493,7 +493,7 @@ export const fakeData = [
     rating: 4.0,
     name: "Laura Johnson",
     email: "laura.johnson@example.com",
-    category: "Nurse",
+    category: "CERTIFIED NURSING ASSISTANT (C.N.A)",
     status: "available",
     education: "BSc Nursing",
     experience: 6,
@@ -519,7 +519,7 @@ export const fakeData = [
     rating: 3.8,
     name: "Sophia Lee",
     email: "sophia.lee@example.com",
-    category: "House Manager",
+    category: "HOUSE MANAGER/ NANNY",
     status: "not available",
     education: "Diploma in Hospitality",
     experience: 2,
@@ -532,7 +532,7 @@ export const fakeData = [
     rating: 4.7,
     name: "James Anderson",
     email: "james.anderson@example.com",
-    category: "Agency",
+    category: "MEDICAL NURSE",
     status: "available",
     education: "BA in Management",
     experience: 9,
@@ -545,7 +545,7 @@ export const fakeData = [
     rating: 4.1,
     name: "Olivia Thomas",
     email: "olivia.thomas@example.com",
-    category: "Nurse",
+    category: "CERTIFIED NURSING ASSISTANT (C.N.A)",
     status: "available",
     education: "MBA",
     experience: 5,
@@ -574,3 +574,56 @@ export const tfbEvents = [
       date:"Nov 2024"
     },
   ];
+
+
+
+  export const categoryFilters = {
+  "house manager nanny": {
+    label: "House Manager / Nanny",
+    options: [
+      { value: "liveIn", label: "Live In" },
+      { value: "dayburg", label: "Dayburg" }
+    ]
+  },
+
+  physiotherapist: {
+    label: "Physiotherapist",
+    options: [
+      { value: "pediatric", label: "Pediatric" },
+      { value: "orthopedic", label: "Orthopedic" },
+      { value: "rehab", label: "Rehab" },
+      { value: "sports", label: "Sports" },
+      { value: "stroke", label: "Stroke" },
+      { value: "other", label: "Other (Describe)" }
+    ]
+  },
+
+  "special needs care giver": {
+    label: "Special Needs Caregiver",
+    options: [
+      { value: "asd", label: "Autism Spectrum Disorder (ASD)" },
+      { value: "adhd", label: "ADHD" },
+      { value: "cerebral", label: "Cerebral palsy" },
+      { value: "down", label: "Down syndrome" },
+      { value: "blindness", label: "Blindness" },
+      { value: "dementia", label: "Dementia & Alzheimer" }
+    ]
+  },
+
+  nurse: {
+    label: "Nurse / Nurse Aide",
+    options: [
+      { value: "pregnancy", label: "Pre and Post Pregnancy Care" },
+      { value: "postSurgery", label: "Post Surgery Care" },
+      { value: "elderly", label: "Elderly Care" }
+    ]
+  }
+};
+
+export const serviceCategory = [
+   "HOUSE MANAGER/ NANNY",
+   "CERTIFIED NURSING ASSISTANT (C.N.A)",
+   "MEDICAL NURSE",
+   "PHYSIOTHERAPIST",
+   "SPECIAL NEEDS CARE GIVER"
+]

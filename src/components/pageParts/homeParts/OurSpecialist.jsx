@@ -23,8 +23,8 @@ const OurSpecialist = () => {
           <ProfileCard key={indx} profile={data} />
         ))}
       </div>
-      <Link href={"/search?category=all"} className="mt-8 flex justify-center">
-        <Button >More <ChevronRight/></Button>
+      <Link href={"/specialist?category=all"} className="mt-8 flex justify-center">
+        <Button size={"lg"}>More <ChevronRight/></Button>
       </Link>
     </Container>
   );

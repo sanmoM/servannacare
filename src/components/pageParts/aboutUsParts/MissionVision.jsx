@@ -92,7 +92,7 @@ const MissionVision = () => {
           <div data-aos="fade-up">
             <Image
               src={
-                "https://emhealth.org/wp-content/uploads/sites/2/2022/11/iStock-802125010.jpg"
+                "https://t3.ftcdn.net/jpg/06/34/06/68/360_F_634066834_nqO8BvBTKZZGD2bToETzZKnVttrDL26L.jpg"
               }
               alt="Image"
               width={500}

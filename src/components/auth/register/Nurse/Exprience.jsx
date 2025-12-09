@@ -58,14 +58,6 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
       return;
     }
 
-    if (
-      data.homeBasedCare === "Yes" &&
-      (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
-    ) {
-      toast.error("Please fill all Home Based Care fields!");
-      return;
-    }
-
     console.log(data);
     onNext(data);
   };
@@ -76,7 +68,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
 
       {/* Hospital Based Care */}
       <div>
-        <Label className="mb-2 block">Hospital Based Care </Label>
+        <Label className="mb-2 block">Hospital Based Care</Label>
         <RadioGroup
           className="flex gap-4 mt-2"
           value={data.hospitalBasedCare}

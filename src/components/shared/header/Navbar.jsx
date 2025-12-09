@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { BookAlert, BookImage, CircleQuestionMark, HandHeart, Headset, HeartPulse, Home, Info, LayoutList, Menu, X } from "lucide-react";
+import { BookAlert, BookImage, CircleQuestionMark, HandHeart, Headset, HeartPulse, Home, Info, LayoutList, Menu, Users, X } from "lucide-react";
 import TopBar from "./TopBar";
 import {
   Dialog,
@@ -33,9 +33,10 @@ const Navbar = () => {
   const navlinks = [
     { text: "Home", link: "/", icon:Home },
     { text: "Our Services", link: "/services",icon:HandHeart  },
-    { text: "Blog", link: "/blog",icon:LayoutList  },
+    { text: "Specialist", link: "/specialist",icon:Users  },
+    // { text: "Blog", link: "/blog",icon:LayoutList  },
     { text: "About Us", link: "/about-us",icon:BookAlert  },
-    { text: "FAQ", link: "/faq",icon:CircleQuestionMark  },
+    // { text: "FAQ", link: "/faq",icon:CircleQuestionMark  },
     { text: "Event", link: "/event",icon:BookImage  },
     { text: "Contact Us", link: "/contact-us",icon:Headset  },
   ];

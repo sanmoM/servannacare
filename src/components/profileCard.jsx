@@ -38,10 +38,10 @@ const ProfileCard = ({ profile }) => {
   return (
     <div
       data-aos="fade-up"
-      className="w-full max-w-2xl flex flex-col lg:flex-row overflow-hidden bg-white border border-gray-200 rounded-2xl  transition-all duration-300 ease-in-out hover:shadow-md"
+      className="w-full  flex flex-col overflow-hidden bg-white border border-gray-200 rounded-2xl  transition-all duration-300 ease-in-out hover:shadow-md"
     >
       {/* Photo Section */}
-      <div className="w-full lg:w-1/3 flex items-center justify-center p-6 lg:rounded-l-2xl relative">
+      <div className="w-full  flex items-center justify-center p-6 lg:rounded-l-2xl relative">
         {/* Half background */}
         <div className="absolute inset-0">
           <div className="h-1/2 bg-indigo-100"></div>
@@ -65,7 +65,7 @@ const ProfileCard = ({ profile }) => {
       </div>
 
       {/* Info & Actions */}
-      <div className="flex flex-col justify-between w-full lg:w-2/3 p-5">
+      <div className="flex flex-col justify-between w-full  p-5">
         {/* Name & Rating */}
         <div>
           <div className="flex items-start justify-between mb-3">

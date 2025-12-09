@@ -7,7 +7,10 @@ import Slider from "@/components/pageParts/homeParts/Slider";
 import Testimonials from "@/components/pageParts/homeParts/Testimonials";
 import WhyChooseUs from "@/components/pageParts/homeParts/WhyChooseUs";
 import Container from "@/components/shared/Container";
+import { Button } from "@/components/ui/button";
 import { blogs } from "@/utilities/data";
+import { ChevronRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -28,6 +31,9 @@ export default function Home() {
             return <BlogCard data-aos="fade-up" key={indx} blog={blog} slug={slug}></BlogCard>;
           })}
         </Container>
+         <Link href={"/blog"} className="mt-8 flex justify-center">
+        <Button size={"lg"}>More <ChevronRight/></Button>
+      </Link>
       </div>
       <Faq/>
       <WhyChooseUs/>

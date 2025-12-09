@@ -39,7 +39,7 @@ export default function DashboardLayout({ children }) {
   const userLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/user-profile", icon: User },
-    { name: "Find Services", href: "/search?category=all", icon: Search },
+    { name: "Find Services", href: "/specialist?category=all", icon: Search },
     {
       name: "My Appointments",
       href: "/dashboard/my-appointment",
