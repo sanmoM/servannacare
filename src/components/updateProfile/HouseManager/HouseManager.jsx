@@ -230,6 +230,8 @@ const HouseManager = ({ data = {} }) => {
             </Select>
           </div>
 
+          {/* comment git */}
+
           <div className="flex-1">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Salary Range (KSh)
