@@ -1,3 +1,4 @@
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle, ClipboardList, Clock } from "lucide-react";
 import React from "react";
 
@@ -64,19 +65,24 @@ const page = () => {
     Completed: "bg-green-300",
     Ongoing: "bg-blue-300",
     Cancelled: "bg-red-300",
-    Active:"bg-blue-300"
+    Active: "bg-blue-300",
   };
 
   return (
     <div>
       <div className="mb-10">
         <h1 className="sectionHeading">My Schedule</h1>
-        <p className="mt-2 text-sm sm:text-base text-gray-600">Manage your schedule efficiently</p>
+        <p className="mt-2 text-sm sm:text-base text-gray-600">
+          Manage your schedule efficiently
+        </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="border  sm:max-w-[300px] w-full bg-purple-300 flex gap-4 overflow-hidden items-center rounded-md ">
           <div className="bg-purple-600">
-            <ClipboardList className="w-full text-white h-full p-4" size={"40"} />
+            <ClipboardList
+              className="w-full text-white h-full p-4"
+              size={"40"}
+            />
           </div>
           <div className="text-white">
             <h2 className="font-semibold  mb-1 text-sm">Total</h2>
@@ -112,7 +118,26 @@ const page = () => {
         </div>
       </div>
 
-      <div className=" overflow-x-auto mt-12 w-full">
+      <div className="mt-12 flex justify-end">
+        <Select
+          // onValueChange={(value) => {
+          //   setSortBy(value);
+          // }}
+        >
+          <SelectTrigger className="w-[180px] border-primary">
+            <SelectValue placeholder="Filter" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="upcomming">Upcomming</SelectItem>
+              <SelectItem value="compleated">Complated</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className=" overflow-x-auto mt-4 w-full">
         <table className="min-w-[700px] w-full text-sm text-left text-gray-700 border rounded-xl shadow">
           <thead className="bg-gray-100 border-b">
             <tr className="text-xs sm:text-sm lg:text-base">
