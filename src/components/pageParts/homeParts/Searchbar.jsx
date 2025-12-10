@@ -21,6 +21,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format, addDays, isBefore, startOfDay } from "date-fns";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { serviceCategory } from "@/utilities/data";
 
 const Searchbar = () => {
   const [category, setCategory] = useState("");
@@ -94,9 +95,9 @@ const Searchbar = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Category</SelectLabel>
-                    {categories.map((item) => (
-                      <SelectItem key={item.id} value={item.value}>
-                        {item.label}
+                    {serviceCategory.map((item,indx) => (
+                      <SelectItem key={indx} value={item.mainCategory}>
+                        {item.mainCategory}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -184,9 +185,9 @@ const Searchbar = () => {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Category</SelectLabel>
-                  {categories.map((item) => (
-                    <SelectItem key={item.id} value={item.value}>
-                      {item.label}
+                  {serviceCategory.map((item,indx) => (
+                    <SelectItem key={indx} value={item.mainCategory}>
+                      {item.mainCategory}
                     </SelectItem>
                   ))}
                 </SelectGroup>

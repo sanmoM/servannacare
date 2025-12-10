@@ -66,7 +66,7 @@ export const services = [
     title: "Post Surgery Care",
     description:
       "Professional home recovery support, including wound care, mobility assistance, and medication monitoring.",
-    icon: <Cross/>,
+    icon: <Cross />,
     image:
       "https://img.topchinasupplier.com/file/upload/2020/04/24/Disposable-Surgical-Powder-Powder-Free-Latex-Examination-Gloves-3.jpg",
   },
@@ -395,6 +395,7 @@ export const userRole = [
     role: "agency",
   },
 
+  ,
   // {
   //   id: 8,
   //   text: "Employer",
@@ -402,7 +403,6 @@ export const userRole = [
   //   href: "/register",
   //   role: "employer",
   // },
-  ,
   {
     id: 8,
     text: "Medical Institutions",
@@ -555,35 +555,32 @@ export const fakeData = [
   },
 ];
 
-
 export const tfbEvents = [
-    {
-      id: 1,
-      title: "Transformed for Better – Employer Edition 1 (May 2024)",
-      description:
-        "A powerful circle of mothers redefining home dynamics, parenting, and the role of domestic workers.",
-      image: "https://servannacare.com/img/moja.jpg",
-      date:"1 May 2024"
-    },
-    {
-      id: 2,
-      title: "Transformed for Better Event – Nanny Edition (Nov 2024)",
-      description:
-        "A transformative workshop honoring and empowering nannies and house managers across Kenya.",
-      image: "https://servannacare.com/img/11.jpg",
-      date:"Nov 2024"
-    },
-  ];
+  {
+    id: 1,
+    title: "Transformed for Better – Employer Edition 1 (May 2024)",
+    description:
+      "A powerful circle of mothers redefining home dynamics, parenting, and the role of domestic workers.",
+    image: "https://servannacare.com/img/moja.jpg",
+    date: "1 May 2024",
+  },
+  {
+    id: 2,
+    title: "Transformed for Better Event – Nanny Edition (Nov 2024)",
+    description:
+      "A transformative workshop honoring and empowering nannies and house managers across Kenya.",
+    image: "https://servannacare.com/img/11.jpg",
+    date: "Nov 2024",
+  },
+];
 
-
-
-  export const categoryFilters = {
+export const categoryFilters = {
   "house manager nanny": {
     label: "House Manager / Nanny",
     options: [
       { value: "liveIn", label: "Live In" },
-      { value: "dayburg", label: "Dayburg" }
-    ]
+      { value: "dayburg", label: "Dayburg" },
+    ],
   },
 
   physiotherapist: {
@@ -594,8 +591,8 @@ export const tfbEvents = [
       { value: "rehab", label: "Rehab" },
       { value: "sports", label: "Sports" },
       { value: "stroke", label: "Stroke" },
-      { value: "other", label: "Other (Describe)" }
-    ]
+      { value: "other", label: "Other (Describe)" },
+    ],
   },
 
   "special needs care giver": {
@@ -606,8 +603,8 @@ export const tfbEvents = [
       { value: "cerebral", label: "Cerebral palsy" },
       { value: "down", label: "Down syndrome" },
       { value: "blindness", label: "Blindness" },
-      { value: "dementia", label: "Dementia & Alzheimer" }
-    ]
+      { value: "dementia", label: "Dementia & Alzheimer" },
+    ],
   },
 
   nurse: {
@@ -615,15 +612,46 @@ export const tfbEvents = [
     options: [
       { value: "pregnancy", label: "Pre and Post Pregnancy Care" },
       { value: "postSurgery", label: "Post Surgery Care" },
-      { value: "elderly", label: "Elderly Care" }
-    ]
-  }
+      { value: "elderly", label: "Elderly Care" },
+    ],
+  },
 };
 
 export const serviceCategory = [
-   "HOUSE MANAGER/ NANNY",
-   "CERTIFIED NURSING ASSISTANT (C.N.A)",
-   "MEDICAL NURSE",
-   "PHYSIOTHERAPIST",
-   "SPECIAL NEEDS CARE GIVER"
-]
+  {
+    mainCategory: "House Manager / Nanny",
+    subCategory: ["Live In", "Dayburg"],
+  },
+  {
+    mainCategory: "Certified Nursing Assistant (C.N.A)",
+    subCategory: [
+      "Pre and Post Pregnancy Care",
+      "Post Surgery Care",
+      "Elderly Care",
+    ],
+  },
+  {
+    mainCategory: "Medical Nurse",
+    subCategory: [
+      // "Pre and Post Pregnancy Care",
+      // "Post Surgery Care",
+      // "Elderly Care",
+    ],
+  },
+  {
+    mainCategory: "Physiotherapist",
+    subCategory: ["Pediatric", "Orthopedic", "Rehab", "Sports", "Stroke"],
+  },
+  {
+    mainCategory: "Special Need Caregiver",
+    subCategory: [
+      "Autism Spectrum Disorder (ASD)",
+      "Speech Therapy",
+      "ADHD (Attention Deficit Hyperactivity Disorder)",
+      "Cerebral Palsy",
+      "Down Syndrome",
+      "Blindness",
+      "Dementia & Alzheimer",
+    ],
+  },
+];

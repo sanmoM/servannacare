@@ -31,6 +31,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Filter } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const SearchContent = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -51,6 +52,11 @@ const SearchContent = () => {
       (a, b) => b.experience - a.experience
     );
   }
+
+  const selectedCategoryObj = serviceCategory.find(
+    (cate) => cate.mainCategory === selectedCategory
+  );
+  console.log(selectedCategoryObj);
 
   return (
     <>
@@ -92,30 +98,68 @@ const SearchContent = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-7 gap-6">
+        <div className="grid lg:grid-cols-7 gap-6 items-start">
           {/* desktop filtersidebar */}
           <div className="col-span-2 hidden lg:flex sticky top-5 h-[95vh]  rounded-md border">
-            <div className="p-6">
-              <h2 className="text-lg border-b mb-4 font-semibold">Category</h2>
-              <select
-                className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm
-  focus:border-primary focus:ring-2 focus:ring-primary outline-none"
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="" disabled  hidden>
-                  Select Category
-                </option>
-
-                {serviceCategory.map((cat, indx) => (
-                  <option  className="text-sm" key={indx} value={cat}>
-                    {cat}
+            <div className="p-6 space-y-6">
+              <div>
+                <h2 className="text-lg border-b mb-4 font-semibold">
+                  Category
+                </h2>
+                <select
+                  className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary outline-none"
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <option value="" disabled selected hidden>
+                    Select Category
                   </option>
-                ))}
-              </select>
+
+                  {serviceCategory.map((cat, indx) => (
+                    <option
+                      className="text-sm"
+                      key={indx}
+                      value={cat.mainCategory}
+                    >
+                      {cat.mainCategory}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {selectedCategory ? (
+                <div>
+                  <h2 className="text-lg border-b mb-4  font-semibold">
+                    Service
+                  </h2>
+                  <div className="space-y-2">
+                    {selectedCategoryObj.subCategory.map((cat, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Checkbox id={cat} />
+                        <Label htmlFor={cat}>{cat}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <h2 className="text-lg border-b mb-4  font-semibold">
+                    Service
+                  </h2>
+                  <div className="space-y-3">
+                    {serviceCategory
+                      .flatMap((cat) => cat.subCategory)
+                      .map((sub, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <Checkbox id={sub} />
+                          <Label htmlFor={sub}>{sub}</Label>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="grid col-span-5 grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid col-span-5 grid-cols-1 gap-4 sm:grid-cols-2 self-start">
             {filteredData.length > 0 ? (
               filteredData.map((profile, i) => (
                 <ProfileCard key={i} profile={profile} />
@@ -126,40 +170,48 @@ const SearchContent = () => {
           </div>
         </div>
 
-        {/* <div className="mt-16">
+        <div className="mt-16">
           <Pagination className={"flex justify-center md:justify-end"}>
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
                   href="#"
-                  onClick={() => goToPage(currentPage - 1)}
+                  // onClick={() => goToPage(currentPage - 1)}
                 />
               </PaginationItem>
 
-              {[...Array(totalPages)].map((_, i) => (
-                <PaginationItem key={i}>
+              {/* {[...Array(totalPages)].map((_, i) => ( */}
+                <PaginationItem key={1}>
                   <PaginationLink
                     href="#"
-                    isActive={currentPage === i + 1}
-                    onClick={() => goToPage(i + 1)}
+                    isActive={ 1}
+                    // onClick={() => goToPage(i + 1)}
                   >
-                    {i + 1}
+                    {1}
                   </PaginationLink>
                 </PaginationItem>
-              ))}
+                <PaginationItem key={2}>
+                  <PaginationLink
+                    href="#"
+                    isActive={2}
+                    // onClick={() => goToPage(i + 1)}
+                  >
+                    {2}
+                  </PaginationLink>
+                </PaginationItem>
+              {/* ))} */}
 
               <PaginationItem>
                 <PaginationNext
                   href="#"
-                  onClick={() => goToPage(currentPage + 1)}
+                  // onClick={() => goToPage(currentPage + 1)}
                 />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </div> */}
+        </div>
       </Container>
 
-      
       {/* Sidebar (Mobile) */}
       {/* Overlay */}
       <div
@@ -171,26 +223,60 @@ const SearchContent = () => {
 
       {/* Sidebar Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-3/4 p-4 lg:hidden sm:w-1/2 bg-white shadow-lg z-50 transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-3/4 p-4 lg:hidden sm:w-1/2 bg-white shadow-lg space-y-6 z-50 transform transition-transform duration-300 ${
           setMobileFilterSidebar ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <h2 className="text-lg border-b mb-4 font-semibold">Category</h2>
-        <select
-          className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm
+        <div>
+          <h2 className="text-lg border-b mb-4 font-semibold">Category</h2>
+          <select
+            className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm
   focus:border-primary focus:ring-2 focus:ring-primary outline-none"
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="" disabled  hidden>
-            Select Category   
-          </option>
-
-          {serviceCategory.map((cat, indx) => (
-            <option  className="text-[10px]" key={indx} value={cat}>
-              {cat}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+          >
+            <option value="" disabled hidden>
+              Select Category
             </option>
-          ))}
-        </select>
+
+            {serviceCategory.map((cat, indx) => (
+              <option
+                className="text-[10px]"
+                key={indx}
+                value={cat.mainCategory}
+              >
+                {cat.mainCategory}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {selectedCategory ? (
+          <div>
+            <h2 className="text-lg border-b mb-4  font-semibold">Services</h2>
+            <div className="space-y-2">
+              {selectedCategoryObj.subCategory.map((cat, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <Checkbox id={cat} />
+                  <Label htmlFor={cat}>{cat}</Label>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <h2 className="text-lg border-b mb-4  font-semibold">Services</h2>
+            <div className="space-y-2">
+              {serviceCategory
+                .flatMap((cat) => cat.subCategory)
+                .map((sub, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Checkbox id={sub} />
+                    <Label htmlFor={sub}>{sub}</Label>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
