@@ -50,7 +50,7 @@ const NurseDetails = ({
     age: "",
     gender: "",
     location: "",
-    education: "",
+    education: [],
     languages: [],
     canDrive: "",
     role: "",
@@ -236,17 +236,30 @@ const NurseDetails = ({
       {/* Education Level */}
       <div className="my-6">
         <Label className="mb-3">Level of Education</Label>
-        <RadioGroup
-          value={data.education}
-          onValueChange={(val) => setData((p) => ({ ...p, education: val }))}
-          className="flex flex-wrap gap-4"
-        >
-          <RadioGroupItem value="Diploma In Nursing" id="edu1" />
-          <Label htmlFor="edu1">Diploma In Nursing</Label>
 
-          <RadioGroupItem value="Degree In Nursing" id="edu2" />
-          <Label htmlFor="edu2">Degree In Nursing</Label>
-        </RadioGroup>
+        <div className="flex flex-wrap gap-4 mt-2">
+          {/* Diploma */}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={data.education.includes("Diploma In Nursing")}
+              onCheckedChange={() =>
+                toggleArray("education", "Diploma In Nursing")
+              }
+            />
+            <Label>Diploma In Nursing</Label>
+          </div>
+
+          {/* Degree */}
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={data.education.includes("Degree In Nursing")}
+              onCheckedChange={() =>
+                toggleArray("education", "Degree In Nursing")
+              }
+            />
+            <Label>Degree In Nursing</Label>
+          </div>
+        </div>
       </div>
 
       {/* Education Certificate Upload */}

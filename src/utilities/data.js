@@ -560,15 +560,102 @@ export const tfbEvents = [
     id: 1,
     title: "Transformed for Better – Employer Edition 1 (May 2024)",
     description:
-      "A powerful circle of mothers redefining home dynamics, parenting, and the role of domestic workers.",
+      "The Transformed for Better workshop brought together a powerful circle of mothers committed to redefining home dynamics, parenting, and the role of domestic workers. Hosted by MyHauzHelp, the event created a safe space for learning, reflection, and meaningful connection.\n The day began with a heartfelt introduction from Rahab, CEO of then MyHauzHelp, who courageously highlighted the challenges faced by domestic workers—ranging from lack of recognition to emotional burnout. She shared the vision behind Transformed for Better: to build homes grounded in empathy, dignity, and mutual respect.",
+
+    more: [
+      {
+        title: "Strengthening Relationships with House Managers – Led by Kate",
+        desc: "Cate guided attendees through practical tools to foster respectful and cooperative relationships with house managers. She challenged employers to lead not with authority, but with understanding—emphasizing communication, appreciation, and clarity of expectations.",
+      },
+      {
+        title: "Child Nutrition & Wellbeing – Led by the Renowned Nthenya",
+        desc: "Nutrition expert Nthenya deeply engaged the room with insights on how food shapes children’s behavior, focus, and emotional balance. She offered realistic meal tips and reminded mothers that nourishment goes beyond feeding—it’s a form of love.",
+      },
+      {
+        title: "Parenting & Emotional Support for Mothers – Led by Grace",
+        desc: "Grace delivered an emotional and healing session for mothers, focusing on self-compassion, inner strength, and creating emotionally safe homes. She helped mothers reflect on their own feelings, reminding them that a nurtured mother nurtures a home.",
+      },
+    ],
+    title2: "Beyond Learning – Connection & Community",
+    description2:
+      "After the sessions, attendees enjoyed a warm meal and open networking on the scenic Nairobi Garage rooftop. Conversations flowed, stories were shared, and a sense of sisterhood was formed. Many expressed how seen and uplifted they felt—proof that Transformed for Better is more than an event; it is a movement.",
+    title3:"A Vision in Motion"  ,
+    description3:"This workshop marked a significant step toward reshaping how families value domestic workers, nurture children, and support mothers. The journey has just begun, and the call is clear:",
+
+   title4:"When homes are transformed for better, society is transformed for good.",
+
+    sponsor: [
+      "KINGDOM BANK",
+      "JACARANDA MATERNITY HOPITAL",
+      "SEED TO FRUIT",
+      "ZUMARIDI",
+    ],
     image: "https://servannacare.com/img/moja.jpg",
     date: "1 May 2024",
   },
+
   {
     id: 2,
-    title: "Transformed for Better Event – Nanny Edition (Nov 2024)",
+    title: "Transformed for Better – House Managers Edition (Nov 2024)",
     description:
-      "A transformative workshop honoring and empowering nannies and house managers across Kenya.",
+      "On 17th November 2024, the Transformed for Better – House Managers Edition gathered 35 dedicated nannies and house managers for a deeply transformative day of learning, appreciation, and empowerment. Hosted by MyHauzHelp, this event honored the silent strength of domestic workers and reaffirmed their invaluable role in homes, the economy, and society at large.",
+
+    title2: "Opening statements",
+    description2:
+      "The day opened with warm introductions from the house managers, each sharing their name and story — a rare moment where they were seen and heard.Rahab, CEO of MyHauzHelp, followed with a heartfelt address, emphasizing the dignity of their work and reminding them: You don’t just support homes — you hold them together.",
+
+    title3: "Transformative Learning Sessions",
+    description3:
+      "The workshop offered practical education and emotional uplift through expert-led sessions:",
+
+    more: [
+      {
+        title: "First Aid Training – Jacaranda Maternity",
+        desc: "Participants learned crucial emergency response skills, preparing them to act confidently and save lives when needed.",
+      },
+      {
+        title: "Caring for Autistic Children – Dr. Alice",
+        desc: "Dr. Alice empowered attendees with understanding of Autism Spectrum Disorder, sensory needs, communication approaches, and inclusive caregiving techniques.",
+      },
+      {
+        title:
+          "Financial Literacy – Elizabeth (DPAK Sacco) & Beatrice (Kingdom Bank)",
+        desc: "This session equipped them with budgeting tools, savings plans, and financial confidence — reinforcing that they, too, can build a secure future.",
+      },
+    ],
+
+    more2: [
+      {
+        title:
+          "Each participant received a self-care package sponsored by Unilever ",
+        desc: "A gift of appreciation for those who rarely get time to care for themselves.",
+      },
+      {
+        title: "Certificates of Participation ",
+        desc: "Were proudly awarded, celebrating their commitment to growth and professional excellence.",
+      },
+    ],
+
+    title4: "Honoring the Caregivers",
+    description4:
+      "Following the sessions, participants enjoyed a sumptuous lunch with music, creating a joyful atmosphere of sisterhood, storytelling, and laughter. It was not just training — it was healing.",
+
+    title5: "A Movement Beyond the Day",
+    description5:
+      "Transformed for Better is not just an event — it is a mission to humanize, dignify, and professionalize domestic work. This edition left every participant feeling valued, empowered, and seen.",
+    title5: "“When house managers are transformed, homes are transformed.”",
+
+    sponsor: [
+      "PARTNERS",
+      "KINGDOM BANK",
+      "JACARANDA MATERNITY",
+      "DPAK SACCO",
+      "CENTRE FOR DOMESTIC TRAINING AND DEVELOPMENT (CDTD)",
+      "NYARAI HOMECARE SERVICES",
+      "NAIROBI NANNY",
+      "NANNY MATCHfcfvg",
+    ],
+
     image: "https://servannacare.com/img/11.jpg",
     date: "Nov 2024",
   },

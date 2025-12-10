@@ -18,8 +18,8 @@ const OurSpecialist = () => {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {fakeData.slice(0,4).map((data, indx) => (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {fakeData.slice(0,6).map((data, indx) => (
           <ProfileCard key={indx} profile={data} />
         ))}
       </div>

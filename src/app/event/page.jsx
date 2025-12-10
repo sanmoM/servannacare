@@ -11,14 +11,14 @@ const page = () => {
       id: 1,
       title: "Transformed for Better – Employer Edition 1 (May 2024)",
       description:
-        "A powerful circle of mothers redefining home dynamics, parenting, and the role of domestic workers.",
+        "The Transformed for Better workshop brought together a powerful .....",
       image: "https://servannacare.com/img/moja.jpg",
     },
     {
       id: 2,
-      title: "Transformed for Better Event – Nanny Edition (Nov 2024)",
+      title: "Transformed for Better – House Managers Edition (Nov 2024)",
       description:
-        "A transformative workshop honoring and empowering nannies and house managers across Kenya.",
+        "On 17th November 2024, the Transformed for Better – House Managers Edition....",
       image: "https://servannacare.com/img/11.jpg",
     },
   ];
@@ -125,32 +125,7 @@ const page = () => {
           </div>
         </div>
 
-        <div>
-          <div className="text-center mb-10">
-            <h2 className="sectionHeading mb-3">Our Event Partners</h2>
-            <p className="text-sm  text-gray-700">
-              Trusted by leading organizations
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { name: "Kingdom Bank" },
-              { name: "Jacaranda Maternity" },
-              { name: "DPAK SACCO" },
-              { name: "CDTD" },
-            ].map((partner) => (
-              <div
-                data-aos="fade-up"
-                key={partner.name}
-                className=" p-6 rounded-lg border cursor-pointer bg-gray-200 hover:text-white hover:bg-primary duration-500"
-              >
-                <p className="text-center font-semibold  text-sm">
-                  {partner.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        
       </Container>
     </div>
   );

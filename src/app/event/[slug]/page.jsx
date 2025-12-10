@@ -28,18 +28,7 @@ const EventDetails = () => {
           <div className="md:col-span-5">
             <h2 className="sectionHeading mb-4 lg:mb-6">{event.title}</h2>
             <p className="text-gray-700 text-justify text-sm">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia
-              quod dolore modi neque. Accusamus dolorem maiores non commodi
-              maxime? Dolorum tempora magni impedit totam, mollitia ea itaque et
-              possimus eligendi vel recusandae nesciunt ab deserunt a vitae
-              ipsum sed earum quibusdam corporis cumque? Ipsum iusto quo et enim
-              nisi repudiandae alias! Quibusdam ratione odio vel ea quo, et
-              voluptas sunt suscipit cumque obcaecati fugit deserunt nesciunt
-              repellendus ipsam, similique optio. Est excepturi voluptatum ipsam
-              accusamus tempora, eligendi tenetur reiciendis facere sit, atque
-              sed molestiae dolore. Cum aperiam dolores dolorem explicabo
-              similique blanditiis officia accusantium vitae porro iusto?
-              Commodi, ipsam nobis.
+              {event.description}
             </p>
             <p className="text-gray-700 mt-3 text-justify text-sm">
               {event.description}
@@ -64,18 +53,83 @@ const EventDetails = () => {
                 />
               </div>
             </div>
-            <h2 className="sectionHeading ">{event.title}</h2>
-            <p className="text-gray-700 mt-4 lg:mt-6 text-justify text-sm">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere
-              accusamus quisquam saepe amet sequi ab aspernatur inventore
-              voluptatem. Eius corrupti magni recusandae fuga ab, necessitatibus
-              error eaque, quisquam dicta officiis laboriosam fugit ipsa sint
-              sapiente cumque? Aut autem, necessitatibus facere ab nihil
-              doloribus, delectus aliquam quasi sapiente nemo minus, voluptatem
-              nam ut omnis vitae. Eum, distinctio fuga! Numquam earum, harum,
-              assumenda repellat quo eligendi, ducimus nulla veniam sint aliquid
-              odit!
-            </p>
+
+            {event.title2 && (
+              <>
+                <h2 className="sectionHeading">{event.title2}</h2>
+                <p className="text-gray-700 mt-4 text-justify text-sm">
+                  {event.description2}
+                </p>
+              </>
+            )}
+
+            {event.more && (
+              <div className="mt-6 space-y-4">
+                {event.more.map((item, index) => (
+                  <div key={index}>
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-gray-700 mt-1">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {event.title3 && (
+              <>
+                <h2 className="sectionHeading mt-8">{event.title3}</h2>
+                <p className="text-gray-700 mt-4 text-justify text-sm">
+                  {event.description3}
+                </p>
+              </>
+            )}
+
+            {event.more2 && (
+              <div className="mt-6 space-y-4">
+                {event.more2.map((item, index) => (
+                  <div key={index}>
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-gray-700 mt-1">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {event.title4 && (
+              <>
+                <h2 className="sectionHeading mt-8">{event.title4}</h2>
+                <p className="text-sm text-gray-700 mt-2">{event.description4}</p>
+              </>
+            )}
+
+
+            {event.title5 && (
+              <>
+                <h2 className="sectionHeading mt-6">{event.title5}</h2>
+                <p className="text-sm text-gray-700 mt-2">{event.description5}</p>
+              </>
+            )}
+
+            <div>
+              <div className="text-center my-10">
+                <h2 className="sectionHeading mb-3">Our Event Partners</h2>
+                <p className="text-sm  text-gray-700">
+                  Trusted by leading organizations
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {event.sponsor.map((partner) => (
+                  <div
+                    data-aos="fade-up"
+                    key={partner}
+                    className=" p-6 rounded-lg border cursor-pointer bg-gray-200 hover:text-white hover:bg-primary duration-500"
+                  >
+                    <p className="text-center font-semibold  text-sm">
+                      {partner}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
           <div className="md:col-span-2">
             <div className="md:sticky md:top-10 ">
