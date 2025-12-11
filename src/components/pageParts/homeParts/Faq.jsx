@@ -1,4 +1,5 @@
 import Container from "@/components/shared/Container";
+import faqimage from "@/asset/faq/faq.png"
 import Input from "@/components/shared/Input";
 import {
   Accordion,
@@ -65,9 +66,7 @@ const Faq = () => {
       <div className="lg:flex gap-4 ">
         <div data-aos="fade-up" className="flex-1 hidden lg:block">
           <Image
-            src={
-              "https://media.istockphoto.com/id/1153408113/photo/african-mother-holding-adopted-child.jpg?s=612x612&w=0&k=20&c=3B6IotvJdAYM430NNmhyMwagG6kJz2L23YFJcNB0rUY="
-            }
+            src={faqimage}
             alt="image"
             quality={100}
             height={500}
