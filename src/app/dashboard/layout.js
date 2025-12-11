@@ -186,7 +186,7 @@ export default function DashboardLayout({ children }) {
               <div className="p-4 flex items-center justify-between border-b border-white/20">
                 <div className="flex gap-2 items-center">
                   <Link className="flex gap-2 items-center" href={"/"}>
-                    <img className="w-28" src="/logo2.png" alt="Logo" />
+                    <img className="w-17" src="/logo2.png" alt="Logo" />
                     {/* <h2 className="font-semibold text-sm lg:text-base">
                       SERVANNACARE
                     </h2> */}

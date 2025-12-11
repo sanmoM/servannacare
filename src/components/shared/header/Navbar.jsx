@@ -55,18 +55,33 @@ const Navbar = () => {
                 src="/logo1.png"
                 alt="logo"
                 quality={100}
-                width={120}
+                width={80}
                 height={100}
               />
             </Link>
           </div>
 
-          {/* Mobile Menu Icon */}
+          <div className="flex gap-3">
+            {/* Mobile Menu Icon */}
           <div className="md:hidden flex items-center">
             <Menu
-              className="cursor-pointer w-6 h-6 text-gray-800"
+              className="cursor-pointer w-7 h-7 text-gray-800"
               onClick={() => setSidebarOpen(true)}
             />
+          </div>
+
+          {/* Mobile Logo */}
+          <div className="inline-block md:hidden">
+            <Link href="/">
+              <Image
+                src="/logo1.png"
+                alt="logo"
+                quality={100}
+                width={60}
+                height={60}
+              />
+            </Link>
+          </div>
           </div>
 
           {/* Desktop Nav Links */}
@@ -94,18 +109,7 @@ const Navbar = () => {
             </ul>
           </div>
 
-          {/* Mobile Logo */}
-          <div className="inline-block md:hidden">
-            <Link href="/">
-              <Image
-                src="/logo1.png"
-                alt="logo"
-                quality={100}
-                width={100}
-                height={100}
-              />
-            </Link>
-          </div>
+          
 
           {/* CTA Button */}
           <div className="flex gap-2">
@@ -200,7 +204,7 @@ const Navbar = () => {
                 <Image
                   src="/logo1.png"
                   alt="logo"
-                  width={100}
+                  width={60}
                   height={60}
                   quality={100}
                 />

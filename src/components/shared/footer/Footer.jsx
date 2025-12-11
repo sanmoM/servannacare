@@ -35,7 +35,7 @@ const Footer = () => {
                   src="/logo2.png"
                   alt="logo"
                   quality={100}
-                  width={120}
+                  width={90}
                   height={100}
                 />
               </Link>

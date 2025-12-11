@@ -84,8 +84,8 @@ const Page = () => {
           src="/logo1.png"
           alt="logo"
           quality={100}
-          width={120}
-          height={100}
+          width={80}
+          height={80}
         />
         </div>
         <h2 className="text-xl font-semibold mb-6 text-center text-gray-900">
