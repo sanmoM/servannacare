@@ -22,9 +22,6 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     salaryRange: defaultValues.salaryRange || "",
     serviceOffered:defaultValues.serviceOffered || "",
     location: defaultValues.location || "",
-    // bankName: defaultValues.bankName || "",
-    // bankAccountName: defaultValues.bankAccountName || "",
-    // bankAccountNumber: defaultValues.bankAccountNumber || "",
     languages: defaultValues.languages || [],
   });
 

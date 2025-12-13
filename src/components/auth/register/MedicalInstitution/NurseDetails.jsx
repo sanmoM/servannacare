@@ -21,13 +21,13 @@ const NurseDetails = ({
   // Document Types
   const documents = [
     {
-      id: 1,
+      id: "idCopy",
       title: "ID Copy",
       accept: "application/pdf,image/*",
       icon: <IdCardLanyard size={32} />,
     },
     {
-      id: 2,
+      id: "profilePhoto",
       title: "Profile Photo",
       accept: "image/*",
       icon: <Camera size={32} />,
@@ -67,7 +67,8 @@ const NurseDetails = ({
     bathingYears: "",
     feedingYears: "",
     serviceFee: "",
-    documents: {},
+    idCopy:null,
+    profilePhoto:null,
     ...defaultValues,
   });
 
@@ -110,11 +111,8 @@ const NurseDetails = ({
   // Handle file uploads
   const handleFileSelect = (id, file) => {
     setData((prev) => ({
-      ...prev,
-      documents: {
-        ...prev.documents,
-        [id]: file,
-      },
+      ...prev,[id]:file
+      
     }));
   };
 
@@ -492,7 +490,7 @@ const NurseDetails = ({
               title={item.title}
               accept={item.accept}
               icon={item.icon}
-              file={data.documents[item.id]}
+              file={data[item.id]}
               onFileSelect={(file) => handleFileSelect(item.id, file)}
             />
           ))}

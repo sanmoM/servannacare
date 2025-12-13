@@ -42,8 +42,8 @@ const Review = ({ data, onNext, onBack }) => {
             //  If array → render each item
             if (Array.isArray(value)) {
               return (
-                <div key={key} className="flex flex-wrap gap-2 items-start">
-                  <Label>{formatLabel(key)}: </Label>
+                <div key={key} className="flex  flex-wrap gap-2 items-center">
+                  <Label>{formatLabel(key)}:</Label>
                   {value.length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {value.map((item, i) => (

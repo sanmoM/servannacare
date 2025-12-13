@@ -422,6 +422,14 @@ export const languages = [
   { id: 7, value: "Other", text: "Other" },
 ];
 
+export  const physiotherapistServiceProvide = [
+  {id:"pediatric", value:"Pediatric"},
+  {id:"orthopedic", value:"Orthopedic"},
+  {id:"rehab", value:"Rehab"},
+  {id:"sports", value:"Sports"},
+  {id:"stroke", value:"Stroke"}
+]
+
 export const fakeData = [
   {
     id: 1,

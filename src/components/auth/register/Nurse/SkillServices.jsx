@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
   const [data, setData] = useState({
     skills: defaultValues.skills || [],
-    // interested: defaultValues.interested || [],
     mobilityYears: defaultValues.mobilityYears || "",
     bathingYears: defaultValues.bathingYears || "",
     feedingYears: defaultValues.feedingYears || "",

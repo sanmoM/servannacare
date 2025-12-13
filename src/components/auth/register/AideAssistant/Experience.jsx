@@ -9,10 +9,8 @@ import toast from "react-hot-toast";
 const Experience = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
     hospitalBasedCare: defaultValues.hospitalBasedCare || "",
-    hospitalBasedYearsOfExperience:
-      defaultValues.hospitalBasedYearsOfExperience || "",
-    hospitalBasedReferenceContact:
-      defaultValues.hospitalBasedReferenceContact || "",
+    hospitalBasedYearsOfExperience:defaultValues.hospitalBasedYearsOfExperience || "",
+    hospitalBasedReferenceContact:defaultValues.hospitalBasedReferenceContact || "",
     homeBasedCare: defaultValues.homeBasedCare || "",
     homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience || "",
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact || "",

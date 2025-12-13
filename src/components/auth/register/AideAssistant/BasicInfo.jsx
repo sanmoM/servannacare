@@ -15,9 +15,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     gender: defaultValues.gender || "",
     languages: defaultValues.languages || [],
     canDrive: defaultValues.canDrive || "",
-    // bankName: defaultValues.bankName || "",
-    // bankAccountName: defaultValues.bankAccountName || "",
-    // bankAccountNumber: defaultValues.bankAccountNumber || "",
+
   });
 
   const handleChange = (e) => {

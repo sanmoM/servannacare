@@ -27,21 +27,19 @@ const validateEmployee = (data) => {
   if (!data.preferredRole) errors.push("Preferred role is required");
   if (data.languages.length === 0)
     errors.push("Please select at least one language");
-  if (
-    !data.skills.cooking ||
-    !data.skills.housekeeping ||
-    !data.skills.childcare
-  )
-    errors.push("All skill proficiencies must be selected");
-  if (!data.liveType) errors.push("Live preference is required");
+  if (!data.cooking)
+    errors.push("Select cooking skill");
+  if (!data.housekeeping )
+    errors.push("Select housekeeping skill");
+  if (!data.childcare)
+    errors.push("Select childcare skill");
 
-  // document validation (optional)
-  const requiredDocs = [1, 2, 3, 4];
-  for (const id of requiredDocs) {
-    if (!data.documents[id]) {
-      errors.push(`Document #${id} is required`);
-    }
-  }
+
+  if (!data.liveType) errors.push("Live preference is required");
+  if (!data.aidCertificate) errors.push("First aid certificate require")
+  if (!data.goodConductCertificate) errors.push("Good conduct certificate require")
+  if (!data.idCopy) errors.push("Id copy require")
+  if (!data.profilePhoto) errors.push("Profile photo require")
 
   return errors;
 };
@@ -94,6 +92,7 @@ const Agency = () => {
         }  
         )
       )
+      console.log(formData)
       toast.success("Register Successfully!");
       router.push("/dashboard")
       // reset form

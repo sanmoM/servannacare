@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 const Education = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
     education: defaultValues.education || "",
-    // isNursingInKenya: defaultValues.isNursingInKenya || "",
     educationCertificate: defaultValues.educationCertificate || null,
   });
 

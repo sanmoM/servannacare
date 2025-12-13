@@ -88,12 +88,13 @@ const validateNurse = (data) => {
     errors.push("Home-based experience must be a number");
   }
 
-  const requiredDocs = [1, 2,];
-  for (const id of requiredDocs) {
-    if (!data.documents[id]) {
-      errors.push(`Document #${id} is required`);
-    }
+  if(!data.idCopy){
+    errors.push("ID copy require")
   }
+  if(!data.profilePhoto){
+    errors.push("Profile photo require")
+  }
+
 
   return errors;
 };

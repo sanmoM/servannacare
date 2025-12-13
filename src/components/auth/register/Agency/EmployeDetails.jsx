@@ -32,31 +32,31 @@ const EmployeDetails = ({
   // document types
   const documents = [
     {
-      id: 1,
+      id: "aidCertificate",
       title: "First Aid Certificate",
       accept: "application/pdf,image/*",
       icon: <Cross size={32} />,
     },
     {
-      id: 2,
+      id: "goodConductCertificate",
       title: "Good Conduct Certificate / Letter from Chief",
       accept: "application/pdf,image/*",
       icon: <FileText size={32} />,
     },
     {
-      id: 3,
+      id: "idCopy",
       title: "ID Copy",
       accept: "application/pdf,image/*",
       icon: <IdCardLanyard size={32} />,
     },
     {
-      id: 4,
+      id: "profilePhoto",
       title: "Profile Photo",
       accept: "image/*",
       icon: <Camera size={32} />,
     },
     {
-      id: 5,
+      id: "drivingLicense",
       title: "Driving License (Optional)",
       accept: "application/pdf,image/*",
       icon: <IdCard size={32} />,
@@ -76,9 +76,15 @@ const EmployeDetails = ({
     handlePets: null,
     preferredRole: "",
     languages: [],
-    skills: { cooking: "", housekeeping: "", childcare: "" },
+    cooking:"",
+    housekeeping:"",
+    childcare:"",
     liveType: "",
-    documents: {},
+    aidCertificate:null,
+    goodConductCertificate:null,
+    idCopy:null,
+    profilePhoto:null,
+    drivingLicense:null,
     ...defaultValues,
   });
 
@@ -131,21 +137,10 @@ const EmployeDetails = ({
   // file upload
   const handleFileSelect = (id, file) => {
     setData((prev) => ({
-      ...prev,
-      documents: {
-        ...prev.documents,
-        [id]: file,
-      },
+      ...prev,[id]:file
     }));
   };
 
-  // skill change
-  const handleSkillChange = (skill, value) => {
-    setData((prev) => ({
-      ...prev,
-      skills: { ...prev.skills, [skill]: value },
-    }));
-  };
 
   return (
     <div>
@@ -371,8 +366,8 @@ const EmployeDetails = ({
             <div key={skill}>
               <Label className="block mb-2 capitalize">{skill}</Label>
               <Select
-                value={data.skills[skill] || ""}
-                onValueChange={(v) => handleSkillChange(skill, v)}
+                value={data[skill] || ""}
+              onValueChange={(v) => handleSelect(skill, v)}
               >
                 <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                   <SelectValue placeholder="Select proficiency" />
@@ -430,7 +425,7 @@ const EmployeDetails = ({
             accept={doc.accept}
             icon={doc.icon}
             optional={doc.optional}
-            file={data.documents[doc.id] || null}
+            file={data[doc.id]|| null}
             onFileSelect={(file) => handleFileSelect(doc.id, file)}
           />
         ))}
