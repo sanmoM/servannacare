@@ -9,6 +9,7 @@ import {
 import Container from "../Container";
 import Image from "next/image";
 import Link from "next/link";
+import { serviceCategory } from "@/utilities/data";
 
 const FooterLink = ({ href, children }) => (
   <li className="flex items-center space-x-2">
@@ -65,12 +66,11 @@ const Footer = () => {
               Care Consulting
             </h3>
             <ul className="mt-4 space-y-3 text-gray-100">
-              <FooterLink href="/services?category=Pre & Post Pregnancy Care">Pre & Post Pregnancy Care</FooterLink>
-              <FooterLink href="#">Post Surgery Care</FooterLink>
-              <FooterLink href="#">Elderly Care</FooterLink>
-              <FooterLink href="#">Physiotherapy</FooterLink>
-              <FooterLink href="#">Nanny & Housekeeping</FooterLink>
-              <FooterLink href="#">Special Need Care</FooterLink>
+              {serviceCategory.map((cat, indx) => {
+                return (
+                  <FooterLink key={indx} href={`/specialist?category=${cat.value}`}>{cat.mainCategory}</FooterLink>
+                );
+              })}
             </ul>
           </div>
 
@@ -88,23 +88,6 @@ const Footer = () => {
             <p className="mt-4 text-sm">Monday - Friday 08 AM - 10 PM</p>
           </div>
         </div>
-
-        {/* <form className="mt-6 flex max-w-lg  rounded-lg overflow-hidden">
-          <input
-            type="email"
-            placeholder="Email"
-            aria-label="Email Address"
-            className="w-full px-4 py-3 text-sm text-gray-900 bg-white border-none focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          />
-          <button
-            type="submit"
-            className="px-6 cursor-pointer py-3 text-sm font-semibold text-white bg-primary hover:bg-c transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-          >
-            SUBSCRIBE
-          </button>
-        </form> */}
-
-        {/* cta section  */}
 
         {/* Bottom section: Copyright and Socials */}
         <hr className="my-10 border-primary" />

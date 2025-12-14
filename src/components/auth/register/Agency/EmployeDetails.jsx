@@ -80,6 +80,7 @@ const EmployeDetails = ({
     housekeeping:"",
     childcare:"",
     liveType: "",
+    bio:"",
     aidCertificate:null,
     goodConductCertificate:null,
     idCopy:null,
@@ -407,6 +408,20 @@ const EmployeDetails = ({
             </div>
           </div>
         </RadioGroup>
+      </div>
+
+      {/* bio  */}
+      <div className="mb-6">
+        <label htmlFor="bio">Bio</label>
+        <textarea
+          value={data.bio}
+          name="bio"  
+          placeholder="Add a bio"
+          className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+          rows={6}
+          onChange={handleChange}
+
+        />
       </div>
 
       {/* Documents */}

@@ -18,6 +18,7 @@ const validateNurse = (data) => {
   const requiredFields = [
     "name",
     "age",
+    "experience",
     "gender",
     "location",
     "education",
@@ -27,16 +28,13 @@ const validateNurse = (data) => {
     "educationCertificate",
     "isNursingInKenya",
     "hospitalBasedCare",
-    // "hospitalBasedYearsOfExperience",
-    // "hospitalBasedReferenceContact",
     "homeBasedCare",
-    // "homeBasedYearsOfExperience",
-    // "homeBasedReferenceContact",
     "skills",
     "mobilityYears",
     "bathingYears",
     "feedingYears",
     "serviceFee",
+    "bio"
   ];
 
   requiredFields.forEach((field) => {
@@ -140,7 +138,7 @@ const MedicalInstitution = () => {
       console.log(formData);
       localStorage.setItem("user", JSON.stringify({
         ...user,
-        role:"medical institution",
+        role:"care institution",
         institution:formData.institution
       }));
       toast.success("Registered Successfully!");
@@ -199,7 +197,7 @@ const MedicalInstitution = () => {
         ) : (
           <>
             <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
-              Medical Institution Registration
+              Care Institution Registration
             </h2>
 
             <Progress currentStep={step} totalSteps={totalSteps} />

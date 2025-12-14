@@ -32,7 +32,7 @@ const PageContent = () => {
         return <NurseAideOrAssistant />;
       case "special-need-caregivers":
         return <SpecialNeedCaregivers/>
-      case "medical-institutions":
+      case "care-institutions":
         return <MedicalInstitution/>  
 
       default:

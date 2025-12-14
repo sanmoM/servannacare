@@ -52,9 +52,6 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       "experience",
       "salaryRange",
       "location",
-      // "bankName",
-      // "bankAccountName",
-      // "bankAccountNumber",
     ];
     for (let field of requiredFields) {
       if (
@@ -78,7 +75,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h4 className="formHeading">Basic Information</h4>
+      <h4 className="formHeading">Basic Informatio</h4>
 
       <div className="flex flex-col sm:flex-row gap-6">
         <div className="flex-1">
@@ -227,31 +224,6 @@ const BasicInfo = ({ defaultValues, onNext }) => {
         </div>
       </div>
 
-      {/* Bank Details */}
-      {/* <h4 className="formHeading">Bank Details</h4>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Input
-          label="Bank Name"
-          name="bankName"
-          placeholder="Your bank name"
-          value={data.bankName}
-          onChange={handleChange}
-        />
-        <Input
-          label="Account Name"
-          name="bankAccountName"
-          placeholder="Your account name"
-          value={data.bankAccountName}
-          onChange={handleChange}
-        />
-        <Input
-          label="Account Number"
-          name="bankAccountNumber"
-          placeholder="Your account number"
-          value={data.bankAccountNumber}
-          onChange={handleChange}
-        />
-      </div> */}
 
       <div className="flex justify-end mt-6">
         <Button type="submit" size="lg">

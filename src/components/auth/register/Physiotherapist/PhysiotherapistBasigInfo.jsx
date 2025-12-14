@@ -3,6 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { languages } from "@/utilities/data";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
@@ -12,9 +20,11 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
     name: defaultValues.name || "",
     location: defaultValues.location || "",
     age: defaultValues.age || "",
+    experience: defaultValues.experience || "",
     gender: defaultValues.gender || "",
     languages: defaultValues.languages || [],
     canDrive: defaultValues.canDrive || "",
+    bio: defaultValues.bio || "",
   });
 
   const handleChange = (e) => {
@@ -40,11 +50,10 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
       "name",
       "age",
       "gender",
-      // "bankName",
-      // "bankAccountName",
-      // "bankAccountNumber",
+      "experience",
       "location",
       "canDrive",
+      "bio",
     ];
     for (let field of requiredFields) {
       if (
@@ -103,28 +112,6 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
         </div>
       </div>
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
-        {/* <div className="space-y-4 flex-1">
-              <Label className={"mb-2 sm:mb-3"}>Bank Details</Label>
-              <Input
-                name="bankName"
-                placeholder="Your bank name"
-                value={data.bankName}
-                onChange={handleChange}
-              />
-    
-              <Input
-                name="bankAccountName"
-                placeholder="Your account name"
-                value={data.bankAccountName}
-                onChange={handleChange}
-              />
-              <Input
-                name="bankAccountNumber"
-                placeholder="Your account number"
-                value={data.bankAccountNumber}
-                onChange={handleChange}
-              />
-            </div> */}
         <div className="flex-1">
           <Input
             label="Location"
@@ -134,6 +121,34 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
             onChange={handleChange}
           />
         </div>
+        <div className="flex-1">
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Experience (Years)
+          </label>
+          <Select
+            value={data.experience}
+            onValueChange={(value) =>
+              setData((prev) => ({ ...prev, experience: value }))
+            }
+          >
+            <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+              <SelectValue placeholder="Select years of experience" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="1">1 year</SelectItem>
+                <SelectItem value="2">2 years</SelectItem>
+                <SelectItem value="3">3 years</SelectItem>
+                <SelectItem value="4">4 years</SelectItem>
+                <SelectItem value="5">5 years</SelectItem>
+                <SelectItem value="more">More than 5 years</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex flex-col mt-6 sm:flex-row gap-6 sm:gap-4 ">
         <div className="flex-1">
           <Label className={"mb-2"}>Gender?</Label>
           <RadioGroup
@@ -163,9 +178,38 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
             </div>
           </RadioGroup>
         </div>
+        <div className="flex-1">
+          <Label className="mb-3 block">Can you drive?</Label>
+          <RadioGroup
+            className="flex gap-4 "
+            value={data.canDrive}
+            onValueChange={(value) =>
+              setData((prev) => ({ ...prev, canDrive: value }))
+            }
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="Yes" id="d1" />
+              <Label
+                htmlFor="d1"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                Yes
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="No" id="d2" />
+              <Label
+                htmlFor="d2"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                No
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
       </div>
 
-      <div className="py-8">
+      <div className="mt-6">
         <Label className={"mb-3"}>Languages</Label>
         <div className="flex flex-wrap gap-4 ">
           {languages.map((lan, indx) => (
@@ -186,34 +230,16 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
         </div>
       </div>
 
-      <div>
-        <Label className="mb-3 block">Can you drive?</Label>
-        <RadioGroup
-          className="flex gap-4 "
-          value={data.canDrive}
-          onValueChange={(value) =>
-            setData((prev) => ({ ...prev, canDrive: value }))
-          }
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="d1" />
-            <Label
-              htmlFor="d1"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="d2" />
-            <Label
-              htmlFor="d2"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
-          </div>
-        </RadioGroup>
+      <div className="mt-6">
+        <label htmlFor="bio">Bio</label>
+        <textarea
+          value={data.bio}
+          name="bio"
+          placeholder="Add a bio"
+          className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+          rows={6}
+          onChange={handleChange}
+        />
       </div>
 
       <div className="flex justify-end mt-6">

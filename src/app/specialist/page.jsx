@@ -8,8 +8,8 @@ import {
   serviceCategory,
   services,
 } from "@/utilities/data";
-import { notFound, useSearchParams } from "next/navigation";
-import React, { useMemo, useState, Suspense } from "react";
+import { notFound, useRouter, useSearchParams } from "next/navigation";
+import React, { useMemo, useState, Suspense, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -34,9 +34,45 @@ import { Filter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const SearchContent = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [setMobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const category = searchParams.get("category");
+    const checkIn = searchParams.get("checkIn");
+    const checkOut = searchParams.get("checkOut");
+    const filterCategory = serviceCategory.find(
+      (cat) => cat.value === category
+    );
+
+    if (filterCategory) {
+      setSelectedCategory(filterCategory.mainCategory);
+    }
+
+    console.log(category);
+    console.log(checkIn);
+    console.log(checkOut);
+  }, [searchParams]);
+
+  const handleCategoryChange = (mainCategory) => {
+    const selected = serviceCategory.find(
+      (cat) => cat.mainCategory === mainCategory
+    );
+
+    if (!selected) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("checkIn");
+    params.delete("checkOut");
+
+    params.set("category", selected.value);
+
+    router.push(`?${params.toString()}`, { scroll: false });
+    setSelectedCategory(mainCategory);
+  };
 
   let filteredData = fakeData;
   if (selectedCategory) {
@@ -107,8 +143,9 @@ const SearchContent = () => {
                   Category
                 </h2>
                 <select
-                  className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary outline-none"
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
+                  value={selectedCategory}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
                 >
                   <option value="" disabled selected hidden>
                     Select Category
@@ -165,7 +202,7 @@ const SearchContent = () => {
                 <ProfileCard key={i} profile={profile} />
               ))
             ) : (
-              <p className="col-span-2 text-gray-500">No specialists found.</p>
+              <p className="col-span-2 text-gray-500 text-center md:mt-16 mt-8">No specialists found.</p>
             )}
           </div>
         </div>
@@ -181,24 +218,24 @@ const SearchContent = () => {
               </PaginationItem>
 
               {/* {[...Array(totalPages)].map((_, i) => ( */}
-                <PaginationItem key={1}>
-                  <PaginationLink
-                    href="#"
-                    isActive={ 1}
-                    // onClick={() => goToPage(i + 1)}
-                  >
-                    {1}
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem key={2}>
-                  <PaginationLink
-                    href="#"
-                    isActive={2}
-                    // onClick={() => goToPage(i + 1)}
-                  >
-                    {2}
-                  </PaginationLink>
-                </PaginationItem>
+              <PaginationItem key={1}>
+                <PaginationLink
+                  href="#"
+                  isActive={1}
+                  // onClick={() => goToPage(i + 1)}
+                >
+                  {1}
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem key={2}>
+                <PaginationLink
+                  href="#"
+                  isActive={2}
+                  // onClick={() => goToPage(i + 1)}
+                >
+                  {2}
+                </PaginationLink>
+              </PaginationItem>
               {/* ))} */}
 
               <PaginationItem>
@@ -230,9 +267,9 @@ const SearchContent = () => {
         <div>
           <h2 className="text-lg border-b mb-4 font-semibold">Category</h2>
           <select
-            className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm
-  focus:border-primary focus:ring-2 focus:ring-primary outline-none"
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
+            value={selectedCategory}
+            onChange={(e) => handleCategoryChange(e.target.value)}
           >
             <option value="" disabled hidden>
               Select Category

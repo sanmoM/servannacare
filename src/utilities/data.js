@@ -405,10 +405,10 @@ export const userRole = [
   // },
   {
     id: 8,
-    text: "Medical Institutions",
+    text: "Care Institutions",
     icon: hospital,
     href: "/register",
-    role: "medical-institutions",
+    role: "care-institutions",
   },
 ];
 
@@ -715,10 +715,13 @@ export const categoryFilters = {
 export const serviceCategory = [
   {
     mainCategory: "House Manager / Nanny",
+    value:"house-manager-nanny",
     subCategory: ["Live In", "Dayburg"],
+    
   },
   {
     mainCategory: "Certified Nursing Assistant (C.N.A)",
+     value:"certified-nursing-assistant",
     subCategory: [
       "Pre and Post Pregnancy Care",
       "Post Surgery Care",
@@ -727,18 +730,19 @@ export const serviceCategory = [
   },
   {
     mainCategory: "Medical Nurse",
+    value:"medical-nurse",
     subCategory: [
-      // "Pre and Post Pregnancy Care",
-      // "Post Surgery Care",
-      // "Elderly Care",
+      
     ],
   },
   {
     mainCategory: "Physiotherapist",
+    value:"physiotherapist",
     subCategory: ["Pediatric", "Orthopedic", "Rehab", "Sports", "Stroke"],
   },
   {
     mainCategory: "Special Need Caregiver",
+    value:"special-need-caregiver",
     subCategory: [
       "Autism Spectrum Disorder (ASD)",
       "Speech Therapy",

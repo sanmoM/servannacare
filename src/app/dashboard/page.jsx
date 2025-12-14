@@ -125,7 +125,7 @@ if(user.role==='user'){
   renderStats = specialistDashboardStats
 }else if (user.role === "agency"){
   renderStats = agencyDashboardStats
-}else if (user.role === "medical institution"){
+}else if (user.role === "care institution"){
   renderStats = agencyDashboardStats
 }
 

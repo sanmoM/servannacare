@@ -246,11 +246,6 @@ const Navbar = () => {
                 <LoadingSpinner />
               ) : user ? (
                 <>
-                  <Link href={"/dashboard"}>
-                    <Button size={"lg"} className={"w-full rounded-full"}>
-                      Dashboard
-                    </Button>
-                  </Link>
                   <Button size={"lg"} className={"rounded-full"}>
                     Log Out
                   </Button>
@@ -262,14 +257,6 @@ const Navbar = () => {
                       LOGIN
                     </Button>
                   </Link>
-
-                  <Button
-                    size={"lg"}
-                    className="w-full rounded-full"
-                    onClick={handleCloseSidebar}
-                  >
-                    GET IN TOUCH
-                  </Button>
                 </>
               )}
             </div>

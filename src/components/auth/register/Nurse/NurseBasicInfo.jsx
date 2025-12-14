@@ -5,6 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { languages } from "@/utilities/data";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
@@ -14,9 +22,11 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
     name: defaultValues.name || "",
     location: defaultValues.location || "",
     age: defaultValues.age || "",
+    experience: defaultValues.experience || "",
     gender: defaultValues.gender || "",
     languages: defaultValues.languages || [],
     canDrive: defaultValues.canDrive || "",
+    bio: defaultValues.bio || "",
   });
 
   const handleChange = (e) => {
@@ -43,11 +53,10 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
       "name",
       "location",
       "age",
+      "experience",
       "gender",
       "canDrive",
-      // "bankName",
-      // "bankAccountName",
-      // "bankAccountNumber",
+      "bio",
     ];
     for (let field of requiredFields) {
       if (
@@ -62,7 +71,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
         return;
       }
     }
-    if(data.age<25){
+    if (data.age < 25) {
       toast.error("Age must be 25 or above");
       return;
     }
@@ -71,7 +80,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
       toast.error("Please select at least one language!");
       return;
     }
-    console.log(data)
+    console.log(data);
 
     onNext(data);
   };
@@ -103,7 +112,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
         </div>
       </div>
 
-      {/* Age + Gender */}
+      {/* Age + experience */}
       <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
         <div className="flex-1">
           <Input
@@ -120,6 +129,34 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
           />
         </div>
 
+        <div className="flex-1">
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Experience (Years)
+          </label>
+          <Select
+            value={data.experience}
+            onValueChange={(value) =>
+              setData((prev) => ({ ...prev, experience: value }))
+            }
+          >
+            <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+              <SelectValue placeholder="Select years of experience" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="1">1 year</SelectItem>
+                <SelectItem value="2">2 years</SelectItem>
+                <SelectItem value="3">3 years</SelectItem>
+                <SelectItem value="4">4 years</SelectItem>
+                <SelectItem value="5">5 years</SelectItem>
+                <SelectItem value="more">More than 5 years</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
         <div className="flex-1">
           <Label className="mb-3 block">Gender</Label>
           <RadioGroup
@@ -149,6 +186,36 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
             </div>
           </RadioGroup>
         </div>
+
+        <div className="flex-1">
+          <Label className="mb-3 block">Can you drive?</Label>
+          <RadioGroup
+            className="flex gap-4 "
+            value={data.canDrive}
+            onValueChange={(value) =>
+              setData((prev) => ({ ...prev, canDrive: value }))
+            }
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="Yes" id="d1" />
+              <Label
+                htmlFor="d1"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                Yes
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="No" id="d2" />
+              <Label
+                htmlFor="d2"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                No
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
       </div>
 
       {/* Languages */}
@@ -174,33 +241,15 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
       </div>
 
       <div>
-        <Label className="mb-3 block">Can you drive?</Label>
-        <RadioGroup
-          className="flex gap-4 "
-          value={data.canDrive}
-          onValueChange={(value) =>
-            setData((prev) => ({ ...prev, canDrive: value }))
-          }
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="d1" />
-            <Label
-              htmlFor="d1"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="d2" />
-            <Label
-              htmlFor="d2"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
-          </div>
-        </RadioGroup>
+        <label htmlFor="bio">Bio</label>
+        <textarea
+          value={data.bio}
+          name="bio"
+          placeholder="Add a bio"
+          className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+          rows={6}
+          onChange={handleChange}
+        />
       </div>
 
       <div className="flex justify-end mt-6">

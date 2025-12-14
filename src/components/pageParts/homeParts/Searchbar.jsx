@@ -56,24 +56,15 @@ const Searchbar = () => {
       return;
     }
 
-    const query = new URLSearchParams({
-      category: category,
-      startDate: format(checkIn, "dd-MM-yyyy"),
-      endDate: format(checkOut, "dd-MM-yyyy"),
-    }).toString();
+    const checkIN =  format(checkIn, "dd-MM-yyyy");
+    const checkOUT =  format(checkOut, "dd-MM-yyyy");
+    
+    router.push(`/specialist?category=${category}&checkIn=${checkIN}&checkOut=${checkOUT}`);
 
-    router.push(`/specialist?${query}`);
-
-    console.log(category, checkIn);
+    console.log(checkOut, checkIn);
   };
 
-  const categories = [
-    { id: 1, value: "house manager nanny", label: "HOUSE MANAGER / NANNY" },
-    { id: 2, value: "certifie nursing assistant (C.N.A)", label: "CERTIFIED NURSING ASSISTANT (C.N.A)" },
-    { id: 3, value: "medical nurse", label: "MEDICAL NURSE" },
-    { id: 4, value: "physiotherapist", label: "PHYSIOTHERAPIST" },
-    { id: 5, value: "special-need-care-giver", label: "SPECIAL NEEDS CARE GIVER" },
-  ];
+ console.log(checkIn,checkOut)
 
   return (
     <div className="w-full mx-auto my-8 md:!mt-0 -translate-y-1/2 z-[20] relative -mb-30 md:-mb-14 max-w-4xl">
@@ -96,7 +87,7 @@ const Searchbar = () => {
                   <SelectGroup>
                     <SelectLabel>Category</SelectLabel>
                     {serviceCategory.map((item,indx) => (
-                      <SelectItem key={indx} value={item.mainCategory}>
+                      <SelectItem key={indx} value={item.value}>
                         {item.mainCategory}
                       </SelectItem>
                     ))}
@@ -186,7 +177,7 @@ const Searchbar = () => {
                 <SelectGroup>
                   <SelectLabel>Category</SelectLabel>
                   {serviceCategory.map((item,indx) => (
-                    <SelectItem key={indx} value={item.mainCategory}>
+                    <SelectItem key={indx} value={item.value}>
                       {item.mainCategory}
                     </SelectItem>
                   ))}

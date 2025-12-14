@@ -88,26 +88,26 @@ export default function DashboardLayout({ children }) {
     { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
 
-  const medicalInstitution = [
+  const careInstitution = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     {
       name: "Profile",
-      href: "/dashboard/medical-institution-profile",
+      href: "/dashboard/care-institution-profile",
       icon: User,
     },
     {
       name: "Nurses",
-      href: "/dashboard/medical-institution-nurses",
+      href: "/dashboard/care-institution-nurses",
       icon: Cross,
     },
      {
       name: "Schedule",
-      href: "/dashboard/medical-institution-schedule",
+      href: "/dashboard/care-institution-schedule",
       icon: Calendar,
     },
     {
       name: "Clients",
-      href: "/dashboard/medical-institution-clients",
+      href: "/dashboard/care-institution-clients",
       icon: Users2,
     },
     { name: "Notes", href: "/dashboard/note", icon: NotepadText },
@@ -125,9 +125,9 @@ export default function DashboardLayout({ children }) {
   } else if (user?.role === "specialist") {
     links = specialistLinks;
     role = "specialist"
-  } else if (user?.role === "medical institution") {
-    links = medicalInstitution;
-    role =  "medical-institution"
+  } else if (user?.role === "care institution") {
+    links = careInstitution;
+    role =  "care-institution"
   }
 
   const handleLogout = () => {
@@ -253,7 +253,7 @@ export default function DashboardLayout({ children }) {
           >
             <img
               src="/user.png"
-              className="h-10 w-10 border bg-white border-white rounded-full"
+              className="h-9 w-9 border bg-white border-white rounded-full"
             />
           </Link>
         </div>

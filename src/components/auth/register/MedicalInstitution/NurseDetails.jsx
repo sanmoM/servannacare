@@ -12,6 +12,14 @@ import {
   blockInvalidKeys,
   numericInputFilter,
 } from "@/utilities/helperFunction";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const NurseDetails = ({
   nurseNumber = 1,
@@ -48,6 +56,7 @@ const NurseDetails = ({
   const [data, setData] = useState({
     name: "",
     age: "",
+    experience: "",
     gender: "",
     location: "",
     education: [],
@@ -67,8 +76,9 @@ const NurseDetails = ({
     bathingYears: "",
     feedingYears: "",
     serviceFee: "",
-    idCopy:null,
-    profilePhoto:null,
+    bio: "",
+    idCopy: null,
+    profilePhoto: null,
     ...defaultValues,
   });
 
@@ -111,8 +121,8 @@ const NurseDetails = ({
   // Handle file uploads
   const handleFileSelect = (id, file) => {
     setData((prev) => ({
-      ...prev,[id]:file
-      
+      ...prev,
+      [id]: file,
     }));
   };
 
@@ -153,14 +163,44 @@ const NurseDetails = ({
 
       {/* Location + Gender */}
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
-        <Input
-          label="Location"
-          placeholder="Location"
-          name="location"
-          value={data.location}
-          onChange={handleChange}
-        />
+        <div className="flex-1">
+          <Input
+            label="Location"
+            placeholder="Location"
+            name="location"
+            value={data.location}
+            onChange={handleChange}
+          />
+        </div>
 
+        <div className="flex-1">
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Experience (Years)
+          </label>
+          <Select
+            value={data.experience}
+            onValueChange={(value) =>
+              setData((prev) => ({ ...prev, experience: value }))
+            }
+          >
+            <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+              <SelectValue placeholder="Select years of experience" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="1">1 year</SelectItem>
+                <SelectItem value="2">2 years</SelectItem>
+                <SelectItem value="3">3 years</SelectItem>
+                <SelectItem value="4">4 years</SelectItem>
+                <SelectItem value="5">5 years</SelectItem>
+                <SelectItem value="more">More than 5 years</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex flex-col my-6 sm:flex-row gap-6 sm:gap-4">
         <div className="flex-1">
           <Label className={"mb-2"}>Gender?</Label>
           <RadioGroup
@@ -179,24 +219,36 @@ const NurseDetails = ({
             </div>
           </RadioGroup>
         </div>
-      </div>
 
-      {/* Languages */}
-      <div className="py-8">
-        <Label className={"mb-3"}>Languages</Label>
-        <div className="flex flex-wrap gap-4">
-          {languages.map((lan, idx) => (
-            <div key={idx} className="flex items-center gap-2">
+        {/* Education Level */}
+        <div className="flex-1">
+          <Label className="mb-3">Level of Education</Label>
+
+          <div className="flex flex-wrap gap-4 mt-2">
+            {/* Diploma */}
+            <div className="flex items-center gap-2">
               <Checkbox
-                checked={data.languages.includes(lan.value)}
-                onCheckedChange={() => toggleArray("languages", lan.value)}
+                checked={data.education.includes("Diploma In Nursing")}
+                onCheckedChange={() =>
+                  toggleArray("education", "Diploma In Nursing")
+                }
               />
-              <Label>{lan.text}</Label>
+              <Label>Diploma In Nursing</Label>
             </div>
-          ))}
+
+            {/* Degree */}
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={data.education.includes("Degree In Nursing")}
+                onCheckedChange={() =>
+                  toggleArray("education", "Degree In Nursing")
+                }
+              />
+              <Label>Degree In Nursing</Label>
+            </div>
+          </div>
         </div>
       </div>
-
       {/* Driving */}
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
         <div className="flex-1">
@@ -215,7 +267,7 @@ const NurseDetails = ({
         </div>
 
         {/* Role */}
-        <div className="flex-1">
+        <div className="flex-1 ">
           <Label className={"mb-2"}>Your Role?</Label>
           <RadioGroup
             value={data.role}
@@ -231,32 +283,19 @@ const NurseDetails = ({
         </div>
       </div>
 
-      {/* Education Level */}
-      <div className="my-6">
-        <Label className="mb-3">Level of Education</Label>
-
-        <div className="flex flex-wrap gap-4 mt-2">
-          {/* Diploma */}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={data.education.includes("Diploma In Nursing")}
-              onCheckedChange={() =>
-                toggleArray("education", "Diploma In Nursing")
-              }
-            />
-            <Label>Diploma In Nursing</Label>
-          </div>
-
-          {/* Degree */}
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={data.education.includes("Degree In Nursing")}
-              onCheckedChange={() =>
-                toggleArray("education", "Degree In Nursing")
-              }
-            />
-            <Label>Degree In Nursing</Label>
-          </div>
+      {/* Languages */}
+      <div className="py-6">
+        <Label className={"mb-3"}>Languages</Label>
+        <div className="flex flex-wrap gap-4">
+          {languages.map((lan, idx) => (
+            <div key={idx} className="flex items-center gap-2">
+              <Checkbox
+                checked={data.languages.includes(lan.value)}
+                onCheckedChange={() => toggleArray("languages", lan.value)}
+              />
+              <Label>{lan.text}</Label>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -472,6 +511,18 @@ const NurseDetails = ({
           });
         }}
       />
+
+      <div className="mt-6">
+        <label htmlFor="bio">Bio</label>
+        <textarea
+          value={data.bio}
+          name="bio"
+          placeholder="Add a bio"
+          className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+          rows={6}
+          onChange={handleChange}
+        />
+      </div>
 
       {/* Document Uploads */}
       <div>

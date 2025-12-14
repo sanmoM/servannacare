@@ -47,8 +47,8 @@ const Page = () => {
       role = "specialist"
     }else if (email === "agency@gmail.com"){
       role = "agency"
-    }else if (email === "medicalinstitution@gmail.com"){
-      role = "medical institution"
+    }else if (email === "careinstitution@gmail.com"){
+      role = "care institution"
     }else{
       toast.error("Incorrect Email!")
       return;
