@@ -237,7 +237,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
         <textarea
           value={data.bio}
           name="bio"
-          placeholder="Add a bio"
+          placeholder="Write a brief bio about yourself and the services you offer.."
           className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
           rows={6}
           onChange={handleChange}

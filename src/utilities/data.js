@@ -55,6 +55,7 @@ export const services = [
   {
     id: 1,
     title: "Pre & Post Pregnancy Care",
+    value:"certified-nursing-assistant",
     description:
       "Gentle, personalized support for mothers and babies before and after childbirth.",
     icon: <Baby />,
@@ -64,6 +65,7 @@ export const services = [
   {
     id: 2,
     title: "Post Surgery Care",
+    value:"certified-nursing-assistant",
     description:
       "Professional home recovery support, including wound care, mobility assistance, and medication monitoring.",
     icon: <Cross />,
@@ -73,6 +75,7 @@ export const services = [
   {
     id: 3,
     title: "Elderly Care",
+    value:"certified-nursing-assistant",
     description:
       "Compassionate in-home care that promotes comfort, independence, and companionship for seniors.",
     icon: <HeartHandshake />,
@@ -82,6 +85,7 @@ export const services = [
   {
     id: 4,
     title: "Physiotherapy",
+    value:"physiotherapist",
     description:
       "Personalized home sessions to restore mobility, relieve pain, and speed up physical recovery.",
     icon: <Activity />,
@@ -91,6 +95,7 @@ export const services = [
   {
     id: 5,
     title: "Nanny & Housekeeping",
+    value:"house-manager-nanny",
     description:
       "Trusted home support — caring for your children and keeping your home in perfect balance.",
     icon: <HouseHeart />,
@@ -100,6 +105,7 @@ export const services = [
   {
     id: 6,
     title: "Special Needs Care",
+    value:"special-need-caregiver",
     description:
       "Professional special needs caregivers in Kenya offering safe, compassionate home care for children and adults with developmental, physical, or sensory challenges.",
     icon: <HandHeart />,

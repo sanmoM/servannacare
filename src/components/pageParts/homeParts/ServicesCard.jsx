@@ -13,7 +13,7 @@ const ServicesCard = ({ services }) => {
       <p className="text-sm text-gray-600 leading-relaxed">{services.description}</p>
     </div> */}
 
-      <Link href={`/specialist?category=${services?.title.toLowerCase()}`}>
+      <Link href={`/specialist?category=${services.value}`}>
         <div className="group  relative overflow-hidden rounded-xl  transition-all duration-500 ">
           <div className="relative h-80 w-full overflow-hidden rounded-xl bg-background">
             <img
