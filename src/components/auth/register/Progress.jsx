@@ -32,7 +32,7 @@ export default function Progress({ currentStep = 1, totalSteps = 4 }) {
                     isCompleted
                       ? "bg-primary text-white"
                       : isActive
-                      ? "bg-[#f9e9ce] text-primary ring-4 ring-[#f6ce8a]"
+                      ? "bg-[#d3abd3] text-white ring-4 ring-[#f6ce8a]"
                       : "bg-gray-200 text-gray-600"
                   }`}
                 >
