@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import Review from "./Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
+import { generateToken } from "@/utilities/helperFunction";
 
 const Nurse = () => {
   const [started, setStarted] = useState(false);
@@ -54,6 +55,7 @@ const Nurse = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      const token = generateToken()
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -63,7 +65,8 @@ const Nurse = () => {
           profilePic: null,
           role:"specialist",
           subRole:"nurse",
-          status:"under review"
+          status:"under review",
+          token
         })
       );
 

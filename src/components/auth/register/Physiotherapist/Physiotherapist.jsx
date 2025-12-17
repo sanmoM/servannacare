@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import Review from "../Nurse/Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
+import { generateToken } from "@/utilities/helperFunction";
 
 const Physiotherapist = () => {
   const [started, setStarted] = useState(false);
@@ -54,6 +55,7 @@ const Physiotherapist = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      const token = generateToken();
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -63,7 +65,8 @@ const Physiotherapist = () => {
           profilePic: null,
           role:"specialist",
           subRole:"physiotherapist",
-          status:"under review"
+          status:"under review",
+          token
         })
       );
       localStorage.setItem("specialist", JSON.stringify(formData));

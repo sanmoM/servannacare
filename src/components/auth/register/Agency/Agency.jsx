@@ -10,6 +10,7 @@ import { Plus } from "lucide-react";
 import Review from "./ReviewAndSubmit";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
+import { generateToken } from "@/utilities/helperFunction";
 
 const validateEmployee = (data) => {
   const errors = [];
@@ -83,12 +84,14 @@ const Agency = () => {
       setStep(step + 1);
     } 
     else {
+      const token = generateToken();
       localStorage.setItem(
         "user",
         JSON.stringify({
           ...user,
           role:"agency",
-          agency:formData.agency
+          agency:formData.agency,
+          token
         }  
         )
       )

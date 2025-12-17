@@ -10,6 +10,7 @@ import ContactAgreement from "./ContactAgreement";
 import Review from "../Nurse/Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
+import { generateToken } from "@/utilities/helperFunction";
 
 const NurseAideOrAssistant = () => {
   const [started, setStarted] = useState(false);
@@ -53,6 +54,7 @@ const NurseAideOrAssistant = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      const token = generateToken()
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -62,7 +64,8 @@ const NurseAideOrAssistant = () => {
           profilePic:null,
           role:"specialist",
           subRole:"nurse aide assistant",
-          status:"under review"
+          status:"under review",
+          token
         })
       )
        localStorage.setItem("specialist", JSON.stringify(formData));

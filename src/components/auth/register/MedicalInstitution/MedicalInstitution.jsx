@@ -10,6 +10,7 @@ import NurseDetails from "./NurseDetails";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Review from "./Review";
+import { generateToken } from "@/utilities/helperFunction";
 
 
 const validateNurse = (data) => {
@@ -135,11 +136,12 @@ const MedicalInstitution = () => {
       setStep(step + 1);
       return;
     } else {
-      console.log(formData);
+      const token = generateToken()
       localStorage.setItem("user", JSON.stringify({
         ...user,
         role:"care institution",
-        institution:formData.institution
+        institution:formData.institution,
+        token
       }));
       toast.success("Registered Successfully!");
 

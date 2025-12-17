@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import useLocalUser from "@/hooks/useLocalUser";
 import { userRole } from "@/utilities/data";
+import { generateToken } from "@/utilities/helperFunction";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -54,6 +55,9 @@ const Page = () => {
       return;
     }
 
+    const token = generateToken();
+    
+
      const userInfo = {
       name,
       email,
@@ -64,10 +68,11 @@ const Page = () => {
         year: "numeric",
       }),
       role,
-      // subRole:"nurse"
+      token
+      
     };
-    
     localStorage.setItem("user", JSON.stringify(userInfo));
+    
     router.push("/dashboard");
     toast.success("Login Success!");
   };

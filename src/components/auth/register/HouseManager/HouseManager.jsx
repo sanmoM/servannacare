@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import Review from "./Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
+import { generateToken } from "@/utilities/helperFunction";
 
 const HouseManager = () => {
   const [started, setStarted] = useState(false);
@@ -41,6 +42,8 @@ const HouseManager = () => {
       setStep(step + 1);
     } else {
       // Save complete updated data (not outdated state)
+      const token = generateToken()
+
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -50,7 +53,8 @@ const HouseManager = () => {
           profilePic: null,
           role: "specialist",
           subRole:"housemanager",
-          status:"under review"
+          status:"under review",
+          token
         })
       );
 

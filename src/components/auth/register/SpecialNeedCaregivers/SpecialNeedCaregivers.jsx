@@ -10,6 +10,7 @@ import DocumentUploads from "./DocumentUploads";
 import Review from "../Nurse/Review";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { generateToken } from "@/utilities/helperFunction";
 
 const SpecialNeedCaregivers = () => {
   const [started, setStarted] = useState(false);
@@ -46,6 +47,7 @@ const SpecialNeedCaregivers = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      const token = generateToken();
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -55,7 +57,8 @@ const SpecialNeedCaregivers = () => {
           profilePic: null,
           role:"specialist",
           subRole:"special need caregivers",
-          status:"under review"
+          status:"under review",
+          token
         })
       );
       localStorage.setItem("specialist", JSON.stringify(formData));

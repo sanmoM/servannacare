@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { notFound, usePathname, useRouter } from "next/navigation";
 import {
   BriefcaseBusiness,
   Calendar,
@@ -30,10 +30,59 @@ export default function DashboardLayout({ children }) {
   const { user, loaded } = useLocalUser();
   const router = useRouter();
 
-  console.log(user);
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    if (!loaded) return;
+
+    if (!user) {
+      notFound();
+    }
+
+    if (!user?.token) {
+      notFound();
+    }
+
+    const role = user.role;
+
+    // USER routes
+    if (
+      (pathname === "/dashboard/my-appointment" ||
+        pathname === "/dashboard/book-history" ||
+        pathname === "/dashboard/payment-history" ||
+        pathname.startsWith("/dashboard/user")) &&
+      role !== "user"
+    ) {
+      notFound();
+    }
+
+    // SPECIALIST routes
+    if (pathname.startsWith("/dashboard/specialist") && role !== "specialist") {
+      notFound();
+    }
+
+    // AGENCY routes
+    if (pathname.startsWith("/dashboard/agency") && role !== "agency") {
+      notFound();
+    }
+
+    // CARE INSTITUTION routes
+    if (
+      pathname.startsWith("/dashboard/care-institution") &&
+      role !== "care institution"
+    ) {
+      notFound();
+    }
+  }, [loaded, user, pathname]);
+
+  if (!loaded) {
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   // --- Links ---
   const userLinks = [
@@ -78,7 +127,7 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/agency-employee",
       icon: BriefcaseBusiness,
     },
-     {
+    {
       name: "Schedule",
       href: "/dashboard/agency-schedule",
       icon: Calendar,
@@ -100,7 +149,7 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/care-institution-nurses",
       icon: Cross,
     },
-     {
+    {
       name: "Schedule",
       href: "/dashboard/care-institution-schedule",
       icon: Calendar,
@@ -124,10 +173,10 @@ export default function DashboardLayout({ children }) {
     role = "agency";
   } else if (user?.role === "specialist") {
     links = specialistLinks;
-    role = "specialist"
+    role = "specialist";
   } else if (user?.role === "care institution") {
     links = careInstitution;
-    role =  "care-institution"
+    role = "care-institution";
   }
 
   const handleLogout = () => {
@@ -247,10 +296,7 @@ export default function DashboardLayout({ children }) {
             </div>
           </button>
 
-          <Link
-            className="md:mr-6 mr-3"
-            href={`/dashboard/${role}-profile`}
-          >
+          <Link className="md:mr-6 mr-3" href={`/dashboard/${role}-profile`}>
             <img
               src="/user.png"
               className="h-9 w-9 border bg-white border-white rounded-full"
