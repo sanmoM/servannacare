@@ -11,7 +11,7 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
     isMother: defaultValues.isMother || "",
     ageOfKids: defaultValues.ageOfKids || [],
     isHandelingPet: defaultValues.isHandelingPet || "",
-    preferBeingA: defaultValues.preferBeingA || ""
+    preferredRole: defaultValues.preferredRole || ""
   });
 
   const toggleageOfKids = (kid) => {
@@ -83,7 +83,7 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
                 onCheckedChange={() => toggleageOfKids(age)}
               />
               <Label htmlFor={`age-${age}`} className="text-gray-700 font-normal cursor-pointer">
-                {age === "11+" ? "11 years and above" : `${age} years`}
+                {`${age} years`}
               </Label>
             </div>
           ))}
@@ -111,19 +111,19 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
         </RadioGroup>
       </div>
        <div className="flex-1">
-        <Label>Prefer being a </Label>
+        <Label>Preferred Role </Label>
         <RadioGroup
           className="flex gap-4 mt-3"
-          value={data.preferBeingA}
-          onValueChange={(value) => setData((prev) => ({ ...prev, preferBeingA: value }))}
+          value={data.preferredRole}
+          onValueChange={(value) => setData((prev) => ({ ...prev, preferredRole: value }))}
         >
           <div className="flex items-center gap-3">
             <RadioGroupItem value="Nanny" id="h1" />
             <Label htmlFor="h1" className="text-gray-700 font-normal cursor-pointer">Nanny</Label>
           </div>
           <div className="flex items-center gap-3">
-            <RadioGroupItem value="House Keeper" id="h2" />
-            <Label htmlFor="h2" className="text-gray-700 font-normal cursor-pointer">House Keeper</Label>
+            <RadioGroupItem value="Housekeeper" id="h2" />
+            <Label htmlFor="h2" className="text-gray-700 font-normal cursor-pointer">Housekeeper</Label>
           </div>
         </RadioGroup>
       </div>

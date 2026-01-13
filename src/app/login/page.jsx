@@ -57,16 +57,12 @@ const Page = () => {
 
     const token = generateToken();
     
-
      const userInfo = {
       name,
       email,
-      phoneNumber: null,
+      phone: "345345662",
       location: null,
-      joinedSince: new Date().toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      }),
+      joinedSince: "January 2026",
       role,
       token
       

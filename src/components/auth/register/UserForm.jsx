@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import OtpModal from "../OtpModal";
+import { generateToken } from "@/utilities/helperFunction";
 
 const UserForm = () => {
   const [showPass, setShowPass] = useState(false);
@@ -48,6 +49,8 @@ const UserForm = () => {
       return;
     }
 
+    const token = generateToken();
+
     const userInfo = {
       name,
       email,
@@ -58,6 +61,7 @@ const UserForm = () => {
         year: "numeric",
       }),
       role: "user",
+      token
     };
 
     setTemUser(userInfo);

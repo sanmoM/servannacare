@@ -13,14 +13,8 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
   const [data, setData] = useState({
     companyName: defaultValues.companyName || "",
     kraPin: defaultValues.kraPin || "",
-    // bankName: defaultValues.bankName || "",
-    // bankAccountName: defaultValues.bankAccountName || "",
-    // bankAccountNumber: defaultValues.bankAccountNumber || "",
-    // emergencyContactName: defaultValues.emergencyContactName || "",
-    // emergencyContactPhoneNumber:
-    //   defaultValues.emergencyContactPhoneNumber || "",
-    // emergencyContactEmail: defaultValues.emergencyContactEmail || "",
     companyRegistrationNumber: defaultValues.companyRegistrationNumber || "",
+     phone: defaultValues.phone || "",
     businessLocation: defaultValues.businessLocation || "",
     trainingAreas: defaultValues.trainingAreas || [],
     registrationDocument: defaultValues.registrationDocument || null,
@@ -51,6 +45,12 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
+    const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    value = value.slice(0, 10);
+    setData((prev) => ({ ...prev, phone: value }));
+  };
+
   // Handle Checkbox Toggle
   const toggleTraining = (item) => {
     setData((prev) => {
@@ -76,13 +76,8 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
     const requiredFields = [
       "companyName",
       "kraPin",
-      // "bankName",
-      // "bankAccountName",
-      // "bankAccountNumber",
-      // "emergencyContactName",
-      // "emergencyContactPhoneNumber",
-      // "emergencyContactEmail",
       "companyRegistrationNumber",
+      "phone",
       "businessLocation",
       "registrationDocument",
       "trainingAreas",
@@ -132,57 +127,6 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
           />
         </div>
 
-        {/* <div className="flex flex-col gap-6 sm:gap-4 sm:flex-row"> */}
-          {/* <div className="flex-1 space-y-4">
-            <div>
-              <Label className="mb-2">Bank Details</Label>
-              <Input
-                name="bankName"
-                placeholder="Your bank name"
-                value={data.bankName}
-                onChange={handleChange}
-              />
-            </div>
-            <Input
-              name="bankAccountName"
-              placeholder="Your account name"
-              value={data.bankAccountName}
-              onChange={handleChange}
-            />
-            <Input
-              name="bankAccountNumber"
-              placeholder="Your account number"
-              value={data.bankAccountNumber}
-              onChange={handleChange}
-            />
-          </div> */}
-
-          {/* <div className="flex-1 space-y-4">
-            <div>
-              <Label className="mb-2">Emergency Contact Details</Label>
-              <Input
-                name="emergencyContactName"
-                placeholder="Emergency contact name"
-                value={data.emergencyContactName}
-                onChange={handleChange}
-              />
-            </div>
-            <Input
-              name="emergencyContactPhoneNumber"
-              placeholder="Emergency contact phone number"
-              value={data.emergencyContactPhoneNumber}
-              onChange={handleChange}
-            />
-            <Input
-              type="email"
-              name="emergencyContactEmail"
-              placeholder="Emergency contact email"
-              value={data.emergencyContactEmail}
-              onChange={handleChange}
-            />
-          </div> */}
-        {/* </div> */}
-
         <div className="flex flex-col py-6 sm:flex-row gap-6 sm:gap-4">
           <Input
             label="Company Registration Number"
@@ -191,16 +135,28 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
             value={data.companyRegistrationNumber}
             onChange={handleChange}
           />
+
           <Input
+            label="Phone Number"
+            name="phone"
+            type="tel"
+            placeholder="07xxxxxxxx"
+            value={data.phone}
+            maxLength={10}
+            onChange={handlePhoneChange}
+          />
+         
+        </div>
+
+         <Input
             label="Business Location"
             name="businessLocation"
             placeholder="Business location"
             value={data.businessLocation}
             onChange={handleChange}
           />
-        </div>
 
-        <div>
+        <div className="mt-6">
           <FileUpload
             title="Company Registration Document"
             accept="application/pdf,image/*"

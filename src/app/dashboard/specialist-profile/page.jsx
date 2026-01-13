@@ -215,7 +215,6 @@ export default function ProfilePage() {
                 className="flex space-x-3 bg-white p-3 lg:p-4 rounded-lg"
               >
                 {item.icon}
-
                 <div className="w-full">
                   <p className="text-sm mb-1 text-gray-500">{item.label}</p>
                   <p className="text-sm text-gray-700">

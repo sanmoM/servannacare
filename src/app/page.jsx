@@ -8,25 +8,29 @@ import Testimonials from "@/components/pageParts/homeParts/Testimonials";
 import WhyChooseUs from "@/components/pageParts/homeParts/WhyChooseUs";
 import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
+import { getHomeData } from "@/lib/homeApi";
 import { blogs } from "@/utilities/data";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+
+    const homeData = await getHomeData();
+
   return (
     <div>
-      <Slider />
-      <Services />
-      <HowItWorks />
+      <Slider data = {homeData.data.banner}/>
+      <Services data = {homeData.data.service}/>
+      <HowItWorks data = {homeData.data.works} />
       <OurSpecialist/>
 
       {/* from our blog section  */}
-      <div className="py-10  bg-[#f7f7ff] md:py-16">
+      <div className="py-10  bg-[#ccb7c65b] md:py-16">
         <h2 className="text-center sectionHeading">From Our Blog</h2>
         <Container
           className={"grid grid-cols-1 gap-6 pt-10 md:pt-16 md:grid-cols-2"}
         >
-          {blogs.slice(0, 4).map((blog, indx) => {
+          {homeData?.data?.blogs.map((blog, indx) => {
             const slug = blog.title.toLowerCase().replace(/ /g, "-");
             return <BlogCard data-aos="fade-up" key={indx} blog={blog} slug={slug}></BlogCard>;
           })}
@@ -35,9 +39,9 @@ export default function Home() {
         <Button size={"lg"}>More <ChevronRight/></Button>
       </Link>
       </div>
-      <Faq/>
-      <WhyChooseUs/>
-      <Testimonials />
+      <Faq data={{faqHeader:homeData.data.faqHeader, faqs:homeData.data.faqs}}/>
+      <WhyChooseUs data = {homeData.data.chooses}/>
+      <Testimonials data = {homeData.data.newsLetter} />
     </div>
   );
 }

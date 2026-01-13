@@ -1,3 +1,4 @@
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import React from "react";
 
 const page = () => {
@@ -15,7 +16,7 @@ const page = () => {
       date: "10 Jan 2024",
       amount: 1800,
       method: "Nagad",
-      status: "Pending",
+      status: "Paid",
       transactionId: "TXN-8213409",
     },
     {
@@ -31,7 +32,7 @@ const page = () => {
       date: "16 Feb 2024",
       amount: 1500,
       method: "Rocket",
-      status: "Failed",
+      status: "Paid",
       transactionId: "TXN-6542387",
     },
     {
@@ -113,6 +114,30 @@ const page = () => {
             ))}
           </tbody>
         </table>
+        {/* ✅ Pagination */}
+        <div className="mt-6">
+          <Pagination className="flex justify-center md:justify-end">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href="#" />
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationLink href="#" isActive>
+                  1
+                </PaginationLink>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationLink href="#">2</PaginationLink>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationNext href="#" />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </div>
   );

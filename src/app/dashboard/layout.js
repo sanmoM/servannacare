@@ -269,7 +269,7 @@ export default function DashboardLayout({ children }) {
 
               {/* Sidebar Footer */}
               <div className="p-4 border-t border-white/20 text-center text-xs opacity-75">
-                © 2025. All rights reserved.
+                © 2026. All rights reserved.
               </div>
             </div>
           )}

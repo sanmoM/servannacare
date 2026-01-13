@@ -25,14 +25,9 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Dynamic validation
     const requiredFields = [
       "hospitalBasedCare",
-      // "hospitalBasedYearsOfExperience",
-      // "hospitalBasedReferenceContact",
       "homeBasedCare",
-      // "homeBasedYearsOfExperience",
-      // "homeBasedReferenceContact",
     ];
 
     for (let field of requiredFields) {
@@ -104,7 +99,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
               type="number"
               label="Years of experience"
               name="hospitalBasedYearsOfExperience"
-              placeholder="Experience"
+              placeholder="Hospital based experience"
               maxLength={2}
               value={data.hospitalBasedYearsOfExperience}
               onChange={(e) => {
@@ -122,7 +117,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             <Input
               label="Reference contact"
               name="hospitalBasedReferenceContact"
-              placeholder="Reference"
+              placeholder="Hospital based ref"
               value={data.hospitalBasedReferenceContact}
               onChange={handleChange}
             />
@@ -168,7 +163,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
               type={"number"}
               label="Years of experience"
               name="homeBasedYearsOfExperience"
-              placeholder="Experience"
+              placeholder="Home based experience"
               maxLength={2}
               value={data.homeBasedYearsOfExperience}
               onChange={(e) => {
@@ -183,7 +178,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             <Input
               label="Reference contact"
               name="homeBasedReferenceContact"
-              placeholder="Reference"
+              placeholder="Home based ref"
               value={data.homeBasedReferenceContact}
               onChange={handleChange}
             />

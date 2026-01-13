@@ -42,41 +42,41 @@ const NurseDetails = ({
     },
   ];
 
-  const skillsList = [
-    "Basic Patient Care",
-    "Vital Signs Monitoring",
-    "Medical Assistance",
+  const skills = [
+    "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
+    "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
+    "Medical Assistance: Aassisting nurses with wound care, administering medication (in some cases)",
     "Compassion & Communication Skills",
-    "Special Needs Care",
-    "Elderly Caregiving",
-    "Handling Medical Equipment",
+    "Special needs children caregiving",
+    "Elderly caregiving",
+    "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
   ];
 
   // Local state
   const [data, setData] = useState({
-    name: "",
-    age: "",
-    experience: "",
-    gender: "",
-    location: "",
-    education: [],
-    languages: [],
-    canDrive: "",
-    role: "",
-    educationCertificate: null,
-    isNursingInKenya: "",
-    hospitalBasedCare: "",
-    hospitalBasedYearsOfExperience: "",
-    hospitalBasedReferenceContact: "",
-    homeBasedCare: "",
-    homeBasedYearsOfExperience: "",
-    homeBasedReferenceContact: "",
+    name: "", 
+    age: "", 
+    experience: "", 
+    gender: "", 
+    location: "", 
+    education: "", 
+    languages: [], 
+    canDrive: "", 
+    preferredRole: "",
+    educationCertificate: null, 
+    isNursingInKenya: "", 
+    hospitalBasedCare: "", 
+    hospitalBasedYearsOfExperience: "", 
+    hospitalBasedReferenceContact: "", 
+    homeBasedCare: "", 
+    homeBasedYearsOfExperience: "", 
+    homeBasedReferenceContact: "", 
     skills: [],
-    mobilityYears: "",
-    bathingYears: "",
+    mobilityYears: "", 
+    bathingYears: "", 
     feedingYears: "",
     serviceFee: "",
-    bio: "",
+    bio: "", 
     idCopy: null,
     profilePhoto: null,
     ...defaultValues,
@@ -193,7 +193,7 @@ const NurseDetails = ({
                 <SelectItem value="3">3 years</SelectItem>
                 <SelectItem value="4">4 years</SelectItem>
                 <SelectItem value="5">5 years</SelectItem>
-                <SelectItem value="more">More than 5 years</SelectItem>
+                <SelectItem value="5+">More than 5 years</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -202,51 +202,61 @@ const NurseDetails = ({
 
       <div className="flex flex-col my-6 sm:flex-row gap-6 sm:gap-4">
         <div className="flex-1">
-          <Label className={"mb-2"}>Gender?</Label>
+          <Label className={"mb-2"}>Gender</Label>
           <RadioGroup
             value={data.gender}
             onValueChange={(val) => setData((p) => ({ ...p, gender: val }))}
             className="flex gap-4"
           >
             <div className="flex items-center gap-3">
-              <RadioGroupItem value="Male" id="g1" />
-              <Label htmlFor="g1">Male</Label>
+              <RadioGroupItem value="Male" id={`g1-${nurseNumber}`} />
+              <Label htmlFor={`g1-${nurseNumber}`}>Male</Label>
             </div>
 
             <div className="flex items-center gap-3">
-              <RadioGroupItem value="Female" id="g2" />
-              <Label htmlFor="g2">Female</Label>
+              <RadioGroupItem value="Female" id={`g2-${nurseNumber}`} />
+              <Label htmlFor={`g2-${nurseNumber}`}>Female</Label>
             </div>
           </RadioGroup>
         </div>
 
         {/* Education Level */}
         <div className="flex-1">
-          <Label className="mb-3">Level of Education</Label>
+          <Label className="mb-3 block">Level of Education</Label>
 
-          <div className="flex flex-wrap gap-4 mt-2">
-            {/* Diploma */}
+          <RadioGroup
+            className="flex flex-wrap gap-4 mt-2"
+            value={data.education}
+            onValueChange={(value) =>
+              setData((prev) => ({ ...prev, education: value }))
+            }
+          >
             <div className="flex items-center gap-2">
-              <Checkbox
-                checked={data.education.includes("Diploma In Nursing")}
-                onCheckedChange={() =>
-                  toggleArray("education", "Diploma In Nursing")
-                }
+              <RadioGroupItem
+                value="Diploma In Nursing"
+                id={`edu1-${nurseNumber}`}
               />
-              <Label>Diploma In Nursing</Label>
+              <Label
+                htmlFor={`edu1-${nurseNumber}`}
+                className="text-gray-700 cursor-pointer"
+              >
+                Diploma In Nursing
+              </Label>
             </div>
 
-            {/* Degree */}
             <div className="flex items-center gap-2">
-              <Checkbox
-                checked={data.education.includes("Degree In Nursing")}
-                onCheckedChange={() =>
-                  toggleArray("education", "Degree In Nursing")
-                }
+              <RadioGroupItem
+                value="Degree In Nursing"
+                id={`edu2-${nurseNumber}`}
               />
-              <Label>Degree In Nursing</Label>
+              <Label
+                htmlFor={`edu2-${nurseNumber}`}
+                className="text-gray-700 cursor-pointer"
+              >
+                Degree In Nursing
+              </Label>
             </div>
-          </div>
+          </RadioGroup>
         </div>
       </div>
       {/* Driving */}
@@ -258,27 +268,27 @@ const NurseDetails = ({
             onValueChange={(val) => setData((p) => ({ ...p, canDrive: val }))}
             className="flex gap-4"
           >
-            <RadioGroupItem value="Yes" id="d1" />
-            <Label htmlFor="d1">Yes</Label>
+            <RadioGroupItem value="Yes" id={`d1-${nurseNumber}`} />
+            <Label htmlFor={`d1-${nurseNumber}`}>Yes</Label>
 
-            <RadioGroupItem value="No" id="d2" />
-            <Label htmlFor="d2">No</Label>
+            <RadioGroupItem value="No" id={`d2-${nurseNumber}`} />
+            <Label htmlFor={`d2-${nurseNumber}`}>No</Label>
           </RadioGroup>
         </div>
 
-        {/* Role */}
+        {/* preferredRole */}
         <div className="flex-1 ">
-          <Label className={"mb-2"}>Your Role?</Label>
+          <Label className={"mb-2"}>Preferred Role?</Label>
           <RadioGroup
-            value={data.role}
-            onValueChange={(val) => setData((p) => ({ ...p, role: val }))}
+            value={data.preferredRole}
+            onValueChange={(val) => setData((p) => ({ ...p, preferredRole: val }))}
             className="flex gap-4"
           >
-            <RadioGroupItem value="Medical Nurse" id="r3" />
-            <Label htmlFor="r3">Medical Nurse</Label>
+            <RadioGroupItem value="Medical Nurse" id={`r3-${nurseNumber}`} />
+            <Label htmlFor={`r3-${nurseNumber}`}>Medical Nurse</Label>
 
-            <RadioGroupItem value="Nurse Aide" id="r4" />
-            <Label htmlFor="r4">Nurse Aide</Label>
+            <RadioGroupItem value="Nurse Aide" id={`r4-${nurseNumber}`} />
+            <Label htmlFor={`r4-${nurseNumber}`}>Nurse Aide</Label>
           </RadioGroup>
         </div>
       </div>
@@ -322,11 +332,11 @@ const NurseDetails = ({
           }
           className="flex gap-4"
         >
-          <RadioGroupItem value="Yes" id="n1" />
-          <Label htmlFor="n1">Yes</Label>
+          <RadioGroupItem value="Yes" id={`n1-${nurseNumber}`} />
+          <Label htmlFor={`n1-${nurseNumber}`}>Yes</Label>
 
-          <RadioGroupItem value="No" id="n2" />
-          <Label htmlFor="n2">No</Label>
+          <RadioGroupItem value="No" id={`n2-${nurseNumber}`} />
+          <Label htmlFor={`n2-${nurseNumber}`}>No</Label>
         </RadioGroup>
       </div>
 
@@ -340,11 +350,11 @@ const NurseDetails = ({
           }
           className="flex gap-4"
         >
-          <RadioGroupItem value="Yes" id="hb1" />
-          <Label htmlFor="hb1">Yes</Label>
+          <RadioGroupItem value="Yes" id={`hb1-${nurseNumber}`} />
+          <Label htmlFor={`hb1-${nurseNumber}`}>Yes</Label>
 
-          <RadioGroupItem value="No" id="hb2" />
-          <Label htmlFor="hb2">No</Label>
+          <RadioGroupItem value="No" id={`hb2-${nurseNumber}`} />
+          <Label htmlFor={`hb2-${nurseNumber}`}>No</Label>
         </RadioGroup>
       </div>
 
@@ -356,6 +366,7 @@ const NurseDetails = ({
             name="hospitalBasedYearsOfExperience"
             placeholder="Hospital based experience"
             value={data.hospitalBasedYearsOfExperience}
+            maxLength={2}
             onKeyDown={blockInvalidKeys}
             onChange={(e) => {
               handleChange({
@@ -376,8 +387,6 @@ const NurseDetails = ({
         </div>
       )}
 
-      {/* Hospital experience fields */}
-
       {/* Home Based Care */}
       <div>
         <Label className={"mb-2"}>Home Based Care</Label>
@@ -388,11 +397,11 @@ const NurseDetails = ({
           }
           className="flex gap-4"
         >
-          <RadioGroupItem value="Yes" id="hb3" />
-          <Label htmlFor="hb3">Yes</Label>
+          <RadioGroupItem value="Yes" id={`hb3-${nurseNumber}`} />
+          <Label htmlFor={`hb3-${nurseNumber}`}>Yes</Label>
 
-          <RadioGroupItem value="No" id="hb4" />
-          <Label htmlFor="hb4">No</Label>
+          <RadioGroupItem value="No" id={`hb4-${nurseNumber}`} />
+          <Label htmlFor={`hb4-${nurseNumber}`}>No</Label>
         </RadioGroup>
       </div>
 
@@ -405,6 +414,7 @@ const NurseDetails = ({
             placeholder="Home based experience"
             value={data.homeBasedYearsOfExperience}
             onKeyDown={blockInvalidKeys}
+            maxLength={2}
             onChange={(e) => {
               handleChange({
                 target: {
@@ -426,11 +436,12 @@ const NurseDetails = ({
 
       {/* Skills */}
       <div>
-        <Label className="mb-2 mt-4 block">Do you have experience in:</Label>
+        <Label className="mb-2 mt-4 block">Do you have experience in : </Label>
         <div className="flex flex-col gap-3">
-          {skillsList.map((skill, idx) => (
+          {skills.map((skill, idx) => (
             <div key={idx} className="flex gap-2">
               <Checkbox
+
                 checked={data.skills.includes(skill)}
                 onCheckedChange={() => toggleArray("skills", skill)}
               />
@@ -450,6 +461,7 @@ const NurseDetails = ({
             name="mobilityYears"
             value={data.mobilityYears}
             onKeyDown={blockInvalidKeys}
+            placeholder="00"
             onChange={(e) => {
               handleChange({
                 target: {
@@ -464,6 +476,7 @@ const NurseDetails = ({
             label="Bathing Assistance (Years)"
             type="number"
             name="bathingYears"
+            placeholder="00"
             value={data.bathingYears}
             onKeyDown={blockInvalidKeys}
             onChange={(e) => {
@@ -480,6 +493,7 @@ const NurseDetails = ({
             label="Feeding Assistance (Years)"
             type="number"
             name="feedingYears"
+            placeholder="00"
             value={data.feedingYears}
             onKeyDown={blockInvalidKeys}
             onChange={(e) => {
@@ -496,10 +510,10 @@ const NurseDetails = ({
 
       {/* Salary Range */}
       <Input
-        label="Salary Range (KSh per day/month)"
+        label="Service Fee (KSh per day/month)"
         type="text"
         name="serviceFee"
-        placeholder="1500 per day or 35000 per month"
+        placeholder="e.g., 1500 per day or 35000 per month"
         value={data.serviceFee}
         onKeyDown={blockInvalidKeys}
         onChange={(e) => {

@@ -44,7 +44,7 @@ const HouseManager = ({ data = {} }) => {
       isMother: data.additionalDetails?.isMother || "",
       ageOfKids: data.additionalDetails?.ageOfKids || [],
       isHandelingPet: data.additionalDetails?.isHandelingPet || "",
-      preferBeingA: data.additionalDetails?.preferBeingA || "",
+      preferredRole: data.additionalDetails?.preferredRole || "",
     },
 
     documents:{
@@ -362,7 +362,7 @@ const HouseManager = ({ data = {} }) => {
                     htmlFor={`age-${age}`}
                     className="text-gray-700 font-normal cursor-pointer"
                   >
-                    {age === "11+" ? "11 years and above" : `${age} years`}
+                    {age === "11+" ? "years" : `${age} years`}
                   </Label>
                 </div>
               ))}
@@ -400,11 +400,11 @@ const HouseManager = ({ data = {} }) => {
             </RadioGroup>
           </div>
           <div className="flex-1">
-            <Label>Prefer being a </Label>
+            <Label>Preferred Role </Label>
             <RadioGroup
               className="flex gap-4 mt-3"
-              value={formData.additionalDetails.preferBeingA}
-              onValueChange={(v) => handleAdditionalSelect("preferBeingA", v)}
+              value={formData.additionalDetails.preferredRole}
+              onValueChange={(v) => handleAdditionalSelect("preferredRole", v)}
             >
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="Nanny" id="h1" />
@@ -416,12 +416,12 @@ const HouseManager = ({ data = {} }) => {
                 </Label>
               </div>
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="House Keeper" id="h2" />
+                <RadioGroupItem value="Housekeeper" id="h2" />
                 <Label
                   htmlFor="h2"
                   className="text-gray-700 font-normal cursor-pointer"
                 >
-                  House Keeper
+                  Housekeeper
                 </Label>
               </div>
             </RadioGroup>

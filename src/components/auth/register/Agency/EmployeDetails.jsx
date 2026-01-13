@@ -79,7 +79,7 @@ const EmployeDetails = ({
     cooking:"",
     housekeeping:"",
     childcare:"",
-    liveType: "",
+    serviceOffered: "",
     bio:"",
     aidCertificate:null,
     goodConductCertificate:null,
@@ -237,11 +237,11 @@ const EmployeDetails = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="10-20">$10,000 - $20,000</SelectItem>
-                  <SelectItem value="20-30">$20,000 - $30,000</SelectItem>
-                  <SelectItem value="30-40">$30,000 - $40,000</SelectItem>
-                  <SelectItem value="40-50">$40,000 - $50,000</SelectItem>
-                  <SelectItem value="50+">$50,000+</SelectItem>
+                  <SelectItem value="200-400">200 - 400</SelectItem>
+                  <SelectItem value="400-600">400 - 600</SelectItem>
+                  <SelectItem value="600-800">600 - 800</SelectItem>
+                  <SelectItem value="800-1000">800 - 1000</SelectItem>
+                  <SelectItem value="1000+">More than 1000</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -274,7 +274,7 @@ const EmployeDetails = ({
         </div>
 
         <div className="flex-1">
-          <Label className="mb-3">Preferred kid ages to work with</Label>
+          <Label className="mb-3">What age of kinds do you prefer working with?</Label>
           <div className="flex flex-wrap gap-y-2 gap-x-4">
             {["0-3", "4-10", "11+"].map((age) => (
               <div key={age} className="flex items-center gap-2">
@@ -388,15 +388,15 @@ const EmployeDetails = ({
 
       {/* Live Type */}
       <div className="py-6">
-        <Label className="mb-3">Live Preference</Label>
+        <Label className="mb-3">Service Offered</Label>
 
         <RadioGroup
-          value={data.liveType || ""}
-          onValueChange={(v) => handleRadio("liveType", v)}
+          value={data.serviceOffered || ""}
+          onValueChange={(v) => handleRadio("serviceOffered", v)}
         >
           <div className="flex gap-4">
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Live-In" id={`liveIn_${employeeNumber}`} />
+              <RadioGroupItem value="Live In" id={`liveIn_${employeeNumber}`} />
               <Label htmlFor={`liveIn_${employeeNumber}`}>Live In</Label>
             </div>
             <div className="flex items-center gap-2">

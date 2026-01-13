@@ -26,14 +26,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
     "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
   ];
 
-  // const interestedAreas = [
-  //   "ELDERLY CARE",
-  //   "DISABILITY SUPPORT",
-  //   "PRE AND POST PREGNANCY SUPPORT",
-  //   "POST SURGERY CARE",
-  // ];
-
-  // Toggle skill selection
+ 
   const toggleSkill = (skill) => {
     setData((prev) => {
       const alreadySelected = prev.skills.includes(skill);
@@ -46,18 +39,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
     });
   };
 
-  // Toggle interested area checkbox
-  // const toggleInterested = (area) => {
-  //   setData((prev) => {
-  //     const alreadySelected = prev.interested.includes(area);
-  //     return {
-  //       ...prev,
-  //       interested: alreadySelected
-  //         ? prev.interested.filter((a) => a !== area)
-  //         : [...prev.interested, area],
-  //     };
-  //   });
-  // };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -119,31 +101,6 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
             ))}
           </div>
         </div>
-
-        {/* Interested Areas */}
-        {/* <div>
-          <Label className="mb-2 mt-4 block">
-            I am interested in working in the following intervention areas –
-            tick the areas you are interested in :
-          </Label>
-          <div className="flex flex-col gap-3">
-            {interestedAreas.map((area, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <Checkbox
-                  id={area}
-                  checked={data.interested.includes(area)}
-                  onCheckedChange={() => toggleInterested(area)}
-                />
-                <Label
-                  htmlFor={area}
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  {area}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div> */}
       </div>
 
       {/* Additional Experience */}

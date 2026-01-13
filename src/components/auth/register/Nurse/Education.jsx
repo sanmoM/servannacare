@@ -67,13 +67,6 @@ const Education = ({ defaultValues, onNext, onBack }) => {
               Degree In Nursing
             </Label>
           </div>
-
-          {/* <div className="flex items-center gap-2">
-            <RadioGroupItem value="Other" id="edu3" />
-            <Label htmlFor="edu3" className="text-gray-700 cursor-pointer">
-              Other
-            </Label>
-          </div> */}
         </RadioGroup>
       </div>
 

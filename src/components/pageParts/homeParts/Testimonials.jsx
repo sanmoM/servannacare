@@ -13,7 +13,7 @@ import Container from "@/components/shared/Container";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
 
-export default function Testimonials() {
+export default function Testimonials({data}) {
   const [startCount, setStartCount] = useState(false);
   const sectionRef = useRef(null);
 
@@ -35,7 +35,7 @@ export default function Testimonials() {
   }, []);
 
   return (
-    <section className="w-full py-10 md:py-16 bg-[#f4fcfe]">
+    <section className="w-full py-10 md:py-16 bg-[#ccb7c65b]">
       <Container>
         {/* Header Section */}
         <div className="mb-8 md:mb-12">
@@ -101,44 +101,15 @@ export default function Testimonials() {
           {/* <div className="swiper-pagination-custom flex justify-center gap-3 mt-12" /> */}
         </div>
 
-        {/* Stats Section */}
-        {/* <div
-          ref={sectionRef}
-          className="grid grid-cols-3 lg:gap-12 gap-4 md:gap-6 lg:mt-24 mt-6 pt-16 border-t border-border"
-        >
-          {[
-            { number: 500, suffix: "+", label: "Happy Clients" },
-            { number: 98, suffix: "%", label: "Satisfaction Rate" },
-            { number: 4.9, suffix: "★", label: "Average Rating" },
-          ].map((stat, idx) => (
-            <div key={idx} className="text-center">
-              <p className="text-2xl text-primary md:text-5xl font-bold text-foreground sm:mb-3 mb-1">
-                {startCount && (
-                  <CountUp
-                    end={stat.number}
-                    duration={2}
-                    decimals={stat.number % 1 !== 0 ? 1 : 0}
-                  />
-                )}
-                {!startCount && "0"}
-                {stat.suffix}
-              </p>
-
-              <p className="text-muted-foreground text-xs sm:text-sm md:text-base font-medium">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div> */}
 
         {/* CTA section */}
         <div className="bg-gradient-to-tl rounded-2xl mt-16 from-primary to-secondary md:py-24 py-8  px-2 sm:px-6 lg:px-8">
           <div className="mx-auto text-center sm:max-w-2xl">
             <h2 className="sectionHeading  text-gray-200">
-              Try Cervanna Care Right Now!
+              {data.title}
             </h2>
             <p className="text-gray-300 my-6 my:mb-8 max-w-xl mx-auto  text-xs lg:text-sm">
-              Boost the traffic to your website and social media accounts. online traffic into sales, and clients into advocates.
+              {data.sub_title}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-1 items-center justify-center">
               <Input

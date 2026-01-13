@@ -20,10 +20,12 @@ import toast from "react-hot-toast";
 const NurseBasicInfo = ({ defaultValues, onNext }) => {
   const [data, setData] = useState({
     name: defaultValues.name || "",
+    phone: defaultValues.phone || "", 
     location: defaultValues.location || "",
     age: defaultValues.age || "",
     experience: defaultValues.experience || "",
     gender: defaultValues.gender || "",
+    preferredRole: defaultValues.preferredRole || "",
     languages: defaultValues.languages || [],
     canDrive: defaultValues.canDrive || "",
     bio: defaultValues.bio || "",
@@ -32,6 +34,13 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  //  phone handler: digits only + max 10
+  const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    value = value.slice(0, 10);
+    setData((prev) => ({ ...prev, phone: value }));
   };
 
   const toggleLanguage = (lan) => {
@@ -51,13 +60,16 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
 
     const requiredFields = [
       "name",
-      "location",
+      "phone",
       "age",
       "experience",
+      "location",
       "gender",
       "canDrive",
+      "preferredRole",
       "bio",
     ];
+
     for (let field of requiredFields) {
       if (
         !data[field] ||
@@ -71,8 +83,14 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
         return;
       }
     }
-    if (data.age < 25) {
+
+    if (Number(data.age) < 25) {
       toast.error("Age must be 25 or above");
+      return;
+    }
+
+    if (data.phone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits.");
       return;
     }
 
@@ -80,56 +98,50 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
       toast.error("Please select at least one language!");
       return;
     }
-    console.log(data);
 
     onNext(data);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Section Title */}
       <h4 className="formHeading">Basic Information</h4>
 
-      {/* Name + Location */}
-      <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
-        <div className="flex-1">
-          <Input
-            label="Full Name (as per ID)"
-            name="name"
-            placeholder="Enter your name"
-            value={data.name}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex-1">
-          <Input
-            label="Your Location"
-            name="location"
-            placeholder="Type your location.."
-            value={data.location}
-            onChange={handleChange}
-          />
-        </div>
+      {/*GRID: Name + Phone */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <Input
+          label="Full Name (as per ID)"
+          name="name"
+          placeholder="Enter your name"
+          value={data.name}
+          onChange={handleChange}
+        />
+
+        <Input
+          label="Phone Number"
+          name="phone"
+          type="tel"
+          placeholder="07xxxxxxxx"
+          value={data.phone}
+          maxLength={10}
+          onChange={handlePhoneChange}
+        />
       </div>
 
-      {/* Age + experience */}
-      <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
-        <div className="flex-1">
-          <Input
-            type="number"
-            label="Age"
-            name="age"
-            placeholder="Your age"
-            maxLength={2}
-            value={data.age}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-              handleChange({ target: { name: "age", value: val } });
-            }}
-          />
-        </div>
+      {/* GRID: Age + Experience */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <Input
+          type="number"
+          label="Age"
+          name="age"
+          placeholder="Your age"
+          value={data.age}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+            setData((prev) => ({ ...prev, age: val }));
+          }}
+        />
 
-        <div className="flex-1">
+        <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Experience (Years)
           </label>
@@ -149,15 +161,25 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
                 <SelectItem value="3">3 years</SelectItem>
                 <SelectItem value="4">4 years</SelectItem>
                 <SelectItem value="5">5 years</SelectItem>
-                <SelectItem value="more">More than 5 years</SelectItem>
+                <SelectItem value="5+">More than 5 years</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
-        <div className="flex-1">
+      {/*Location FULL width */}
+      <Input
+        label="Your Location"
+        name="location"
+        placeholder="Type your location.."
+        value={data.location}
+        onChange={handleChange}
+      />
+
+      {/* GRID: Gender + Can Drive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
           <Label className="mb-3 block">Gender</Label>
           <RadioGroup
             className="flex gap-4 mt-2"
@@ -187,10 +209,10 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
           </RadioGroup>
         </div>
 
-        <div className="flex-1">
+        <div>
           <Label className="mb-3 block">Can you drive?</Label>
           <RadioGroup
-            className="flex gap-4 "
+            className="flex gap-4"
             value={data.canDrive}
             onValueChange={(value) =>
               setData((prev) => ({ ...prev, canDrive: value }))
@@ -218,6 +240,24 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
         </div>
       </div>
 
+      {/* preferredRole */}
+        <div className="flex-1 ">
+          <Label className={"mb-2"}>Preferred Role?</Label>
+          <RadioGroup
+            value={data.preferredRole}
+             onValueChange={(value) =>
+              setData((prev) => ({ ...prev, preferredRole: value }))
+            }
+            className="flex gap-4"
+          >
+            <RadioGroupItem value="Medical Nurse" id={`r3`} />
+            <Label htmlFor={`r3`}>Medical Nurse</Label>
+
+            <RadioGroupItem value="Nurse Aide" id={`r4`} />
+            <Label htmlFor={`r4`}>Nurse Aide</Label>
+          </RadioGroup>
+        </div>
+
       {/* Languages */}
       <div>
         <Label className="font-medium mb-3 text-gray-700">Languages</Label>
@@ -240,6 +280,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
         </div>
       </div>
 
+      {/* Bio */}
       <div>
         <label htmlFor="bio">Bio</label>
         <textarea

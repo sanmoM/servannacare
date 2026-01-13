@@ -1,5 +1,8 @@
 "use client";
 
+import React from "react";
+import toast from "react-hot-toast";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -11,10 +14,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import React from "react";
-import toast from "react-hot-toast";
 
-const page = () => {
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const Page = () => {
   const appointments = [
     {
       id: 1,
@@ -54,22 +73,39 @@ const page = () => {
     },
   ];
 
+  // ✅ Use darker colors so white text looks good
   const statusColors = {
-    Pending: "bg-amber-300",
-    Completed: "bg-green-300",
-    Ongoing: "bg-blue-300",
-    Cancelled: "bg-red-300",
+    Pending: "bg-amber-500",
+    Completed: "bg-green-600",
+    Ongoing: "bg-blue-600",
+    Cancelled: "bg-red-600",
   };
 
   const handleCancel = (id) => {
-    toast.error(`Appointment cancelled with ${id}`);
+    toast.error(`Appointment cancelled with id: ${id}`);
   };
 
   return (
     <div>
-      <h1 className="sectionHeading">Your Appointment</h1>
+      <h1 className="sectionHeading mb-6">Your Appointment</h1>
+      <div className={"flex justify-end"}>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort By" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Sort By</SelectLabel>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Completed">Completed</SelectItem>
+              <SelectItem value="Ongoing">Ongoing</SelectItem>
+              <SelectItem value="Cancelled">Cancelled</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
-      <div className="mt-6 overflow-x-auto w-full">
+      <div className="mt-4 overflow-x-auto w-full">
         <table className="min-w-[700px] w-full text-sm text-left text-gray-700 border rounded-xl shadow">
           <thead className="bg-gray-100 border-b">
             <tr className="text-xs sm:text-sm lg:text-base">
@@ -118,6 +154,7 @@ const page = () => {
                 <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
                   {row.totalDays}
                 </td>
+
                 <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
                   <span
                     className={`${
@@ -127,44 +164,47 @@ const page = () => {
                     {row.status}
                   </span>
                 </td>
+
                 <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
                   {row.status === "Pending" || row.status === "Ongoing" ? (
-                    <>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <button
-                           
-                            className="px-4 py-1 text-sm bg-red-500 cursor-pointer hover:bg-red-400 text-white rounded-md transition"
-                          >
-                            Cancel
-                          </button>
-                        </DialogTrigger>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <button className="px-4 py-1 text-sm bg-red-500 cursor-pointer hover:bg-red-400 text-white rounded-md transition">
+                          Cancel
+                        </button>
+                      </DialogTrigger>
 
-                        <DialogContent className="sm:max-w-md">
-                          <DialogHeader>
-                            <DialogTitle className="text-center">
-                              Are you sure?
-                            </DialogTitle>
-                            <DialogDescription className="text-center" />
-                          </DialogHeader>
-                          <h2 className="text-sm text-gray-700 font-semibold">
-                            Do you want cancel Appointment with{" "}
-                            <span>{row.specialist}?</span>
-                          </h2>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="text-center">
+                            Are you sure?
+                          </DialogTitle>
+                          <DialogDescription className="text-center" />
+                        </DialogHeader>
 
-                          <DialogFooter className="mt-6">
-                            <DialogClose asChild>
-                              <Button type="button" variant="secondary">
-                                Cancel
-                              </Button>
-                            </DialogClose>
-                            <DialogClose asChild>
-                              <Button onClick ={() => handleCancel(row.id)} type="button">Confirm</Button>
-                            </DialogClose>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
-                    </>
+                        <h2 className="text-sm text-gray-700 font-semibold">
+                          Do you want cancel Appointment with{" "}
+                          <span className="font-bold">{row.specialist}</span>?
+                        </h2>
+
+                        <DialogFooter className="mt-6">
+                          <DialogClose asChild>
+                            <Button type="button" variant="secondary">
+                              Cancel
+                            </Button>
+                          </DialogClose>
+
+                          <DialogClose asChild>
+                            <Button
+                              type="button"
+                              onClick={() => handleCancel(row.id)}
+                            >
+                              Confirm
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   ) : (
                     <span className="text-gray-400 italic text-sm">N/A</span>
                   )}
@@ -173,9 +213,34 @@ const page = () => {
             ))}
           </tbody>
         </table>
+
+        {/* ✅ Pagination */}
+        <div className="mt-6">
+          <Pagination className="flex justify-center md:justify-end">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href="#" />
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationLink href="#" isActive>
+                  1
+                </PaginationLink>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationLink href="#">2</PaginationLink>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationNext href="#" />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </div>
   );
 };
 
-export default page;
+export default Page;

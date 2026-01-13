@@ -33,21 +33,21 @@ export const slides = [
     image: hero3,
     title: "Caring Hands, Professional Hearts",
     subtitle:
-      "ervanna makes it easy to find reliable, professional caregivers — whether it’s medical support or household help — so you’re never alone in the journey",
+      "cervanna makes it easy to find reliable, professional caregivers — whether it’s medical support or household help — so you’re never alone in the journey",
   },
   {
     id: 1,
     image: hero1,
     title: "Professional Agency Services",
     subtitle:
-      "ervanna makes it easy to find reliable, professional caregivers — whether it’s medical support or household help — so you’re never alone in the journey",
+      "cervanna makes it easy to find reliable, professional caregivers — whether it’s medical support or household help — so you’re never alone in the journey",
   },
   {
     id: 2,
     image: hero2,
     title: "Your Health, Our Priority",
     subtitle:
-      "ervanna makes it easy to find reliable, professional caregivers — whether it’s medical support or household help — so you’re never alone in the journey",
+      "cervanna makes it easy to find reliable, professional caregivers — whether it’s medical support or household help — so you’re never alone in the journey",
   },
 ];
 
@@ -741,18 +741,9 @@ export const serviceCategory = [
     subCategory: ["Live In", "Dayburg"],
     
   },
-  {
-    mainCategory: "Certified Nursing Assistant (C.N.A)",
-     value:"certified-nursing-assistant",
-    subCategory: [
-      "Pre and Post Pregnancy Care",
-      "Post Surgery Care",
-      "Elderly Care",
-    ],
-  },
-  {
-    mainCategory: "Medical Nurse",
-    value:"medical-nurse",
+    {
+    mainCategory: "Nurse",
+    value:"nurse",
     subCategory: [
       
     ],
@@ -761,6 +752,15 @@ export const serviceCategory = [
     mainCategory: "Physiotherapist",
     value:"physiotherapist",
     subCategory: ["Pediatric", "Orthopedic", "Rehab", "Sports", "Stroke"],
+  },
+  {
+    mainCategory: "Nurse Aide or Assistant",
+     value:"nurse-aide-assistant",
+    subCategory: [
+      "Pre and Post Pregnancy Care",
+      "Post Surgery Care",
+      "Elderly Care",
+    ],
   },
   {
     mainCategory: "Special Need Caregiver",

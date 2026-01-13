@@ -23,9 +23,7 @@ const Physiotherapist = () => {
     basicInfo: {},
     education: {},
     experience: {},
-    // skillsServices: {},
     documents: {},
-    // contactAgrement: {},
   });
 
   const handleSignupSuccess = (accountData) => {
@@ -43,14 +41,10 @@ const Physiotherapist = () => {
     if (step === 3)
       setFormData((prev) => ({ ...prev, experience: dataForStep }));
 
-    // if (step === 4)
-    //   setFormData((prev) => ({ ...prev, skillsServices: dataForStep }));
 
     if (step === 4)
       setFormData((prev) => ({ ...prev, documents: dataForStep }));
 
-    // if (step === 6)
-    //   setFormData((prev) => ({ ...prev, contactAgrement: dataForStep }));
 
     if (step < totalSteps) {
       setStep(step + 1);
@@ -72,14 +66,6 @@ const Physiotherapist = () => {
       localStorage.setItem("specialist", JSON.stringify(formData));
       toast.success("Register Sucessfully!");
       router.push("/dashboard")
-      // setFormData({
-        // basicInfo: {},
-        // education: {},
-        // experience: {},
-        // skillsServices: {},
-        // documents: {},
-        // contactAgrement: {},
-      // });
     }
   };
 
@@ -126,13 +112,6 @@ const Physiotherapist = () => {
                   onBack={handleBack}
                 />
               )}
-              {/* {step === 4 && (
-                <SkillsServices
-                  defaultValues={formData.skillsServices}
-                  onBack={handleBack}
-                  onNext={handleNext}
-                />
-              )} */}
               {step === 4 && (
                 <Document
                   defaultValues={formData.documents}
@@ -140,13 +119,6 @@ const Physiotherapist = () => {
                   onBack={handleBack}
                 />
               )}
-              {/* {step === 6 && (
-                <ContactAgreement
-                  defaultValues={formData.contactAgrement}
-                  onNext={handleNext}
-                  onBack={handleBack}
-                />
-              )} */}
               {step === 5 && (
                 <Review
                   data={formData}

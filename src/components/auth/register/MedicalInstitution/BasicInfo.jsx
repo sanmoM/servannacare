@@ -7,15 +7,15 @@ import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 
-const BasicInfo = ({defaultValues = {},onNext}) => {
-    const [data, setData] = useState({
+const BasicInfo = ({ defaultValues = {}, onNext }) => {
+  const [data, setData] = useState({
     companyName: defaultValues.companyName || "",
     kraPin: defaultValues.kraPin || "",
     companyRegistrationNumber: defaultValues.companyRegistrationNumber || "",
     businessLocation: defaultValues.businessLocation || "",
+    phone: defaultValues.phone || "",
     registrationDocument: defaultValues.registrationDocument || null,
   });
-
 
   // Handle Input Changes
   const handleChange = (e) => {
@@ -23,12 +23,19 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // phone handler (digits only + max 10)
+  const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, "");
+    value = value.slice(0, 10);
+    setData((prev) => ({ ...prev, phone: value }));
+  };
+
   useEffect(() => {
-      if (defaultValues && Object.keys(defaultValues).length > 0) {
-        setData((prev) => ({ ...prev, ...defaultValues }));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }
-    }, [defaultValues]);
+    if (defaultValues && Object.keys(defaultValues).length > 0) {
+      setData((prev) => ({ ...prev, ...defaultValues }));
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }
+  }, [defaultValues]);
 
   // Handle File Upload
   const handleFileSelect = (file) => {
@@ -44,14 +51,12 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
       "kraPin",
       "companyRegistrationNumber",
       "businessLocation",
+      "phone", 
       "registrationDocument",
     ];
 
     for (let field of requiredFields) {
-      if (
-        !data[field] ||
-        (Array.isArray(data[field]) && data[field].length === 0)
-      ) {
+      if (!data[field]) {
         const formattedField = field
           .replace(/([A-Z])/g, " $1")
           .replace(/^./, (str) => str.toUpperCase());
@@ -60,17 +65,23 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
       }
     }
 
-    console.log( data);
+    // ✅ phone validation
+    if (data.phone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits.");
+      return;
+    }
+
+    console.log(data);
     onNext(data);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {/* Agency Details */}
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h2 className="formHeading">Institution Details</h2>
 
-        <div className="flex pt-6 flex-col sm:flex-row gap-6 sm:gap-4">
+        {/*  GRID: company name + KRA */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
           <Input
             type="text"
             label="Company/Business Name"
@@ -79,6 +90,7 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
             value={data.companyName}
             onChange={handleChange}
           />
+
           <Input
             label="KRA PIN Number"
             name="kraPin"
@@ -88,8 +100,8 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
           />
         </div>
 
-
-        <div className="flex flex-col py-6 sm:flex-row gap-6 sm:gap-4">
+        {/*  GRID: registration number + phone */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-6">
           <Input
             label="Company Registration Number"
             name="companyRegistrationNumber"
@@ -97,16 +109,28 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
             value={data.companyRegistrationNumber}
             onChange={handleChange}
           />
+
           <Input
-            label="Business Location"
-            name="businessLocation"
-            placeholder="Business location"
-            value={data.businessLocation}
-            onChange={handleChange}
+            label="Phone Number"
+            name="phone"
+            type="tel"
+            placeholder="07xxxxxxxx"
+            value={data.phone}
+            maxLength={10}
+            onChange={handlePhoneChange}
           />
         </div>
 
-        <div>
+        {/*  Business location full width */}
+        <Input
+          label="Business Location"
+          name="businessLocation"
+          placeholder="Business location"
+          value={data.businessLocation}
+          onChange={handleChange}
+        />
+
+        <div className="mt-6">
           <FileUpload
             title="Company Registration Document"
             accept="application/pdf,image/*"
@@ -117,7 +141,6 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
         </div>
       </div>
 
-
       {/* Submit */}
       <div className="flex justify-end mt-6">
         <Button type="submit" size="lg">
@@ -126,6 +149,6 @@ const BasicInfo = ({defaultValues = {},onNext}) => {
       </div>
     </form>
   );
-}
+};
 
-export default BasicInfo
+export default BasicInfo;

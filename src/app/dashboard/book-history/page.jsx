@@ -1,3 +1,13 @@
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import React from "react";
 
 const page = () => {
@@ -81,7 +91,7 @@ const page = () => {
     },
   ];
 
-   const statusColors = {
+  const statusColors = {
     Pending: "bg-amber-300",
     Completed: "bg-green-300",
     Ongoing: "bg-blue-300",
@@ -91,6 +101,23 @@ const page = () => {
   return (
     <div>
       <h1 className="sectionHeading">Booking History</h1>
+
+      <div className={"flex justify-end"}>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort By" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Sort By</SelectLabel>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Completed">Completed</SelectItem>
+              <SelectItem value="Ongoing">Ongoing</SelectItem>
+              <SelectItem value="Cancelled">Cancelled</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="mt-6 overflow-x-auto w-full">
         <table className="min-w-[700px] w-full text-sm text-left text-gray-700 border rounded-xl shadow">
@@ -160,12 +187,34 @@ const page = () => {
                     {row.status}
                   </span>
                 </td>
-                
-                
               </tr>
             ))}
           </tbody>
         </table>
+        {/* ✅ Pagination */}
+        <div className="mt-6">
+          <Pagination className="flex justify-center md:justify-end">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious href="#" />
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationLink href="#" isActive>
+                  1
+                </PaginationLink>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationLink href="#">2</PaginationLink>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationNext href="#" />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </div>
   );

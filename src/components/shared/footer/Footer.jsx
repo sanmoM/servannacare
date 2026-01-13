@@ -52,11 +52,14 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold text-white">Quick Links</h3>
             <ul className="mt-4 space-y-3">
-              <FooterLink href="/services">Our Services</FooterLink>
+              {/* <FooterLink href="/services">Our Services</FooterLink> */}
               <FooterLink href="/about-us">About Us</FooterLink>
               <FooterLink href="/contact-us">Contact Us</FooterLink>
               <FooterLink href="/blog">Our Blog</FooterLink>
               <FooterLink href="/faq">FAQ</FooterLink>
+              <FooterLink href="/terms-condition">Terms & Conditions</FooterLink>
+              <FooterLink href="/privacy-policy">Privacy Policy </FooterLink>
+              <FooterLink href="/refund-policy">Refund Policy </FooterLink>
             </ul>
           </div>
 

@@ -182,7 +182,7 @@ const AgencyEmployee = () => {
           </div>
 
           <div className="flex-1">
-            <Label className="mb-3">Preferred kid ages to work with</Label>
+            <Label className="mb-3">Preferred kid ages to work with </Label>
             <div className="flex flex-wrap gap-y-2 gap-x-4">
               {["0-3", "4-10", "11+"].map((age) => (
                 <div key={age} className="flex items-center gap-2">

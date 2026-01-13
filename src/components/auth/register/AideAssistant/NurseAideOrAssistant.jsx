@@ -71,14 +71,6 @@ const NurseAideOrAssistant = () => {
        localStorage.setItem("specialist", JSON.stringify(formData));
       toast.success("Register Sucessfully!");
       router.push("/dashboard")
-      // setFormData({
-      //   basicInfo: {},
-      //   education: {},
-      //   experience: {},
-      //   skillsServices: {},
-      //   documents: {},
-      //   // contactAgrement: {},
-      // });
     }
   };
 

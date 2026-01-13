@@ -48,7 +48,7 @@ const steps = [
  * defined in your tailwind.config.js for the gradients to work.
  * e.g., theme: { extend: { colors: { accent: '#yourColorCode' } } }
  */
-export default function HowItWorks() {
+export default function HowItWorks({data}) {
   return (
     <section className="py-10 md:py-16">
   
@@ -65,7 +65,7 @@ export default function HowItWorks() {
         {/* Uses flex-col on mobile and flex-row on large screens */}
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start">
           
-          {steps.map((step, index) => (
+          {data.map((step, index) => (
             <React.Fragment  key={step.id}>
               
               {/* Step Card */}
@@ -76,7 +76,10 @@ export default function HowItWorks() {
                   // The `bg-gradient-to-r` and color classes are applied here
                   className={`w-20 h-20  rounded-full bg-primary flex items-center justify-center mb-6 shadow-lg relative ring-4 ring-white`}
                 >
-                  <step.Icon className="w-10 h-10 text-white" />
+                  <span
+                  dangerouslySetInnerHTML={{ __html: step.icon }}
+                  className="w-10 h-10"
+                />
                   
                   {/* Step Number Badge */}
                   <span className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-white text-primary border-2 border-gray-200 flex items-center justify-center font-bold text-sm">
@@ -91,7 +94,7 @@ export default function HowItWorks() {
                 
                 {/* Step Description */}
                 <p className="text-gray-600 text-sm">
-                  {step.description}
+                  {step.subtitle}
                 </p>
               </div>
 

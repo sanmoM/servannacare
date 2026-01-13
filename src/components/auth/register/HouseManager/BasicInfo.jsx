@@ -20,14 +20,22 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     education: defaultValues.education || "",
     experience: defaultValues.experience || "",
     salaryRange: defaultValues.salaryRange || "",
-    serviceOffered:defaultValues.serviceOffered || "",
+    serviceOffered: defaultValues.serviceOffered || "",
     location: defaultValues.location || "",
     languages: defaultValues.languages || [],
+    phone: defaultValues.phone || "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Phone handler (digits only + max 10)
+  const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, ""); // digits only
+    value = value.slice(0, 10); // max 10 digits
+    setData((prev) => ({ ...prev, phone: value }));
   };
 
   const toggleLanguage = (lan) => {
@@ -45,7 +53,6 @@ const BasicInfo = ({ defaultValues, onNext }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Dynamic validation
     const requiredFields = [
       "name",
       "education",
@@ -53,11 +60,9 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       "salaryRange",
       "location",
     ];
+
     for (let field of requiredFields) {
-      if (
-        !data[field] ||
-        (Array.isArray(data[field]) && data[field].length === 0)
-      ) {
+      if (!data[field]) {
         toast.error(
           `${field.charAt(0).toUpperCase() + field.slice(1)} is required!`
         );
@@ -70,25 +75,29 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       return;
     }
 
+    // ✅ ONLY 10 digit validation (on Next click)
+    if (!data.phone || data.phone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits.");
+      return;
+    }
+
     onNext(data);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h4 className="formHeading">Basic Informatio</h4>
+      <h4 className="formHeading">Basic Information</h4>
 
-      <div className="flex flex-col sm:flex-row gap-6">
-        <div className="flex-1">
-          <Input
-            label="Full Name (AS per ID)"
-            name="name"
-            placeholder="Enter your name"
-            value={data.name}
-            onChange={handleChange}
-          />
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <Input
+          label="Full Name (As per ID)"
+          name="name"
+          placeholder="Enter your name"
+          value={data.name}
+          onChange={handleChange}
+        />
 
-        <div className="flex-1">
+        <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Education Level
           </label>
@@ -99,7 +108,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
             }
           >
             <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
-              <SelectValue placeholder="Select a category" />
+              <SelectValue placeholder="Select education" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -111,11 +120,8 @@ const BasicInfo = ({ defaultValues, onNext }) => {
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      {/* Experience + Salary */}
-      <div className="flex flex-col sm:flex-row gap-6">
-        <div className="flex-1">
+        <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Experience (Years)
           </label>
@@ -141,7 +147,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
           </Select>
         </div>
 
-        <div className="flex-1">
+        <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Salary Range (KSh)
           </label>
@@ -165,21 +171,19 @@ const BasicInfo = ({ defaultValues, onNext }) => {
             </SelectContent>
           </Select>
         </div>
-      </div>
 
-      <div className="flex flex-col sm:flex-row gap-6">
-        <div className="flex-1">
-          {/* Location */}
-          <Input
-            label="Your Location"
-            name="location"
-            placeholder="Type your location.."
-            value={data.location}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="flex-1">
-          {/* service offered */}
+        {/* ✅ phone input */}
+        <Input
+          label="Phone Number"
+          name="phone"
+          type="tel"
+          placeholder="07xxxxxxxx"
+          value={data.phone}
+          maxLength={10}
+          onChange={handlePhoneChange}
+        />
+
+        <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Service Offered
           </label>
@@ -194,15 +198,22 @@ const BasicInfo = ({ defaultValues, onNext }) => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="Live In (month rate pay)">Live In (month rate pay)</SelectItem>
-                <SelectItem value="Dayburg (daily rate pay)">Dayburg (daily rate pay)</SelectItem>
+                <SelectItem value="Live In">Live In</SelectItem>
+                <SelectItem value="Dayburg">Dayburg </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Languages */}
+      <Input
+        label="Your Location"
+        name="location"
+        placeholder="Type your location.."
+        value={data.location}
+        onChange={handleChange}
+      />
+
       <div>
         <Label className="font-medium text-gray-700">Languages</Label>
         <div className="flex flex-wrap gap-4 mt-3">
@@ -223,7 +234,6 @@ const BasicInfo = ({ defaultValues, onNext }) => {
           ))}
         </div>
       </div>
-
 
       <div className="flex justify-end mt-6">
         <Button type="submit" size="lg">

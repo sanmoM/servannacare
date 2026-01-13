@@ -44,7 +44,7 @@ const ProfileCard = ({ profile }) => {
       <div className="w-full  flex items-center justify-center p-6 lg:rounded-l-2xl relative">
         {/* Half background */}
         <div className="absolute inset-0">
-          <div className="h-1/2 bg-indigo-100"></div>
+          <div className="h-1/2 bg-[#bb92ad5b]"></div>
           <div className="h-1/2 bg-white"></div>
         </div>
 

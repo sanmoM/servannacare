@@ -12,7 +12,7 @@ import { slides } from "@/utilities/data";
 import { Button } from "@/components/ui/button";
 import Searchbar from "./Searchbar";
 
-const Slider = () => {
+const Slider = ({data}) => {
   const [swiperRef, setSwiperRef] = useState(null);
 
   return (
@@ -31,12 +31,12 @@ const Slider = () => {
           speed={800}
           className="w-full h-full"
         >
-          {slides.map((slide) => (
+          {data?.map((slide) => (
             <SwiperSlide key={slide.id} className="h-full w-full">
               <div
                 className="relative w-full h-full bg-cover bg-center"
                 style={{
-                  backgroundImage: `url('${slide.image.src}')`,
+                  backgroundImage: `url('${process.env.NEXT_PUBLIC_API_URL}${slide.image}')`,
                 }}
               >
                 {/* Gradient overlay */}
@@ -50,10 +50,10 @@ const Slider = () => {
                         {slide.title}
                       </h1>
                       <p className="text-xs sm:text-sm md:text-base lg:text-xl  text-gray-200 mb-8 leading-relaxed">
-                        {slide.subtitle}
+                        {slide.sub_title}
                       </p>
                       <Button size={"lg"} className="text-sm md:text-lg font-medium">
-                        Learn More
+                        {slide.btn_text}
                       </Button>
                     </div>
                   </div>
