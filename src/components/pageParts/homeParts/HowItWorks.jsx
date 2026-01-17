@@ -8,9 +8,6 @@ import {
 } from 'lucide-react';
 import Container from '@/components/shared/Container';
 
-// This is the data you provided.
-// We are aliasing the icon component to 'Icon' (with a capital letter)
-// so that React can render it as a component.
 const steps = [
   {
     id: 1,
@@ -42,13 +39,9 @@ const steps = [
   },
 ];
 
-/**
- * A responsive "How It Works" section component.
- * NOTE: This component assumes you have an 'accent' color 
- * defined in your tailwind.config.js for the gradients to work.
- * e.g., theme: { extend: { colors: { accent: '#yourColorCode' } } }
- */
-export default function HowItWorks({data}) {
+
+
+export default function HowItWorks() {
   return (
     <section className="py-10 md:py-16">
   
@@ -65,7 +58,9 @@ export default function HowItWorks({data}) {
         {/* Uses flex-col on mobile and flex-row on large screens */}
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start">
           
-          {data.map((step, index) => (
+          {steps.map((step, index) => {
+            const Icon = step.Icon
+            return(
             <React.Fragment  key={step.id}>
               
               {/* Step Card */}
@@ -76,10 +71,8 @@ export default function HowItWorks({data}) {
                   // The `bg-gradient-to-r` and color classes are applied here
                   className={`w-20 h-20  rounded-full bg-primary flex items-center justify-center mb-6 shadow-lg relative ring-4 ring-white`}
                 >
-                  <span
-                  dangerouslySetInnerHTML={{ __html: step.icon }}
-                  className="w-10 h-10"
-                />
+                 
+                <Icon className='text-white'/>
                   
                   {/* Step Number Badge */}
                   <span className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-white text-primary border-2 border-gray-200 flex items-center justify-center font-bold text-sm">
@@ -94,7 +87,7 @@ export default function HowItWorks({data}) {
                 
                 {/* Step Description */}
                 <p className="text-gray-600 text-sm">
-                  {step.subtitle}
+                  {step.description}
                 </p>
               </div>
 
@@ -113,7 +106,7 @@ export default function HowItWorks({data}) {
               )}
 
             </React.Fragment>
-          ))}
+          )})}
           
         </div>
 

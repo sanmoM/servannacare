@@ -19,10 +19,12 @@ const Faq = ({data}) => {
           FAQ
         </h4>
         <h2 className="sectionHeading ">
-        {data.faqHeader.title}
+       
+        Explore common questions about our services
         </h2>
         <p className="text-sm mt-2 max-w-4xl mx-auto text-gray-700">
-          {data.faqHeader.subtitle}
+          
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum odit perspiciatis fuga labore .
         </p>
       </div>
       <div className="lg:flex gap-4 ">

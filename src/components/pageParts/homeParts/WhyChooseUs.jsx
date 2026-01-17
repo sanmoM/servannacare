@@ -3,8 +3,8 @@ import React from 'react'
 import FeatureItem from '../aboutUsParts/FeatureItem'
 import { ClipboardList, DollarSign, Phone, ShieldCheck, Sparkles, Users } from 'lucide-react';
 
-const WhyChooseUs = ({data}) => {
-  console.log(data)
+const WhyChooseUs = () => {
+
      const features = [
     {
       icon: DollarSign,

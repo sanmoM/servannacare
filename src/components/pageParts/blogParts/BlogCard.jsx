@@ -21,7 +21,7 @@ const BlogCard = ({ blog,slug }) => {
   <div className="flex-1">
     <div className="relative w-full h-56 md:h-64 lg:h-60 overflow-hidden rounded-md">
       <Image
-        src={`${process.env.NEXT_PUBLIC_API_URL}${image}`}
+        src={image}
         alt="blog"
         fill
         quality={100}
@@ -51,7 +51,7 @@ const BlogCard = ({ blog,slug }) => {
 
     <div className="flex items-center text-gray-600 gap-2 mt-2">
       <Calendar width={14} />
-      <p className="text-xs">{formatDate(blog.created_at)}</p>
+      <p className="text-xs">{formatDate(blog.date)}</p>
     </div>
 
     <div className="flex justify-between mt-3">

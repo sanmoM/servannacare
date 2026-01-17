@@ -12,7 +12,7 @@ import { slides } from "@/utilities/data";
 import { Button } from "@/components/ui/button";
 import Searchbar from "./Searchbar";
 
-const Slider = ({data}) => {
+const Slider = () => {
   const [swiperRef, setSwiperRef] = useState(null);
 
   return (
@@ -31,7 +31,7 @@ const Slider = ({data}) => {
           speed={800}
           className="w-full h-full"
         >
-          {data?.map((slide) => (
+          {slides?.map((slide) => (
             <SwiperSlide key={slide.id} className="h-full w-full">
               <div
                 className="relative w-full h-full bg-cover bg-center"
@@ -50,10 +50,10 @@ const Slider = ({data}) => {
                         {slide.title}
                       </h1>
                       <p className="text-xs sm:text-sm md:text-base lg:text-xl  text-gray-200 mb-8 leading-relaxed">
-                        {slide.sub_title}
+                        {slide.subtitle}
                       </p>
                       <Button size={"lg"} className="text-sm md:text-lg font-medium">
-                        {slide.btn_text}
+                        Book Now
                       </Button>
                     </div>
                   </div>

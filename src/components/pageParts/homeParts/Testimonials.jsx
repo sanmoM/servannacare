@@ -13,7 +13,7 @@ import Container from "@/components/shared/Container";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
 
-export default function Testimonials({data}) {
+export default function Testimonials() {
   const [startCount, setStartCount] = useState(false);
   const sectionRef = useRef(null);
 
@@ -106,10 +106,10 @@ export default function Testimonials({data}) {
         <div className="bg-gradient-to-tl rounded-2xl mt-16 from-primary to-secondary md:py-24 py-8  px-2 sm:px-6 lg:px-8">
           <div className="mx-auto text-center sm:max-w-2xl">
             <h2 className="sectionHeading  text-gray-200">
-              {data.title}
+              Try Cervanna Care Right Now!
             </h2>
             <p className="text-gray-300 my-6 my:mb-8 max-w-xl mx-auto  text-xs lg:text-sm">
-              {data.sub_title}
+              Boost the traffic to your website and social media accounts. online traffic into sales, and clients into advocates.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-1 items-center justify-center">
               <Input

@@ -19,9 +19,9 @@ export default async function Home() {
 
   return (
     <div>
-      <Slider data = {homeData.data.banner}/>
-      <Services data = {homeData.data.service}/>
-      <HowItWorks data = {homeData.data.works} />
+      <Slider />
+      <Services />
+      <HowItWorks  />
       <OurSpecialist/>
 
       {/* from our blog section  */}
@@ -30,7 +30,7 @@ export default async function Home() {
         <Container
           className={"grid grid-cols-1 gap-6 pt-10 md:pt-16 md:grid-cols-2"}
         >
-          {homeData?.data?.blogs.map((blog, indx) => {
+          {blogs?.slice(0,4).map((blog, indx) => {
             const slug = blog.title.toLowerCase().replace(/ /g, "-");
             return <BlogCard data-aos="fade-up" key={indx} blog={blog} slug={slug}></BlogCard>;
           })}
@@ -40,8 +40,8 @@ export default async function Home() {
       </Link>
       </div>
       <Faq data={{faqHeader:homeData.data.faqHeader, faqs:homeData.data.faqs}}/>
-      <WhyChooseUs data = {homeData.data.chooses}/>
-      <Testimonials data = {homeData.data.newsLetter} />
+      <WhyChooseUs/>
+      <Testimonials/>
     </div>
   );
 }
