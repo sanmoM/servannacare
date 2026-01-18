@@ -36,7 +36,7 @@ const Slider = () => {
               <div
                 className="relative w-full h-full bg-cover bg-center"
                 style={{
-                  backgroundImage: `url('${process.env.NEXT_PUBLIC_API_URL}${slide.image}')`,
+                  backgroundImage: `url(${slide.image.src})`,
                 }}
               >
                 {/* Gradient overlay */}
@@ -52,7 +52,10 @@ const Slider = () => {
                       <p className="text-xs sm:text-sm md:text-base lg:text-xl  text-gray-200 mb-8 leading-relaxed">
                         {slide.subtitle}
                       </p>
-                      <Button size={"lg"} className="text-sm md:text-lg font-medium">
+                      <Button
+                        size={"lg"}
+                        className="text-sm md:text-lg font-medium"
+                      >
                         Book Now
                       </Button>
                     </div>

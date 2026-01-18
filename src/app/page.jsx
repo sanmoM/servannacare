@@ -8,15 +8,11 @@ import Testimonials from "@/components/pageParts/homeParts/Testimonials";
 import WhyChooseUs from "@/components/pageParts/homeParts/WhyChooseUs";
 import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
-import { getHomeData } from "@/lib/homeApi";
 import { blogs } from "@/utilities/data";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 export default async function Home() {
-
-    const homeData = await getHomeData();
-
   return (
     <div>
       <Slider />
@@ -39,7 +35,7 @@ export default async function Home() {
         <Button size={"lg"}>More <ChevronRight/></Button>
       </Link>
       </div>
-      <Faq data={{faqHeader:homeData.data.faqHeader, faqs:homeData.data.faqs}}/>
+      <Faq />
       <WhyChooseUs/>
       <Testimonials/>
     </div>
