@@ -119,13 +119,13 @@ export default function DashboardPage() {
 ];
 
 let renderStats = []
-if(user.role==='user'){
+if(user?.role==='user'){
   renderStats= userDashboardStats
-}else if (user.role === "specialist"){
+}else if (user?.role === "specialist"){
   renderStats = specialistDashboardStats
-}else if (user.role === "agency"){
+}else if (user?.role === "agency"){
   renderStats = agencyDashboardStats
-}else if (user.role === "care institution"){
+}else if (user?.role === "care institution"){
   renderStats = agencyDashboardStats
 }
 

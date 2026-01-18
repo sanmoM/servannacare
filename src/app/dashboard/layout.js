@@ -37,14 +37,16 @@ export default function DashboardLayout({ children }) {
     if (!loaded) return;
 
     if (!user) {
-      notFound();
+      router.push("/login");
+      return;
     }
 
     if (!user?.token) {
-      notFound();
+      router.push("/login");
+      return;
     }
 
-    const role = user.role;
+    const role = user?.role;
 
     // USER routes
     if (
@@ -74,7 +76,7 @@ export default function DashboardLayout({ children }) {
     ) {
       notFound();
     }
-  }, [loaded, user, pathname]);
+  }, [loaded, user, pathname, router]);
 
   if (!loaded) {
     return (
