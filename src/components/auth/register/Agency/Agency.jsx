@@ -36,7 +36,7 @@ const validateEmployee = (data) => {
     errors.push("Select childcare skill");
 
 
-  if (!data.liveType) errors.push("Live preference is required");
+  if (!data.serviceOffered) errors.push("service offered is required");
   if (!data.aidCertificate) errors.push("First aid certificate require")
   if (!data.goodConductCertificate) errors.push("Good conduct certificate require")
   if (!data.idCopy) errors.push("Id copy require")
