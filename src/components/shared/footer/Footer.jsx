@@ -43,8 +43,7 @@ const Footer = () => {
             </div>
 
             <p className="mt-4 text-sm leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit
-              tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.
+              care for your home & health
             </p>
           </div>
 
