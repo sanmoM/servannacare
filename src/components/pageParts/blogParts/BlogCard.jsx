@@ -2,11 +2,9 @@ import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/formatDate";
 import {
   Calendar,
-  Facebook,
-  Instagram,
   MessageCircleMoreIcon,
   User,
-  Youtube,
+
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,21 +18,29 @@ const BlogCard = ({ blog,slug }) => {
   {/* Image Section */}
   <div className="flex-1">
     <div className="relative w-full h-56 md:h-64 lg:h-60 overflow-hidden rounded-md">
-      <Image
+      {/* <Image
         src={image}
         alt="blog"
         fill
         quality={100}
         className="object-cover h-full"
         
-      />
+      /> */}
+
+           <Image
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${image}`}
+              alt={title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+
+
     </div>
   </div>
 
   {/* Text Section */}
-  <div className="flex-1">
-    
-
+  <div className="flex-1 flex flex-col h-full">
     <Link
       href={`/blog/${slug}?id=${id}`}
       className="text-base lg:text-lg font-semibold text-gray-900 cursor-pointer hover:text-primary"
@@ -43,24 +49,23 @@ const BlogCard = ({ blog,slug }) => {
     </Link>
 
     {/* Truncated Description */}
-    <p className="text-gray-700 text-sm mt-1">
+    <p className="text-gray-700 text-sm mt-2">
       {description.length > 60
         ? description.substring(0, 150) + "..."
         : description}
     </p>
 
-    <div className="flex items-center text-gray-600 gap-2 mt-2">
+    {/* <div className="flex items-center text-gray-600 gap-2 mt-2">
       <Calendar width={14} />
       <p className="text-xs">{formatDate(blog.date)}</p>
-    </div>
+    </div> */}
 
-    <div className="flex justify-between mt-3">
+    <div className="flex justify-between mt-auto pt-3">
       <Link href={`/blog/${slug}?id=${id}`}>
         <Button>Read More</Button>
       </Link>
       <div className="flex gap-1 hover:text-primary cursor-pointer items-center">
         <MessageCircleMoreIcon />
-        {/* <p className="text-sm">{comments.length}</p> */}
       </div>
     </div>
   </div>

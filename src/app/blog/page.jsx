@@ -1,12 +1,24 @@
+"use client"
 import BlogCard from '@/components/pageParts/blogParts/BlogCard';
-import BlogCardSecond from '@/components/pageParts/blogParts/BlogCardSecond';
 import Container from '@/components/shared/Container'
 import PageBanner from '@/components/shared/PageBanner'
+import { useFetch } from '@/hooks/useFetch';
 import { blogs } from '@/utilities/data';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 const page = () => {
+  const [homeData, setHomeData] = useState(null);
 
+
+  const { data, isLoading, error } = useFetch("/home");
+  useEffect(() => {
+    if (data) {
+      setHomeData(data?.data?.data ?? data); 
+    }
+  }, [data]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
 
   return (
     <div>
@@ -24,7 +36,6 @@ const page = () => {
             )
           })
         }
-
       </Container>
     </div>
   )

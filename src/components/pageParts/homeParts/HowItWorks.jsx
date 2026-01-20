@@ -40,7 +40,7 @@ const steps = [
 ];
 
 export default function HowItWorks({ homeData }) {
-  console.log("works page", homeData);
+
   return (
     <section className="py-10 md:py-16">
       <Container>

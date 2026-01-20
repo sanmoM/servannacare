@@ -6,7 +6,8 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-const OurSpecialist = () => {
+const OurSpecialist = ({homeData}) => {
+  console.log("blog",homeData?.blogs)
   return (
     <Container className={" py-10 md:py-16"}>
       <div className="mb-8 md:mb-12">

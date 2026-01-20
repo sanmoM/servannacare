@@ -64,7 +64,7 @@ export default function Home() {
         <Container
           className={"grid grid-cols-1 gap-6 pt-10 md:pt-16 md:grid-cols-2"}
         >
-          {blogs?.slice(0,4).map((blog, indx) => {
+          {homeData?.blogs?.slice(0,4).map((blog, indx) => {
             const slug = blog.title.toLowerCase().replace(/ /g, "-");
             return (
               <BlogCard
@@ -82,9 +82,9 @@ export default function Home() {
           </Button>
         </Link>
       </div>
-      <Faq />
-      <WhyChooseUs />
-      <Testimonials />
+      <Faq homeData={homeData}/>
+      <WhyChooseUs homeData={homeData}/>
+      <Testimonials homeData={homeData}/>
     </div>
   );
 }

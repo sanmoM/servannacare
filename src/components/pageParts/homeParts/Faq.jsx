@@ -10,7 +10,11 @@ import {
 import Image from "next/image";
 import React from "react";
 
-const Faq = () => {
+const Faq = ({ homeData }) => {
+  const imageSrc = homeData?.faqHeader?.image
+    ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${homeData.faqHeader.image}`
+    : "/assets/images/blog.jpg";
+
   const faq = [
     {
       id: 1,
@@ -56,23 +60,30 @@ const Faq = () => {
         <h4 className="md:text-sm mb-3  text-xs font-semibold text-primary">
           FAQ
         </h4>
-        <h2 className="sectionHeading ">
-          Explore common questions about our services
-        </h2>
+        <h2 className="sectionHeading ">{homeData?.faqHeader?.title}</h2>
         <p className="text-sm mt-2 max-w-4xl mx-auto text-gray-700">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum odit
-          perspiciatis fuga labore .
+          {homeData?.faqHeader?.subtitle}
         </p>
       </div>
+
       <div className="lg:flex gap-4 ">
         <div data-aos="fade-up" className="flex-1 hidden lg:block">
+          {/* {homeData?.faqHeader?.image && (
+            <Image
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${homeData.faqHeader.image}`}
+              alt={homeData?.faqHeader?.title ?? "FAQ image"}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          )} */}
+
           <Image
-            src={faqimage}
-            alt="image"
-            quality={100}
-            height={500}
-            width={600}
-            className="rounded-xl w-full h-full"
+            src={imageSrc}
+            alt={homeData?.faqHeader?.title ?? "FAQ image"}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         </div>
         <div className="flex-1">
@@ -82,7 +93,7 @@ const Faq = () => {
             defaultValue="item-1"
             className="space-y-4"
           >
-            {faq.map((item, indx) => (
+            {homeData?.faqs.map((item, indx) => (
               <AccordionItem
                 data-aos="fade-up"
                 key={indx}

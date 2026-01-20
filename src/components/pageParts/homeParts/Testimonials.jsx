@@ -13,7 +13,9 @@ import Container from "@/components/shared/Container";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
 
-export default function Testimonials() {
+export default function Testimonials({ homeData }) {
+  console.log("testimonial", homeData);
+  // const {id, title, sub_title } = homeData?.newsLetter;
   const [startCount, setStartCount] = useState(false);
   const sectionRef = useRef(null);
 
@@ -24,7 +26,7 @@ export default function Testimonials() {
           setStartCount(true);
         }
       },
-      { threshold: 0.4 } //
+      { threshold: 0.4 }, //
     );
 
     if (sectionRef.current) {
@@ -101,23 +103,28 @@ export default function Testimonials() {
           {/* <div className="swiper-pagination-custom flex justify-center gap-3 mt-12" /> */}
         </div>
 
-
         {/* CTA section */}
         <div className="bg-gradient-to-tl rounded-2xl mt-16 from-primary to-secondary md:py-24 py-8  px-2 sm:px-6 lg:px-8">
           <div className="mx-auto text-center sm:max-w-2xl">
             <h2 className="sectionHeading  text-gray-200">
-              Try Cervanna Care Right Now!
+              {homeData?.newsLetter?.title ? homeData?.newsLetter?.title : ""}
             </h2>
             <p className="text-gray-300 my-6 my:mb-8 max-w-xl mx-auto  text-xs lg:text-sm">
-              Boost the traffic to your website and social media accounts. online traffic into sales, and clients into advocates.
+              {homeData?.newsLetter?.sub_title ? homeData?.newsLetter?.sub_title : ""}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-1 items-center justify-center">
               <Input
-              type="email"
-              placeholder="Enter Your Email"
-              className={"rounded-full"}
+                type="email"
+                placeholder="Enter Your Email"
+                className={"rounded-full"}
               />
-              <Button  size={"lg"} variant={"outline"} className={"rounded-full hover:bg-secondary w-full sm:w-auto"}>SUBSCRIBE</Button>
+              <Button
+                size={"lg"}
+                variant={"outline"}
+                className={"rounded-full hover:bg-secondary w-full sm:w-auto"}
+              >
+                SUBSCRIBE
+              </Button>
             </div>
           </div>
         </div>
