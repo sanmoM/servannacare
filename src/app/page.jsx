@@ -1,3 +1,4 @@
+"use client";
 import BlogCard from "@/components/pageParts/blogParts/BlogCard";
 import Faq from "@/components/pageParts/homeParts/Faq";
 import HowItWorks from "@/components/pageParts/homeParts/HowItWorks";
@@ -8,17 +9,54 @@ import Testimonials from "@/components/pageParts/homeParts/Testimonials";
 import WhyChooseUs from "@/components/pageParts/homeParts/WhyChooseUs";
 import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
+import { useFetch } from "@/hooks/useFetch";
 import { blogs } from "@/utilities/data";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-export default async function Home() {
+export default function Home() {
+  const [homeData, setHomeData] = useState(null);
+
+
+  const { data, isLoading, error } = useFetch("/home");
+  useEffect(() => {
+    if (data) {
+      setHomeData(data?.data?.data ?? data); 
+    }
+  }, [data]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
+
+  console.log("Home data stored in state:", homeData);
+
+  // useEffect(() => {
+  //   const getHomeAllData = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const res = await api.get("/home");
+  //       const homeData = res?.data?.data;
+  //       setData(homeData);
+  //     } catch (err) {
+  //       console.log(err);
+  //       setData([]);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   getHomeAllData();
+  // }, []);
+
+
+
   return (
     <div>
       <Slider />
       <Services />
-      <HowItWorks  />
-      <OurSpecialist/>
+      <HowItWorks />
+      <OurSpecialist />
 
       {/* from our blog section  */}
       <div className="py-10  bg-[#ccb7c65b] md:py-16">
@@ -28,16 +66,25 @@ export default async function Home() {
         >
           {blogs?.slice(0,4).map((blog, indx) => {
             const slug = blog.title.toLowerCase().replace(/ /g, "-");
-            return <BlogCard data-aos="fade-up" key={indx} blog={blog} slug={slug}></BlogCard>;
+            return (
+              <BlogCard
+                data-aos="fade-up"
+                key={indx}
+                blog={blog}
+                slug={slug}
+              ></BlogCard>
+            );
           })}
         </Container>
-         <Link href={"/blog"} className="mt-8 flex justify-center">
-        <Button size={"lg"}>More <ChevronRight/></Button>
-      </Link>
+        <Link href={"/blog"} className="mt-8 flex justify-center">
+          <Button size={"lg"}>
+            More <ChevronRight />
+          </Button>
+        </Link>
       </div>
       <Faq />
-      <WhyChooseUs/>
-      <Testimonials/>
+      <WhyChooseUs />
+      <Testimonials />
     </div>
   );
 }

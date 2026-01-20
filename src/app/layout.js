@@ -2,10 +2,11 @@ import { IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
 import LayoutWrapper from "@/components/shared/LayoutWrapper";
 import AOSInit from "@/animation/AOSInit";
+import QueryProvider from "@/providers/queryProvider";
 
 const ibmPlexSerif = IBM_Plex_Serif({
   subsets: ["latin"],
-  weight: ["100","200","300","400","500","600","700"], 
+  weight: ["100", "200", "300", "400", "500", "600", "700"],
   variable: "--font-ibm-plex-serif",
 });
 
@@ -19,7 +20,9 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${ibmPlexSerif.variable} font-serif antialiased`}>
         <AOSInit />
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <QueryProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </QueryProvider>
       </body>
     </html>
   );
