@@ -55,7 +55,7 @@ export default function Home() {
     <div>
       <Slider homeData={homeData}/>
       <Services homeData={homeData}/>
-      <HowItWorks />
+      <HowItWorks homeData={homeData}/>
       <OurSpecialist />
 
       {/* from our blog section  */}

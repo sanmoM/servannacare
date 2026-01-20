@@ -1,12 +1,12 @@
-import React from 'react';
-import { 
-  CheckCircle2, 
-  Calendar, 
-  Users, 
-  MessageSquare, 
-  ChevronRight 
-} from 'lucide-react';
-import Container from '@/components/shared/Container';
+import React from "react";
+import {
+  CheckCircle2,
+  Calendar,
+  Users,
+  MessageSquare,
+  ChevronRight,
+} from "lucide-react";
+import Container from "@/components/shared/Container";
 
 const steps = [
   {
@@ -39,82 +39,73 @@ const steps = [
   },
 ];
 
-
-
-export default function HowItWorks() {
+export default function HowItWorks({ homeData }) {
+  console.log("works page", homeData);
   return (
     <section className="py-10 md:py-16">
-  
-
-        <Container>
-          {/* Section Header */}
+      <Container>
+        {/* Section Header */}
         <div className="mb-8 md:mb-12">
-          <h2 className="sectionHeading text-center">
-            How It Works
-          </h2>
+          <h2 className="sectionHeading text-center">How It Works</h2>
         </div>
 
         {/* Steps Layout */}
         {/* Uses flex-col on mobile and flex-row on large screens */}
         <div className="flex flex-col md:flex-row justify-between items-center md:items-start">
-          
-          {steps.map((step, index) => {
-            const Icon = step.Icon
-            return(
-            <React.Fragment  key={step.id}>
-              
-              {/* Step Card */}
-              <div data-aos="fade-up" className="flex flex-col items-center text-center w-full max-w-xs lg:max-w-none   lg:w-1/4 px-4">
-                
-                {/* Icon and Step Number */}
-                <div 
-                  // The `bg-gradient-to-r` and color classes are applied here
-                  className={`w-20 h-20  rounded-full bg-primary flex items-center justify-center mb-6 shadow-lg relative ring-4 ring-white`}
+          {homeData?.works?.map((step, index) => {
+            const Icon = step.Icon;
+            return (
+              <React.Fragment key={step.id}>
+                {/* Step Card */}
+                <div
+                  data-aos="fade-up"
+                  className="flex flex-col items-center text-center w-full max-w-xs lg:max-w-none   lg:w-1/4 px-4"
                 >
-                 
-                <Icon className='text-white'/>
-                  
-                  {/* Step Number Badge */}
-                  <span className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-white text-primary border-2 border-gray-200 flex items-center justify-center font-bold text-sm">
-                    {step.id}
-                  </span>
-                </div>
-                
-                {/* Step Title */}
-                <h3 className="subHeading mb-2">
-                  {step.title}
-                </h3>
-                
-                {/* Step Description */}
-                <p className="text-gray-600 text-sm">
-                  {step.description}
-                </p>
-              </div>
+                  {/* Icon and Step Number */}
+                  <div
+                    // The `bg-gradient-to-r` and color classes are applied here
+                    className={`w-20 h-20  rounded-full bg-primary flex items-center justify-center mb-6 shadow-lg relative ring-4 ring-white`}
+                  >
+                    {/* <Icon className='text-white'/> */}
 
-              {/* Connector: Renders after each step except the last one */}
-              {index < steps.length - 1 && (
-                <>
-                  {/* Mobile Vertical Connector */}
-                  <div className="md:hidden w-1 border-l-2 border-dashed border-primary h-16 my-4"></div>
-                  
-                  {/* Desktop Horizontal Connector */}
-                  {/* pt-10 pushes the arrow down to align with the center of the icons */}
-                  <div className="hidden md:flex items-center justify-center flex-1 pt-10">
-                     <ChevronRight className="w-8 h-8 text-primary" />
+                    <div className="flex">
+                      <span
+                        dangerouslySetInnerHTML={{ __html: step.icon }}
+                        className="w-6 h-6"
+                      />
+                    </div>
+
+                    {/* Step Number Badge */}
+                    <span className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-white text-primary border-2 border-gray-200 flex items-center justify-center font-bold text-sm">
+                      {step.id}
+                    </span>
                   </div>
-                </>
-              )}
 
-            </React.Fragment>
-          )})}
-          
+                  {/* Step Title */}
+                  <h3 className="subHeading mb-2">{step.title}</h3>
+
+                  {/* Step Description */}
+                  <p className="text-gray-600 text-sm">{step.subtitle}</p>
+                </div>
+
+                {/* Connector: Renders after each step except the last one */}
+                {index < steps.length - 1 && (
+                  <>
+                    {/* Mobile Vertical Connector */}
+                    <div className="md:hidden w-1 border-l-2 border-dashed border-primary h-16 my-4"></div>
+
+                    {/* Desktop Horizontal Connector */}
+                    {/* pt-10 pushes the arrow down to align with the center of the icons */}
+                    <div className="hidden md:flex items-center justify-center flex-1 pt-10">
+                      <ChevronRight className="w-8 h-8 text-primary" />
+                    </div>
+                  </>
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
-
-        </Container>
-        
-        
-
-     
+      </Container>
     </section>
   );
 }

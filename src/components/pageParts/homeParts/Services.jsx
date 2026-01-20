@@ -7,7 +7,7 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 const Services = ({ homeData }) => {
-  console.log("service page", homeData);
+
   return (
     <Container className={" py-10 md:py-16"}>
       <div className="mb-8 flex justify-between items-center md:mb-12">

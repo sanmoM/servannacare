@@ -8,12 +8,21 @@ const ServicesCard = ({ services }) => {
     <>
       <div className="group  relative overflow-hidden rounded-xl  transition-all duration-500 ">
         <div className="relative h-80 w-full overflow-hidden rounded-xl bg-background">
-          <Image
+          {/* <Image
             src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${services?.image}`}
             alt={services.title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-110"
-          />
+          /> */}
+          <div className="relative h-64 w-full group">
+            <Image
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${services?.image}`}
+              alt={services.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          </div>
 
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-blue-900/10"></div>
         </div>
