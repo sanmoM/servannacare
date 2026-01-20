@@ -12,7 +12,7 @@ import { slides } from "@/utilities/data";
 import { Button } from "@/components/ui/button";
 import Searchbar from "./Searchbar";
 
-const Slider = () => {
+const Slider = ({ homeData }) => {
   const [swiperRef, setSwiperRef] = useState(null);
 
   return (
@@ -31,12 +31,12 @@ const Slider = () => {
           speed={800}
           className="w-full h-full"
         >
-          {slides?.map((slide) => (
+          {homeData?.banner?.map((slide) => (
             <SwiperSlide key={slide.id} className="h-full w-full">
               <div
                 className="relative w-full h-full bg-cover bg-center"
                 style={{
-                  backgroundImage: `url(${slide.image.src})`,
+                  backgroundImage: `url(${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${slide?.image})`,
                 }}
               >
                 {/* Gradient overlay */}
@@ -47,16 +47,16 @@ const Slider = () => {
                   <div className="max-w-7xl mx-auto w-full px-4 lg:px-0">
                     <div className="lg:max-w-4xl md:max-w-2xl mx-auto text-center ">
                       <h1 className="text-lg sm:text-3xl md:text-5xl xl:text-6xl 2xl:text-6xl font-bold text-white mb-4 leading-snug">
-                        {slide.title}
+                        {slide?.title}
                       </h1>
                       <p className="text-xs sm:text-sm md:text-base lg:text-xl  text-gray-200 mb-8 leading-relaxed">
-                        {slide.subtitle}
+                        {slide?.sub_title}
                       </p>
                       <Button
                         size={"lg"}
                         className="text-sm md:text-lg font-medium"
                       >
-                        Book Now
+                        {slide?.btn_text}
                       </Button>
                     </div>
                   </div>

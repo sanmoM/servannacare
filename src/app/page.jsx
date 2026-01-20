@@ -29,7 +29,7 @@ export default function Home() {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading data</div>;
 
-  console.log("Home data stored in state:", homeData);
+  // console.log("Home data stored in state:", homeData);
 
   // useEffect(() => {
   //   const getHomeAllData = async () => {
@@ -53,8 +53,8 @@ export default function Home() {
 
   return (
     <div>
-      <Slider />
-      <Services />
+      <Slider homeData={homeData}/>
+      <Services homeData={homeData}/>
       <HowItWorks />
       <OurSpecialist />
 
