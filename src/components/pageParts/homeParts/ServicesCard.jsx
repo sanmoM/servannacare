@@ -1,9 +1,9 @@
-import { ArrowRight } from "lucide-react";
+
 import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 
 const ServicesCard = ({ services }) => {
+
   return (
     <>
       <div className="group  relative overflow-hidden rounded-xl  transition-all duration-500 ">
