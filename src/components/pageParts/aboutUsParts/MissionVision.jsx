@@ -13,12 +13,12 @@ import Image from "next/image";
 import React from "react";
 import WhyChooseUs from "../homeParts/WhyChooseUs";
 
-const MissionVision = () => {
-  
+const MissionVision = (data) => {
+  console.log("mission vission",data?.about)
   return (
     <div className="">
 
-     {/* Core Values */}
+    
       <div className="py-10 lg:py-16">
         <h2 className="sectionHeading text-center mb-2">Our Core Values</h2>
         <p className="text-center text-slate-600 mb-8 lg:mb-10 text-sm lg:text-base">

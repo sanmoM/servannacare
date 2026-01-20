@@ -1,11 +1,28 @@
+"use client";
 import MissionVision from "@/components/pageParts/aboutUsParts/MissionVision";
 import Container from "@/components/shared/Container";
 import PageBanner from "@/components/shared/PageBanner";
+import { useFetch } from "@/hooks/useFetch";
 import { Handshake, Shield, Star } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const page = () => {
+  const [abouts, setAbouts] = useState(null);
+  console.log("abouts", abouts?.about?.items);
+  const description = abouts?.about?.description || "";
+  const boldWords = ["Myhauzhelp", "Servana"];
+  const { data, isLoading, error } = useFetch("/abouts");
+
+  useEffect(() => {
+    if (data?.data) {
+      setAbouts(data.data.data);
+    }
+  }, [data]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
+
   const features = [
     {
       icon: Shield,
@@ -35,48 +52,58 @@ const page = () => {
       <Container>
         <div className="grid grid-cols-1 py-10 lg:py-16 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-3">
-            <h4 data-aos="fade-up" className="text-sm md:text-base text-primary font-bold">ABOUT US</h4>
-            <h2 data-aos="fade-up" className="sectionHeading my-4">
-              Your Trusted Partner in Best Improvement.
-            </h2>
-            <p data-aos="fade-up" className="text-sm text-justify text-gray-700">
-              Servana was born out of the lessons we learned building
-              <span className="font-bold"> Myhauzhelp</span>. With MyHauzHelp,
-              we saw firsthand the challenges working families face when looking
-              for trustworthy home-based care and household support. We believe
-              that true care begins at home. We are a tech-enabled home care
-              platform dedicated to supporting families with trusted,
-              professional help — whether it&apos;s medical support or
-              day-to-day household assistance. We serve what matters most: your
-              home and your health. Our mission is to create safe, well-managed,
-              and healthy living environments by connecting you with the right
-              support, exactly when you need it. From qualified medical
-              caregivers — such as nurses and nurse aides — to experienced
-              domestic workers, we bring care directly to your doorstep. We
-              understand the pace and pressure of modern life. Whether
-              you&apos;re a working parent, caring for an elderly loved one,
-              recovering from surgery, or adjusting to life after childbirth,
-              Servana makes home care seamless and stress-free. With{" "}
-              <span className="font-bold"> Servana</span>, care isn&apos;t just
-              a service — it&apos;s a promise.
-            </p>
+            {abouts?.about && (
+              <div>
+                <h4
+                  data-aos="fade-up"
+                  className="text-sm md:text-base text-primary font-bold"
+                >
+                  ABOUT US
+                </h4>
+                <h2 data-aos="fade-up" className="sectionHeading my-4">
+                  {abouts?.about?.title}
+                </h2>
+                <p
+                  data-aos="fade-up"
+                  className="text-sm text-justify text-gray-700"
+                >
+                  {description
+                    .split(new RegExp(`(${boldWords.join("|")})`, "g"))
+                    .map((part, index) => {
+                      return boldWords.includes(part) ? (
+                        <span key={index} className="font-bold">
+                          {part}
+                        </span>
+                      ) : (
+                        part
+                      );
+                    })}
+                </p>
+              </div>
+            )}
             <div className="sm:flex space-y-2 justify-evenly mt-6">
-              {features.map((feature, index) => {
-                const Icon = feature.icon;
+              {abouts?.about?.items.map((feature, index) => {
+                // const Icon = feature.icon;
                 return (
-                  <div data-aos="fade-up" key={index} className="flex items-center gap-2">
+                  <div
+                    data-aos="fade-up"
+                    key={index}
+                    className="flex items-center gap-2"
+                  >
                     <div className="flex-shrink-0">
                       <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-cyan-100">
-                        <Icon
+                        {/* <Icon
                           className="h-6 w-6 text-cyan-600"
                           aria-hidden="true"
-                        />
+                        /> */}
+                          <span
+                        dangerouslySetInnerHTML={{ __html: feature.tag_icon }}
+                        className="w-6 h-6"
+                      />
                       </div>
                     </div>
                     <div className="flex-1">
-                      <h3 className="subHeading mb-1">
-                        {feature.title}
-                      </h3>
+                      <h3 className="subHeading mb-1">{feature?.tag}</h3>
                       {/* <p className="text-sm text-slate-600 leading-relaxed">
                         {feature.description}
                       </p> */}
@@ -97,12 +124,21 @@ const page = () => {
                 alt="image"
                 className="h-full rounded-xl w-full"
               />
+
+              {abouts?.about?.image && (
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${abouts?.about?.image}`}
+                  alt={abouts?.about?.title}
+                  fill
+                  // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover rounded-xl transition-transform duration-500 group-hover:scale-110"
+                />
+              )}
             </div>
           </div>
         </div>
-        
-        <MissionVision/>
-        
+
+        <MissionVision data={abouts}/>
       </Container>
     </div>
   );
