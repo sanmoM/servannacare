@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 
 const page = () => {
   const [abouts, setAbouts] = useState(null);
-  console.log("abouts", abouts?.about?.items);
+  console.log("abouts", abouts?.ourCore);
   const description = abouts?.about?.description || "";
   const boldWords = ["Myhauzhelp", "Servana"];
   const { data, isLoading, error } = useFetch("/abouts");

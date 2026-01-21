@@ -1,11 +1,26 @@
+"use client";
 import Container from "@/components/shared/Container";
 import PageBanner from "@/components/shared/PageBanner";
 import { Button } from "@/components/ui/button";
+import { useFetch } from "@/hooks/useFetch";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const page = () => {
+  const [events, setevents] = useState(null);
+  console.log(events);
+
+  const { data, isLoading, error } = useFetch("/events");
+  useEffect(() => {
+    if (data) {
+      setevents(data?.data?.data ?? data);
+    }
+  }, [data]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
+
   const tfbEvents = [
     {
       id: 1,
@@ -25,7 +40,10 @@ const page = () => {
 
   return (
     <div>
-      <PageBanner image="https://www.goodwin.edu/landingpages/files/images/nursing-programs-main-header.jpg" title="Transformed For Better Event" />
+      <PageBanner
+        image="https://www.goodwin.edu/landingpages/files/images/nursing-programs-main-header.jpg"
+        title="Transformed For Better Event"
+      />
       <Container className="py-10 lg:py-16">
         <div className="pb-6">
           <h4 className="md:text-sm mb-3  text-xs font-semibold text-primary">
@@ -85,7 +103,7 @@ const page = () => {
             A movement rooted in home transformation, empathy, and dignity.
           </p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {tfbEvents.map((event, indx) => {
+            {events?.map((event, indx) => {
               const slug = event.title.toLowerCase().replace(/ /g, "-");
               return (
                 <div
@@ -95,37 +113,33 @@ const page = () => {
                 >
                   <div className="h-64">
                     <Image
-                      src={event.image}
+                      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.image}`}
+                      alt={event?.title}
                       quality={100}
-                      alt="event"
                       width={400}
                       height={300}
                       className="w-full h-full"
                     />
                   </div>
                   <div className="p-4 py-6">
-                    <h2 className="subHeading">
-                      {event.title}
-                    </h2>
+                    <h2 className="subHeading">{event.title}</h2>
                     <p className="text-gray-700 text-sm mt-2">
-                      {event.description}
+                      {event?.description?.split(" ").length > 25
+                        ? event.description.split(" ").slice(0, 25).join(" ") +
+                          "..."
+                        : event.description}
                     </p>
                     <div className="mt-8 flex justify-end">
-                         <Link href={`/event/${slug}?id=${event.id}`}>
-                         <Button>Read More</Button>
-                         </Link>
+                      <Link href={`/event/${slug}?id=${event.id}`}>
+                        <Button>Read More</Button>
+                      </Link>
                     </div>
                   </div>
-
                 </div>
               );
             })}
-
-            
           </div>
         </div>
-
-        
       </Container>
     </div>
   );

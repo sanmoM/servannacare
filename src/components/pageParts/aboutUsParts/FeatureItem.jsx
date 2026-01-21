@@ -1,6 +1,7 @@
 import React from "react";
 
 const FeatureItem = ({ feature }) => {
+  console.log(feature)
   return (
     <div data-aos="fade-up">
       <div className="flex items-start space-x-4 p-5 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">

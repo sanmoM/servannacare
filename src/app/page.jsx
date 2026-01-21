@@ -18,11 +18,10 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [homeData, setHomeData] = useState(null);
 
-
   const { data, isLoading, error } = useFetch("/home");
   useEffect(() => {
     if (data) {
-      setHomeData(data?.data?.data ?? data); 
+      setHomeData(data?.data?.data ?? data);
     }
   }, [data]);
 
@@ -49,13 +48,11 @@ export default function Home() {
   //   getHomeAllData();
   // }, []);
 
-
-
   return (
     <div>
-      <Slider homeData={homeData}/>
-      <Services homeData={homeData}/>
-      <HowItWorks homeData={homeData}/>
+      <Slider homeData={homeData} />
+      <Services homeData={homeData} />
+      <HowItWorks homeData={homeData} />
       <OurSpecialist />
 
       {/* from our blog section  */}
@@ -64,7 +61,7 @@ export default function Home() {
         <Container
           className={"grid grid-cols-1 gap-6 pt-10 md:pt-16 md:grid-cols-2"}
         >
-          {homeData?.blogs?.slice(0,4).map((blog, indx) => {
+          {homeData?.blogs?.slice(0, 4).map((blog, indx) => {
             const slug = blog.title.toLowerCase().replace(/ /g, "-");
             return (
               <BlogCard
@@ -82,9 +79,9 @@ export default function Home() {
           </Button>
         </Link>
       </div>
-      <Faq homeData={homeData}/>
-      <WhyChooseUs homeData={homeData}/>
-      <Testimonials homeData={homeData}/>
+      <Faq homeData={homeData} />
+      <WhyChooseUs Data={homeData} />
+      <Testimonials homeData={homeData} />
     </div>
   );
 }

@@ -3,8 +3,8 @@ import React from 'react'
 import FeatureItem from '../aboutUsParts/FeatureItem'
 import { ClipboardList, DollarSign, Phone, ShieldCheck, Sparkles, Users } from 'lucide-react';
 
-const WhyChooseUs = ({homeData}) => {
-
+const WhyChooseUs = ({Data}) => {
+console.log(Data)
      const features = [
     {
       icon: DollarSign,
@@ -44,7 +44,7 @@ const WhyChooseUs = ({homeData}) => {
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {homeData?.chooses?.map((feature, index) => (
+          {Data?.chooses?.map((feature, index) => (
             <FeatureItem key={index} feature={feature} />
           ))}
         </div>
