@@ -8,6 +8,7 @@ import Slider from "@/components/pageParts/homeParts/Slider";
 import Testimonials from "@/components/pageParts/homeParts/Testimonials";
 import WhyChooseUs from "@/components/pageParts/homeParts/WhyChooseUs";
 import Container from "@/components/shared/Container";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
 import { blogs } from "@/utilities/data";
@@ -25,7 +26,7 @@ export default function Home() {
     }
   }, [data]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
 
   // console.log("Home data stored in state:", homeData);

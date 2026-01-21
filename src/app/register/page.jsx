@@ -9,6 +9,7 @@ import Physiotherapist from "@/components/auth/register/Physiotherapist/Physioth
 import SpecialNeedCaregivers from "@/components/auth/register/SpecialNeedCaregivers/SpecialNeedCaregivers";
 import UserForm from "@/components/auth/register/UserForm";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
+import LoadingSpinnerSecond from "@/components/shared/Loadingspiner";
 import { notFound, useSearchParams } from "next/navigation";
 import React, { Suspense } from "react";
 
@@ -58,7 +59,8 @@ const Page = () => {
     <Suspense
       fallback={
         <div className="w-full py-20 text-center font-semibold text-primary">
-          <LoadingSpinner/>
+          {/* <LoadingSpinner/> */}
+          <LoadingSpinnerSecond/>
         </div>
       }
     >

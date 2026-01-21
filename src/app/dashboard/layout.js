@@ -86,7 +86,6 @@ export default function DashboardLayout({ children }) {
     );
   }
 
-  // --- Links ---
   const userLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/user-profile", icon: User },

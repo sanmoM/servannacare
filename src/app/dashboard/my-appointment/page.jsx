@@ -1,8 +1,6 @@
 "use client";
-
 import React from "react";
 import toast from "react-hot-toast";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 import {
   Pagination,
   PaginationContent,
@@ -34,6 +31,7 @@ import {
 } from "@/components/ui/select";
 
 const Page = () => {
+  const [filterStatus, setFilterStatus] = React.useState("");
   const appointments = [
     {
       id: 1,
@@ -73,7 +71,11 @@ const Page = () => {
     },
   ];
 
-  // ✅ Use darker colors so white text looks good
+  const filteredAppointments =
+    filterStatus && filterStatus !== "All"
+      ? appointments.filter((appt) => appt.status === filterStatus)
+      : appointments;
+
   const statusColors = {
     Pending: "bg-amber-500",
     Completed: "bg-green-600",
@@ -89,13 +91,14 @@ const Page = () => {
     <div>
       <h1 className="sectionHeading mb-6">Your Appointment</h1>
       <div className={"flex justify-end"}>
-        <Select>
+        <Select onValueChange={(value) => setFilterStatus(value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sort By" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Sort By</SelectLabel>
+              <SelectItem value="All">All</SelectItem>
               <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="Completed">Completed</SelectItem>
               <SelectItem value="Ongoing">Ongoing</SelectItem>
@@ -134,7 +137,7 @@ const Page = () => {
           </thead>
 
           <tbody>
-            {appointments.map((row) => (
+            {filteredAppointments.map((row) => (
               <tr
                 key={row.id}
                 className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"

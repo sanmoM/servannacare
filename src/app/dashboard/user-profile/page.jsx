@@ -14,7 +14,7 @@ export default function ProfilePage() {
   const [userInfo, setUserInfo] = useState({
     name: "John Doe",
     email: "johndoe@gmail.com",
-    phone: "0712345678",
+    phone: "+2541234567",
     location: "Nairobi, Kenya",
     joinedSince: "Jan 2025",
     profilePic: "/user.png",
@@ -74,8 +74,8 @@ export default function ProfilePage() {
   const handleSave = () => {
     if (!form.name.trim()) return toast.error("Name is required");
     if (!form.location.trim()) return toast.error("Location is required");
-    if (!form.phone || form.phone.length !== 10)
-      return toast.error("Phone number must be 10 digits");
+    if (!form.phone || form.phone.length !== 11)
+      return toast.error("Phone number must be 11 digits");
 
     setUserInfo((prev) => ({
       ...prev,
@@ -178,10 +178,23 @@ export default function ProfilePage() {
 
               <Input
                 label="Phone Number"
-                placeholder="07xxxxxxxx"
+                placeholder="+254xxxxxxx"
                 value={form.phone}
-                maxLength={10}
-                onChange={handlePhoneChange}
+                maxLength={11}
+                onFocus={() => {
+                  if (!form.phone || form.phone === "") {
+                    setForm((prev) => ({ ...prev, phone: "+254" }));
+                  }
+                }}
+                onChange={(e) => {
+                  let val = e.target.value;
+                  if (!val.startsWith("+254")) {
+                    val = "+254" + val.replace(/\D/g, "").slice(0, 7);
+                  } else {
+                    val = "+254" + val.slice(4).replace(/\D/g, "").slice(0, 7);
+                  }
+                  setForm((prev) => ({ ...prev, phone: val }));
+                }}
               />
 
               <Input
