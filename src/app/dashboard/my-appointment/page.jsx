@@ -32,42 +32,153 @@ import {
 
 const Page = () => {
   const [filterStatus, setFilterStatus] = React.useState("");
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const itemsPerPage = 8;
+
   const appointments = [
     {
       id: 1,
       serviceName: "Nurse Care",
       specialist: "Jassy Jea",
-      startDate: "23 Jan 2024",
-      endDate: "10 Feb 2024",
-      totalDays: "18 Days",
+      startDate: "01 Jan 2025",
+      endDate: "05 Jan 2025",
+      totalDays: "4 Days",
       status: "Pending",
     },
     {
       id: 2,
       serviceName: "Elderly Assistance",
       specialist: "Maria Simon",
-      startDate: "01 Feb 2024",
-      endDate: "12 Feb 2024",
-      totalDays: "11 Days",
+      startDate: "02 Jan 2025",
+      endDate: "06 Jan 2025",
+      totalDays: "4 Days",
       status: "Completed",
     },
     {
       id: 3,
       serviceName: "Medical Nurse",
       specialist: "Kelvin Mark",
-      startDate: "10 Jan 2024",
-      endDate: "20 Jan 2024",
-      totalDays: "10 Days",
+      startDate: "03 Jan 2025",
+      endDate: "07 Jan 2025",
+      totalDays: "4 Days",
       status: "Ongoing",
     },
     {
       id: 4,
       serviceName: "Home Care Support",
       specialist: "Sofia Rahman",
-      startDate: "05 Feb 2024",
-      endDate: "15 Feb 2024",
-      totalDays: "10 Days",
+      startDate: "04 Jan 2025",
+      endDate: "08 Jan 2025",
+      totalDays: "4 Days",
       status: "Cancelled",
+    },
+    {
+      id: 5,
+      serviceName: "Nurse Care",
+      specialist: "Emma Brown",
+      startDate: "05 Jan 2025",
+      endDate: "09 Jan 2025",
+      totalDays: "4 Days",
+      status: "Completed",
+    },
+    {
+      id: 6,
+      serviceName: "Elderly Assistance",
+      specialist: "Liam Scott",
+      startDate: "06 Jan 2025",
+      endDate: "10 Jan 2025",
+      totalDays: "4 Days",
+      status: "Pending",
+    },
+    {
+      id: 7,
+      serviceName: "Medical Nurse",
+      specialist: "Noah Davis",
+      startDate: "07 Jan 2025",
+      endDate: "11 Jan 2025",
+      totalDays: "4 Days",
+      status: "Completed",
+    },
+    {
+      id: 8,
+      serviceName: "Home Care Support",
+      specialist: "Olivia Wilson",
+      startDate: "08 Jan 2025",
+      endDate: "12 Jan 2025",
+      totalDays: "4 Days",
+      status: "Ongoing",
+    },
+    {
+      id: 9,
+      serviceName: "Nurse Care",
+      specialist: "Jassy Jea",
+      startDate: "09 Jan 2025",
+      endDate: "13 Jan 2025",
+      totalDays: "4 Days",
+      status: "Cancelled",
+    },
+    {
+      id: 10,
+      serviceName: "Elderly Assistance",
+      specialist: "Maria Simon",
+      startDate: "10 Jan 2025",
+      endDate: "14 Jan 2025",
+      totalDays: "4 Days",
+      status: "Ongoing",
+    },
+    {
+      id: 11,
+      serviceName: "Medical Nurse",
+      specialist: "Kelvin Mark",
+      startDate: "11 Jan 2025",
+      endDate: "15 Jan 2025",
+      totalDays: "4 Days",
+      status: "Pending",
+    },
+    {
+      id: 12,
+      serviceName: "Home Care Support",
+      specialist: "Sofia Rahman",
+      startDate: "12 Jan 2025",
+      endDate: "16 Jan 2025",
+      totalDays: "4 Days",
+      status: "Completed",
+    },
+    {
+      id: 13,
+      serviceName: "Nurse Care",
+      specialist: "Emma Brown",
+      startDate: "13 Jan 2025",
+      endDate: "17 Jan 2025",
+      totalDays: "4 Days",
+      status: "Ongoing",
+    },
+    {
+      id: 14,
+      serviceName: "Elderly Assistance",
+      specialist: "Liam Scott",
+      startDate: "14 Jan 2025",
+      endDate: "18 Jan 2025",
+      totalDays: "4 Days",
+      status: "Cancelled",
+    },
+    {
+      id: 15,
+      serviceName: "Medical Nurse",
+      specialist: "Noah Davis",
+      startDate: "15 Jan 2025",
+      endDate: "19 Jan 2025",
+      totalDays: "4 Days",
+      status: "Completed",
+    },
+    {
+      id: 16,
+      serviceName: "Home Care Support",
+      specialist: "Olivia Wilson",
+      startDate: "16 Jan 2025",
+      endDate: "20 Jan 2025",
+      totalDays: "4 Days",
+      status: "Pending",
     },
   ];
 
@@ -75,6 +186,21 @@ const Page = () => {
     filterStatus && filterStatus !== "All"
       ? appointments.filter((appt) => appt.status === filterStatus)
       : appointments;
+
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentAppointments = filteredAppointments.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus]);
 
   const statusColors = {
     Pending: "bg-amber-500",
@@ -113,6 +239,9 @@ const Page = () => {
           <thead className="bg-gray-100 border-b">
             <tr className="text-xs sm:text-sm lg:text-base">
               <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
+                ids
+              </th>
+              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
                 Service Name
               </th>
               <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
@@ -137,11 +266,14 @@ const Page = () => {
           </thead>
 
           <tbody>
-            {filteredAppointments.map((row) => (
+            {currentAppointments.map((row) => (
               <tr
                 key={row.id}
                 className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"
               >
+                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
+                  {row.id}
+                </td>
                 <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
                   {row.serviceName}
                 </td>
@@ -217,26 +349,36 @@ const Page = () => {
           </tbody>
         </table>
 
-        {/* ✅ Pagination */}
         <div className="mt-6">
           <Pagination className="flex justify-center md:justify-end">
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                />
               </PaginationItem>
 
-              <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
-                </PaginationLink>
-              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(i + 1)}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
 
               <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
