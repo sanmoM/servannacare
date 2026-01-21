@@ -1,4 +1,12 @@
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+"use client";
+import React from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -8,17 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const page = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const itemsPerPage = 5;
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const filterStatus = searchParams.get("status") || "All";
+
   const bookingHistory = [
     {
       id: 1,
       serviceName: "Nurse Care",
       specialist: "Jassy Jea",
-      bookingDate: "15 Jan 2024",
-      startDate: "23 Jan 2024",
-      endDate: "10 Feb 2024",
+      bookingDate: "15 Jan 2025",
+      startDate: "23 Jan 2025",
+      endDate: "10 Feb 2025",
       totalDays: 18,
       status: "Pending",
       amountPaid: "KSh 25,000",
@@ -27,9 +42,9 @@ const page = () => {
       id: 2,
       serviceName: "Elderly Assistance",
       specialist: "Maria Simon",
-      bookingDate: "25 Jan 2024",
-      startDate: "01 Feb 2024",
-      endDate: "12 Feb 2024",
+      bookingDate: "25 Jan 2025",
+      startDate: "01 Feb 2025",
+      endDate: "12 Feb 2025",
       totalDays: 11,
       status: "Completed",
       amountPaid: "KSh 15,000",
@@ -38,9 +53,9 @@ const page = () => {
       id: 3,
       serviceName: "Medical Nurse",
       specialist: "Kelvin Mark",
-      bookingDate: "05 Jan 2024",
-      startDate: "10 Jan 2024",
-      endDate: "20 Jan 2024",
+      bookingDate: "05 Jan 2025",
+      startDate: "10 Jan 2025",
+      endDate: "20 Jan 2025",
       totalDays: 10,
       status: "Ongoing",
       amountPaid: "KSh 20,000",
@@ -49,9 +64,9 @@ const page = () => {
       id: 4,
       serviceName: "Home Care Support",
       specialist: "Sofia Rahman",
-      bookingDate: "30 Jan 2024",
-      startDate: "05 Feb 2024",
-      endDate: "15 Feb 2024",
+      bookingDate: "30 Jan 2025",
+      startDate: "05 Feb 2025",
+      endDate: "15 Feb 2025",
       totalDays: 10,
       status: "Cancelled",
       amountPaid: "KSh 1200",
@@ -60,9 +75,9 @@ const page = () => {
       id: 5,
       serviceName: "Post-Surgery Assistance",
       specialist: "David Kim",
-      bookingDate: "10 Mar 2024",
-      startDate: "12 Mar 2024",
-      endDate: "22 Mar 2024",
+      bookingDate: "10 Mar 2025",
+      startDate: "12 Mar 2025",
+      endDate: "22 Mar 2025",
       totalDays: 10,
       status: "Pending",
       amountPaid: "KSh 30,000",
@@ -71,9 +86,9 @@ const page = () => {
       id: 6,
       serviceName: "Pediatric Care",
       specialist: "Anna Lee",
-      bookingDate: "15 Mar 2024",
-      startDate: "18 Mar 2024",
-      endDate: "25 Mar 2024",
+      bookingDate: "15 Mar 2025",
+      startDate: "18 Mar 2025",
+      endDate: "25 Mar 2025",
       totalDays: 7,
       status: "Completed",
       amountPaid: "KSh 18,000",
@@ -82,14 +97,35 @@ const page = () => {
       id: 7,
       serviceName: "Physiotherapy",
       specialist: "Mark Anthony",
-      bookingDate: "20 Mar 2024",
-      startDate: "01 Apr 2024",
-      endDate: "10 Apr 2024",
+      bookingDate: "20 Mar 2025",
+      startDate: "01 Apr 2025",
+      endDate: "10 Apr 2025",
       totalDays: 9,
       status: "Pending",
       amountPaid: "KSh 22,000",
     },
   ];
+
+  const filteredBookings =
+    filterStatus !== "All"
+      ? bookingHistory.filter((b) => b.status === filterStatus)
+      : bookingHistory;
+
+  const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const currentBookings = filteredBookings.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  const goToPage = (page) => {
+    router.push(`?page=${page}&status=${filterStatus}`);
+  };
+
+  const onFilterChange = (value) => {
+    router.push(`?page=1&status=${value}`);
+  };
 
   const statusColors = {
     Pending: "bg-amber-300",
@@ -102,14 +138,15 @@ const page = () => {
     <div>
       <h1 className="sectionHeading">Booking History</h1>
 
-      <div className={"flex justify-end"}>
-        <Select>
+      <div className="flex justify-end">
+        <Select value={filterStatus} onValueChange={onFilterChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Sort By" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Sort By</SelectLabel>
+              <SelectItem value="All">All</SelectItem>
               <SelectItem value="Pending">Pending</SelectItem>
               <SelectItem value="Completed">Completed</SelectItem>
               <SelectItem value="Ongoing">Ongoing</SelectItem>
@@ -151,7 +188,7 @@ const page = () => {
           </thead>
 
           <tbody>
-            {bookingHistory.map((row) => (
+            {currentBookings?.map((row) => (
               <tr
                 key={row.id}
                 className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"
@@ -191,30 +228,32 @@ const page = () => {
             ))}
           </tbody>
         </table>
-        {/* ✅ Pagination */}
-        <div className="mt-6">
-          <Pagination className="flex justify-center md:justify-end">
+
+        {totalPages > 1 && (
+          <Pagination className="mt-6 flex justify-center md:justify-end">
             <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
+              <PaginationPrevious
+                disabled={currentPage === 1}
+                onClick={() => goToPage(currentPage - 1)}
+              />
 
-              <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
+              {Array.from({ length: totalPages }, (_, i) => (
+                <PaginationLink
+                  key={i}
+                  isActive={currentPage === i + 1}
+                  onClick={() => goToPage(i + 1)}
+                >
+                  {i + 1}
                 </PaginationLink>
-              </PaginationItem>
+              ))}
 
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
+              <PaginationNext
+                disabled={currentPage === totalPages}
+                onClick={() => goToPage(currentPage + 1)}
+              />
             </PaginationContent>
           </Pagination>
-        </div>
+        )}
       </div>
     </div>
   );

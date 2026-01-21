@@ -1,11 +1,35 @@
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+"use client";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
 const page = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const itemsPerPage = 4;
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const filterStatus = searchParams.get("status") || "All";
+
   const paymentHistory = [
     {
       id: 1,
-      date: "25 Nov 2024",
+      date: "25 Nov 2025",
       amount: 2500,
       method: "Bkash",
       status: "Paid",
@@ -13,7 +37,7 @@ const page = () => {
     },
     {
       id: 2,
-      date: "10 Jan 2024",
+      date: "10 Jan 2025",
       amount: 1800,
       method: "Nagad",
       status: "Paid",
@@ -21,15 +45,15 @@ const page = () => {
     },
     {
       id: 3,
-      date: "25 Feb 2024",
+      date: "25 Feb 2025",
       amount: 3200,
       method: "Bank Transfer",
-      status: "Paid",
+      status: "Pending",
       transactionId: "TXN-7645123",
     },
     {
       id: 4,
-      date: "16 Feb 2024",
+      date: "16 Feb 2025",
       amount: 1500,
       method: "Rocket",
       status: "Paid",
@@ -37,13 +61,34 @@ const page = () => {
     },
     {
       id: 5,
-      date: "04 Mar 2024",
+      date: "04 Mar 2025",
       amount: 2900,
       method: "Bkash",
-      status: "Paid",
+      status: "Failed",
       transactionId: "TXN-5321098",
     },
   ];
+
+  const filteredPayments =
+    filterStatus !== "All"
+      ? paymentHistory.filter((b) => b.status === filterStatus)
+      : paymentHistory;
+
+  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
+  const currentPayments = filteredPayments.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
+
+  const goToPage = (page) => {
+    router.push(`?page=${page}&status=${filterStatus}`);
+  };
+
+  const onFilterChange = (value) => {
+    router.push(`?page=1&status=${value}`);
+  };
 
   const statusColors = {
     Pending: "bg-amber-300",
@@ -54,6 +99,23 @@ const page = () => {
   return (
     <div>
       <h1 className="sectionHeading">Payment History</h1>
+
+      <div className="flex justify-end">
+        <Select value={filterStatus} onValueChange={onFilterChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort By" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Sort By</SelectLabel>
+              <SelectItem value="All">All</SelectItem>
+              <SelectItem value="Pending">Pending</SelectItem>
+              <SelectItem value="Paid">Paid</SelectItem>
+              <SelectItem value="Failed">Failed</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="mt-6 overflow-x-auto w-full">
         <table className="min-w-[700px] w-full text-sm text-left text-gray-700 border rounded-xl shadow">
@@ -78,7 +140,7 @@ const page = () => {
           </thead>
 
           <tbody>
-            {paymentHistory.map((row) => (
+            {currentPayments.map((row) => (
               <tr
                 key={row.id}
                 className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"
@@ -114,29 +176,33 @@ const page = () => {
             ))}
           </tbody>
         </table>
-        {/* ✅ Pagination */}
+
         <div className="mt-6">
-          <Pagination className="flex justify-center md:justify-end">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious href="#" />
-              </PaginationItem>
+          {totalPages > 1 && (
+            <Pagination className="mt-6 flex justify-center md:justify-end">
+              <PaginationContent>
+                <PaginationPrevious
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(currentPage - 1)}
+                />
 
-              <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
-                </PaginationLink>
-              </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <PaginationLink
+                    key={i}
+                    isActive={currentPage === i + 1}
+                    onClick={() => goToPage(i + 1)}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                ))}
 
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                <PaginationNext
+                  disabled={currentPage === totalPages}
+                  onClick={() => goToPage(currentPage + 1)}
+                />
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       </div>
     </div>
