@@ -36,15 +36,15 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     if (!loaded) return;
 
-    if (!user) {
-      router.push("/login");
-      return;
-    }
+    // if (!user) {
+    //   router.push("/login");
+    //   return;
+    // }
 
-    if (!user?.token) {
-      router.push("/login");
-      return;
-    }
+    // if (!user?.token) {
+    //   router.push("/login");
+    //   return;
+    // }
 
     const role = user?.role;
 

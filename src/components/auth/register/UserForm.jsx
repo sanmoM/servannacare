@@ -11,6 +11,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import OtpModal from "../OtpModal";
 import { generateToken } from "@/utilities/helperFunction";
+import { postApi } from "@/lib/apiHandler";
 
 const UserForm = () => {
   const [showPass, setShowPass] = useState(false);
@@ -20,7 +21,7 @@ const UserForm = () => {
   const [temUser, setTemUser] = useState(null);
   const [phone, setPhone] = useState("");
 
-  const handleCreateUser = (e) => {
+  const handleCreateUser = async (e) => {
     e.preventDefault();
     const form = e.target;
     const name = form.name.value;
@@ -52,37 +53,60 @@ const UserForm = () => {
 
     const userInfo = {
       name,
-      email,
-      phone,
-      location: null,
-      joinedSince: new Date().toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      }),
       role: "user",
-      token,
+      number: phone,
+      email,
+      password,
     };
 
-    setTemUser(userInfo);
-    setOpenOTP(true);
-    toast.success(`OTP send to ${phone}!`);
+    try {
+      const res = await postApi("/register", userInfo);
+      if (res?.data?.status) {
+        setTemUser(userInfo);
+      }
+      setOpenOTP(true);
+      toast.success(`OTP sent to ${userInfo?.email}!`);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "User registration failed");
+    }
   };
 
   const handleShowPassword = () => {
     setShowPass(!showPass);
   };
 
-  const handleVerifyOTP = (otp) => {
-    //todo
-    if (otp !== "123456") {
-      toast.error("Invalid OTP!");
-      return;
-    }
-    setOpenOTP(false);
+  // const handleVerifyOTP = (otp) => {
+  //   if (otp !== "123456") {
+  //     toast.error("Invalid OTP!");
+  //     return;
+  //   }
 
-    localStorage.setItem("user", JSON.stringify(temUser));
-    router.push("/dashboard");
-    toast.success("User Create Successfully!");
+  //   setOpenOTP(false);
+  //   localStorage.setItem("user", JSON.stringify(temUser));
+  //   router.push("/dashboard");
+  //   toast.success("User created successfully!");
+  // };
+
+  const handleVerifyOTP = async (otp) => {
+    try {
+      const res = await postApi("/verify", {
+        email: temUser.email,
+        otp,
+      });
+      const { token, role, is_profile_completed } = res?.data?.data;
+
+
+      localStorage.setItem("token", token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ role, is_profile_completed }),
+      );
+      setOpenOTP(false);
+      router.push("/dashboard");
+      toast.success("Account verified successfully!");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Invalid OtP");
+    }
   };
 
   return (
@@ -172,7 +196,7 @@ const UserForm = () => {
       {/* OTP Modal  */}
       {openOTP && (
         <OtpModal
-          phone={phone}
+          email={temUser?.email}
           onVerify={handleVerifyOTP}
           onClose={() => setOpenOTP(false)}
         />

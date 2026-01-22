@@ -9,7 +9,6 @@ export default function useLocalUser() {
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem("user");
-      
       if (savedUser) {
         setUser(JSON.parse(savedUser));
       }
