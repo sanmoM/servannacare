@@ -31,12 +31,18 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Phone handler (digits only + max 10)
-  const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ""); // digits only
-    value = value.slice(0, 10); // max 10 digits
-    setData((prev) => ({ ...prev, phone: value }));
-  };
+const handlePhoneChange = (e) => {
+  let value = e.target.value;
+  if (!value.startsWith("+254")) {
+    value = "+254";
+  }
+  value = "+254" + value.slice(4).replace(/\D/g, "");
+  if (value.length > 11) {
+    value = value.slice(0, 11);
+  }
+  setData((prev) => ({ ...prev, phone: value }));
+};
+
 
   const toggleLanguage = (lan) => {
     setData((prev) => {
@@ -64,7 +70,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     for (let field of requiredFields) {
       if (!data[field]) {
         toast.error(
-          `${field.charAt(0).toUpperCase() + field.slice(1)} is required!`
+          `${field.charAt(0).toUpperCase() + field.slice(1)} is required!`,
         );
         return;
       }
@@ -75,9 +81,8 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       return;
     }
 
-    // ✅ ONLY 10 digit validation (on Next click)
-    if (!data.phone || data.phone.length !== 10) {
-      toast.error("Phone number must be exactly 10 digits.");
+    if (!data.phone || data.phone.length !== 11) {
+      toast.error("Phone number must be exactly 11 digits.");
       return;
     }
 
@@ -172,14 +177,26 @@ const BasicInfo = ({ defaultValues, onNext }) => {
           </Select>
         </div>
 
-        {/* ✅ phone input */}
-        <Input
+        {/* <Input
           label="Phone Number"
           name="phone"
           type="tel"
           placeholder="07xxxxxxxx"
           value={data.phone}
           maxLength={10}
+          onChange={handlePhoneChange}
+        /> */}
+
+        <Input
+          label="Phone Number"
+          name="phone"
+          type="tel"
+          placeholder="+254xxxxxxx"
+          value={data?.phone}
+          maxLength={11}
+          onFocus={() => {
+            if (!data?.phone) setData((prev)=>({...prev,phone:"+254"}))
+          }}
           onChange={handlePhoneChange}
         />
 

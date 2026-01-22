@@ -12,7 +12,6 @@ import { Plus } from "lucide-react";
 import Review from "./Review";
 import { generateToken } from "@/utilities/helperFunction";
 
-
 const validateNurse = (data) => {
   const errors = [];
 
@@ -25,7 +24,7 @@ const validateNurse = (data) => {
     "education",
     "languages",
     "canDrive",
-    "role",
+    "preferredRole",
     "educationCertificate",
     "isNursingInKenya",
     "hospitalBasedCare",
@@ -35,7 +34,7 @@ const validateNurse = (data) => {
     "bathingYears",
     "feedingYears",
     "serviceFee",
-    "bio"
+    "bio",
   ];
 
   requiredFields.forEach((field) => {
@@ -51,26 +50,27 @@ const validateNurse = (data) => {
 
   // Extra Validation Rules
 
-  if(data.age<25){
-      errors.push("Age must be 25 or above")
-    }
+  if (data.age < 25) {
+    errors.push("Age must be 25 or above");
+  }
 
   if (data.serviceFee && isNaN(data.serviceFee)) {
     errors.push("Service Fee must be a valid number");
   }
 
-  if(
-    data.hospitalBasedCare === "Yes" && 
-    (!data.hospitalBasedYearsOfExperience || !data.hospitalBasedReferenceContact)
-  ){
-    errors.push("Please fill all Hospital Based Care fields!")
+  if (
+    data.hospitalBasedCare === "Yes" &&
+    (!data.hospitalBasedYearsOfExperience ||
+      !data.hospitalBasedReferenceContact)
+  ) {
+    errors.push("Please fill all Hospital Based Care fields!");
   }
 
-  if(
-    data.homeBasedCare === "Yes" && 
+  if (
+    data.homeBasedCare === "Yes" &&
     (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
-  ){
-    errors.push("Please fill all Hospital Based Care fields!")
+  ) {
+    errors.push("Please fill all Hospital Based Care fields!");
   }
 
   if (
@@ -87,18 +87,18 @@ const validateNurse = (data) => {
     errors.push("Home-based experience must be a number");
   }
 
-  if(!data.idCopy){
-    errors.push("ID copy require")
+  if (!data.idCopy) {
+    errors.push("ID copy require");
   }
-  if(!data.profilePhoto){
-    errors.push("Profile photo require")
+  if (!data.profilePhoto) {
+    errors.push("Profile photo require");
   }
-
 
   return errors;
 };
 
-const MedicalInstitution = () => {
+const MedicalInstitution = ({ skills }) => {
+  console.log("medical",skills)
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const [nurses, setNurses] = useState([1]);
@@ -136,13 +136,16 @@ const MedicalInstitution = () => {
       setStep(step + 1);
       return;
     } else {
-      const token = generateToken()
-      localStorage.setItem("user", JSON.stringify({
-        ...user,
-        role:"care institution",
-        institution:formData.institution,
-        token
-      }));
+      const token = generateToken();
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          role: "care institution",
+          institution: formData.institution,
+          token,
+        }),
+      );
       toast.success("Registered Successfully!");
 
       router.push("/dashboard");
@@ -227,6 +230,7 @@ const MedicalInstitution = () => {
                         nurseNumber={num}
                         defaultValues={formData.nurses[index] || {}}
                         onDataChange={(data) => handleNursesChange(index, data)}
+                        skills={skills}
                       />
 
                       {index > 0 && (
@@ -244,11 +248,7 @@ const MedicalInstitution = () => {
               )}
 
               {/* STEP 3 — REVIEW */}
-              {step === 3 && (
-                <Review
-                  data={formData}
-                />
-              )}
+              {step === 3 && <Review data={formData} />}
 
               {/* FOOTER BUTTONS */}
               <div className="flex justify-between mt-6">

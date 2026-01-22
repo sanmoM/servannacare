@@ -354,28 +354,32 @@ const Page = () => {
         </table>
 
         <div className="mt-6">
-          <Pagination className="mt-6 flex justify-end">
-            <PaginationContent>
-              <PaginationPrevious
-                disabled={currentPage === 1}
-                onClick={() => goToPage(Math.max(currentPage - 1, 1))}
-              />
-              {Array.from({ length: totalPages }, (_, i) => (
-                <PaginationLink
-                  key={i}
-                  isActive={currentPage === i + 1}
-                  onClick={() => goToPage(i + 1)}
-                >
-                  {i + 1}
-                </PaginationLink>
-              ))}
-              <PaginationNext
-              disabled={currentPage === totalPages}
-                onClick={() => goToPage(Math.min(currentPage + 1, totalPages))}
-              />
-            </PaginationContent>
-          </Pagination>
-        </div> 
+          {totalPages > 1 && (
+            <Pagination className="mt-6 flex justify-end">
+              <PaginationContent>
+                <PaginationPrevious
+                  disabled={currentPage === 1}
+                  onClick={() => goToPage(Math.max(currentPage - 1, 1))}
+                />
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <PaginationLink
+                    key={i}
+                    isActive={currentPage === i + 1}
+                    onClick={() => goToPage(i + 1)}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                ))}
+                <PaginationNext
+                  disabled={currentPage === totalPages}
+                  onClick={() =>
+                    goToPage(Math.min(currentPage + 1, totalPages))
+                  }
+                />
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
       </div>
     </div>
   );

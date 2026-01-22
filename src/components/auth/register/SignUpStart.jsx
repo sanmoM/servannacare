@@ -26,7 +26,7 @@ const SignUpStart = ({ onSuccess }) => {
     const phone = form.phone.value;
 
     // validate phone (Kenya)
-    if (phone.length !== 10) {
+    if (phone.length !== 11) {
       toast.error("Invalied phone number!");
       return;
     }
@@ -89,11 +89,19 @@ const SignUpStart = ({ onSuccess }) => {
             label="Phone Number"
             name="phone"
             type="tel"
-            placeholder="07xxxxxxxx "
+            placeholder="+254xxxxxxx"
             value={phone}
-            maxLength={10}
+            maxLength={11}
+            onFocus={() => {
+              if (!phone) setPhone("+254");
+            }}
             onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "");
+              let val = e.target.value;
+              if (!val.startsWith("+254")) {
+                val = "+254" + val.replace(/\D/g, "").slice(0, 7);
+              } else {
+                val = "+254" + val.slice(4).replace(/\D/g, "").slice(0, 7);
+              }
               setPhone(val);
             }}
           />

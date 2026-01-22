@@ -25,6 +25,7 @@ const NurseDetails = ({
   nurseNumber = 1,
   onDataChange,
   defaultValues = {},
+  skills
 }) => {
   // Document Types
   const documents = [
@@ -42,15 +43,15 @@ const NurseDetails = ({
     },
   ];
 
-  const skills = [
-    "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
-    "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
-    "Medical Assistance: Aassisting nurses with wound care, administering medication (in some cases)",
-    "Compassion & Communication Skills",
-    "Special needs children caregiving",
-    "Elderly caregiving",
-    "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
-  ];
+  // const skills = [
+  //   "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
+  //   "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
+  //   "Medical Assistance: Aassisting nurses with wound care, administering medication (in some cases)",
+  //   "Compassion & Communication Skills",
+  //   "Special needs children caregiving",
+  //   "Elderly caregiving",
+  //   "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
+  // ];
 
   // Local state
   const [data, setData] = useState({
@@ -441,11 +442,10 @@ const NurseDetails = ({
           {skills.map((skill, idx) => (
             <div key={idx} className="flex gap-2">
               <Checkbox
-
-                checked={data.skills.includes(skill)}
-                onCheckedChange={() => toggleArray("skills", skill)}
+                checked={data.skills.includes(skill.name)}
+                onCheckedChange={() => toggleArray("skills", skill.name)}
               />
-              <Label>{skill}</Label>
+              <Label>{skill.name}</Label>
             </div>
           ))}
         </div>

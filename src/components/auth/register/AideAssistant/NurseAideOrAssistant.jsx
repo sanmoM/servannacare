@@ -12,7 +12,7 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 
-const NurseAideOrAssistant = () => {
+const NurseAideOrAssistant = ({skills}) => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const [user,setUser] = useState({});
@@ -122,6 +122,7 @@ const NurseAideOrAssistant = () => {
                   defaultValues={formData.skillsServices}
                   onNext={handleNext}
                   onBack={handleBack}
+                  skills={skills}
                 />
               )}
               {step === 5 && (

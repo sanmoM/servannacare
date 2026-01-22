@@ -13,7 +13,7 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 
-const Nurse = () => {
+const Nurse = ({skills}) => {
   const [started, setStarted] = useState(false);
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -133,6 +133,7 @@ const Nurse = () => {
                   defaultValues={formData.skillsServices}
                   onNext={handleNext}
                   onBack={handleBack}
+                  skills={skills}
                 />
               )}
               {step === 5 && (

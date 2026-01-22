@@ -10,12 +10,48 @@ import SpecialNeedCaregivers from "@/components/auth/register/SpecialNeedCaregiv
 import UserForm from "@/components/auth/register/UserForm";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import LoadingSpinnerSecond from "@/components/shared/Loadingspiner";
+import { useFetch } from "@/hooks/useFetch";
 import { notFound, useSearchParams } from "next/navigation";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 const PageContent = () => {
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
+
+const normalizeRoleToType = (role) => {
+  if (!role) return "";
+
+  let normalized = role.replaceAll("-", "_");
+
+  normalized = normalized.replace("nurse_aide_or_assistant", "nurse_ade_assistant");
+  normalized = normalized.replace("care_institutions", "institution_nurse");
+
+  return normalized;
+};
+
+
+  const [roleSkills, setRoleSkills] = useState([]);
+  const { data, isLoading, error } = useFetch("/skills");
+
+useEffect(() => {
+  if (!data || !role) return;
+
+  const skills = Array.isArray(data?.data?.data)
+    ? data.data.data
+    : [];
+
+  const normalizedType = normalizeRoleToType(role);
+
+  const filteredSkills = skills.filter(
+    (skill) => skill.type === normalizedType
+  );
+
+  setRoleSkills(filteredSkills);
+}, [data, role]);
+
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
 
   const renderForm = () => {
     switch (role) {
@@ -24,17 +60,17 @@ const PageContent = () => {
       case "house-manager":
         return <HouseManager />;
       case "nurse":
-        return <Nurse />;
+        return <Nurse skills={roleSkills} />;
       case "agency":
         return <Agency />;
       case "physiotherapist":
         return <Physiotherapist />;
       case "nurse-aide-or-assistant":
-        return <NurseAideOrAssistant />;
+        return <NurseAideOrAssistant skills={roleSkills} />;
       case "special-need-caregivers":
-        return <SpecialNeedCaregivers/>
+        return <SpecialNeedCaregivers />;
       case "care-institutions":
-        return <MedicalInstitution/>  
+        return <MedicalInstitution skills={roleSkills}/>;
 
       default:
         return notFound();
@@ -60,7 +96,7 @@ const Page = () => {
       fallback={
         <div className="w-full py-20 text-center font-semibold text-primary">
           {/* <LoadingSpinner/> */}
-          <LoadingSpinnerSecond/>
+          <LoadingSpinnerSecond />
         </div>
       }
     >

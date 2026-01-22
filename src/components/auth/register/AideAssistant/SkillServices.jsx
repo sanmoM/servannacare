@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
+const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
   const [data, setData] = useState({
     skills: defaultValues.skills || [],
     mobilityYears: defaultValues.mobilityYears || "",
@@ -14,13 +14,13 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
     serviceFee: defaultValues.serviceFee || "",
   });
 
-  const skills = [
-    "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
-    "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
-    "Compassion &  strong communication Skills",
-    "Special needs caregiver (name which special need you have worked with e. g. autistic, deaf, blind ",
-    "Elderly caregiving",
-  ];
+  // const skills = [
+  //   "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
+  //   "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
+  //   "Compassion &  strong communication Skills",
+  //   "Special needs caregiver (name which special need you have worked with e. g. autistic, deaf, blind ",
+  //   "Elderly caregiving",
+  // ];
 
   // const interested = [
   //   "ELDERLY CARE",
@@ -98,15 +98,15 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
           {skills.map((area, idx) => (
             <div key={idx} className="flex gap-2">
               <Checkbox
-                id={area}
-                checked={data.skills.includes(area)}
-                onCheckedChange={() => toggleSkill(area)}
+                id={area.id}
+                checked={data.skills.includes(area.name)}
+                onCheckedChange={() => toggleSkill(area.name)}
               />
               <Label
-                htmlFor={area}
+                htmlFor={area.name}
                 className="text-gray-700 font-normal cursor-pointer"
               >
-                {area}
+                {area.name}
               </Label>
             </div>
           ))}
@@ -154,7 +154,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
             label="Bathing Assistance (Years)"
             type="number"
             name="bathingYears"
-             maxLength={2}
+            maxLength={2}
             placeholder="00"
             value={data.bathingYears}
             onChange={(e) => {
@@ -166,7 +166,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
             label="Feeding Assistance (Years)"
             type="number"
             name="feedingYears"
-                maxLength={2}
+            maxLength={2}
             placeholder="00"
             value={data.feedingYears}
             onChange={(e) => {

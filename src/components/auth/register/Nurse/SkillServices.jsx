@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
+const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
+  console.log("skil service",skills)
   const [data, setData] = useState({
     skills: defaultValues.skills || [],
     mobilityYears: defaultValues.mobilityYears || "",
@@ -16,17 +17,16 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
     serviceFee: defaultValues.serviceFee || "",
   });
 
-  const skills = [
-    "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
-    "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
-    "Medical Assistance: Aassisting nurses with wound care, administering medication (in some cases)",
-    "Compassion & Communication Skills",
-    "Special needs children caregiving",
-    "Elderly caregiving",
-    "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
-  ];
+  // const skills = [
+  //   "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
+  //   "Vital Signs Monitoring(checking blood pressure, blood sugar, pulse, temperature, etc.",
+  //   "Medical Assistance: Aassisting nurses with wound care, administering medication (in some cases)",
+  //   "Compassion & Communication Skills",
+  //   "Special needs children caregiving",
+  //   "Elderly caregiving",
+  //   "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
+  // ];
 
- 
   const toggleSkill = (skill) => {
     setData((prev) => {
       const alreadySelected = prev.skills.includes(skill);
@@ -39,8 +39,6 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
     });
   };
 
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
@@ -52,7 +50,6 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
     // Dynamic validation
     const requiredFields = [
       "skills",
-      // "interested",
       "mobilityYears",
       "bathingYears",
       "feedingYears",
@@ -87,15 +84,15 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack }) => {
             {skills.map((area, idx) => (
               <div key={idx} className="flex gap-2">
                 <Checkbox
-                  id={area}
-                  checked={data.skills.includes(area)}
-                  onCheckedChange={() => toggleSkill(area)}
+                  id={area.id}
+                  checked={data.skills.includes(area.name)}
+                  onCheckedChange={() => toggleSkill(area.name)}
                 />
                 <Label
-                  htmlFor={area}
+                  htmlFor={area.name}
                   className="text-gray-700 font-normal cursor-pointer"
                 >
-                  {area}
+                  {area.name}
                 </Label>
               </div>
             ))}
