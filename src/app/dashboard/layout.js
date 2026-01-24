@@ -28,6 +28,7 @@ import Link from "next/link";
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const { user, loaded } = useLocalUser();
+  console.log("user", user);
   const router = useRouter();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,7 +38,6 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     if (!loaded) return;
-
 
     if (!token) {
       router.push("/login");
@@ -70,7 +70,7 @@ export default function DashboardLayout({ children }) {
     // CARE INSTITUTION routes
     if (
       pathname.startsWith("/dashboard/care-institution") &&
-      role !== "care institution"
+      role !== "care_institutions"
     ) {
       notFound();
     }
@@ -140,7 +140,7 @@ export default function DashboardLayout({ children }) {
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     {
       name: "Profile",
-      href: "/dashboard/care-institution-profile",
+      href: "/dashboard/care_institutions-profile",
       icon: User,
     },
     {
@@ -173,9 +173,9 @@ export default function DashboardLayout({ children }) {
   } else if (user?.role === "specialist") {
     links = specialistLinks;
     role = "specialist";
-  } else if (user?.role === "care institution") {
+  } else if (user?.role === "care_institutions") {
     links = careInstitution;
-    role = "care-institution";
+    role = "care_institutions";
   }
 
   const handleLogout = () => {
@@ -236,9 +236,6 @@ export default function DashboardLayout({ children }) {
                 <div className="flex gap-2 items-center">
                   <Link className="flex gap-2 items-center" href={"/"}>
                     <img className="w-17" src="/logo2.png" alt="Logo" />
-                    {/* <h2 className="font-semibold text-sm lg:text-base">
-                      SERVANNACARE
-                    </h2> */}
                   </Link>
                 </div>
                 <button

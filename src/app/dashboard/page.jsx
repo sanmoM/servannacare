@@ -130,7 +130,7 @@ export default function DashboardPage() {
     renderStats = specialistDashboardStats;
   } else if (user?.role === "agency") {
     renderStats = agencyDashboardStats;
-  } else if (user?.role === "care institution") {
+  } else if (user?.role === "care_institutions") {
     renderStats = agencyDashboardStats;
   }
 

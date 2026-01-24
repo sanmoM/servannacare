@@ -28,7 +28,6 @@ import {
   User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 export default function MedicalInstitutionProfile() {
   const [userInfo, setUserInfo] = useState({});
