@@ -7,15 +7,12 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { userRole } from "@/utilities/data";
-import { generateToken } from "@/utilities/helperFunction";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,17 +48,17 @@ const Page = () => {
     try {
       const res = await postApi("/login", userInfo);
       const { token, is_profile_completed, role, subRole } = res.data.data;
-            document.cookie = `token=${token}; path=/; max-age=86400`;
-      // localStorage.setItem("token", token);
+      localStorage.setItem("token", token);
       localStorage.setItem(
         "user",
         JSON.stringify({ is_profile_completed, role, subRole }),
       );
       toast.success("Login successful!");
-      if (is_profile_completed) {
-        router.push("/dashboard");
-        return;
-      }
+      router.push("/dashboard");
+      // if (is_profile_completed) {
+      //   router.push("/dashboard");
+      //   return;
+      // }
     } catch (error) {
       toast.error(
         error?.response?.data?.message || "Invalid email or password",

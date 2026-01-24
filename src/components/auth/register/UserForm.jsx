@@ -75,17 +75,6 @@ const UserForm = () => {
     setShowPass(!showPass);
   };
 
-  // const handleVerifyOTP = (otp) => {
-  //   if (otp !== "123456") {
-  //     toast.error("Invalid OTP!");
-  //     return;
-  //   }
-
-  //   setOpenOTP(false);
-  //   localStorage.setItem("user", JSON.stringify(temUser));
-  //   router.push("/dashboard");
-  //   toast.success("User created successfully!");
-  // };
 
   const handleVerifyOTP = async (otp) => {
     try {
@@ -94,7 +83,6 @@ const UserForm = () => {
         otp,
       });
       const { token, role, is_profile_completed } = res?.data?.data;
-
 
       localStorage.setItem("token", token);
       localStorage.setItem(

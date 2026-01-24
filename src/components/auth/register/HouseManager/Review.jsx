@@ -6,9 +6,7 @@ import { Label } from "@/components/ui/label";
 import { FileText, Image, Image as ImageIcon } from "lucide-react";
 import React, { useState } from "react";
 
-
 const Review = ({ data, onNext, onBack }) => {
-  
 
   const handleSubmit = () => {
     if (onNext) onNext();
@@ -16,9 +14,7 @@ const Review = ({ data, onNext, onBack }) => {
 
   // Format labels nicely from camelCase
   const formatLabel = (key) =>
-    key
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (str) => str.toUpperCase());
+    key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
   // Helper: format file size in KB/MB
   const formatFileSize = (size) => {
@@ -110,9 +106,8 @@ const Review = ({ data, onNext, onBack }) => {
 
       {/*  Render all form sections */}
       {Object.entries(data).map(([sectionKey, sectionValue]) =>
-        renderSection(sectionKey, sectionValue)
+        renderSection(sectionKey, sectionValue),
       )}
-
 
       {/*  Buttons */}
       <div className="flex justify-between pt-6">

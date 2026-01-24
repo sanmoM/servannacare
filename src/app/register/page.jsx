@@ -16,39 +16,31 @@ import React, { Suspense, useEffect, useState } from "react";
 
 const PageContent = () => {
   const searchParams = useSearchParams();
-  const role = searchParams.get("role");
-
-const normalizeRoleToType = (role) => {
-  if (!role) return "";
-
-  let normalized = role.replaceAll("-", "_");
-
-  normalized = normalized.replace("nurse_aide_or_assistant", "nurse_ade_assistant");
-  normalized = normalized.replace("care_institutions", "institution_nurse");
-
-  return normalized;
-};
-
+  const role = searchParams.get("role")
+  
+console.log("role",role)
+  const ROLE_TYPE_MAP = {
+    "nurse-aide-or-assistant": "nurse_ade_assistant",
+    care_institutions: "institution_nurse",
+    nurse: "nurse",
+  };
 
   const [roleSkills, setRoleSkills] = useState([]);
   const { data, isLoading, error } = useFetch("/skills");
 
-useEffect(() => {
-  if (!data || !role) return;
+  useEffect(() => {
+    if (!data || !role) return;
 
-  const skills = Array.isArray(data?.data?.data)
-    ? data.data.data
-    : [];
+    const skills = Array.isArray(data?.data?.data) ? data.data.data : [];
 
-  const normalizedType = normalizeRoleToType(role);
+    const normalizedType = ROLE_TYPE_MAP[role] || role;
 
-  const filteredSkills = skills.filter(
-    (skill) => skill.type === normalizedType
-  );
+    const filteredSkills = skills.filter(
+      (skill) => skill.type === normalizedType,
+    );
 
-  setRoleSkills(filteredSkills);
-}, [data, role]);
-
+    setRoleSkills(filteredSkills);
+  }, [data, role]);
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
@@ -69,8 +61,8 @@ useEffect(() => {
         return <NurseAideOrAssistant skills={roleSkills} />;
       case "special-need-caregivers":
         return <SpecialNeedCaregivers />;
-      case "care-institutions":
-        return <MedicalInstitution skills={roleSkills}/>;
+      case "care_institutions":
+        return <MedicalInstitution skills={roleSkills} />;
 
       default:
         return notFound();

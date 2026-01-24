@@ -32,19 +32,17 @@ export default function DashboardLayout({ children }) {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const token = localStorage.getItem("token");
+  const isProfileCompleted = Boolean(user?.is_profile_completed);
 
   useEffect(() => {
     if (!loaded) return;
 
-    // if (!user) {
-    //   router.push("/login");
-    //   return;
-    // }
 
-    // if (!user?.token) {
-    //   router.push("/login");
-    //   return;
-    // }
+    if (!token) {
+      router.push("/login");
+      return;
+    }
 
     const role = user?.role;
 
@@ -181,6 +179,7 @@ export default function DashboardLayout({ children }) {
   }
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("specialist");
     router.push("/");

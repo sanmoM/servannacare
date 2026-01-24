@@ -11,6 +11,7 @@ import Review from "../Nurse/Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
+import { Button } from "@/components/ui/button";
 
 const Physiotherapist = () => {
   const [started, setStarted] = useState(false);
@@ -72,6 +73,11 @@ const Physiotherapist = () => {
   const handleBack = () => {
     if (step > 1) setStep(step - 1);
   };
+
+      const handleSkip = () => {
+    router.push("/dashboard");
+  };
+
   
   return (
     <div className="w-full flex justify-center  px-2">
@@ -84,7 +90,23 @@ const Physiotherapist = () => {
           <SignUpStart onSuccess={handleSignupSuccess} />
         ) : (
           <>
-            {/* Header */}
+                        {started && step === 1 && (
+<div className="mb-6 w-full rounded-lg bg-red-100 px-4 py-3 text-red-900 border border-red-300">
+  <div className="flex items-center justify-between gap-4">
+    <p className="text-xl font-medium">
+      You can skip this and complete your profile later.
+    </p>
+
+    <Button
+      onClick={handleSkip}
+      className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
+    >
+      Skip
+    </Button>
+  </div>
+</div>
+
+            )}
             <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
               Physiotherapist Registration
             </h2>

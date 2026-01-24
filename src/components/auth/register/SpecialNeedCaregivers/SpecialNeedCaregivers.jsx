@@ -11,12 +11,13 @@ import Review from "../Nurse/Review";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
+import { Button } from "@/components/ui/button";
 
 const SpecialNeedCaregivers = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const [user, setUser] = useState({});
-  const router = useRouter()
+  const router = useRouter();
   const totalSteps = 5;
   const [formData, setFormData] = useState({
     basicInfo: {},
@@ -43,7 +44,6 @@ const SpecialNeedCaregivers = () => {
     if (step === 4)
       setFormData((prev) => ({ ...prev, documents: dataForStep }));
 
-
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
@@ -55,11 +55,11 @@ const SpecialNeedCaregivers = () => {
           location: formData.basicInfo.location,
           name: formData.basicInfo.name,
           profilePic: null,
-          role:"specialist",
-          subRole:"special need caregivers",
-          status:"under review",
-          token
-        })
+          role: "specialist",
+          subRole: "special need caregivers",
+          status: "under review",
+          token,
+        }),
       );
       localStorage.setItem("specialist", JSON.stringify(formData));
       toast.success("Register Sucessfully!");
@@ -79,6 +79,11 @@ const SpecialNeedCaregivers = () => {
     if (step > 1) setStep(step - 1);
   };
 
+
+    const handleSkip = () => {
+    router.push("/dashboard");
+  };
+
   return (
     <div className="w-full flex justify-center  px-2">
       <div
@@ -90,7 +95,22 @@ const SpecialNeedCaregivers = () => {
           <SignUpStart onSuccess={handleSignupSuccess} />
         ) : (
           <>
-            {/* Header */}
+            {started && step === 1 && (
+              <div className="mb-6 w-full rounded-lg bg-red-100 px-4 py-3 text-red-900 border border-red-300">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-xl font-medium">
+                    You can skip this and complete your profile later.
+                  </p>
+
+                  <Button
+                    onClick={handleSkip}
+                    className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
+                  >
+                    Skip
+                  </Button>
+                </div>
+              </div>
+            )}
             <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
               Special Need Caregivers
             </h2>

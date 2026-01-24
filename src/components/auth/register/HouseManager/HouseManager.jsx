@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Progress from "../Progress";
 import BasicInfo from "./BasicInfo";
 import AdditionalDetails from "./AdditionalDetails";
@@ -10,6 +10,7 @@ import Review from "./Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
+import { Button } from "@/components/ui/button";
 
 const HouseManager = () => {
   const [started, setStarted] = useState(false);
@@ -23,6 +24,13 @@ const HouseManager = () => {
     additionalDetails: {},
     documents: {},
   });
+
+  // useEffect(() => {
+  //   if (!user?.is_profile_completed) {
+  //     setStarted(true);
+  //     setStep(1);
+  //   }
+  // }, []);
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
@@ -41,8 +49,7 @@ const HouseManager = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // Save complete updated data (not outdated state)
-      const token = generateToken()
+      const token = generateToken();
 
       localStorage.setItem(
         "user",
@@ -52,19 +59,21 @@ const HouseManager = () => {
           name: updatedFormData.basicInfo.name,
           profilePic: null,
           role: "specialist",
-          subRole:"housemanager",
-          status:"under review",
-          token
-        })
+          subRole: "housemanager",
+          status: "under review",
+          token,
+        }),
       );
 
       localStorage.setItem("specialist", JSON.stringify(updatedFormData));
 
-      console.log(updatedFormData);
-
       toast.success("Register Successfully!");
       router.push("/dashboard");
     }
+  };
+
+  const handleSkip = () => {
+    router.push("/dashboard");
   };
 
   const handleBack = () => {
@@ -82,6 +91,23 @@ const HouseManager = () => {
           <SignUpStart onSuccess={handleSignupSuccess} />
         ) : (
           <>
+            {started && step === 1 && (
+              <div className="mb-6 w-full rounded-lg bg-red-100 px-4 py-3 text-red-900 border border-red-300">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-xl font-medium">
+                    You can skip this and complete your profile later.
+                  </p>
+
+                  <Button
+                    onClick={handleSkip}
+                    className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
+                  >
+                    Skip
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <h2 className="text-xl mb-6 font-semibold text-center text-gray-900">
               Continue as Nanny/Housekeeper
             </h2>

@@ -1,11 +1,16 @@
 "use client";
 
 import LoadingSpinner from "@/components/shared/LoadingSpin";
+import { Button } from "@/components/ui/button";
 import useLocalUser from "@/hooks/useLocalUser";
 import { Calendar, CheckCircle, Clock, DollarSign, Star } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, loaded } = useLocalUser();
+  const token = localStorage.getItem("token");
+
+  const isProfileCompleted = Boolean(user?.is_profile_completed);
   if (!loaded) {
     return <LoadingSpinner />;
   }
@@ -42,108 +47,132 @@ export default function DashboardPage() {
   ];
 
   const specialistDashboardStats = [
-  {
-    id: 1,
-    title: "Total Jobs Received",
-    icon: <Calendar size={28} />,
-    count: 34,
-    color: "blue",
-  },
-  {
-    id: 2,
-    title: "Jobs Completed",
-    icon: <CheckCircle size={28} />,
-    count: 27,
-    color: "green",
-  },
-  {
-    id: 3,
-    title: "Pending Jobs",
-    icon: <Clock size={28} />,
-    count: 5,
-    color: "yellow",
-  },
-  {
-    id: 4,
-    title: "Total Earnings",
-    icon: <DollarSign size={28} />,
-    count: "KSh 125,400",
-    color: "purple",
-  },
+    {
+      id: 1,
+      title: "Total Jobs Received",
+      icon: <Calendar size={28} />,
+      count: 34,
+      color: "blue",
+    },
+    {
+      id: 2,
+      title: "Jobs Completed",
+      icon: <CheckCircle size={28} />,
+      count: 27,
+      color: "green",
+    },
+    {
+      id: 3,
+      title: "Pending Jobs",
+      icon: <Clock size={28} />,
+      count: 5,
+      color: "yellow",
+    },
+    {
+      id: 4,
+      title: "Total Earnings",
+      icon: <DollarSign size={28} />,
+      count: "KSh 125,400",
+      color: "purple",
+    },
 
-  {
-    id: 5,
-    title: "Average Rating",
-    icon: <Star size={28} />,
-    count: "4.8",
-    color: "pink",
-  },
-];
+    {
+      id: 5,
+      title: "Average Rating",
+      icon: <Star size={28} />,
+      count: "4.8",
+      color: "pink",
+    },
+  ];
   const agencyDashboardStats = [
-  {
-    id: 1,
-    title: "Total Jobs Received",
-    icon: <Calendar size={28} />,
-    count: 34,
-    color: "blue",
-  },
-  {
-    id: 2,
-    title: "Jobs Completed",
-    icon: <CheckCircle size={28} />,
-    count: 27,
-    color: "green",
-  },
-  {
-    id: 3,
-    title: "Pending Jobs",
-    icon: <Clock size={28} />,
-    count: 5,
-    color: "yellow",
-  },
-  {
-    id: 4,
-    title: "Total Earnings",
-    icon: <DollarSign size={28} />,
-    count: "KSh 125,400",
-    color: "purple",
-  },
+    {
+      id: 1,
+      title: "Total Jobs Received",
+      icon: <Calendar size={28} />,
+      count: 34,
+      color: "blue",
+    },
+    {
+      id: 2,
+      title: "Jobs Completed",
+      icon: <CheckCircle size={28} />,
+      count: 27,
+      color: "green",
+    },
+    {
+      id: 3,
+      title: "Pending Jobs",
+      icon: <Clock size={28} />,
+      count: 5,
+      color: "yellow",
+    },
+    {
+      id: 4,
+      title: "Total Earnings",
+      icon: <DollarSign size={28} />,
+      count: "KSh 125,400",
+      color: "purple",
+    },
 
-  {
-    id: 5,
-    title: "Average Rating",
-    icon: <Star size={28} />,
-    count: "4.8",
-    color: "pink",
-  },
-];
+    {
+      id: 5,
+      title: "Average Rating",
+      icon: <Star size={28} />,
+      count: "4.8",
+      color: "pink",
+    },
+  ];
 
-let renderStats = []
-if(user?.role==='user'){
-  renderStats= userDashboardStats
-}else if (user?.role === "specialist"){
-  renderStats = specialistDashboardStats
-}else if (user?.role === "agency"){
-  renderStats = agencyDashboardStats
-}else if (user?.role === "care institution"){
-  renderStats = agencyDashboardStats
-}
+  let renderStats = [];
+  if (user?.role === "user") {
+    renderStats = userDashboardStats;
+  } else if (user?.role === "specialist") {
+    renderStats = specialistDashboardStats;
+  } else if (user?.role === "agency") {
+    renderStats = agencyDashboardStats;
+  } else if (user?.role === "care institution") {
+    renderStats = agencyDashboardStats;
+  }
 
-  // Required Tailwind-safe static gradient classes
   const gradientColors = {
     blue: "from-blue-500 to-blue-700",
     green: "from-green-500 to-green-700",
     yellow: "from-yellow-500 to-yellow-700",
     purple: "from-purple-500 to-purple-700",
-    pink:"from-pink-500 to-pink-700"
+    pink: "from-pink-500 to-pink-700",
   };
 
   return (
     <div>
+      {!isProfileCompleted && (
+        <div className="mt-6 mb-8 rounded-xl border border-amber-300 bg-amber-100 p-5 shadow-md">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-amber-900">
+                Your profile is not complete
+              </h3>
+              <p className="text-sm text-amber-800 mt-1 max-w-lg">
+                Complete your profile to get verified faster and start receiving
+                more.
+              </p>
+            </div>
+
+            <Link
+              href={`/dashboard/${user?.role}-profile`}
+              className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-6 py-3 text-white font-medium hover:bg-amber-700 transition"
+            >
+              Complete Profile
+            </Link>
+          </div>
+        </div>
+      )}
+
       <h1 className="sectionHeading">
         Hi <span className="text-primary">{user?.name || user?.email}!</span>
       </h1>
-      <p className="mt-2 text-sm sm:text-base text-gray-600">Welcome to Servannacare!</p>
+      <p className="mt-2 text-sm sm:text-base text-gray-600">
+        Welcome to Servannacare!
+      </p>
 
       <div className="grid  sm:grid-cols-2 mt-10 gap-4 lg:gap-6 lg:grid-cols-4">
         {renderStats.map((stats) => (
@@ -156,7 +185,9 @@ if(user?.role==='user'){
             <div className="text-white mb-4">{stats.icon}</div>
 
             <p className="text-sm font-medium opacity-90">{stats.title}</p>
-            <h5 className="lg:text-2xl text-xl font-bold mt-1">{stats.count}</h5>
+            <h5 className="lg:text-2xl text-xl font-bold mt-1">
+              {stats.count}
+            </h5>
           </div>
         ))}
       </div>

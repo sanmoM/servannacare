@@ -414,7 +414,7 @@ export const userRole = [
     text: "Care Institutions",
     icon: hospital,
     href: "/register",
-    role: "care-institutions",
+    role: "care_institutions",
   },
 ];
 

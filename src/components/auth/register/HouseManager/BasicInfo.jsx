@@ -31,18 +31,17 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-const handlePhoneChange = (e) => {
-  let value = e.target.value;
-  if (!value.startsWith("+254")) {
-    value = "+254";
-  }
-  value = "+254" + value.slice(4).replace(/\D/g, "");
-  if (value.length > 11) {
-    value = value.slice(0, 11);
-  }
-  setData((prev) => ({ ...prev, phone: value }));
-};
-
+  const handlePhoneChange = (e) => {
+    let value = e.target.value;
+    if (!value.startsWith("+254")) {
+      value = "+254";
+    }
+    value = "+254" + value.slice(4).replace(/\D/g, "");
+    if (value.length > 11) {
+      value = value.slice(0, 11);
+    }
+    setData((prev) => ({ ...prev, phone: value }));
+  };
 
   const toggleLanguage = (lan) => {
     setData((prev) => {
@@ -88,6 +87,7 @@ const handlePhoneChange = (e) => {
 
     onNext(data);
   };
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -195,7 +195,7 @@ const handlePhoneChange = (e) => {
           value={data?.phone}
           maxLength={11}
           onFocus={() => {
-            if (!data?.phone) setData((prev)=>({...prev,phone:"+254"}))
+            if (!data?.phone) setData((prev) => ({ ...prev, phone: "+254" }));
           }}
           onChange={handlePhoneChange}
         />

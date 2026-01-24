@@ -10,24 +10,40 @@ import Link from "next/link";
 import OtpModal from "../OtpModal";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useSearchParams } from "next/navigation";
+import { postApi } from "@/lib/apiHandler";
+import { number } from "framer-motion";
 
 const SignUpStart = ({ onSuccess }) => {
+  const searchParams = useSearchParams();
+  const inComingRole = searchParams.get("role");
+  const SPECIALIST_SUBROLE = [
+    "house-manager",
+    "nurse",
+    "physiotherapist",
+    "nurse-aide-or-assistant",
+    "special-need-caregivers",
+  ];
+  const isSpecialistSubRole = SPECIALIST_SUBROLE.includes(inComingRole);
+  const role = isSpecialistSubRole ? "specialist" : inComingRole;
+  const subRole = isSpecialistSubRole ? inComingRole : "";
+
+
   const [showPass, setShowPass] = useState(false);
   const [phone, setPhone] = useState("");
   const [openOTP, setOpenOTP] = useState(false);
   const [temUser, setTemUser] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
     const phone = form.phone.value;
 
-    // validate phone (Kenya)
     if (phone.length !== 11) {
-      toast.error("Invalied phone number!");
+      toast.error("Invalid phone number!");
       return;
     }
 
@@ -47,35 +63,46 @@ const SignUpStart = ({ onSuccess }) => {
     }
 
     const newUserData = {
+      role,
+      subRole,
+      number: phone,
       email,
-      phone,
-      joinedSince: new Date().toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      }),
+      password,
     };
-
-    setTemUser(newUserData);
-
-    setOpenOTP(true);
-
-    toast.success(`OTP send to ${phone}!`);
+    try {
+      const res = await postApi("/register", newUserData);
+      if (res?.data?.status) {
+        setTemUser(newUserData);
+      }
+      setOpenOTP(true);
+      toast.success(`OTP send to ${email}!`);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "registration failed");
+    }
   };
 
   const handleShowPassword = () => {
     setShowPass(!showPass);
   };
 
-  const handleVerifyOTP = (otp) => {
-    if (otp !== "123456") {
-      toast.error("Invalid OTP!");
-      return;
+  const handleVerifyOTP = async (otp) => {
+    try {
+      const res = await postApi("/verify", {
+        email: temUser?.email,
+        otp,
+      });
+      const { token, role, is_profile_completed } = res?.data?.data;
+      localStorage.setItem("token", token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ role, subRole, is_profile_completed }),
+      );
+      setOpenOTP(false);
+      onSuccess(temUser);
+      toast.success("Account verified successfully!");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Invalid OtP");
     }
-
-    toast.success("Phone number verified!");
-    setOpenOTP(false);
-
-    onSuccess(temUser);
   };
 
   return (
@@ -163,7 +190,7 @@ const SignUpStart = ({ onSuccess }) => {
       {/* OTP Modal  */}
       {openOTP && (
         <OtpModal
-          phone={phone}
+          email={temUser?.email}
           onVerify={handleVerifyOTP}
           onClose={() => setOpenOTP(false)}
         />

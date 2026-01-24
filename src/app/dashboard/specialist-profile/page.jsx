@@ -188,7 +188,7 @@ export default function ProfilePage() {
           <span>Joined {userInfo.joinedSince}</span>
         </div>
       </div>
-      <p className="p-4 mb-4 text-sm flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+      <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
         <Info /> Your account is Under review .
       </p>
       <div className="border flex  items-center md:items-start flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">

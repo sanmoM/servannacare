@@ -12,8 +12,9 @@ import Review from "./Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
+import { Button } from "@/components/ui/button";
 
-const Nurse = ({skills}) => {
+const Nurse = ({ skills }) => {
   const [started, setStarted] = useState(false);
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -55,7 +56,7 @@ const Nurse = ({skills}) => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      const token = generateToken()
+      const token = generateToken();
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -63,11 +64,11 @@ const Nurse = ({skills}) => {
           location: formData.basicInfo.location,
           name: formData.basicInfo.name,
           profilePic: null,
-          role:"specialist",
-          subRole:"nurse",
-          status:"under review",
-          token
-        })
+          role: "specialist",
+          subRole: "nurse",
+          status: "under review",
+          token,
+        }),
       );
 
       localStorage.setItem("specialist", JSON.stringify(formData));
@@ -89,6 +90,11 @@ const Nurse = ({skills}) => {
     if (step > 1) setStep(step - 1);
   };
 
+    const handleSkip = () => {
+    router.push("/dashboard");
+  };
+
+
   return (
     <div className="w-full flex justify-center  px-2">
       <div
@@ -100,7 +106,23 @@ const Nurse = ({skills}) => {
           <SignUpStart onSuccess={handleSignupSuccess} />
         ) : (
           <>
-            {/* Header */}
+            {started && step === 1 && (
+<div className="mb-6 w-full rounded-lg bg-red-100 px-4 py-3 text-red-900 border border-red-300">
+  <div className="flex items-center justify-between gap-4">
+    <p className="text-xl font-medium">
+      You can skip this and complete your profile later.
+    </p>
+
+    <Button
+      onClick={handleSkip}
+      className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
+    >
+      Skip
+    </Button>
+  </div>
+</div>
+
+            )}
             <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
               Nurse Registration
             </h2>
