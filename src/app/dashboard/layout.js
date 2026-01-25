@@ -28,16 +28,20 @@ import Link from "next/link";
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const { user, loaded } = useLocalUser();
-  console.log("user", user);
   const router = useRouter();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const token = localStorage.getItem("token");
+  const [token, setToken] = useState(null);
+
   const isProfileCompleted = Boolean(user?.is_profile_completed);
 
   useEffect(() => {
     if (!loaded) return;
+
+    if (typeof window !== "undefined") {
+      setToken(localStorage.getItem("token"));
+    }
 
     if (!token) {
       router.push("/login");
