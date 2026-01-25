@@ -1,19 +1,48 @@
+import useLocalUser from "@/hooks/useLocalUser";
 import { NextResponse } from "next/server";
 
-const protectedRoutes = ["/dashboard"];
+const ROLE_ROUTES = {
+  user: [
+    "/dashboard/my-appointment",
+    "/dashboard/book-history",
+    "/dashboard/payment-history",
+    "/dashboard/user",
+  ],
+  specialist: ["/dashboard/specialist"],
+  agency: ["/dashboard/agency"],
+  care_institutions: ["/dashboard/care-institution"],
+};
+
+function matchRoute(pathname, routes) {
+  return routes.some(
+    (route) => pathname === route || pathname.startsWith(route + "/"),
+  );
+}
 
 export function middleware(req) {
-  const token = req.cookies.get("token")?.value;
-
   const { pathname } = req.nextUrl;
 
-  const isProtected = protectedRoutes.some((route) =>
-    pathname.startsWith(route),
-  );
+  if (pathname.startsWith("/login") || pathname.startsWith("/signup")) {
+    return NextResponse.next();
+  }
 
-  if (isProtected && !token) {
-    const loginUrl = new URL("/login", req.url);
-    return NextResponse.redirect(loginUrl);
+  const token = localStorage.getItem("token");
+  const { user, loaded } = useLocalUser();
+
+  if (!token || !user?.role) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  s;
+  const allowedRoutes = ROLE_ROUTES[role];
+
+  if (!allowedRoutes) {
+    return NextResponse.rewrite(new URL("/404", req.url));
+  }
+
+  const isAllowed = matchRoute(pathname, allowedRoutes);
+  if (!isAllowed) {
+    return NextResponse.rewrite(new URL("/404", req.url));
   }
 
   return NextResponse.next();
