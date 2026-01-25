@@ -256,7 +256,7 @@ export default function DashboardLayout({ children }) {
               {/* Links */}
               <nav className="flex-grow overflow-y-auto py-3">
                 {!loaded ? (
-                  <LoadingSpinner />
+                  <Loading />
                 ) : (
                   links.map((link) => <NavLink key={link.name} link={link} />)
                 )}

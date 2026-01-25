@@ -21,6 +21,7 @@ import {
 import { userRole } from "@/utilities/data";
 import useLocalUser from "@/hooks/useLocalUser";
 import LoadingSpinner from "../LoadingSpin";
+import LoadingSpinnerSecond from "../Loadingspiner";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -28,7 +29,7 @@ const Navbar = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { user, loaded } = useLocalUser();
 
-  console.log(user);
+
 
   const navlinks = [
     { text: "Home", link: "/", icon:Home },
@@ -114,7 +115,7 @@ const Navbar = () => {
           {/* CTA Button */}
           <div className="flex gap-2">
             {!loaded ? (
-              <LoadingSpinner />
+              <LoadingSpinnerSecond />
             ) : user ? (
               <Link href={"/dashboard"}>
                 <Button className={"rounded-full"}>Dashboard</Button>

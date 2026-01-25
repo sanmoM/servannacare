@@ -11,17 +11,18 @@ const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
 
   // Define routes where Navbar and Footer are hidden
-  const hideLayout = ["/login", "/register","/dashboard","/forgot-password"];
+  const hideLayout = ["/login", "/register", "/dashboard", "/forgot-password"];
   const shouldHideLayout = hideLayout.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   return (
     <>
+     
       {!shouldHideLayout && <Navbar />}
       <div className="min-h-[60vh]">{children}</div>
-      <ChatBot/>
-      <Toaster  position="top-right"  reverseOrder={false} />
+      <ChatBot />
+      <Toaster position="top-right" reverseOrder={false} />
       {!shouldHideLayout && <Footer />}
     </>
   );

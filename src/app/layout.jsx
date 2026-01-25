@@ -4,6 +4,7 @@ import LayoutWrapper from "@/components/shared/LayoutWrapper";
 import AOSInit from "@/animation/AOSInit";
 import QueryProvider from "@/providers/queryProvider";
 
+
 const ibmPlexSerif = IBM_Plex_Serif({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700"],
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${ibmPlexSerif.variable} font-serif antialiased`}>
+     
         <AOSInit />
         <QueryProvider>
           <LayoutWrapper>{children}</LayoutWrapper>
