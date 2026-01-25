@@ -9,7 +9,7 @@ const FeatureItem = ({ feature }) => {
           {/* <Icon width={"32"} className={"text-primary "} /> */}
           <span
             dangerouslySetInnerHTML={{ __html: feature.icon }}
-            className="w-8 h-6"
+            className="text-primary"
           />
         </div>
         <div className="flex-grow">

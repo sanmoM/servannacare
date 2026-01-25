@@ -1,6 +1,5 @@
 "use client";
 
-import CountUp from "react-countup";
 import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
@@ -14,8 +13,6 @@ import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
 
 export default function Testimonials({ homeData }) {
-  console.log("testimonial", homeData);
-  // const {id, title, sub_title } = homeData?.newsLetter;
   const [startCount, setStartCount] = useState(false);
   const sectionRef = useRef(null);
 
@@ -86,14 +83,14 @@ export default function Testimonials({ homeData }) {
 
           {/* Navigation Buttons */}
           <button
-            className="swiper-button-prev-custom absolute -left-3 md:-left-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary  hover:bg-primary/10  bg-primary hover:text-primary flex items-center text-white justify-center transition-all duration-300 hover:scale-110"
+            className="swiper-button-prev-custom absolute -left-3 md:-left-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary  hover:bg-primary/10  bg-primary hover:text-primary flex items-center text-white justify-center transition-all duration-300 hover:scale-110 cursor-pointer"
             aria-label="Previous testimonial"
           >
             <ChevronLeft />
           </button>
 
           <button
-            className="swiper-button-next-custom absolute -right-3 md:-right-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary text-white bg-primary hover:bg-primary/10  hover:text-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
+            className="swiper-button-next-custom absolute -right-3 md:-right-0 top-1/3 z-10 w-12 h-12 rounded-full border-2 border-border hover:border-primary text-white bg-primary hover:bg-primary/10 cursor-pointer hover:text-primary flex items-center justify-center transition-all duration-300 hover:scale-110"
             aria-label="Next testimonial"
           >
             <ChevronRight />
@@ -110,7 +107,9 @@ export default function Testimonials({ homeData }) {
               {homeData?.newsLetter?.title ? homeData?.newsLetter?.title : ""}
             </h2>
             <p className="text-gray-300 my-6 my:mb-8 max-w-xl mx-auto  text-xs lg:text-sm">
-              {homeData?.newsLetter?.sub_title ? homeData?.newsLetter?.sub_title : ""}
+              {homeData?.newsLetter?.sub_title
+                ? homeData?.newsLetter?.sub_title
+                : ""}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-1 items-center justify-center">
               <Input
@@ -151,9 +150,9 @@ function TestimonialCard({ testimonial }) {
             ))}
           </div>
 
-          {/* Testimonial Content */}
-          <p className="text-card-foreground text-sm lg:text-base leading-relaxed mb-8 flex-grow font-light italic">
-            “{testimonial.content}”
+          <p className="text-card-foreground text-sm lg:text-base leading-relaxed mb-8 font-light italic">
+            “{testimonial.content.split(" ").slice(0, 16).join(" ")}
+            {testimonial.content.split(" ").length > 16 ? "..." : ""}”
           </p>
         </div>
 

@@ -4,7 +4,6 @@ import FeatureItem from '../aboutUsParts/FeatureItem'
 import { ClipboardList, DollarSign, Phone, ShieldCheck, Sparkles, Users } from 'lucide-react';
 
 const WhyChooseUs = ({Data}) => {
-console.log(Data)
      const features = [
     {
       icon: DollarSign,

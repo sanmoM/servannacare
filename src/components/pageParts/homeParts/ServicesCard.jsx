@@ -40,7 +40,9 @@ const ServicesCard = ({ services }) => {
             {services?.title}
           </h3>
           <p className="text-sm group-hover:text-white text-gray-700 leading-relaxed">
-            {services.subtitle}
+               “{services?.subtitle?.split(" ").slice(0, 10).join(" ")}
+            {services?.subtitle?.split(" ").length > 10 ? "..." : ""}”
+            {/* {services.subtitle} */}
           </p>
         </div>
       </div>

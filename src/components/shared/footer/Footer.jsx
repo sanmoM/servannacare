@@ -56,7 +56,9 @@ const Footer = () => {
               <FooterLink href="/contact-us">Contact Us</FooterLink>
               <FooterLink href="/blog">Our Blog</FooterLink>
               <FooterLink href="/faq">FAQ</FooterLink>
-              <FooterLink href="/terms-condition">Terms & Conditions</FooterLink>
+              <FooterLink href="/terms-condition">
+                Terms & Conditions
+              </FooterLink>
               <FooterLink href="/privacy-policy">Privacy Policy </FooterLink>
               <FooterLink href="/refund-policy">Refund Policy </FooterLink>
             </ul>
@@ -70,7 +72,12 @@ const Footer = () => {
             <ul className="mt-4 space-y-3 text-gray-100">
               {serviceCategory.map((cat, indx) => {
                 return (
-                  <FooterLink key={indx} href={`/specialist?category=${cat.value}`}>{cat.mainCategory}</FooterLink>
+                  <FooterLink
+                    key={indx}
+                    href={`/specialist?category=${cat.value}`}
+                  >
+                    {cat.mainCategory}
+                  </FooterLink>
                 );
               })}
             </ul>
@@ -95,34 +102,34 @@ const Footer = () => {
         <hr className="my-10 border-primary" />
         <div className="flex flex-col items-center justify-between sm:flex-row">
           <p className="text-xs text-center sm:text-left">
-            ALLRIGHT RESERVED - CERVANNA CARE
+            CERVANNA CARE &copy; {new Date().getFullYear()}. ALL RIGHT RESERVED
           </p>
           <div className="flex items-center space-x-5 mt-4 sm:mt-0">
             <a
               href="#"
               aria-label="Facebook"
-              className="text-blue-200 hover:text-white transition-colors duration-200"
+              className="text-blue-200 transition-colors duration-200"
             >
               <Facebook size={20} />
             </a>
             <a
               href="#"
               aria-label="Twitter"
-              className="text-blue-200 hover:text-white transition-colors duration-200"
+              className="text-blue-200 transition-colors duration-200"
             >
               <Twitter size={20} />
             </a>
             <a
               href="#"
               aria-label="Instagram"
-              className="text-blue-200 hover:text-white transition-colors duration-200"
+              className="text-blue-200 transition-colors duration-200"
             >
               <Instagram size={20} />
             </a>
             <a
               href="#"
               aria-label="LinkedIn"
-              className="text-blue-200 hover:text-white transition-colors duration-200"
+              className="text-blue-200 transition-colors duration-200"
             >
               <Linkedin size={20} />
             </a>

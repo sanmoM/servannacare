@@ -1,4 +1,3 @@
-import useLocalUser from "@/hooks/useLocalUser";
 import { NextResponse } from "next/server";
 
 const ROLE_ROUTES = {
@@ -15,35 +14,40 @@ const ROLE_ROUTES = {
 
 function matchRoute(pathname, routes) {
   return routes.some(
-    (route) => pathname === route || pathname.startsWith(route + "/"),
+    (route) => pathname === route || pathname.startsWith(route + "/")
   );
 }
 
 export function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  if (pathname.startsWith("/login") || pathname.startsWith("/signup")) {
+
+  if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
     return NextResponse.next();
   }
 
-  const token = localStorage.getItem("token");
-  const { user, loaded } = useLocalUser();
 
-  if (!token || !user?.role) {
+  const token = req.cookies.get("token")?.value;
+  const role = req.cookies.get("role")?.value;
+
+
+  if (!token || !role) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  s;
   const allowedRoutes = ROLE_ROUTES[role];
 
+  
   if (!allowedRoutes) {
-    return NextResponse.rewrite(new URL("/404", req.url));
+    return NextResponse.rewrite(new URL("/", req.url));
   }
+
 
   const isAllowed = matchRoute(pathname, allowedRoutes);
   if (!isAllowed) {
-    return NextResponse.rewrite(new URL("/404", req.url));
+    return NextResponse.rewrite(new URL("/", req.url));
   }
+
 
   return NextResponse.next();
 }

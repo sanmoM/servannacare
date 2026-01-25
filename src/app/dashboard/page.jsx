@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, loaded } = useLocalUser();
-  const token = localStorage.getItem("token");
+  // const token = localStorage.getItem("token");
 
   const isProfileCompleted = Boolean(user?.is_profile_completed);
   if (!loaded) {

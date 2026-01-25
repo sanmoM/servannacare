@@ -55,7 +55,8 @@ const Faq = ({ homeData }) => {
   ];
 
   return (
-    <Container className="py-10 lg:py-16">
+    <Container className="py-10 lg:py-16 pb-24">
+
       <div className="pb-10 text-center">
         <h4 className="md:text-sm mb-3  text-xs font-semibold text-primary">
           FAQ
@@ -90,7 +91,7 @@ const Faq = ({ homeData }) => {
           <Accordion
             type="single"
             collapsible
-            defaultValue="item-1"
+            defaultValue="item-1 "
             className="space-y-4"
           >
             {homeData?.faqs.map((item, indx) => (
