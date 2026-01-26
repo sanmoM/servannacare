@@ -235,6 +235,7 @@ const MedicalInstitution = ({ skills }) => {
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
+          //todo this localStorage
           localStorage.setItem(
             "user",
             JSON.stringify({

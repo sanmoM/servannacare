@@ -11,6 +11,7 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
+import { postApi } from "@/lib/apiHandler";
 
 const HouseManager = () => {
   const [started, setStarted] = useState(false);
@@ -37,7 +38,7 @@ const HouseManager = () => {
     setUser(accountData);
   };
 
-  const handleNext = (dataForStep) => {
+  const handleNext = async (dataForStep) => {
     let updatedFormData = { ...formData };
 
     if (step === 1) updatedFormData.basicInfo = dataForStep;
@@ -49,8 +50,6 @@ const HouseManager = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      const token = generateToken();
-
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -61,15 +60,88 @@ const HouseManager = () => {
           role: "specialist",
           subRole: "housemanager",
           status: "under review",
-          token,
         }),
       );
 
       localStorage.setItem("specialist", JSON.stringify(updatedFormData));
 
-
       toast.success("Register Successfully!");
-      router.push("/dashboard");
+      // router.push("/dashboard");
+
+      const fd = new FormData();
+      const BASICINFO = formData.basicInfo;
+      const ADDITIONALDETAILS = formData.additionalDetails;
+      const DOCUMENTSUPLOADS = formData.documents;
+
+      fd.append("name", BASICINFO.name);
+      fd.append("education", BASICINFO.education);
+      fd.append("experience", BASICINFO.experience);
+      fd.append("location", BASICINFO.location);
+      BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
+      fd.append("phone", BASICINFO.phone);
+      fd.append("salaryRange", BASICINFO.salaryRange);
+      fd.append("serviceOffered", BASICINFO.serviceOffered);
+      fd.append("isMother", ADDITIONALDETAILS.isMother ? 1 : 0);
+      ADDITIONALDETAILS.ageOfKids.forEach((age) =>
+        fd.append("ageOfKids[]", age),
+      );
+      fd.append("isHandelingPet", ADDITIONALDETAILS.isHandelingPet ? 1 : 0);
+      fd.append("preferredRole", ADDITIONALDETAILS.preferredRole);
+      if (DOCUMENTSUPLOADS?.idCopy) {
+        fd.append("idCopy", DOCUMENTSUPLOADS.idCopy);
+      }
+      if (DOCUMENTSUPLOADS?.profilePhoto) {
+        fd.append("profilePhoto", DOCUMENTSUPLOADS.profilePhoto);
+      }
+      if (DOCUMENTSUPLOADS?.drivingLicense) {
+        fd.append("drivingLicense", DOCUMENTSUPLOADS.drivingLicense);
+      }
+      if (DOCUMENTSUPLOADS?.firstAidCertificate) {
+        fd.append("firstAidCertificate", DOCUMENTSUPLOADS.firstAidCertificate);
+      }
+      if (DOCUMENTSUPLOADS?.goodConductCertificate) {
+        fd.append(
+          "goodConductCertificate",
+          DOCUMENTSUPLOADS.goodConductCertificate,
+        );
+      }
+
+      try {
+        const res = await postApi("/create-profile", fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("res", res);
+        if (res?.status === 200) {
+          toast.success("Registered Successfully!");
+          router.push(`/dashboard/${user?.role}-profile`);
+          //todo this localStorage
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...user,
+              role: "sub-manager",
+              institution: fd,
+            }),
+          );
+        } else {
+          toast.error(
+            res?.data?.message || "Something went wrong. Please try again.",
+          );
+        }
+      } catch (error) {
+        console.error("Error creating profile:", error);
+        if (error.response) {
+          toast.error(
+            error.response.data?.message || `Error: ${error.response.status}`,
+          );
+        } else if (error.request) {
+          toast.error("No response from server. Please check your connection.");
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
+      }
     }
   };
 
