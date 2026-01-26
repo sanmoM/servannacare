@@ -50,22 +50,22 @@ const HouseManager = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          ...user,
-          location: updatedFormData.basicInfo.location,
-          name: updatedFormData.basicInfo.name,
-          profilePic: null,
-          role: "specialist",
-          subRole: "housemanager",
-          status: "under review",
-        }),
-      );
+      // localStorage.setItem(
+      //   "user",
+      //   JSON.stringify({
+      //     ...user,
+      //     location: updatedFormData.basicInfo.location,
+      //     name: updatedFormData.basicInfo.name,
+      //     profilePic: null,
+      //     role: "specialist",
+      //     subRole: "housemanager",
+      //     status: "under review",
+      //   }),
+      // );
 
-      localStorage.setItem("specialist", JSON.stringify(updatedFormData));
+      // localStorage.setItem("specialist", JSON.stringify(updatedFormData));
 
-      toast.success("Register Successfully!");
+      // toast.success("Register Successfully!");
       // router.push("/dashboard");
 
       const fd = new FormData();
@@ -116,15 +116,17 @@ const HouseManager = () => {
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
+          //todo 
+          // localStorage.setItem("token", user?.token);
           //todo this localStorage
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...user,
-              role: "sub-manager",
-              institution: fd,
-            }),
-          );
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     role: user?.role,
+          //     institution: fd,
+          //   }),
+          // );
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

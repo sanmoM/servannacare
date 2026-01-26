@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 const Education = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
     education: defaultValues.education || "",
-    isNursingInKenya: defaultValues.isNursingInKenya || "",
+    isNursingInKenya: defaultValues.isNursingInKenya || null,
     educationCertificate: defaultValues.educationCertificate || null,
   });
 
@@ -31,7 +31,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
       toast.error("Education certificate is require!");
       return;
     }
-    if (!data.isNursingInKenya) {
+    if (!data.isNursingInKenya === null) {
       toast.error(" Answer the nursing council question!");
       return;
     }
@@ -89,19 +89,19 @@ const Education = ({ defaultValues, onNext, onBack }) => {
         </Label>
         <RadioGroup
           className="flex gap-4 mt-2"
-          value={data.isNursingInKenya}
+          value={String(data.isNursingInKenya)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, isNursingInKenya: value }))
+            setData((prev) => ({ ...prev, isNursingInKenya: value ="true"}))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="kenya1" />
+            <RadioGroupItem value="true" id="kenya1" />
             <Label htmlFor="kenya1" className="text-gray-700 cursor-pointer">
               Yes
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="kenya2" />
+            <RadioGroupItem value="false" id="kenya2" />
             <Label htmlFor="kenya2" className="text-gray-700 cursor-pointer">
               No
             </Label>

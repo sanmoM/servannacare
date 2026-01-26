@@ -7,12 +7,12 @@ import toast from "react-hot-toast";
 
 const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
   const [data, setData] = useState({
-    hospitalBasedCare: defaultValues.hospitalBasedCare || "",
+    hospitalBasedCare: defaultValues.hospitalBasedCare || null,
     hospitalBasedYearsOfExperience:
       defaultValues.hospitalBasedYearsOfExperience || "",
     hospitalBasedReferenceContact:
       defaultValues.hospitalBasedReferenceContact || "",
-    homeBasedCare: defaultValues.homeBasedCare || "",
+    homeBasedCare: defaultValues.homeBasedCare || null,
     homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience || "",
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact || "",
   });
@@ -45,7 +45,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
     }
 
     if (
-      data.hospitalBasedCare === "Yes" &&
+      data.hospitalBasedCare === "true" &&
       (!data.hospitalBasedYearsOfExperience ||
         !data.hospitalBasedReferenceContact)
     ) {
@@ -66,13 +66,13 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         <Label className="mb-2 block">Hospital Based Care</Label>
         <RadioGroup
           className="flex gap-4 mt-2"
-          value={data.hospitalBasedCare}
+          value={String(data.hospitalBasedCare)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, hospitalBasedCare: value }))
+            setData((prev) => ({ ...prev, hospitalBasedCare: value ==="true"}))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="r1" />
+            <RadioGroupItem value="true" id="r1" />
             <Label
               htmlFor="r1"
               className="text-gray-700 font-normal cursor-pointer"
@@ -81,7 +81,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="r2" />
+            <RadioGroupItem value="false" id="r2" />
             <Label
               htmlFor="r2"
               className="text-gray-700 font-normal cursor-pointer"
@@ -92,7 +92,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         </RadioGroup>
       </div>
 
-      {data.hospitalBasedCare === "Yes" && (
+      {data.hospitalBasedCare === "true" && (
         <div className="flex flex-col mb-8 sm:flex-row gap-4">
           <div className="flex-1">
             <Input
@@ -130,13 +130,13 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         <Label className="mb-2 block">Home Based Care</Label>
         <RadioGroup
           className="flex gap-4 mt-2"
-          value={data.homeBasedCare}
+          value={String(data.homeBasedCare)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, homeBasedCare: value }))
+            setData((prev) => ({ ...prev, homeBasedCare: value ==="true"}))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="r3" />
+            <RadioGroupItem value="true" id="r3" />
             <Label
               htmlFor="r3"
               className="text-gray-700 font-normal cursor-pointer"
@@ -145,7 +145,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="r4" />
+            <RadioGroupItem value="false" id="r4" />
             <Label
               htmlFor="r4"
               className="text-gray-700 font-normal cursor-pointer"
@@ -156,7 +156,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         </RadioGroup>
       </div>
 
-      {data.homeBasedCare === "Yes" && (
+      {data.homeBasedCare === "true" && (
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <Input

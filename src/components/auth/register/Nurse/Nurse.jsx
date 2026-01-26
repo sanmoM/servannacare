@@ -13,6 +13,7 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
+import { postApi } from "@/lib/apiHandler";
 
 const Nurse = ({ skills }) => {
   const [started, setStarted] = useState(false);
@@ -34,7 +35,7 @@ const Nurse = ({ skills }) => {
     setUser(accountData);
   };
 
-  const handleNext = (dataForStep) => {
+  const handleNext = async (dataForStep) => {
     if (step === 1)
       setFormData((prev) => ({ ...prev, basicInfo: dataForStep }));
 
@@ -56,25 +57,25 @@ const Nurse = ({ skills }) => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      const token = generateToken();
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          ...user,
-          location: formData.basicInfo.location,
-          name: formData.basicInfo.name,
-          profilePic: null,
-          role: "specialist",
-          subRole: "nurse",
-          status: "under review",
-          token,
-        }),
-      );
+      // const token = generateToken();
+      // localStorage.setItem(
+      //   "user",
+      //   JSON.stringify({
+      //     ...user,
+      //     location: formData.basicInfo.location,
+      //     name: formData.basicInfo.name,
+      //     profilePic: null,
+      //     role: "specialist",
+      //     subRole: "nurse",
+      //     status: "under review",
+      //     token,
+      //   }),
+      // );
 
-      localStorage.setItem("specialist", JSON.stringify(formData));
+      // localStorage.setItem("specialist", JSON.stringify(formData));
 
-      toast.success("Register Sucessfully!");
-      router.push("/dashboard");
+      // toast.success("Register Sucessfully!");
+      // router.push("/dashboard");
       // setFormData({
       //   basicInfo: {},
       //   education: {},
@@ -83,6 +84,111 @@ const Nurse = ({ skills }) => {
       //   documents: {},
       //   // contactAgrement: {},
       // });
+
+      const fd = new FormData();
+      const BASICINFO = formData.basicInfo;
+      const EDUCATION = formData.education;
+      const EXPERIENCE = formData.experience;
+      const SKILLSERVICES = formData.skillsServices;
+      const DOCUMENTS = formData.documents;
+
+      fd.append("name", BASICINFO.name);
+      fd.append("location", BASICINFO.location);
+      fd.append("age", BASICINFO.age);
+      fd.append("experience", BASICINFO.experience);
+      fd.append("gender", BASICINFO.gender);
+      fd.append("preferredRole", BASICINFO.preferredRole);
+      BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
+      fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
+      fd.append("bio", BASICINFO.bio);
+      fd.append("number_two", BASICINFO.phone);
+
+      fd.append("education", EDUCATION.education);
+      fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
+
+      fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
+      fd.append(
+        "hospitalBasedYearsOfExperience",
+        EXPERIENCE.hospitalBasedYearsOfExperience,
+      );
+      fd.append(
+        "hospitalBasedReferenceContact",
+        EXPERIENCE.hospitalBasedReferenceContact,
+      );
+      fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
+      fd.append(
+        "homeBasedYearsOfExperience",
+        EXPERIENCE.homeBasedYearsOfExperience,
+      );
+      fd.append(
+        "homeBasedReferenceContact",
+        EXPERIENCE.homeBasedReferenceContact,
+      );
+
+      SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
+      fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
+      fd.append("bathingYears", SKILLSERVICES.bathingYears);
+      fd.append("feedingYears", SKILLSERVICES.feedingYears);
+      fd.append("serviceFee", SKILLSERVICES.serviceFee);
+
+      if (DOCUMENTS?.idCopy) {
+        fd.append("idCopy", DOCUMENTS.idCopy);
+      }
+      if (DOCUMENTS?.profilePhoto) {
+        fd.append("profilePhoto", DOCUMENTS.profilePhoto);
+      }
+      if (DOCUMENTS?.goodConductCertificate) {
+        fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
+      }
+      if (DOCUMENTS?.drivingLicense) {
+        fd.append("drivingLicense", DOCUMENTS.drivingLicense);
+      }
+      if (DOCUMENTS?.referenceLetter) {
+        fd.append("referenceLetter", DOCUMENTS.referenceLetter);
+      }
+      if (DOCUMENTS?.educationCertificate) {
+        fd.append("educationCertificate", DOCUMENTS.educationCertificate);
+      }
+
+      //number_two
+      try {
+        const res = await postApi("/create-profile", fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        console.log("res", res);
+        if (res?.status === 200) {
+          toast.success("Registered Successfully!");
+          router.push(`/dashboard/${user?.role}-profile`);
+          //todo 
+          // localStorage.setItem("token", user?.token);
+          //todo this localStorage
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     role: user?.role,
+          //     institution: fd,
+          //   }),
+          // );
+        } else {
+          toast.error(
+            res?.data?.message || "Something went wrong. Please try again.",
+          );
+        }
+      } catch (error) {
+        console.error("Error creating profile:", error);
+        if (error.response) {
+          toast.error(
+            error.response.data?.message || `Error: ${error.response.status}`,
+          );
+        } else if (error.request) {
+          toast.error("No response from server. Please check your connection.");
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
+      }
     }
   };
 

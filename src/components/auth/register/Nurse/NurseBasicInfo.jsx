@@ -27,7 +27,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
     gender: defaultValues.gender || "",
     preferredRole: defaultValues.preferredRole || "",
     languages: defaultValues.languages || [],
-    canDrive: defaultValues.canDrive || "",
+    canDrive: defaultValues.canDrive || null,
     bio: defaultValues.bio || "",
   });
 
@@ -222,13 +222,13 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
           <Label className="mb-3 block">Can you drive?</Label>
           <RadioGroup
             className="flex gap-4"
-            value={data.canDrive}
+            value={String(data.canDrive)}
             onValueChange={(value) =>
-              setData((prev) => ({ ...prev, canDrive: value }))
+              setData((prev) => ({ ...prev, canDrive: value==="true" }))
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="d1" />
+              <RadioGroupItem value="True" id="d1" />
               <Label
                 htmlFor="d1"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -237,7 +237,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="d2" />
+              <RadioGroupItem value="false" id="d2" />
               <Label
                 htmlFor="d2"
                 className="text-gray-700 font-normal cursor-pointer"
