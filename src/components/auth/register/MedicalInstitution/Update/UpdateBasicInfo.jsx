@@ -2,12 +2,12 @@
 
 import Input from "@/components/shared/Input";
 import React, { useEffect, useState } from "react";
-import FileUpload from "../FileUpload";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import FileUpload from "../../FileUpload";
 
-const BasicInfo = ({ defaultValues = {}, onNext }) => {
+const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
   const [data, setData] = useState({
     companyName: defaultValues.companyName || "",
     kraPin: defaultValues.kraPin || "",
@@ -70,13 +70,14 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
       return;
     }
 
+    console.log(data);
     onNext(data);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h2 className="formHeading">Institution Details</h2>
+        <h2 className="formHeading">Institution Details Update</h2>
 
         {/*  GRID: company name + KRA */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
@@ -140,13 +141,13 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
       </div>
 
       {/* Submit */}
-      <div className="flex justify-end mt-6">
+      {/* <div className="flex justify-end mt-6">
         <Button type="submit" size="lg">
           Next
         </Button>
-      </div>
+      </div> */}
     </form>
   );
 };
 
-export default BasicInfo;
+export default UpdateBasicInfo;

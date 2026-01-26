@@ -28,19 +28,16 @@ const validateEmployee = (data) => {
   if (!data.preferredRole) errors.push("Preferred role is required");
   if (data.languages.length === 0)
     errors.push("Please select at least one language");
-  if (!data.cooking)
-    errors.push("Select cooking skill");
-  if (!data.housekeeping )
-    errors.push("Select housekeeping skill");
-  if (!data.childcare)
-    errors.push("Select childcare skill");
-
+  if (!data.cooking) errors.push("Select cooking skill");
+  if (!data.housekeeping) errors.push("Select housekeeping skill");
+  if (!data.childcare) errors.push("Select childcare skill");
 
   if (!data.serviceOffered) errors.push("service offered is required");
-  if (!data.aidCertificate) errors.push("First aid certificate require")
-  if (!data.goodConductCertificate) errors.push("Good conduct certificate require")
-  if (!data.idCopy) errors.push("Id copy require")
-  if (!data.profilePhoto) errors.push("Profile photo require")
+  if (!data.aidCertificate) errors.push("First aid certificate require");
+  if (!data.goodConductCertificate)
+    errors.push("Good conduct certificate require");
+  if (!data.idCopy) errors.push("Id copy require");
+  if (!data.profilePhoto) errors.push("Profile photo require");
 
   return errors;
 };
@@ -49,9 +46,9 @@ const Agency = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 3;
-  const[user,setUser] = useState({})
+  const [user, setUser] = useState({});
   const [employees, setEmployees] = useState([1]);
-  const router = useRouter()
+  const router = useRouter();
   const [formData, setFormData] = useState({
     agency: {},
     allEmployees: [],
@@ -59,7 +56,7 @@ const Agency = () => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    setUser(accountData)
+    setUser(accountData);
   };
 
   const handleNext = () => {
@@ -82,22 +79,20 @@ const Agency = () => {
       }
 
       setStep(step + 1);
-    } 
-    else {
+    } else {
       const token = generateToken();
       localStorage.setItem(
         "user",
         JSON.stringify({
           ...user,
-          role:"agency",
-          agency:formData.agency,
-          token
-        }  
-        )
-      )
-      console.log(formData)
+          role: "agency",
+          agency: formData.agency,
+          token,
+        }),
+      );
+      console.log(formData);
       toast.success("Register Successfully!");
-      router.push("/dashboard")
+      router.push("/dashboard");
       // reset form
       // setFormData({ agency: {}, allEmployees: [] });
       // setEmployees([1]);
@@ -138,8 +133,8 @@ const Agency = () => {
     toast.error("Employee Removed!");
   };
 
-    const handleSkip = () => {
-    router.push("/dashboard");
+  const handleSkip = () => {
+    router.push(`/dashboard/${user?.role}-profile`);
   };
 
   return (
@@ -153,22 +148,21 @@ const Agency = () => {
           <SignUpStart onSuccess={handleSignupSuccess} />
         ) : (
           <>
-                        {started && step === 1 && (
-<div className="mb-6 w-full rounded-lg bg-red-100 px-4 py-3 text-red-900 border border-red-300">
-  <div className="flex items-center justify-between gap-4">
-    <p className="text-xl font-medium">
-      You can skip this and complete your profile later.
-    </p>
+            {started && step === 1 && (
+              <div className="mb-6 w-full rounded-lg bg-red-100 px-4 py-3 text-red-900 border border-red-300">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-xl font-medium">
+                    You can skip this and complete your profile later.
+                  </p>
 
-    <Button
-      onClick={handleSkip}
-      className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
-    >
-      Skip
-    </Button>
-  </div>
-</div>
-
+                  <Button
+                    onClick={handleSkip}
+                    className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
+                  >
+                    Skip
+                  </Button>
+                </div>
+              </div>
             )}
             <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
               Agency Registration
@@ -217,11 +211,7 @@ const Agency = () => {
               )}
 
               {/* STEP 3 — REVIEW */}
-              {step === 3 && (
-                <Review
-                  data={formData}
-                />
-              )}
+              {step === 3 && <Review data={formData} />}
 
               {/* NAVIGATION BUTTONS */}
               <div className="flex justify-between mt-6">

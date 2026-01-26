@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }) {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [token, setToken] = useState(null); 
+  const [token, setToken] = useState(null);
 
   const isProfileCompleted = Boolean(user?.is_profile_completed);
 
@@ -52,6 +52,13 @@ export default function DashboardLayout({ children }) {
     }
 
     const role = user?.role;
+
+    const profilePath = `/dashboard/${role}-profile`;
+
+    if (user && !user.is_profile_completed && pathname !== profilePath) {
+      router.replace(profilePath);
+      return;
+    }
 
     // USER routes
     if (
@@ -256,7 +263,7 @@ export default function DashboardLayout({ children }) {
               {/* Links */}
               <nav className="flex-grow overflow-y-auto py-3">
                 {!loaded ? (
-                  <Loading />
+                  <LoadingSpinner />
                 ) : (
                   links.map((link) => <NavLink key={link.name} link={link} />)
                 )}
@@ -273,7 +280,8 @@ export default function DashboardLayout({ children }) {
 
               {/* Sidebar Footer */}
               <div className="p-4 border-t border-white/20 text-center text-xs opacity-75">
-                © 2026. All rights reserved.
+                CERVANNA CARE &copy; {new Date().getFullYear()}. ALL RIGHT
+                RESERVED
               </div>
             </div>
           )}

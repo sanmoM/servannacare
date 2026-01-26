@@ -80,7 +80,7 @@ const NurseAideOrAssistant = ({ skills }) => {
   };
 
   const handleSkip = () => {
-    router.push("/dashboard");
+    router.push(`/dashboard/${user?.role}-profile`);
   };
 
   return (

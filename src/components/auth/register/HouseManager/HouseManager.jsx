@@ -67,13 +67,14 @@ const HouseManager = () => {
 
       localStorage.setItem("specialist", JSON.stringify(updatedFormData));
 
+
       toast.success("Register Successfully!");
       router.push("/dashboard");
     }
   };
 
   const handleSkip = () => {
-    router.push("/dashboard");
+    router.push(`/dashboard/${user?.role}-profile`);
   };
 
   const handleBack = () => {

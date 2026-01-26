@@ -10,7 +10,7 @@ import NurseDetails from "./NurseDetails";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Review from "./Review";
-import { generateToken } from "@/utilities/helperFunction";
+import { postApi } from "@/lib/apiHandler";
 
 const validateNurse = (data) => {
   const errors = [];
@@ -98,7 +98,6 @@ const validateNurse = (data) => {
 };
 
 const MedicalInstitution = ({ skills }) => {
-  console.log("medical", skills);
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const [nurses, setNurses] = useState([1]);
@@ -108,7 +107,9 @@ const MedicalInstitution = ({ skills }) => {
   const totalSteps = 3;
 
   const [formData, setFormData] = useState({
-    institution: {},
+    institution: {
+      registrationDocument: null,
+    },
     nurses: [],
   });
 
@@ -117,7 +118,7 @@ const MedicalInstitution = ({ skills }) => {
     setUser(accountData);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < totalSteps) {
       if (step === 2) {
         if (formData.nurses.length === 0) {
@@ -136,23 +137,129 @@ const MedicalInstitution = ({ skills }) => {
       setStep(step + 1);
       return;
     } else {
-      const token = generateToken();
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          ...user,
-          role: "care institution",
-          institution: formData.institution,
-          token,
-        }),
-      );
-      toast.success("Registered Successfully!");
+      const fd = new FormData();
+      const inst = formData.institution;
 
-      router.push("/dashboard");
+      fd.append("companyName", inst.companyName);
+      fd.append("kraPin", inst.kraPin);
+      fd.append("companyRegistrationNumber", inst.companyRegistrationNumber);
+      fd.append("number", inst.phone);
+      fd.append("businessLocation", inst.businessLocation);
 
-      // Reset Form
-      // setFormData({ institution: {}, nurses: [] });
-      // setNurses([1]);
+      if (inst.registrationDocument) {
+        fd.append("registrationDocument", inst.registrationDocument);
+      }
+
+      formData.nurses.forEach((nurse, i) => {
+        fd.append(`institutionNurses[${i}][fullName]`, nurse.name);
+        fd.append(`institutionNurses[${i}][age]`, nurse.age);
+        fd.append(`institutionNurses[${i}][gender]`, nurse.gender);
+        fd.append(`institutionNurses[${i}][location]`, nurse.location);
+        fd.append(`institutionNurses[${i}][experience]`, nurse.experience);
+        fd.append(`institutionNurses[${i}][education]`, nurse.education);
+
+        fd.append(`institutionNurses[${i}][canDrive]`, nurse.canDrive ? 1 : 0);
+        fd.append(
+          `institutionNurses[${i}][isNursingInKenya]`,
+          nurse.isNursingInKenya ? 1 : 0,
+        );
+        fd.append(
+          `institutionNurses[${i}][hospitalBasedCare]`,
+          nurse.hospitalBasedCare ? 1 : 0,
+        );
+        fd.append(
+          `institutionNurses[${i}][homeBasedCare]`,
+          nurse.homeBasedCare ? 1 : 0,
+        );
+
+        fd.append(
+          `institutionNurses[${i}][preferredRole]`,
+          nurse.preferredRole,
+        );
+        fd.append(`institutionNurses[${i}][serviceFee]`, nurse.serviceFee);
+        fd.append(`institutionNurses[${i}][bio]`, nurse.bio);
+
+        (nurse.languages || []).forEach((lang) => {
+          fd.append(`institutionNurses[${i}][languages][]`, lang);
+        });
+
+        (nurse.skills || []).forEach((skill) => {
+          const skillName = typeof skill === "object" ? skill.name : skill;
+          fd.append(`institutionNurses[${i}][services][]`, skillName);
+        });
+
+        fd.append(
+          `institutionNurses[${i}][mobilityYears]`,
+          nurse.mobilityYears,
+        );
+        fd.append(`institutionNurses[${i}][bathingYears]`, nurse.bathingYears);
+        fd.append(`institutionNurses[${i}][feedingYears]`, nurse.feedingYears);
+
+        if (nurse.hospitalBasedCare) {
+          fd.append(
+            `institutionNurses[${i}][hospitalBasedYearsOfExperience]`,
+            nurse.hospitalBasedYearsOfExperience,
+          );
+          fd.append(
+            `institutionNurses[${i}][hospitalBasedReferenceContact]`,
+            nurse.hospitalBasedReferenceContact,
+          );
+        }
+
+        if (nurse.homeBasedCare) {
+          fd.append(
+            `institutionNurses[${i}][homeBasedYearsOfExperience]`,
+            nurse.homeBasedYearsOfExperience,
+          );
+          fd.append(
+            `institutionNurses[${i}][homeBasedReferenceContact]`,
+            nurse.homeBasedReferenceContact,
+          );
+        }
+
+        fd.append(
+          `institutionNurses[${i}][educationCertificate]`,
+          nurse.educationCertificate,
+        );
+        fd.append(`institutionNurses[${i}][idCopy]`, nurse.idCopy);
+        fd.append(`institutionNurses[${i}][profilePhoto]`, nurse.profilePhoto);
+      });
+
+      try {
+        const res = await postApi("/create-profile", fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (res?.status === 200) {
+          toast.success("Registered Successfully!");
+          router.push(`/dashboard/${user?.role}-profile`);
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...user,
+              role: "care_institutions",
+              institution: formData.institution,
+            }),
+          );
+        } else {
+          toast.error(
+            res?.data?.message || "Something went wrong. Please try again.",
+          );
+        }
+      } catch (error) {
+        console.error("Error creating profile:", error);
+        if (error.response) {
+          toast.error(
+            error.response.data?.message || `Error: ${error.response.status}`,
+          );
+        } else if (error.request) {
+          toast.error("No response from server. Please check your connection.");
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
+      }
     }
   };
 
@@ -191,7 +298,7 @@ const MedicalInstitution = ({ skills }) => {
   };
 
   const handleSkip = () => {
-    router.push("/dashboard");
+    router.push(`/dashboard/${user?.role}-profile`);
   };
 
   return (
@@ -228,7 +335,6 @@ const MedicalInstitution = ({ skills }) => {
             <Progress currentStep={step} totalSteps={totalSteps} />
 
             <div className="space-y-8 mt-6">
-              {/* STEP 1 — Institution Info */}
               {step === 1 && (
                 <BasicInfo
                   key="institution-step"

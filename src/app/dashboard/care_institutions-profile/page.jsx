@@ -1,7 +1,8 @@
 "use client";
 
-import AgencyBasicInfo from "@/components/auth/register/Agency/AgencyBasicInfo";
-import Input from "@/components/shared/Input";
+import UpdateBasicInfo from "@/components/auth/register/MedicalInstitution/Update/UpdateBasicInfo";
+import UpdateNurseDetails from "@/components/auth/register/MedicalInstitution/Update/UpdateNurseDetails";
+import UpdateReview from "@/components/auth/register/MedicalInstitution/Update/UpdateReview";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,8 +15,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import AgencyUpdate from "@/components/updateProfile/Agency/AgencyUpdate";
 import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/MedicalInstitution";
+import useLocalUser from "@/hooks/useLocalUser";
 import {
   Calendar,
   Camera,
@@ -31,24 +32,9 @@ import { useEffect, useState } from "react";
 
 export default function MedicalInstitutionProfile() {
   const [userInfo, setUserInfo] = useState({});
+  const { user, loaded } = useLocalUser();
 
-  // Load saved data
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          setUserInfo(JSON.parse(savedUser));
-        }
-      } catch (error) {
-        console.error("Invalid JSON:", error);
-      }
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  console.log(userInfo);
+  console.log("user", user);
 
   const formatLabel = (key) =>
     key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
@@ -71,7 +57,6 @@ export default function MedicalInstitutionProfile() {
 
         <div className="space-y-2 grid gap-4 md:grid-cols-2">
           {Object.entries(sectionData).map(([key, value]) => {
-            //  If array → render each item
             if (Array.isArray(value)) {
               return (
                 <div key={key} className="flex flex-wrap gap-2 items-center">
@@ -149,22 +134,43 @@ export default function MedicalInstitutionProfile() {
       <p className="p-4 mb-4 text-sm flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
         <Info /> Your account is Under review .
       </p>
+      {user?.is_profile_completed ? (
+        <UpdateBasicInfo />
+      ) : (
+        <>
+          <UpdateBasicInfo />
+          <UpdateNurseDetails />
+          {/* <UpdateReview/> */}
+        </>
+      )}
 
       <div>
-        {/*  Render all form sections */}
         {userInfo.institution &&
           typeof userInfo.institution === "object" &&
           Object.entries(userInfo).map(([sectionKey, sectionValue]) =>
-            renderSection(sectionKey, sectionValue)
+            renderSection(sectionKey, sectionValue),
           )}
       </div>
 
       <div className=" flex justify-end mt-6">
         <Dialog>
           <DialogTrigger asChild>
-            <Button className={"w-full sm:w-auto"} size={"lg"}>
-              Update
-            </Button>
+            {user?.is_profile_completed ? (
+              <>
+                {" "}
+                <Button className={"w-full sm:w-auto"} size={"lg"}>
+                  Update
+                </Button>
+              </>
+            ) : (
+              <>
+                {" "}
+                <Button className={"w-full sm:w-auto"} size={"lg"}>
+                  Create
+                </Button>
+              </>
+            )}
+        
           </DialogTrigger>
           <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
             <DialogHeader>

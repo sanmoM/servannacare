@@ -79,9 +79,8 @@ const SpecialNeedCaregivers = () => {
     if (step > 1) setStep(step - 1);
   };
 
-
-    const handleSkip = () => {
-    router.push("/dashboard");
+  const handleSkip = () => {
+    router.push(`/dashboard/${user?.role}-profile`);
   };
 
   return (

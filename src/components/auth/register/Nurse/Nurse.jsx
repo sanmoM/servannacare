@@ -91,9 +91,8 @@ const Nurse = ({ skills }) => {
   };
 
   const handleSkip = () => {
-    router.push("/dashboard");
+    router.push(`/dashboard/${user?.role}-profile`);
   };
-
   return (
     <div className="w-full flex justify-center  px-2">
       <div

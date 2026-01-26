@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { FileText, Image as ImageIcon } from "lucide-react";
 import React, { useState } from "react";
 
-const Review = ({ data, }) => {
+const UpdateReview = ({ data, }) => {
   // Format labels nicely from camelCase
   const formatLabel = (key) =>
     key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
@@ -16,6 +16,8 @@ const Review = ({ data, }) => {
     const kb = size / 1024;
     return kb > 1024 ? `${(kb / 1024).toFixed(2)} MB` : `${kb.toFixed(1)} KB`;
   };
+
+  console.log(data);
 
   // Recursive renderer for nested objects
   const renderSection = (sectionKey, sectionData) => {
@@ -86,7 +88,7 @@ const Review = ({ data, }) => {
 
   return (
     <div>
-      <h2 className="formHeading mb-4">Review and Submit</h2>
+      <h2 className="formHeading mb-4">UpdateReview and Submit</h2>
 
       {/* Render Agency Details */}
       {Object.entries(data)
@@ -109,4 +111,4 @@ const Review = ({ data, }) => {
   );
 };
 
-export default Review;
+export default UpdateReview;
