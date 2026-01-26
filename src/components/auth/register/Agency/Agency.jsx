@@ -80,22 +80,82 @@ const Agency = () => {
 
       setStep(step + 1);
     } else {
-      const token = generateToken();
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          ...user,
-          role: "agency",
-          agency: formData.agency,
-          token,
-        }),
+      // const token = generateToken();
+      // localStorage.setItem(
+      //   "user",
+      //   JSON.stringify({
+      //     ...user,
+      //     role: "agency",
+      //     agency: formData.agency,
+      //     token,
+      //   }),
+      // );
+      // toast.success("Register Successfully!");
+      // router.push("/dashboard");
+      const fd = new FormData();
+      const AGENCY = formData.agency;
+      const ALLEMPLOYEES = formData.allEmployees;
+
+
+      fd.append("name", BASICINFO.name);
+      fd.append("location", BASICINFO.location);
+      fd.append("age", BASICINFO.age);
+      fd.append("experience", BASICINFO.experience);
+      fd.append("gender", BASICINFO.gender);
+      fd.append("preferredRole", BASICINFO.preferredRole);
+      BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
+      fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
+      fd.append("bio", BASICINFO.bio);
+      fd.append("number_two", BASICINFO.phone);
+
+      fd.append("education", EDUCATION.education);
+      fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
+
+      fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
+      fd.append(
+        "hospitalBasedYearsOfExperience",
+        EXPERIENCE.hospitalBasedYearsOfExperience,
       );
-      console.log(formData);
-      toast.success("Register Successfully!");
-      router.push("/dashboard");
-      // reset form
-      // setFormData({ agency: {}, allEmployees: [] });
-      // setEmployees([1]);
+      fd.append(
+        "hospitalBasedReferenceContact",
+        EXPERIENCE.hospitalBasedReferenceContact,
+      );
+      fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
+      fd.append(
+        "homeBasedYearsOfExperience",
+        EXPERIENCE.homeBasedYearsOfExperience,
+      );
+      fd.append(
+        "homeBasedReferenceContact",
+        EXPERIENCE.homeBasedReferenceContact,
+      );
+
+      SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
+      fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
+      fd.append("bathingYears", SKILLSERVICES.bathingYears);
+      fd.append("feedingYears", SKILLSERVICES.feedingYears);
+      fd.append("serviceFee", SKILLSERVICES.serviceFee);
+
+      if (DOCUMENTS?.idCopy) {
+        fd.append("idCopy", DOCUMENTS.idCopy);
+      }
+      if (DOCUMENTS?.profilePhoto) {
+        fd.append("profilePhoto", DOCUMENTS.profilePhoto);
+      }
+      if (DOCUMENTS?.goodConductCertificate) {
+        fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
+      }
+      if (DOCUMENTS?.drivingLicense) {
+        fd.append("drivingLicense", DOCUMENTS.drivingLicense);
+      }
+      if (DOCUMENTS?.referenceLetter) {
+        fd.append("referenceLetter", DOCUMENTS.referenceLetter);
+      }
+      if (DOCUMENTS?.educationCertificate) {
+        fd.append("educationCertificate", DOCUMENTS.educationCertificate);
+      }
+
+      console.log("form data", formData);
     }
   };
 

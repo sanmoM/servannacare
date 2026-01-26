@@ -8,14 +8,19 @@ import toast from "react-hot-toast";
 
 const Experience = ({ defaultValues = {}, onNext, onBack }) => {
   const [data, setData] = useState({
-    hospitalBasedCare: defaultValues.hospitalBasedCare || "",
-    hospitalBasedYearsOfExperience:defaultValues.hospitalBasedYearsOfExperience || "",
-    hospitalBasedReferenceContact:defaultValues.hospitalBasedReferenceContact || "",
-    homeBasedCare: defaultValues.homeBasedCare || "",
-    homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience || "",
-    homeBasedReferenceContact: defaultValues.homeBasedReferenceContact || "",
-    preferred: defaultValues.preferred || [],
-    serviceFee: defaultValues.serviceFee || "",
+    hospitalBasedCare: defaultValues.hospitalBasedCare ?? null,
+    homeBasedCare: defaultValues.homeBasedCare ?? null,
+
+    hospitalBasedYearsOfExperience:
+      defaultValues.hospitalBasedYearsOfExperience ?? "",
+    hospitalBasedReferenceContact:
+      defaultValues.hospitalBasedReferenceContact ?? "",
+
+    homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience ?? "",
+    homeBasedReferenceContact: defaultValues.homeBasedReferenceContact ?? "",
+
+    preferred: defaultValues.preferred ?? [],
+    serviceFee: Number(defaultValues.serviceFee) || 0,
   });
 
   const preferred = [
@@ -56,33 +61,31 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Dynamic validation
-    const requiredFields = [
-      "hospitalBasedCare",
-      // "hospitalBasedYearsOfExperience",
-      // "hospitalBasedReferenceContact",
-      "homeBasedCare",
-      // "homeBasedYearsOfExperience",
-      // "homeBasedReferenceContact",
-      "serviceFee",
-    ];
+    // Required field validation
+    const requiredFields = ["hospitalBasedCare", "homeBasedCare", "serviceFee"];
 
-    for (let field of requiredFields) {
+    for (const field of requiredFields) {
       if (
-        !data[field] ||
-        (Array.isArray(data[field]) && data[field].length === 0)
+        data[field] === null ||
+        (typeof data[field] === "string" && data[field].trim() === "")
       ) {
-        const formattedField = field
+        const label = field
           .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (str) => str.toUpperCase());
+          .replace(/^./, (s) => s.toUpperCase());
 
-        toast.error(`${formattedField} is required!`);
+        toast.error(`${label} is required!`);
         return;
       }
     }
 
+    if (!Number.isFinite(data.serviceFee) || data.serviceFee <= 0) {
+      toast.error("Service fee must be a valid number greater than 0");
+      return;
+    }
+
+    // Hospital-based conditional validation
     if (
-      data.hospitalBasedCare === "Yes" &&
+      data.hospitalBasedCare &&
       (!data.hospitalBasedYearsOfExperience ||
         !data.hospitalBasedReferenceContact)
     ) {
@@ -90,131 +93,126 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       return;
     }
 
+    // Home-based conditional validation
     if (
-      data.homeBasedCare === "Yes" &&
+      data.homeBasedCare &&
       (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
     ) {
       toast.error("Please fill all Home Based Care fields!");
       return;
     }
 
+    // Preferred areas validation
     if (data.preferred.length === 0) {
-      toast.error("Please select what you preferred");
+      toast.error("Please select at least one preferred area");
       return;
     }
 
-    console.log(data);
     onNext(data);
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <h2 className="formHeading">Experience</h2>
+
+      {/* Hospital Based Care */}
       <div className="mt-6">
         <Label className="mb-3 block">Hospital Based Care</Label>
         <RadioGroup
-          className="flex gap-x-4 flex-wrap "
-          value={data.hospitalBasedCare}
+          className="flex gap-4"
+          value={
+            data.hospitalBasedCare === null
+              ? ""
+              : String(data.hospitalBasedCare)
+          }
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, hospitalBasedCare: value }))
+            setData((prev) => ({
+              ...prev,
+              hospitalBasedCare: value === "true",
+            }))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="d1" />
-            <Label
-              htmlFor="d1"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
+            <RadioGroupItem value="true" id="hospital-yes" />
+            <Label htmlFor="hospital-yes">Yes</Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="d2" />
-            <Label
-              htmlFor="d2"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
+            <RadioGroupItem value="false" id="hospital-no" />
+            <Label htmlFor="hospital-no">No</Label>
           </div>
         </RadioGroup>
       </div>
-      {data.hospitalBasedCare === "Yes" && (
-        <div className="flex gap-6 sm:flex-row my-6 flex-col sm:gap-4">
+
+      {data.hospitalBasedCare && (
+        <div className="flex gap-6 my-6 flex-col sm:flex-row">
           <Input
-            type={"number"}
+            type="number"
             label="Years of experience"
             name="hospitalBasedYearsOfExperience"
-            placeholder="Experience"
             maxLength={2}
             value={data.hospitalBasedYearsOfExperience}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+            onChange={(e) =>
               handleChange({
-                target: { name: "hospitalBasedYearsOfExperience", value: val },
-              });
-            }}
+                target: {
+                  name: "hospitalBasedYearsOfExperience",
+                  value: e.target.value.replace(/\D/g, "").slice(0, 2),
+                },
+              })
+            }
           />
           <Input
             label="Reference contact"
             name="hospitalBasedReferenceContact"
-            placeholder="Reference"
             value={data.hospitalBasedReferenceContact}
             onChange={handleChange}
           />
         </div>
       )}
 
+      {/* Home Based Care */}
       <div className="my-6">
         <Label className="mb-3 block">Home Based Care</Label>
         <RadioGroup
-          className="flex gap-x-4 flex-wrap "
-          value={data.homeBasedCare}
+          className="flex gap-4"
+          value={data.homeBasedCare === null ? "" : String(data.homeBasedCare)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, homeBasedCare: value }))
+            setData((prev) => ({
+              ...prev,
+              homeBasedCare: value === "true",
+            }))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="d3" />
-            <Label
-              htmlFor="d3"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
+            <RadioGroupItem value="true" id="home-yes" />
+            <Label htmlFor="home-yes">Yes</Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="d4" />
-            <Label
-              htmlFor="d4"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
+            <RadioGroupItem value="false" id="home-no" />
+            <Label htmlFor="home-no">No</Label>
           </div>
         </RadioGroup>
       </div>
 
-      {data.homeBasedCare === "Yes" && (
-        <div className="flex gap-6 sm:flex-row flex-col my-6 sm:gap-4">
+      {data.homeBasedCare && (
+        <div className="flex gap-6 my-6 flex-col sm:flex-row">
           <Input
-            type={"number"}
+            type="number"
             label="Years of experience"
             name="homeBasedYearsOfExperience"
-            placeholder="Experience"
             maxLength={2}
             value={data.homeBasedYearsOfExperience}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+            onChange={(e) =>
               handleChange({
-                target: { name: "homeBasedYearsOfExperience", value: val },
-              });
-            }}
+                target: {
+                  name: "homeBasedYearsOfExperience",
+                  value: e.target.value.replace(/\D/g, "").slice(0, 2),
+                },
+              })
+            }
           />
           <Input
             label="Reference contact"
             name="homeBasedReferenceContact"
-            placeholder="Reference"
             value={data.homeBasedReferenceContact}
             onChange={handleChange}
           />
@@ -246,28 +244,44 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
 
       {/* Service Fee */}
       <div className="mt-4">
-        <Input
-          label="Service Fee (KSh per day/month)"
+        {/* <Input
+          label="Service Fee (KSh)"
           type="number"
           name="serviceFee"
           maxLength={5}
-          placeholder="e.g., 1500 per day or 35000 per month"
+          value={data.serviceFee}
+          onChange={(e) =>
+            handleChange({
+              target: {
+                name: "serviceFee",
+                value: e.target.value.replace(/\D/g, "").slice(0, 5),
+              },
+            })
+          }
+        /> */}
+
+        <Input
+          label="Service Fee (KSh)"
+          type="number"
+          name="serviceFee"
+          maxLength={5}
           value={data.serviceFee}
           onChange={(e) => {
-            const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-            handleChange({ target: { name: "serviceFee", value: val } });
+            const value = e.target.value;
+            setData((prev) => ({
+              ...prev,
+              serviceFee: value === "" ? "" : Number(value),
+            }));
           }}
         />
       </div>
 
       {/* Navigation */}
       <div className="flex justify-between pt-6">
-        <Button type="button" size="lg" variant="outline" onClick={onBack}>
+        <Button type="button" variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button type="submit" size="lg">
-          Next
-        </Button>
+        <Button type="submit">Next</Button>
       </div>
     </form>
   );

@@ -12,13 +12,14 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
+import { postApi } from "@/lib/apiHandler";
 
 const Physiotherapist = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 5;
   const [user, setUser] = useState({});
-  const router = useRouter()
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     basicInfo: {},
@@ -32,7 +33,7 @@ const Physiotherapist = () => {
     setUser(accountData);
   };
 
-  const handleNext = (dataForStep) => {
+  const handleNext = async (dataForStep) => {
     if (step === 1)
       setFormData((prev) => ({ ...prev, basicInfo: dataForStep }));
 
@@ -42,31 +43,137 @@ const Physiotherapist = () => {
     if (step === 3)
       setFormData((prev) => ({ ...prev, experience: dataForStep }));
 
-
     if (step === 4)
       setFormData((prev) => ({ ...prev, documents: dataForStep }));
-
 
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      const token = generateToken();
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          ...user,
-          location: formData.basicInfo.location,
-          name: formData.basicInfo.name,
-          profilePic: null,
-          role:"specialist",
-          subRole:"physiotherapist",
-          status:"under review",
-          token
-        })
+      // const token = generateToken();
+      // localStorage.setItem(
+      //   "user",
+      //   JSON.stringify({
+      //     ...user,
+      //     location: formData.basicInfo.location,
+      //     name: formData.basicInfo.name,
+      //     profilePic: null,
+      //     role: "specialist",
+      //     subRole: "physiotherapist",
+      //     status: "under review",
+      //     token,
+      //   }),
+      // );
+      // localStorage.setItem("specialist", JSON.stringify(formData));
+      // toast.success("Register Sucessfully!");
+      // router.push("/dashboard");
+
+      const fd = new FormData();
+      const BASICINFO = formData.basicInfo;
+      const EDUCATION = formData.education;
+      const EXPERIENCE = formData.experience;
+      const DOCUMENTS = formData.documents;
+
+      fd.append("name", BASICINFO.name);
+      fd.append("location", BASICINFO.location);
+      fd.append("age", BASICINFO.age);
+      fd.append("experience", BASICINFO.experience);
+      fd.append("gender", BASICINFO.gender);
+      BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
+      fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
+      fd.append("bio", BASICINFO.bio);
+      fd.append("number_two", BASICINFO.phone);
+
+      fd.append("education", EDUCATION.education);
+      fd.append("isRegisterPCK", EDUCATION.isRegisterPCK ? 1 : 0);
+      fd.append("registrationNumber", EDUCATION.registrationNumber);
+
+      fd.append("serviceFee", EXPERIENCE.serviceFee);
+      fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
+      fd.append(
+        "hospitalBasedYearsOfExperience",
+        EXPERIENCE.hospitalBasedYearsOfExperience,
       );
-      localStorage.setItem("specialist", JSON.stringify(formData));
-      toast.success("Register Sucessfully!");
-      router.push("/dashboard")
+      fd.append(
+        "hospitalBasedReferenceContact",
+        EXPERIENCE.hospitalBasedReferenceContact,
+      );
+      fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
+      fd.append(
+        "homeBasedYearsOfExperience",
+        EXPERIENCE.homeBasedYearsOfExperience,
+      );
+      fd.append(
+        "homeBasedReferenceContact",
+        EXPERIENCE.homeBasedReferenceContact,
+      );
+      EXPERIENCE.preferred.forEach((prep) => fd.append("preferred[]", prep));
+
+      // SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
+      // fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
+      // fd.append("bathingYears", SKILLSERVICES.bathingYears);
+      // fd.append("feedingYears", SKILLSERVICES.feedingYears);
+      // fd.append("serviceFee", SKILLSERVICES.serviceFee);
+
+      if (DOCUMENTS?.idCopy) {
+        fd.append("idCopy", DOCUMENTS.idCopy);
+      }
+      if (DOCUMENTS?.profilePhoto) {
+        fd.append("profilePhoto", DOCUMENTS.profilePhoto);
+      }
+      if (DOCUMENTS?.goodConductCertificate) {
+        fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
+      }
+      if (DOCUMENTS?.drivingLicense) {
+        fd.append("drivingLicense", DOCUMENTS.drivingLicense);
+      }
+      if (DOCUMENTS?.referenceLetter) {
+        fd.append("referenceLetter", DOCUMENTS.referenceLetter);
+      }
+      if (DOCUMENTS?.eduCertificate) {
+        fd.append("eduCertificate", DOCUMENTS.eduCertificate);
+      }
+      if (DOCUMENTS?.practiceLicense) {
+        fd.append("practiceLicense", DOCUMENTS.practiceLicense);
+      }
+
+      console.log("form Data", formData);
+      try {
+        const res = await postApi("/create-profile", fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        if (res?.status === 200) {
+          toast.success("Registered Successfully!");
+          router.push(`/dashboard/${user?.role}-profile`);
+          //todo
+          // localStorage.setItem("token", user?.token);
+          //todo this localStorage
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     role: user?.role,
+          //     institution: fd,
+          //   }),
+          // );
+        } else {
+          toast.error(
+            res?.data?.message || "Something went wrong. Please try again.",
+          );
+        }
+      } catch (error) {
+        console.error("Error creating profile:", error);
+        if (error.response) {
+          toast.error(
+            error.response.data?.message || `Error: ${error.response.status}`,
+          );
+        } else if (error.request) {
+          toast.error("No response from server. Please check your connection.");
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
+      }
     }
   };
 
@@ -78,7 +185,6 @@ const Physiotherapist = () => {
     router.push(`/dashboard/${user?.role}-profile`);
   };
 
-  
   return (
     <div className="w-full flex justify-center  px-2">
       <div
@@ -90,22 +196,21 @@ const Physiotherapist = () => {
           <SignUpStart onSuccess={handleSignupSuccess} />
         ) : (
           <>
-                        {started && step === 1 && (
-<div className="mb-6 w-full rounded-lg bg-red-100 px-4 py-3 text-red-900 border border-red-300">
-  <div className="flex items-center justify-between gap-4">
-    <p className="text-xl font-medium">
-      You can skip this and complete your profile later.
-    </p>
+            {started && step === 1 && (
+              <div className="mb-6 w-full rounded-lg bg-red-100 px-4 py-3 text-red-900 border border-red-300">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="text-xl font-medium">
+                    You can skip this and complete your profile later.
+                  </p>
 
-    <Button
-      onClick={handleSkip}
-      className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
-    >
-      Skip
-    </Button>
-  </div>
-</div>
-
+                  <Button
+                    onClick={handleSkip}
+                    className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
+                  >
+                    Skip
+                  </Button>
+                </div>
+              </div>
             )}
             <h2 className="text-2xl mb-6 font-semibold text-center text-gray-900">
               Physiotherapist Registration
