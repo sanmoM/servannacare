@@ -11,6 +11,7 @@ import Review from "./ReviewAndSubmit";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
+import { postApi } from "@/lib/apiHandler";
 
 const validateEmployee = (data) => {
   const errors = [];
@@ -59,7 +60,7 @@ const Agency = () => {
     setUser(accountData);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < totalSteps) {
       if (step === 2) {
         // validate all employees before moving on
@@ -96,63 +97,88 @@ const Agency = () => {
       const AGENCY = formData.agency;
       const ALLEMPLOYEES = formData.allEmployees;
 
-
-      fd.append("name", BASICINFO.name);
-      fd.append("location", BASICINFO.location);
-      fd.append("age", BASICINFO.age);
-      fd.append("experience", BASICINFO.experience);
-      fd.append("gender", BASICINFO.gender);
-      fd.append("preferredRole", BASICINFO.preferredRole);
-      BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
-      fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
-      fd.append("bio", BASICINFO.bio);
-      fd.append("number_two", BASICINFO.phone);
-
-      fd.append("education", EDUCATION.education);
-      fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
-
-      fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
-      fd.append(
-        "hospitalBasedYearsOfExperience",
-        EXPERIENCE.hospitalBasedYearsOfExperience,
+      fd.append("companyName", AGENCY?.companyName);
+      fd.append("kraPin", AGENCY?.kraPin);
+      fd.append("companyRegistrationNumber", AGENCY?.companyRegistrationNumber);
+      fd.append("number", AGENCY?.phone);
+      fd.append("businessLocation", AGENCY?.businessLocation);
+      AGENCY.trainingAreas.forEach((area) =>
+        fd.append("agency_services[]", area),
       );
-      fd.append(
-        "hospitalBasedReferenceContact",
-        EXPERIENCE.hospitalBasedReferenceContact,
-      );
-      fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
-      fd.append(
-        "homeBasedYearsOfExperience",
-        EXPERIENCE.homeBasedYearsOfExperience,
-      );
-      fd.append(
-        "homeBasedReferenceContact",
-        EXPERIENCE.homeBasedReferenceContact,
-      );
+      fd.append("placementFee", AGENCY?.placementFee);
 
-      SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
-      fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
-      fd.append("bathingYears", SKILLSERVICES.bathingYears);
-      fd.append("feedingYears", SKILLSERVICES.feedingYears);
-      fd.append("serviceFee", SKILLSERVICES.serviceFee);
+      if (AGENCY?.registrationDocument) {
+        fd.append("registrationDocument", AGENCY.registrationDocument);
+      }
+      fd.append("replacementWindow", AGENCY?.replacementWindow);
+      fd.append("numberOfReplacement", AGENCY?.numberOfReplacement);
 
-      if (DOCUMENTS?.idCopy) {
-        fd.append("idCopy", DOCUMENTS.idCopy);
-      }
-      if (DOCUMENTS?.profilePhoto) {
-        fd.append("profilePhoto", DOCUMENTS.profilePhoto);
-      }
-      if (DOCUMENTS?.goodConductCertificate) {
-        fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
-      }
-      if (DOCUMENTS?.drivingLicense) {
-        fd.append("drivingLicense", DOCUMENTS.drivingLicense);
-      }
-      if (DOCUMENTS?.referenceLetter) {
-        fd.append("referenceLetter", DOCUMENTS.referenceLetter);
-      }
-      if (DOCUMENTS?.educationCertificate) {
-        fd.append("educationCertificate", DOCUMENTS.educationCertificate);
+      ALLEMPLOYEES.forEach((employee, i) => {
+        fd.append(`employees[${i}][name]`, employee.name);
+        fd.append(`employees[${i}][educationLevel]`, employee.educationLevel);
+        fd.append(`employees[${i}][location]`, employee.location);
+        fd.append(`employees[${i}][experience]`, employee.experience);
+        fd.append(`employees[${i}][salaryRange]`, employee.salaryRange);
+        fd.append(`employees[${i}][isMother]`, employee.isMother ? 1 : 0);
+        (ALLEMPLOYEES.kidAges || []).forEach((kidAge) => {
+          fd.append(`employees[${i}][kidAge][]`, kidAge);
+        });
+        fd.append(`employees[${i}][handlePets]`, employee.handlePets ? 1 : 0);
+        fd.append(`employees[${i}][preferredRole]`, employee.preferredRole);
+        (ALLEMPLOYEES.languages || []).forEach((lang) => {
+          fd.append(`employees[${i}][languages][]`, lang);
+        });
+        fd.append(`employees[${i}][cooking]`, employee.cooking);
+        fd.append(`employees[${i}][housekeeping]`, employee.housekeeping);
+        fd.append(`employees[${i}][childcare]`, employee.childcare);
+        fd.append(`employees[${i}][liveType]`, employee.serviceOffered); //todo field name from database
+        fd.append(`employees[${i}][bio]`, employee.bio);
+
+        fd.append(`employees[${i}][idCopy]`, employee.idCopy);
+        fd.append(`employees[${i}][profilePhoto]`, employee.profilePhoto);
+        fd.append(`employees[${i}][drivingLicense]`, employee.drivingLicense);
+        fd.append(
+          `employees[${i}][goodConductCertificate]`,
+          employee.goodConductCertificate,
+        );
+        fd.append(`employees[${i}][aidCertificate]`, employee.aidCertificate);
+      });
+      try {
+        const res = await postApi("/create-profile", fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (res?.status === 200) {
+          console.log("response", res);
+          toast.success("Registered Successfully!");
+          // router.push(`/dashboard/${user?.role}-profile`);
+          //todo this localStorage
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     role: "care_institutions",
+          //     institution: formData.institution,
+          //   }),
+          // );
+        } else {
+          toast.error(
+            res?.data?.message || "Something went wrong. Please try again.",
+          );
+        }
+      } catch (error) {
+        console.error("Error creating profile:", error);
+        if (error.response) {
+          toast.error(
+            error.response.data?.message || `Error: ${error.response.status}`,
+          );
+        } else if (error.request) {
+          toast.error("No response from server. Please check your connection.");
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
       }
 
       console.log("form data", formData);

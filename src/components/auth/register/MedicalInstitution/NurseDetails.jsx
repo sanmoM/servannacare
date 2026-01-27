@@ -345,6 +345,40 @@ const NurseDetails = ({
         </RadioGroup>
       </div>
 
+{/* todo */}
+       {/* Show only when PCK = Yes */}
+      {/* {data.isNursingInKenya === "true" && (
+        <div>
+          <Input
+            label={"Registration Number"}
+            placeholder="Registration Number"
+            type="number"
+            value={data.registrationNumber || ""}
+            onChange={(e) =>
+              setData((prev) => ({
+                ...prev,
+                registrationNumber: e.target.value,
+              }))
+            }
+          />
+
+          <div className="mt-6">
+            <FileUpload
+              title="Practising License"
+              accept="application/pdf,image/*"
+              icon={<FileText size={32} />}
+              file={data.practiceLicense}
+              onFileSelect={(file) =>
+                setData((prev) => ({
+                  ...prev,
+                  practiceLicense: file,
+                }))
+              }
+            />
+          </div>
+        </div>
+      )} */}
+
       {/* Hospital Based Care */}
       <div className="mb-6">
         <Label className={"mb-2"}>Hospital Based Care</Label>

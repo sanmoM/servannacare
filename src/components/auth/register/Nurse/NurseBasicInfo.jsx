@@ -228,7 +228,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="True" id="d1" />
+              <RadioGroupItem value="true" id="d1" />
               <Label
                 htmlFor="d1"
                 className="text-gray-700 font-normal cursor-pointer"

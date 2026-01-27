@@ -35,6 +35,7 @@ export default function DashboardLayout({ children }) {
   const [token, setToken] = useState(null);
 
   const isProfileCompleted = Boolean(user?.is_profile_completed);
+  const isProfileVerified = Boolean(user?.is_profile_verified);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -54,9 +55,21 @@ export default function DashboardLayout({ children }) {
     const role = user?.role;
 
     const profilePath = `/dashboard/${role}-profile`;
+    const nursesPath = "/dashboard/care-institution-nurses";
 
-    if (user && !user.is_profile_completed && pathname !== profilePath) {
-      router.replace(profilePath);
+    if (!isProfileCompleted && !isProfileVerified) {
+      if (pathname !== profilePath) {
+        router.replace(profilePath);
+      }
+      return;
+    }
+
+    if (isProfileCompleted && !isProfileVerified) {
+      const allowedPaths = [profilePath, nursesPath];
+
+      if (!allowedPaths.includes(pathname)) {
+        router.replace(profilePath);
+      }
       return;
     }
 

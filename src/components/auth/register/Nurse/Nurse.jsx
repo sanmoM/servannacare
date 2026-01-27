@@ -172,6 +172,13 @@ const Nurse = ({ skills }) => {
           //     institution: fd,
           //   }),
           // );
+                    localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...user,
+              is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            }),
+          );
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 import Review from "./Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
-import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
 
@@ -116,7 +115,7 @@ const HouseManager = () => {
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
-          //todo 
+          //todo
           // localStorage.setItem("token", user?.token);
           //todo this localStorage
           // localStorage.setItem(
@@ -127,6 +126,13 @@ const HouseManager = () => {
           //     institution: fd,
           //   }),
           // );
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...user,
+              is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            }),
+          );
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

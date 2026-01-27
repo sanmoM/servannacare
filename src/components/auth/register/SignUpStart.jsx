@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "next/navigation";
 import { postApi } from "@/lib/apiHandler";
-import { number } from "framer-motion";
 
 const SignUpStart = ({ onSuccess }) => {
   const searchParams = useSearchParams();
@@ -27,7 +26,6 @@ const SignUpStart = ({ onSuccess }) => {
   const isSpecialistSubRole = SPECIALIST_SUBROLE.includes(inComingRole);
   const role = isSpecialistSubRole ? "specialist" : inComingRole;
   const subRole = isSpecialistSubRole ? inComingRole : "";
-
 
   const [showPass, setShowPass] = useState(false);
   const [phone, setPhone] = useState("");
@@ -98,7 +96,7 @@ const SignUpStart = ({ onSuccess }) => {
         JSON.stringify({ role, subRole, is_profile_completed }),
       );
       setOpenOTP(false);
-      onSuccess(temUser);
+      onSuccess({ role, subRole, is_profile_completed });
       toast.success("Account verified successfully!");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Invalid OtP");
