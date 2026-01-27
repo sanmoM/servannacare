@@ -3,6 +3,7 @@
 import UpdateBasicInfo from "@/components/auth/register/MedicalInstitution/Update/UpdateBasicInfo";
 import UpdateNurseDetails from "@/components/auth/register/MedicalInstitution/Update/UpdateNurseDetails";
 import UpdateReview from "@/components/auth/register/MedicalInstitution/Update/UpdateReview";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/MedicalInstitution";
+import { useFetch } from "@/hooks/useFetch";
 import useLocalUser from "@/hooks/useLocalUser";
 import {
   Calendar,
@@ -34,7 +36,18 @@ export default function MedicalInstitutionProfile() {
   const [userInfo, setUserInfo] = useState({});
   const { user, loaded } = useLocalUser();
 
-  console.log("user", user);
+  const [instituteData, setInstituteData] = useState(null);
+
+
+  const { data, isLoading, error } = useFetch("/profile");
+  useEffect(() => {
+    if (data) {
+      setInstituteData(data?.data?.data ?? data);
+    }
+  }, [data]);
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
 
   const formatLabel = (key) =>
     key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
@@ -121,21 +134,26 @@ export default function MedicalInstitutionProfile() {
     );
   };
 
+  
+
   return (
     <div>
-      <div className="flex justify-between">
+      {/* <div className="flex justify-between">
         <h1 className="sectionHeading mb-4">My Profile</h1>
         <div className="text-xs text-gray-700 font-semibold gap-2 flex items-center">
           <Calendar size={16} />
           <span>Joined {userInfo.joinedSince}</span>
         </div>
-      </div>
+      </div> */}
 
-      <p className="p-4 mb-4 text-sm flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
-        <Info /> Your account is Under review .
-      </p>
+      {!user?.is_profile_verified && (
+        <p className="p-4 mb-4 text-sm flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+          <Info /> Your account is Under review .
+        </p>
+      )}
+
       {user?.is_profile_completed ? (
-        <UpdateBasicInfo />
+        <UpdateBasicInfo instituteData={instituteData?.data?.careInstitution}/>
       ) : (
         <>
           <UpdateBasicInfo />
@@ -154,7 +172,7 @@ export default function MedicalInstitutionProfile() {
 
       <div className=" flex justify-end mt-6">
         <Dialog>
-          <DialogTrigger asChild>
+          {/* <DialogTrigger asChild>
             {user?.is_profile_completed ? (
               <>
                 {" "}
@@ -170,8 +188,7 @@ export default function MedicalInstitutionProfile() {
                 </Button>
               </>
             )}
-        
-          </DialogTrigger>
+          </DialogTrigger> */}
           <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
             <DialogHeader>
               <DialogTitle className={"text-center"}>

@@ -3,19 +3,36 @@
 import Input from "@/components/shared/Input";
 import React, { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import FileUpload from "../../FileUpload";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import useLocalUser from "@/hooks/useLocalUser";
 
-const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
+const UpdateBasicInfo = ({ instituteData }) => {
+  const { user, loaded } = useLocalUser();
   const [data, setData] = useState({
-    companyName: defaultValues.companyName || "",
-    kraPin: defaultValues.kraPin || "",
-    companyRegistrationNumber: defaultValues.companyRegistrationNumber || "",
-    businessLocation: defaultValues.businessLocation || "",
-    phone: defaultValues.phone || "",
-    registrationDocument: defaultValues.registrationDocument || null,
+    companyName: "",
+    kraPin: "",
+    companyRegistrationNumber: "",
+    businessLocation: "",
+    phone: "",
+    registrationDocument: null,
   });
+
+  useEffect(() => {
+    if (instituteData) {
+      setData({
+        companyName: instituteData.companyName || "",
+        kraPin: instituteData.kraPin || "",
+        companyRegistrationNumber:
+          instituteData.companyRegistrationNumber || "",
+        businessLocation: instituteData.businessLocation || "",
+        phone: instituteData.phone || "",
+        registrationDocument: instituteData.registrationDocument || null,
+      });
+    }
+  }, []);
 
   // Handle Input Changes
   const handleChange = (e) => {
@@ -23,26 +40,18 @@ const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // phone handler (digits only + max 10)
+  // Phone handler (digits only, max 10)
   const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    value = value.slice(0, 10);
+    let value = e.target.value.replace(/\D/g, "").slice(0, 10);
     setData((prev) => ({ ...prev, phone: value }));
   };
 
-  useEffect(() => {
-    if (defaultValues && Object.keys(defaultValues).length > 0) {
-      setData((prev) => ({ ...prev, ...defaultValues }));
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }
-  }, [defaultValues]);
-
-  // Handle File Upload
+  // File upload
   const handleFileSelect = (file) => {
     setData((prev) => ({ ...prev, registrationDocument: file }));
   };
 
-  // Validation + Submit
+  // Submit
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -51,27 +60,22 @@ const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
       "kraPin",
       "companyRegistrationNumber",
       "businessLocation",
-      "phone", 
-      "registrationDocument",
+      "phone",
     ];
 
     for (let field of requiredFields) {
       if (!data[field]) {
-        const formattedField = field
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (str) => str.toUpperCase());
-        toast.error(`${formattedField} is required!`);
+        toast.error(`${field.replace(/([A-Z])/g, " $1")} is required!`);
         return;
       }
     }
 
     if (data.phone.length !== 10) {
-      toast.error("Phone number must be exactly 10 digits.");
+      toast.error("Phone number must be exactly 10 digits");
       return;
     }
 
-    console.log(data);
-    onNext(data);
+    console.log("Updated institute data:", data);
   };
 
   return (
@@ -86,7 +90,8 @@ const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
             label="Company/Business Name"
             name="companyName"
             placeholder="Company name"
-            value={data.companyName}
+            // value={data?.companyName}
+            defaultValue={instituteData?.companyName}
             onChange={handleChange}
           />
 
@@ -94,7 +99,7 @@ const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
             label="KRA PIN Number"
             name="kraPin"
             placeholder="PIN number"
-            value={data.kraPin}
+            defaultValue={instituteData?.kraPin}
             onChange={handleChange}
           />
         </div>
@@ -105,7 +110,7 @@ const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
             label="Company Registration Number"
             name="companyRegistrationNumber"
             placeholder="Company registration number"
-            value={data.companyRegistrationNumber}
+            defaultValue={instituteData?.companyRegistrationNumber}
             onChange={handleChange}
           />
 
@@ -114,7 +119,7 @@ const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
             name="phone"
             type="tel"
             placeholder="07xxxxxxxx"
-            value={data.phone}
+            defaultValue={instituteData?.number}
             maxLength={10}
             onChange={handlePhoneChange}
           />
@@ -125,7 +130,7 @@ const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
           label="Business Location"
           name="businessLocation"
           placeholder="Business location"
-          value={data.businessLocation}
+          defaultValue={instituteData?.businessLocation}
           onChange={handleChange}
         />
 
@@ -137,15 +142,59 @@ const UpdateBasicInfo = ({ defaultValues = {}, onNext }) => {
             file={data.registrationDocument}
             onFileSelect={handleFileSelect}
           />
+
+          {(data.registrationDocument ||
+            instituteData?.registrationDocument) && (
+            <div className="mt-3">
+              {data.registrationDocument ? (
+                // User has selected a new file
+                data.registrationDocument.type.startsWith("image/") ? (
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData?.registrationDocument}`}
+                    alt={instituteData?.companyName}
+                    height={30}
+                    width={30}
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                ) : (
+                  <span className="text-gray-700 mt-2 block">
+                    Selected file: {data.registrationDocument.name}
+                  </span>
+                )
+              ) : typeof instituteData.registrationDocument === "string" ? (
+                // File from server
+                instituteData.registrationDocument.match(
+                  /\.(jpeg|jpg|gif|png|webp)$/i,
+                ) ? (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData.registrationDocument}`}
+                    alt="Current Registration Document"
+                    className="w-48 h-auto border rounded-md mt-2"
+                  />
+                ) : (
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData.registrationDocument}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline"
+                  >
+                    View Current Document
+                  </a>
+                )
+              ) : null}
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Submit */}
-      {/* <div className="flex justify-end mt-6">
-        <Button type="submit" size="lg">
-          Next
-        </Button>
-      </div> */}
+      <div className="flex justify-end">
+        {user?.is_profile_completed && (
+          <>
+            <Button className={"w-full sm:w-auto"} size={"lg"}>
+              Update
+            </Button>
+          </>
+        )}
+      </div>
     </form>
   );
 };

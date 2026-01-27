@@ -43,6 +43,11 @@ export default function DashboardLayout({ children }) {
     }
   }, []);
 
+  const roleSecondaryRoute = {
+    care_institutions: "/dashboard/care-institution-nurses",
+    agency: "/dashboard/agency-employee",
+  };
+
   useEffect(() => {
     if (!loaded) return;
     if (token === null) return;
@@ -53,11 +58,14 @@ export default function DashboardLayout({ children }) {
     }
 
     const role = user?.role;
+    if (!role) {
+      return;
+    }
 
     const profilePath = `/dashboard/${role}-profile`;
-    const nursesPath = "/dashboard/care-institution-nurses";
+    const secondaryPath = roleSecondaryRoute[role];
 
-    if (!isProfileCompleted && !isProfileVerified) {
+    if (!isProfileCompleted) {
       if (pathname !== profilePath) {
         router.replace(profilePath);
       }
@@ -65,7 +73,7 @@ export default function DashboardLayout({ children }) {
     }
 
     if (isProfileCompleted && !isProfileVerified) {
-      const allowedPaths = [profilePath, nursesPath];
+      const allowedPaths = [profilePath, secondaryPath].filter(Boolean);
 
       if (!allowedPaths.includes(pathname)) {
         router.replace(profilePath);
