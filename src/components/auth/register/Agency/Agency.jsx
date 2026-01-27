@@ -57,7 +57,6 @@ const Agency = () => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    setUser(accountData);
   };
 
   const handleNext = async () => {
@@ -97,6 +96,7 @@ const Agency = () => {
       const AGENCY = formData.agency;
       const ALLEMPLOYEES = formData.allEmployees;
 
+      // Agency data
       fd.append("companyName", AGENCY?.companyName);
       fd.append("kraPin", AGENCY?.kraPin);
       fd.append("companyRegistrationNumber", AGENCY?.companyRegistrationNumber);
@@ -113,6 +113,7 @@ const Agency = () => {
       fd.append("replacementWindow", AGENCY?.replacementWindow);
       fd.append("numberOfReplacement", AGENCY?.numberOfReplacement);
 
+      // Employee data
       ALLEMPLOYEES.forEach((employee, i) => {
         fd.append(`employees[${i}][name]`, employee.name);
         fd.append(`employees[${i}][educationLevel]`, employee.educationLevel);
@@ -120,18 +121,12 @@ const Agency = () => {
         fd.append(`employees[${i}][experience]`, employee.experience);
         fd.append(`employees[${i}][salaryRange]`, employee.salaryRange);
         fd.append(`employees[${i}][isMother]`, employee.isMother ? 1 : 0);
-        (ALLEMPLOYEES.kidAges || []).forEach((kidAge) => {
-          fd.append(`employees[${i}][kidAge][]`, kidAge);
-        });
         fd.append(`employees[${i}][handlePets]`, employee.handlePets ? 1 : 0);
         fd.append(`employees[${i}][preferredRole]`, employee.preferredRole);
-        (ALLEMPLOYEES.languages || []).forEach((lang) => {
-          fd.append(`employees[${i}][languages][]`, lang);
-        });
         fd.append(`employees[${i}][cooking]`, employee.cooking);
         fd.append(`employees[${i}][housekeeping]`, employee.housekeeping);
         fd.append(`employees[${i}][childcare]`, employee.childcare);
-        fd.append(`employees[${i}][liveType]`, employee.serviceOffered); //todo field name from database
+        fd.append(`employees[${i}][liveType]`, employee.serviceOffered);
         fd.append(`employees[${i}][bio]`, employee.bio);
 
         fd.append(`employees[${i}][idCopy]`, employee.idCopy);
@@ -142,7 +137,16 @@ const Agency = () => {
           employee.goodConductCertificate,
         );
         fd.append(`employees[${i}][aidCertificate]`, employee.aidCertificate);
+
+        employee.kidAges?.forEach((age) => {
+          fd.append(`employees[${i}][kidAges][]`, age);
+        });
+
+        employee.languages?.forEach((lang) => {
+          fd.append(`employees[${i}][languages][]`, lang);
+        });
       });
+
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -151,9 +155,16 @@ const Agency = () => {
         });
 
         if (res?.status === 200) {
-          console.log("response", res);
           toast.success("Registered Successfully!");
-          // router.push(`/dashboard/${user?.role}-profile`);
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...user,
+              is_profile_completed: Boolean(res?.data?.is_profile_completed),
+              is_profile_verified: Boolean(res?.data?.is_profile_verified),
+            }),
+          );
+          router.push(`/dashboard/${user?.role}-profile`);
           //todo this localStorage
           // localStorage.setItem(
           //   "user",

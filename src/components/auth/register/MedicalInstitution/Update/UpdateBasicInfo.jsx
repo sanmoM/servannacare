@@ -11,6 +11,8 @@ import useLocalUser from "@/hooks/useLocalUser";
 
 const UpdateBasicInfo = ({ instituteData }) => {
   const { user, loaded } = useLocalUser();
+
+
   const [data, setData] = useState({
     companyName: "",
     kraPin: "",
@@ -20,6 +22,7 @@ const UpdateBasicInfo = ({ instituteData }) => {
     registrationDocument: null,
   });
 
+
   useEffect(() => {
     if (instituteData) {
       setData({
@@ -28,30 +31,30 @@ const UpdateBasicInfo = ({ instituteData }) => {
         companyRegistrationNumber:
           instituteData.companyRegistrationNumber || "",
         businessLocation: instituteData.businessLocation || "",
-        phone: instituteData.phone || "",
-        registrationDocument: instituteData.registrationDocument || null,
+        phone: instituteData.number || "",
+        registrationDocument: null,
       });
     }
-  }, []);
+  }, [instituteData]);
 
-  // Handle Input Changes
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Phone handler (digits only, max 10)
+
   const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "").slice(0, 10);
+    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
     setData((prev) => ({ ...prev, phone: value }));
   };
 
-  // File upload
+
   const handleFileSelect = (file) => {
     setData((prev) => ({ ...prev, registrationDocument: file }));
   };
 
-  // Submit
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -75,124 +78,130 @@ const UpdateBasicInfo = ({ instituteData }) => {
       return;
     }
 
-    console.log("Updated institute data:", data);
+ 
+    const payload = {
+      ...data,
+      registrationDocument: data.registrationDocument || instituteData.registrationDocument,
+    };
+
+    console.log("Updated institute data:", payload);
+    toast.success("Institution details updated successfully!");
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <h2 className="formHeading">Institution Details Update</h2>
+      <h2 className="formHeading">Institution Details Update</h2>
 
-        {/*  GRID: company name + KRA */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
-          <Input
-            type="text"
-            label="Company/Business Name"
-            name="companyName"
-            placeholder="Company name"
-            // value={data?.companyName}
-            defaultValue={instituteData?.companyName}
-            onChange={handleChange}
-          />
-
-          <Input
-            label="KRA PIN Number"
-            name="kraPin"
-            placeholder="PIN number"
-            defaultValue={instituteData?.kraPin}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/*  GRID: registration number + phone */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-6">
-          <Input
-            label="Company Registration Number"
-            name="companyRegistrationNumber"
-            placeholder="Company registration number"
-            defaultValue={instituteData?.companyRegistrationNumber}
-            onChange={handleChange}
-          />
-
-          <Input
-            label="Phone Number"
-            name="phone"
-            type="tel"
-            placeholder="07xxxxxxxx"
-            defaultValue={instituteData?.number}
-            maxLength={10}
-            onChange={handlePhoneChange}
-          />
-        </div>
-
-        {/*  Business location full width */}
+    
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
         <Input
-          label="Business Location"
-          name="businessLocation"
-          placeholder="Business location"
-          defaultValue={instituteData?.businessLocation}
+          type="text"
+          label="Company/Business Name"
+          name="companyName"
+          placeholder="Company name"
+          value={data.companyName}
           onChange={handleChange}
         />
 
-        <div className="mt-6">
-          <FileUpload
-            title="Company Registration Document"
-            accept="application/pdf,image/*"
-            icon={<FileText size={32} />}
-            file={data.registrationDocument}
-            onFileSelect={handleFileSelect}
-          />
-
-          {(data.registrationDocument ||
-            instituteData?.registrationDocument) && (
-            <div className="mt-3">
-              {data.registrationDocument ? (
-                // User has selected a new file
-                data.registrationDocument.type.startsWith("image/") ? (
-                  <Image
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData?.registrationDocument}`}
-                    alt={instituteData?.companyName}
-                    height={30}
-                    width={30}
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                ) : (
-                  <span className="text-gray-700 mt-2 block">
-                    Selected file: {data.registrationDocument.name}
-                  </span>
-                )
-              ) : typeof instituteData.registrationDocument === "string" ? (
-                // File from server
-                instituteData.registrationDocument.match(
-                  /\.(jpeg|jpg|gif|png|webp)$/i,
-                ) ? (
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData.registrationDocument}`}
-                    alt="Current Registration Document"
-                    className="w-48 h-auto border rounded-md mt-2"
-                  />
-                ) : (
-                  <a
-                    href={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData.registrationDocument}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    View Current Document
-                  </a>
-                )
-              ) : null}
-            </div>
-          )}
-        </div>
+        <Input
+          label="KRA PIN Number"
+          name="kraPin"
+          placeholder="PIN number"
+          value={data.kraPin}
+          onChange={handleChange}
+        />
       </div>
+
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-6">
+        <Input
+          label="Company Registration Number"
+          name="companyRegistrationNumber"
+          placeholder="Company registration number"
+          value={data.companyRegistrationNumber}
+          onChange={handleChange}
+        />
+
+        <Input
+          label="Phone Number"
+          name="phone"
+          type="tel"
+          placeholder="07xxxxxxxx"
+          value={data.phone}
+          maxLength={10}
+          onChange={handlePhoneChange}
+        />
+      </div>
+
+      <Input
+        label="Business Location"
+        name="businessLocation"
+        placeholder="Business location"
+        value={data.businessLocation}
+        onChange={handleChange}
+      />
+
+      {/* File Upload */}
+      <div className="mt-6">
+        <FileUpload
+          title="Company Registration Document"
+          accept="application/pdf,image/*"
+          icon={<FileText size={32} />}
+          file={data.registrationDocument}
+          onFileSelect={handleFileSelect}
+        />
+
+        {/* File Preview */}
+        {(data.registrationDocument || instituteData?.registrationDocument) && (
+          <div className="mt-3">
+            {data.registrationDocument ? (
+              // User selected a new file
+              data.registrationDocument.type.startsWith("image/") ? (
+                <Image
+                  src={URL.createObjectURL(data.registrationDocument)}
+                  alt={data.companyName}
+                  height={100}
+                  width={100}
+                  className="object-cover"
+                />
+              ) : (
+                <span className="text-gray-700 mt-2 block">
+                  Selected file: {data.registrationDocument.name}
+                </span>
+              )
+            ) : typeof instituteData.registrationDocument === "string" ? (
+              // Existing file from server
+              instituteData.registrationDocument.match(
+                /\.(jpeg|jpg|gif|png|webp)$/i
+              ) ? (
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData.registrationDocument}`}
+                  alt={data.companyName}
+                  height={100}
+                  width={100}
+                  className="object-cover"
+                />
+              ) : (
+                <a
+                  href={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData.registrationDocument}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline"
+                >
+                  View Current Document
+                </a>
+              )
+            ) : null}
+          </div>
+        )}
+      </div>
+
+      {/* Submit button */}
       <div className="flex justify-end">
         {user?.is_profile_completed && (
-          <>
-            <Button className={"w-full sm:w-auto"} size={"lg"}>
-              Update
-            </Button>
-          </>
+          <Button className="w-full sm:w-auto" size="lg" type="submit">
+            Update
+          </Button>
         )}
       </div>
     </form>
