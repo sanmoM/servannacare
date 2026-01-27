@@ -18,13 +18,13 @@ import toast from "react-hot-toast";
 const BasicInfo = ({ defaultValues, onNext }) => {
   const [data, setData] = useState({
     name: defaultValues.name || "",
-    phone: defaultValues.phone || "", 
+    phone: defaultValues.phone || "",
     location: defaultValues.location || "",
     age: defaultValues.age || "",
     experience: defaultValues.experience || "",
     gender: defaultValues.gender || "",
     languages: defaultValues.languages || [],
-    canDrive: defaultValues.canDrive || "",
+    canDrive: defaultValues.canDrive || null,
     bio: defaultValues.bio || "",
   });
 
@@ -33,7 +33,6 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  
   const handlePhoneChange = (e) => {
     let value = e.target.value.replace(/\D/g, "");
     value = value.slice(0, 10);
@@ -58,13 +57,11 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     const requiredFields = [
       "name",
       "age",
-      "phone", 
-       "experience",
-         "location",
+      "phone",
+      "experience",
+      "location",
       "gender",
-     
-    
-      "canDrive",
+
       "bio",
     ];
 
@@ -92,6 +89,11 @@ const BasicInfo = ({ defaultValues, onNext }) => {
 
     if (data.languages.length === 0) {
       toast.error("Please select at least one language!");
+      return;
+    }
+
+    if (data.canDrive === null) {
+      toast.error("Can Drive is required!");
       return;
     }
 
@@ -210,13 +212,13 @@ const BasicInfo = ({ defaultValues, onNext }) => {
           <Label className="mb-3 block">Can you drive?</Label>
           <RadioGroup
             className="flex gap-4"
-            value={data.canDrive}
+            value={String(data.canDrive)}
             onValueChange={(value) =>
-              setData((prev) => ({ ...prev, canDrive: value }))
+              setData((prev) => ({ ...prev, canDrive: value === "true" }))
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="d1" />
+              <RadioGroupItem value="true" id="d1" />
               <Label
                 htmlFor="d1"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -226,7 +228,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
             </div>
 
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="d2" />
+              <RadioGroupItem value="false" id="d2" />
               <Label
                 htmlFor="d2"
                 className="text-gray-700 font-normal cursor-pointer"

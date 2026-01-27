@@ -8,10 +8,10 @@ import toast from "react-hot-toast";
 
 const Experience = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
-    hospitalBasedCare: defaultValues.hospitalBasedCare || "",
+    hospitalBasedCare: defaultValues.hospitalBasedCare || null,
     hospitalBasedYearsOfExperience:defaultValues.hospitalBasedYearsOfExperience || "",
     hospitalBasedReferenceContact:defaultValues.hospitalBasedReferenceContact || "",
-    homeBasedCare: defaultValues.homeBasedCare || "",
+    homeBasedCare: defaultValues.homeBasedCare || null,
     homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience || "",
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact || "",
     preferred: defaultValues.preferred || [],
@@ -49,31 +49,31 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Dynamic validation
-    const requiredFields = [
-      "hospitalBasedCare",
-      // "hospitalBasedYearsOfExperience",
-      // "hospitalBasedReferenceContact",
-      "homeBasedCare",
-      // "homeBasedYearsOfExperience",
-      // "homeBasedReferenceContact",
-    ];
+    // const requiredFields = [
+    //   "hospitalBasedCare",
+    //   // "hospitalBasedYearsOfExperience",
+    //   // "hospitalBasedReferenceContact",
+    //   "homeBasedCare",
+    //   // "homeBasedYearsOfExperience",
+    //   // "homeBasedReferenceContact",
+    // ];
 
-    for (let field of requiredFields) {
-      if (
-        !data[field] ||
-        (Array.isArray(data[field]) && data[field].length === 0)
-      ) {
-        const formattedField = field
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (str) => str.toUpperCase());
+    // for (let field of requiredFields) {
+    //   if (
+    //     !data[field] ||
+    //     (Array.isArray(data[field]) && data[field].length === 0)
+    //   ) {
+    //     const formattedField = field
+    //       .replace(/([A-Z])/g, " $1")
+    //       .replace(/^./, (str) => str.toUpperCase());
 
-        toast.error(`${formattedField} is required!`);
-        return;
-      }
-    }
+    //     toast.error(`${formattedField} is required!`);
+    //     return;
+    //   }
+    // }
 
     if (
-      data.hospitalBasedCare === "Yes" &&
+      data.hospitalBasedCare === "true" &&
       (!data.hospitalBasedYearsOfExperience ||
         !data.hospitalBasedReferenceContact)
     ) {
@@ -82,7 +82,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
     }
 
     if (
-      data.homeBasedCare === "Yes" &&
+      data.homeBasedCare === "true" &&
       (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
     ) {
       toast.error("Please fill all Home Based Care fields!");
@@ -105,13 +105,13 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
         <Label className="mb-3 block">Hospital Based Care</Label>
         <RadioGroup
           className="flex gap-x-4 flex-wrap "
-          value={data.hospitalBasedCare}
+          value={String(data.hospitalBasedCare)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, hospitalBasedCare: value }))
+            setData((prev) => ({ ...prev, hospitalBasedCare: value==="true" }))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="d1" />
+            <RadioGroupItem value="true" id="d1" />
             <Label
               htmlFor="d1"
               className="text-gray-700 font-normal cursor-pointer"
@@ -120,7 +120,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="d2" />
+            <RadioGroupItem value="false" id="d2" />
             <Label
               htmlFor="d2"
               className="text-gray-700 font-normal cursor-pointer"
@@ -130,7 +130,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      {data.hospitalBasedCare === "Yes" && (
+      {data.hospitalBasedCare === "true" && (
         <div className="flex gap-6 sm:flex-row my-6 flex-col sm:gap-4">
           <Input
             type="number"
@@ -160,13 +160,13 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
         <Label className="mb-3 mt-6 block">Home Based Care</Label>
         <RadioGroup
           className="flex gap-x-4 flex-wrap "
-          value={data.homeBasedCare}
+          value={String(data.homeBasedCare)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, homeBasedCare: value }))
+            setData((prev) => ({ ...prev, homeBasedCare: value ==="true"}))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="d3" />
+            <RadioGroupItem value="true" id="d3" />
             <Label
               htmlFor="d3"
               className="text-gray-700 font-normal cursor-pointer"
@@ -175,7 +175,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
             </Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="d4" />
+            <RadioGroupItem value="false" id="d4" />
             <Label
               htmlFor="d4"
               className="text-gray-700 font-normal cursor-pointer"
@@ -185,7 +185,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      {data.homeBasedCare === "Yes" && (
+      {data.homeBasedCare === "true" && (
         <div className="flex gap-6 sm:flex-row flex-col my-6  sm:gap-4">
           <Input
             type="number"
