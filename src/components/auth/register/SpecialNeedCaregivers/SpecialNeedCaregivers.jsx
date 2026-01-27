@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
+import { postApi } from "@/lib/apiHandler";
 
 const SpecialNeedCaregivers = () => {
   const [started, setStarted] = useState(false);
@@ -31,7 +32,7 @@ const SpecialNeedCaregivers = () => {
     setUser(accountData);
   };
 
-  const handleNext = (dataForStep) => {
+  const handleNext = async (dataForStep) => {
     if (step === 1)
       setFormData((prev) => ({ ...prev, basicInfo: dataForStep }));
 
@@ -66,20 +67,31 @@ const SpecialNeedCaregivers = () => {
       // router.push("/dashboard");
 
       const fd = new FormData();
+      const BASICINFO = formData.basicInfo;
+      const EDUCATION = formData.education;
+      const EXPERIENCE = formData.experience;
+      const DOCUMENTS = formData.documents;
 
       fd.append("name", BASICINFO.name);
       fd.append("location", BASICINFO.location);
       fd.append("age", BASICINFO.age);
       fd.append("experience", BASICINFO.experience);
       fd.append("gender", BASICINFO.gender);
-      fd.append("preferredRole", BASICINFO.preferredRole);
       BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
       fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
       fd.append("bio", BASICINFO.bio);
       fd.append("number_two", BASICINFO.phone);
 
-      fd.append("education", EDUCATION.education);
-      fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
+      fd.append("education", EDUCATION.educationLevel);
+      fd.append("isRegisterPCK", EXPERIENCE.isRegisterPCK ? 1 : 0);
+      fd.append("registrationNumber", EDUCATION.registrationNumber);
+
+      if (EDUCATION?.educationCertificate) {
+        fd.append("educationCertificate", EDUCATION.educationCertificate);
+      }
+      if (EDUCATION?.practiceLicense) {
+        fd.append("practiceLicense", EDUCATION.practiceLicense);
+      }
 
       fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
       fd.append(
@@ -99,12 +111,7 @@ const SpecialNeedCaregivers = () => {
         "homeBasedReferenceContact",
         EXPERIENCE.homeBasedReferenceContact,
       );
-
-      SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
-      fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
-      fd.append("bathingYears", SKILLSERVICES.bathingYears);
-      fd.append("feedingYears", SKILLSERVICES.feedingYears);
-      fd.append("serviceFee", SKILLSERVICES.serviceFee);
+      EXPERIENCE.preferred.forEach((pref) => fd.append("preferred[]", pref));
 
       if (DOCUMENTS?.idCopy) {
         fd.append("idCopy", DOCUMENTS.idCopy);
@@ -121,11 +128,53 @@ const SpecialNeedCaregivers = () => {
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
-      if (DOCUMENTS?.educationCertificate) {
-        fd.append("educationCertificate", DOCUMENTS.educationCertificate);
-      }
 
       console.log("form data", formData);
+      try {
+        const res = await postApi("/create-profile", fd, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        if (res?.status === 200) {
+          console.log("after nurse aide assistant create profile", res);
+          toast.success("Registered Successfully!");
+          localStorage.setItem(
+            "user",
+            JSON.stringify({
+              ...user,
+              is_profile_completed: Boolean(res?.data?.is_profile_completed),
+              is_profile_verified: Boolean(res?.data?.is_profile_verified),
+            }),
+          );
+          // router.push(`/dashboard/${user?.role}-profile`);
+          //todo this localStorage
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     role: "care_institutions",
+          //     institution: formData.institution,
+          //   }),
+          // );
+        } else {
+          toast.error(
+            res?.data?.message || "Something went wrong. Please try again.",
+          );
+        }
+      } catch (error) {
+        console.error("Error creating profile:", error);
+        if (error.response) {
+          toast.error(
+            error.response.data?.message || `Error: ${error.response.status}`,
+          );
+        } else if (error.request) {
+          toast.error("No response from server. Please check your connection.");
+        } else {
+          toast.error("An unexpected error occurred.");
+        }
+      }
     }
   };
 

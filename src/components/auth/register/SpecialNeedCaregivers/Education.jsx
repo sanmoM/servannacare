@@ -12,7 +12,7 @@ import Input from "@/components/shared/Input";
 const Education = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
     educationLevel: defaultValues.educationLevel || "",
-    isRegisterPCK: defaultValues.isRegisterPCK || "",
+    isRegisterPCK: defaultValues.isRegisterPCK || null,
     registrationNumber: defaultValues.registrationNumber || "",
     practiceLicense: defaultValues.practiceLicense || null,
     educationCertificate: defaultValues.educationCertificate || null,
@@ -24,7 +24,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
 
   // Handle PCK Yes/No
   const handlePCKChange = (value) => {
-    if (value === "No") {
+    if (value === "true") {
       setData((prev) => ({
         ...prev,
         isRegisterPCK: value,
@@ -62,7 +62,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
 
     // Filter out unwanted fields if PCK = No
     const finalData = { ...data };
-    if (data.isRegisterPCK === "No") {
+    if (data.isRegisterPCK === "false") {
       delete finalData.registrationNumber;
       delete finalData.practiceLicense;
     }
@@ -173,22 +173,22 @@ const Education = ({ defaultValues, onNext, onBack }) => {
 
         <RadioGroup
           className="flex gap-4"
-          value={data.isRegisterPCK}
+          value={String(data.isRegisterPCK)}
           onValueChange={handlePCKChange}
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="pckYes" />
+            <RadioGroupItem value="true" id="pckYes" />
             <Label htmlFor="pckYes">Yes</Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="pckNo" />
+            <RadioGroupItem value="false" id="pckNo" />
             <Label htmlFor="pckNo">No</Label>
           </div>
         </RadioGroup>
       </div>
 
-      {/* Show only when PCK = Yes */}
-      {data.isRegisterPCK === "Yes" && (
+      {/* Show only when PCK = true */}
+      {data.isRegisterPCK === "true" && (
         <div>
           <Input
             label={"Registration Number"}
