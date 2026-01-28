@@ -117,6 +117,7 @@ export default function Testimonials({ homeData }) {
                 placeholder="Enter Your Email"
                 className={"rounded-full"}
               />
+              {/* todo: email send in admin panel. */}
               <Button
                 size={"lg"}
                 variant={"outline"}

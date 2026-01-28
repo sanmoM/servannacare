@@ -97,8 +97,8 @@ const SearchContent = () => {
         <div className="pb-8">
           <div className="flex  border-b items-center pb-2 gap-4 justify-between">
             <h2 className="font-medium hidden lg:block text-sm md:text-base">
-              Showing <span className="text-gray-600"></span> services{" "}
-              <span className="text-gray-600"></span> of{" "}
+              Showing <span className="text-gray-600"></span> services
+              <span className="text-gray-600"></span> of
               <span className="text-gray-600"></span>
             </h2>
 

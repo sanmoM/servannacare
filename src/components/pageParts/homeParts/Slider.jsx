@@ -11,6 +11,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { slides } from "@/utilities/data";
 import { Button } from "@/components/ui/button";
 import Searchbar from "./Searchbar";
+import Link from "next/link";
 
 const Slider = ({ homeData }) => {
   const [swiperRef, setSwiperRef] = useState(null);
@@ -52,12 +53,14 @@ const Slider = ({ homeData }) => {
                       <p className="text-xs sm:text-sm md:text-base lg:text-xl  text-gray-200 mb-8 leading-relaxed">
                         {slide?.sub_title}
                       </p>
-                      <Button
-                        size={"lg"}
-                        className="text-sm md:text-lg font-medium"
-                      >
-                        {slide?.btn_text}
-                      </Button>
+                      <Link href={`/about-us`}>
+                        <Button
+                          size={"lg"}
+                          className="text-sm md:text-lg font-medium cursor-pointer"
+                        >
+                          {slide?.btn_text}
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 </div>

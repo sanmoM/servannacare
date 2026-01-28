@@ -440,9 +440,9 @@ export const fakeData = [
   {
     id: 1,
     rating: 4.5,
-    name: "John Doe",
+    name: "Milon Poddar",
     email: "john.doe@example.com",
-    category: "House Manager / Nanny",
+    category: "House-Manager / Nanny",
     service:["Live In","Dayburg"],
     status: "available",
     education: "BSc Nursing",

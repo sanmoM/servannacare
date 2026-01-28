@@ -57,7 +57,7 @@ const ProfileCard = ({ profile }) => {
             onError={(e) => {
               e.target.onerror = null;
               e.target.src = `https://placehold.co/160x160/6366f1/white?text=${profile.name.charAt(
-                0
+                0,
               )}`;
             }}
           />
@@ -109,13 +109,29 @@ const ProfileCard = ({ profile }) => {
                 profile.id
               }`}
             >
-              <Button className="w-full" variant="outline">
+              <Button className="w-full cursor-pointer" variant="outline">
                 View Profile
               </Button>
             </Link>
           </div>
-
           <div className="flex-1">
+            <Link
+              href={{
+                pathname: "/bookingForm",
+                query: {
+                  category: profile.category.toLowerCase(),
+                  id: profile.id,
+                },
+              }}
+            >
+              <Button className="w-full cursor-pointer">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Book Now
+              </Button>
+            </Link>
+          </div>
+
+          {/* <div className="flex-1">
             <Dialog >
               <DialogTrigger asChild>
                 <Button className="w-full" onClick={() => setOpenModal(true)}>
@@ -130,17 +146,11 @@ const ProfileCard = ({ profile }) => {
                    
                   </DialogDescription>
                 </DialogHeader>
-                <SubscriptionPlans />
-                {/* <DialogFooter className="sm:justify-start">
-                  <DialogClose asChild>
-                    <Button type="button" variant="secondary">
-                      Close
-                    </Button>
-                  </DialogClose>
-                </DialogFooter> */}
+                
+         
               </DialogContent>
             </Dialog>
-          </div>
+          </div> */}
         </div>
       </div>
 
