@@ -104,17 +104,17 @@ const HouseManager = () => {
           DOCUMENTSUPLOADS.goodConductCertificate,
         );
       }
-
+      console.log("formData", formData);
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-        console.log("res", res);
         if (res?.status === 200) {
+          console.log("res", res);
           toast.success("Registered Successfully!");
-          router.push(`/dashboard/${user?.role}-profile`);
+          // router.push(`/dashboard/${user?.role}-profile`);
           //todo
           // localStorage.setItem("token", user?.token);
           //todo this localStorage
@@ -131,6 +131,7 @@ const HouseManager = () => {
             JSON.stringify({
               ...user,
               is_profile_completed: Boolean(res?.data?.is_profile_completed),
+              is_profile_verified: Boolean(res?.data?.is_profile_verified),
             }),
           );
         } else {

@@ -72,7 +72,7 @@ export default function DashboardLayout({ children }) {
       return;
     }
 
-    if (isProfileCompleted && !isProfileVerified) {
+    if (role !== "user" && isProfileCompleted && !isProfileVerified) {
       const allowedPaths = [profilePath, secondaryPath].filter(Boolean);
 
       if (!allowedPaths.includes(pathname)) {

@@ -1,6 +1,7 @@
 "use client";
 
 import BasicInfo from "@/components/auth/register/HouseManager/BasicInfo";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,6 +20,8 @@ import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
 import NurseAideUpdate from "@/components/updateProfile/NurseAide/NurseAide";
 import Physiotherapist from "@/components/updateProfile/Physiotherapist/Physiotherapist";
 import SpecialNeedCaregiversUpdate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversUpdate";
+import { useFetch } from "@/hooks/useFetch";
+import useLocalUser from "@/hooks/useLocalUser";
 import {
   Calendar,
   FileText,
@@ -32,42 +35,20 @@ import {
 import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
-  const [userInfo, setUserInfo] = useState({});
-  const [userDetails, setUserDetails] = useState([]);
+  const [specialistDatas, setSpecialistDatas] = useState(null);
+  // console.log(specialistDatas?.data?.houseManager)
 
-  // Load saved data
+  const { user, loaded } = useLocalUser();
+
+  const { data, isLoading, error } = useFetch("/profile");
   useEffect(() => {
-    // Delay to avoid cascading renders during hydration
-    const timer = setTimeout(() => {
-      try {
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          setUserInfo(JSON.parse(savedUser));
-          
-        }
-      } catch (error) {
-        console.error("Invalid JSON:", error);
-      }
-    }, 0);
+    if (data) {
+      setSpecialistDatas(data?.data?.data ?? data);
+    }
+  }, [data]);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Delay to avoid cascading renders during hydration
-    const timer = setTimeout(() => {
-      try {
-        const saveDetails = localStorage.getItem("specialist");
-        if (saveDetails) {
-          setUserDetails(JSON.parse(saveDetails));
-        }
-      } catch (error) {
-        console.error("Invalid JSON:", error);
-      }
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, []);
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
 
   const infoItems = [
     {
@@ -185,7 +166,7 @@ export default function ProfilePage() {
 
         <div className="text-xs text-gray-700 font-semibold gap-2 flex items-center">
           <Calendar size={16} />
-          <span>Joined {userInfo.joinedSince}</span>
+          {/* <span>Joined {userInfo.joinedSince}</span> */}
         </div>
       </div>
       <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
@@ -195,14 +176,14 @@ export default function ProfilePage() {
         {/* Profile Picture */}
         <div className="flex flex-col justify-center  items-center">
           <div className="relative h-36 w-36 lg:w-48 lg:h-48 rounded-full border-4 border-primary overflow-hidden shadow-lg">
-            <img
+            {/* <img
               className="object-cover w-full h-full"
               src={userInfo.profilePic || "/user.png"}
               alt="profile"
-            />
+            /> */}
           </div>
           <h1 className="text-center text-xl text-gray-600 font-semibold mt-4 break-words max-w-[180px]">
-            {userInfo.name || "N/A"}
+            {/* {userInfo.name || "N/A"} */}
           </h1>
         </div>
 
@@ -218,18 +199,21 @@ export default function ProfilePage() {
                 <div className="w-full">
                   <p className="text-sm mb-1 text-gray-500">{item.label}</p>
                   <p className="text-sm text-gray-700">
-                    {userInfo[item.key] || "N/A"}
+                    {/* {userInfo[item.key] || "N/A"} */}
                   </p>
                 </div>
               </div>
             ))}
           </div>
+          {specialistDatas?.data?.houseManager?.subRole === "house-manager" && (
+            <HouseManager data={specialistDatas?.data?.houseManager} />
+          )}
           <div className="flex mt-6 justify-end">
             <Dialog>
               <DialogTrigger asChild>
-                <Button className={"w-full sm:w-auto"} size={"lg"}>
+                {/* <Button className={"w-full sm:w-auto"} size={"lg"}>
                   Update Profile?
-                </Button>
+                </Button> */}
               </DialogTrigger>
               <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
                 <DialogHeader>
@@ -239,25 +223,30 @@ export default function ProfilePage() {
                   <DialogDescription></DialogDescription>
                 </DialogHeader>
                 <div>
-                  {userInfo?.subRole === "housemanager" && (
-                    <HouseManager data={userDetails} />
+                  {specialistDatas?.subRole === "housemanager" && (
+                    <HouseManager data={specialistDatas} />
                   )}
-                  {userInfo?.subRole === "nurse" && (
-                    <NurseUpdate data={userDetails} />
+                  {specialistDatas?.subRole === "nurse" && (
+                    <NurseUpdate data={specialistDatas} />
                   )}
-                  {userInfo?.subRole === "physiotherapist" && (
-                    <Physiotherapist data={userDetails} />
+                  {specialistDatas?.subRole === "physiotherapist" && (
+                    <Physiotherapist data={specialistDatas} />
                   )}
-                  {userInfo?.subRole === "nurse aide assistant" && (
-                    <NurseAideUpdate data={userDetails} />
+                  {specialistDatas?.subRole === "nurse aide assistant" && (
+                    <NurseAideUpdate data={specialistDatas} />
                   )}
-                  {userInfo?.subRole === "special need caregivers" && (
-                    <SpecialNeedCaregiversUpdate data={userDetails} />
+                  {specialistDatas?.subRole === "special need caregivers" && (
+                    <SpecialNeedCaregiversUpdate data={specialistDatas} />
                   )}
                 </div>
                 <DialogFooter className="sm:justify-end">
                   <DialogClose asChild>
-                    <Button className={""} size={"lg"} type="button" variant="secondary">
+                    <Button
+                      className={""}
+                      size={"lg"}
+                      type="button"
+                      variant="secondary"
+                    >
                       Cancel
                     </Button>
                   </DialogClose>
@@ -268,14 +257,14 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div>
-        {/*  Render all form sections */}
+      {/* <div>
+     
         {userDetails &&
           typeof userDetails === "object" &&
           Object.entries(userDetails).map(([sectionKey, sectionValue]) =>
-            renderSection(sectionKey, sectionValue)
+            renderSection(sectionKey, sectionValue),
           )}
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -9,7 +9,7 @@ const page = () => {
       email: "rahim@example.com",
       photo: "/images/users/rahim.jpg",
 
-      plan: "Gold", // Silver / Gold / Platinum
+      plan: "Gold", 
       status: "Active",
 
       bookingStart: "01 Dec 2025",

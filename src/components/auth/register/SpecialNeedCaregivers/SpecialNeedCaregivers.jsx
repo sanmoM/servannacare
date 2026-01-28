@@ -129,7 +129,6 @@ const SpecialNeedCaregivers = () => {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
 
-      console.log("form data", formData);
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -148,7 +147,7 @@ const SpecialNeedCaregivers = () => {
               is_profile_verified: Boolean(res?.data?.is_profile_verified),
             }),
           );
-          // router.push(`/dashboard/${user?.role}-profile`);
+          router.push(`/dashboard/${user?.role}-profile`);
           //todo this localStorage
           // localStorage.setItem(
           //   "user",

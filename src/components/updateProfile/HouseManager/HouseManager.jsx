@@ -26,8 +26,9 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const HouseManager = ({ data = {} }) => {
-  const router  = useRouter()
-  const {user}  = useLocalUser();
+  console.log("datas", data);
+  const router = useRouter();
+  const { user } = useLocalUser();
 
   const [formData, setFormData] = useState({
     basicInfo: {
@@ -47,15 +48,13 @@ const HouseManager = ({ data = {} }) => {
       preferredRole: data.additionalDetails?.preferredRole || "",
     },
 
-    documents:{
-      firstAidCertificate:data.documents?.firstAidCertificate || null,
-      goodConductCertificate:data.documents?.goodConductCertificate || null,
-      iDCopy:data.documents?.iDCopy || null,
-      profilePhoto:data.documents?.profilePhoto || null,
-      drivingLicense:data.documents?.drivingLicense || null
-    }
-
-
+    documents: {
+      firstAidCertificate: data.documents?.firstAidCertificate || null,
+      goodConductCertificate: data.documents?.goodConductCertificate || null,
+      iDCopy: data.documents?.iDCopy || null,
+      profilePhoto: data.documents?.profilePhoto || null,
+      drivingLicense: data.documents?.drivingLicense || null,
+    },
   });
 
   const handleChange = (e) => {
@@ -156,18 +155,24 @@ const HouseManager = ({ data = {} }) => {
     },
   ];
 
-  const handleUpdate = (e) =>{
-      e.preventDefault()
-      localStorage.setItem("specialist", JSON.stringify(formData));
-      localStorage.setItem("user",JSON.stringify({...user,name:formData.basicInfo.name,location:formData.basicInfo.location}));
-      toast.success("Profile Updated!");
-      router.push("/dashboard")
-      
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    localStorage.setItem("specialist", JSON.stringify(formData));
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        ...user,
+        name: formData.basicInfo.name,
+        location: formData.basicInfo.location,
+      }),
+    );
+    toast.success("Profile Updated!");
+    router.push("/dashboard");
   };
-  
+
   return (
     <div>
-      <form onSubmit={handleUpdate}  className="space-y-6 relative">
+      <form onSubmit={handleUpdate} className="space-y-6 relative">
         <h4 className="formHeading">Basic Information</h4>
 
         <div className="flex flex-col sm:flex-row gap-6">
@@ -451,8 +456,15 @@ const HouseManager = ({ data = {} }) => {
           ))}
         </div>
 
-        <div className="absolute mt-4 b-0">
-          <Button size={"lg"} type="submit">Submit</Button>
+        <div className="flex justify-end mt-4 b-0">
+          {!user?.is_profile_completed ?  <Button size={"lg"} type="submit">
+            Submit
+          </Button>:
+           <Button size={"lg"} type="submit">
+            Update
+          </Button>
+          }
+         
         </div>
       </form>
     </div>
