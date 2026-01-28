@@ -17,13 +17,14 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { postApi } from "@/lib/apiHandler";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function page() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const id = searchParams.get("id");
+  const router = useRouter();
   const {
     register,
     watch,
@@ -65,9 +66,10 @@ export default function page() {
       // care_start_date: data?.startMonth,
       // care_end_date: data?.endMonth,
 
-  care_start_date: data?.careFrequency === "daily" ? data?.startDate : data?.startMonth,
-  care_end_date: data?.careFrequency === "daily" ? data?.endDate : data?.endMonth,
-
+      care_start_date:
+        data?.careFrequency === "daily" ? data?.startDate : data?.startMonth,
+      care_end_date:
+        data?.careFrequency === "daily" ? data?.endDate : data?.endMonth,
 
       location_of_care: data?.location,
       emergency_contact_name: data?.emergencyName,
@@ -82,6 +84,7 @@ export default function page() {
       if (res?.status === 200) {
         toast.success("Booking Successfully!");
         console.log("response", res);
+        router.push("/specialist");
       } else {
         toast.error(
           res?.data?.message || "Something went wrong. Please try again.",
