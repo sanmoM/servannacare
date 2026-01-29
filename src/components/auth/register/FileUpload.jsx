@@ -8,7 +8,7 @@ const FileUpload = ({
   accept,
   icon,
   optional = false,
-  file, 
+  file,
   onFileSelect,
 }) => {
   const handleChange = (e) => {
@@ -16,7 +16,22 @@ const FileUpload = ({
     if (onFileSelect) onFileSelect(selectedFile);
   };
 
-  const isImage = file && file.type.startsWith("image/");
+  const isFileObject = file instanceof File;
+  const isString = typeof file === "string" && file.length > 0;
+
+  // 🔒 SAFE image check
+  const isImage =
+    (isFileObject && file.type?.startsWith("image/")) ||
+    (isString && file.match(/\.(jpg|jpeg|png|gif|webp)$/i));
+
+  // 🔒 SAFE preview source
+  const previewSrc = isFileObject
+    ? URL.createObjectURL(file)
+    : isString
+    ? file.startsWith("http")
+      ? file
+      : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${file}`
+    : null;
 
   return (
     <label
@@ -33,9 +48,9 @@ const FileUpload = ({
 
       <div className="text-center space-y-3 w-full">
         <div className="flex justify-center">
-          {isImage ? (
+          {isImage && previewSrc ? (
             <img
-              src={URL.createObjectURL(file)}
+              src={previewSrc}
               alt={title}
               className="h-24 w-24 object-cover rounded-md"
             />
@@ -54,7 +69,9 @@ const FileUpload = ({
         {file && !isImage && (
           <div className="flex text-xs text-gray-600 items-center justify-center gap-2 text-green-600 font-medium">
             <CheckCircle size={14} />
-            <span>{file.name} is selected</span>
+            <span>
+              {isFileObject ? `${file.name} is selected` : "File uploaded"}
+            </span>
           </div>
         )}
 

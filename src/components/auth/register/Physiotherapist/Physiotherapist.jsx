@@ -129,21 +129,23 @@ const Physiotherapist = () => {
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
-      if (DOCUMENTS?.eduCertificate) {
-        fd.append("eduCertificate", DOCUMENTS.eduCertificate);
+      if (EDUCATION?.eduCertificate) {
+        fd.append("eduCertificate", EDUCATION.eduCertificate);
       }
-      if (DOCUMENTS?.practiceLicense) {
-        fd.append("practiceLicense", DOCUMENTS.practiceLicense);
+      if (EDUCATION?.practiceLicense) {
+        fd.append("practiceLicense", EDUCATION.practiceLicense);
       }
 
-      console.log("form Data", formData);
+      // console.log("form Data", formData);
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
+     
         if (res?.status === 200) {
+          // console.log("res", res);
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
           //todo
@@ -162,7 +164,7 @@ const Physiotherapist = () => {
             JSON.stringify({
               ...user,
               is_profile_completed: Boolean(res?.data?.is_profile_completed),
-              
+              is_profile_verified: Boolean(res?.data?.is_profile_verified),
             }),
           );
         } else {

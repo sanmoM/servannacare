@@ -47,11 +47,22 @@ const Page = () => {
     };
     try {
       const res = await postApi("/login", userInfo);
-      const { token, is_profile_completed, role, subRole } = res.data.data;
+      const {
+        token,
+        is_profile_completed,
+        role,
+        subRole,
+        is_profile_verified,
+      } = res.data.data;
       localStorage.setItem("token", token);
       localStorage.setItem(
         "user",
-        JSON.stringify({ is_profile_completed, role, subRole }),
+        JSON.stringify({
+          is_profile_completed,
+          role,
+          subRole,
+          is_profile_verified,
+        }),
       );
       toast.success("Login successful!");
       router.push("/dashboard");

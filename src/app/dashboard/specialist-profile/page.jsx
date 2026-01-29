@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  // console.log(specialistDatas?.data?.houseManager)
+  console.log(specialistDatas?.data?.physiotherapist);
 
   const { user, loaded } = useLocalUser();
 
@@ -165,9 +165,11 @@ export default function ProfilePage() {
       <div className="flex justify-between">
         <h1 className="sectionHeading mb-4">My Profile</h1>
       </div>
-      <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
-        <Info /> Your account is Under review .
-      </p>
+      {!user?.is_profile_verified && (
+        <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+          <Info /> Your account is Under review .
+        </p>
+      )}
 
       <div className="border flex  items-center md:items-start flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
         {/* Info Fields */}
@@ -177,6 +179,13 @@ export default function ProfilePage() {
               <HouseManager data={specialistDatas?.data?.houseManager} />
             ) : (
               <HouseManagerCreate />
+            ))}
+          {specialistDatas?.data?.physiotherapist?.subRole ===
+            "physiotherapist" &&
+            (specialistDatas?.data?.physiotherapist?.is_profile_completed ? (
+              <Physiotherapist data={specialistDatas} />
+            ) : (
+              <Physiotherapist />
             ))}
 
           <div className="flex mt-6 justify-end">

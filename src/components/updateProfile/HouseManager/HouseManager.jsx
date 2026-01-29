@@ -1,3 +1,4 @@
+import FilePreview from "@/components/auth/register/FilePreview";
 import FileUpload from "@/components/auth/register/FileUpload";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const HouseManager = ({ data = {} }) => {
-  console.log("datas", data);
+  // console.log("datas", data);
   const router = useRouter();
   const { user } = useLocalUser();
 
@@ -45,18 +46,18 @@ const HouseManager = ({ data = {} }) => {
       isMother: data?.house_manager?.isMother ?? null,
       ageOfKids: data.house_manager?.ageOfKids || [],
       isHandelingPet: data.house_manager?.isHandelingPet ?? null,
-      preferredRole: data ?.preferredRole || "",
+      preferredRole: data?.preferredRole || "",
     },
 
     documents: {
-      firstAidCertificate: data.documents?.firstAidCertificate || null,
-      goodConductCertificate: data.documents?.goodConductCertificate || null,
-      iDCopy: data.documents?.iDCopy || null,
-      profilePhoto: data.documents?.profilePhoto || null,
-      drivingLicense: data.documents?.drivingLicense || null,
+      firstAidCertificate: data?.house_manager?.firstAidCertificate || "",
+      goodConductCertificate: data?.goodConductCertificate || "",
+      iDCopy: data?.idCopy || "",
+      profilePhoto: data?.profilePhoto || "",
+      drivingLicense: data?.drivingLicense || "",
     },
   });
-  console.log(formData?.additionalDetails?.preferredRole);
+  // console.log(formData?.documents?.firstAidCertificate);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -110,51 +111,76 @@ const HouseManager = ({ data = {} }) => {
     });
   };
 
+  // const handleFileSelect = (id, file) => {
+  //   setFormData((p) => ({
+  //     ...p,
+  //     documents: { ...p.documents, [id]: file },
+  //   }));
+  // };
   const handleFileSelect = (id, file) => {
-    setFormData((p) => ({
-      ...p,
-      documents: { ...p.documents, [id]: file },
+    setFormData((prev) => ({
+      ...prev,
+      documents: {
+        ...prev.documents,
+        [id]: file,
+      },
     }));
   };
 
-  const docs = [
+  const documentConfig = [
     {
       id: "firstAidCertificate",
       title: "First Aid Certificate",
-      accept: "application/pdf,image/*",
-      icon: <Cross size={32} />,
       required: true,
     },
     {
       id: "goodConductCertificate",
       title: "Good Conduct Certificate",
-      accept: "application/pdf,image/*",
-      icon: <FileText size={32} />,
       required: true,
     },
-    {
-      id: "iDCopy",
-      title: "ID Copy",
-      accept: "application/pdf,image/*",
-      icon: <IdCardLanyard size={32} />,
-      required: true,
-    },
-    {
-      id: "profilePhoto",
-      title: "Profile Photo",
-      accept: "image/*",
-      icon: <ImageIcon size={32} />,
-      required: true,
-    },
-    {
-      id: "drivingLicense",
-      title: "Driving License (Optional)",
-      accept: "application/pdf,image/*",
-      icon: <IdCard size={32} />,
-      required: false,
-      optional: true,
-    },
+    { id: "iDCopy", title: "ID Copy", required: true },
+    { id: "profilePhoto", title: "Profile Photo", required: true },
+    { id: "drivingLicense", title: "Driving License", required: false },
   ];
+
+  // const docs = [
+  //   {
+  //     id: "firstAidCertificate",
+  //     title: "First Aid Certificate",
+  //     accept: "application/pdf,image/*",
+  //     icon: <Cross size={32} />,
+  //     required: true,
+  //   },
+  //   {
+  //     id: "goodConductCertificate",
+  //     title: "Good Conduct Certificate",
+  //     accept: "application/pdf,image/*",
+  //     icon: <FileText size={32} />,
+  //     required: true,
+  //   },
+  //   {
+  //     id: "iDCopy",
+  //     title: "ID Copy",
+  //     accept: "application/pdf,image/*",
+  //     icon: <IdCardLanyard size={32} />,
+  //     required: true,
+  //   },
+  //   {
+  //     id: "profilePhoto",
+  //     title: "Profile Photo",
+  //     accept: "image/*",
+  //     icon: <ImageIcon size={32} />,
+  //     required: true,
+  //   },
+  //   {
+  //     id: "drivingLicense",
+  //     title: "Driving License (Optional)",
+  //     accept: "application/pdf,image/*",
+  //     icon: <IdCard size={32} />,
+  //     required: false,
+  //     optional: true,
+  //   },
+  // ];
 
   const handleUpdate = (e) => {
     e.preventDefault();
@@ -501,23 +527,26 @@ const HouseManager = ({ data = {} }) => {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {docs.map((doc) => (
-            <FileUpload
-              key={doc.id}
-              title={doc.title}
-              accept={doc.accept}
-              icon={doc.icon}
-              optional={doc.optional}
-              // file={formData?.documents[doc.id]}
-              onFileSelect={(file) => handleFileSelect(doc.id, file)}
-            />
-          ))}
+        <div className="mt-6">
+          {/* File Preview */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+            {documentConfig.map((doc) => (
+              <div key={doc.id} className="border rounded-xl p-4">
+                <FileUpload
+                  title={doc.title}
+                  accept="application/pdf,image/*"
+                  file={formData.documents[doc.id]}
+                  onFileSelect={(file) => handleFileSelect(doc.id, file)}
+                />
+
+                <FilePreview
+                  file={formData.documents[doc.id]}
+                  alt={doc.title}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-
-
-
-
 
         <div className="flex justify-end mt-4 b-0">
           {!user?.is_profile_completed ? (
