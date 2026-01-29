@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const HouseManager = ({ data = {} }) => {
+const HouseManagerCreate = ({ data = {} }) => {
   console.log("datas", data);
   const router = useRouter();
   const { user } = useLocalUser();
@@ -33,19 +33,19 @@ const HouseManager = ({ data = {} }) => {
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
-      education: data?.education || "",
-      experience: data?.house_manager?.experience || "",
-      salaryRange: data?.house_manager?.salaryRange || "",
-      location: data?.location || "",
-      serviceOffered: data?.house_manager?.serviceOffered || "",
-      languages: data?.languages || [],
+      education: data.basicInfo?.education || "",
+      experience: data.basicInfo?.experience || "",
+      salaryRange: data.basicInfo?.salaryRange || "",
+      location: data.basicInfo?.location || "",
+      serviceOffered: data.basicInfo?.serviceOffered || "",
+      languages: data.basicInfo?.languages || [],
     },
 
     additionalDetails: {
-      isMother: data?.house_manager?.isMother ?? null,
-      ageOfKids: data.house_manager?.ageOfKids || [],
-      isHandelingPet: data.house_manager?.isHandelingPet ?? null,
-      preferredRole: data ?.preferredRole || "",
+      isMother: data.additionalDetails?.isMother || "",
+      ageOfKids: data.additionalDetails?.ageOfKids || [],
+      isHandelingPet: data.additionalDetails?.isHandelingPet || "",
+      preferredRole: data.additionalDetails?.preferredRole || "",
     },
 
     documents: {
@@ -56,7 +56,6 @@ const HouseManager = ({ data = {} }) => {
       drivingLicense: data.documents?.drivingLicense || null,
     },
   });
-  console.log(formData?.additionalDetails?.preferredRole);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -171,10 +170,11 @@ const HouseManager = ({ data = {} }) => {
     router.push("/dashboard");
   };
 
+
   return (
     <div>
       <form onSubmit={handleUpdate} className="space-y-6 relative">
-        <h4 className="formHeading">Basic Information</h4>
+        <h4 className="formHeading">Basic Information create</h4>
 
         <div className="flex flex-col sm:flex-row gap-6">
           <div className="flex-1">
@@ -183,6 +183,7 @@ const HouseManager = ({ data = {} }) => {
               name="name"
               placeholder="Enter your name"
               defaultValue={formData?.basicInfo?.name}
+              
               onChange={handleChange}
             />
           </div>
@@ -273,25 +274,26 @@ const HouseManager = ({ data = {} }) => {
               onChange={handleChange}
             />
           </div>
-
           <div className="flex-1">
+            {/* service offered */}
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Service Offered
             </label>
             <Select
-              value={formData?.basicInfo?.serviceOffered}
+              value={formData.basicInfo.serviceOffered}
               onValueChange={(v) => handleSelect("serviceOffered", v)}
-              // onValueChange={(value) =>
-              //   setData((prev) => ({ ...prev, serviceOffered: value }))
-              // }
             >
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select service offered" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="Live In">Live In</SelectItem>
-                  <SelectItem value="Dayburg">Dayburg </SelectItem>
+                  <SelectItem value="Live In (month rate pay)">
+                    Live In (month rate pay)
+                  </SelectItem>
+                  <SelectItem value="Dayburg (daily rate pay)">
+                    Dayburg (daily rate pay)
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -324,8 +326,7 @@ const HouseManager = ({ data = {} }) => {
 
         <div className="flex flex-col md:flex-row gap-6">
           {/* Mother Question */}
-          {/* yousuf doing this */}
-          {/* <div className="w-full flex-1 flex flex-col">
+          <div className="w-full flex-1 flex flex-col">
             <Label>Are you a mother?</Label>
             <RadioGroup
               className="flex gap-4 mt-3"
@@ -343,34 +344,6 @@ const HouseManager = ({ data = {} }) => {
               </div>
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="no" id="r2" />
-                <Label
-                  htmlFor="r2"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  No
-                </Label>
-              </div>
-            </RadioGroup>
-          </div> */}
-
-          <div className="w-full flex-1 flex flex-col">
-            <Label>Are you a mother?</Label>
-            <RadioGroup
-              className="flex gap-4 mt-3"
-              value={String(formData.additionalDetails.isMother)}
-              onValueChange={(v) => handleAdditionalSelect("isMother", v)}
-            >
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="true" id="r1" />
-                <Label
-                  htmlFor="r1"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  Yes
-                </Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="false" id="r2" />
                 <Label
                   htmlFor="r2"
                   className="text-gray-700 font-normal cursor-pointer"
@@ -406,7 +379,7 @@ const HouseManager = ({ data = {} }) => {
 
         {/* Pets */}
         <div className="flex md:flex-row flex-col gap-6">
-          {/* <div className="flex-1">
+          <div className="flex-1">
             <Label>Are you okay handling pets?</Label>
             <RadioGroup
               className="flex gap-4 mt-3"
@@ -432,37 +405,7 @@ const HouseManager = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
-          </div> */}
-
-          <div className="flex-1">
-            <Label>Are you okay handling pets?</Label>
-            <RadioGroup
-              className="flex gap-4 mt-3"
-              // value={formData?.additionalDetails?.isHandelingPet}
-              value={String(formData?.additionalDetails?.isHandelingPet)}
-              onValueChange={(v) => handleAdditionalSelect("isHandelingPet", v)}
-            >
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="true" id="p1" />
-                <Label
-                  htmlFor="p1"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  Yes
-                </Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="false" id="p2" />
-                <Label
-                  htmlFor="p2"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  No
-                </Label>
-              </div>
-            </RadioGroup>
           </div>
-
           <div className="flex-1">
             <Label>Preferred Role </Label>
             <RadioGroup
@@ -515,10 +458,6 @@ const HouseManager = ({ data = {} }) => {
           ))}
         </div>
 
-
-
-
-
         <div className="flex justify-end mt-4 b-0">
           {!user?.is_profile_completed ? (
             <Button size={"lg"} type="submit">
@@ -535,4 +474,4 @@ const HouseManager = ({ data = {} }) => {
   );
 };
 
-export default HouseManager;
+export default HouseManagerCreate;

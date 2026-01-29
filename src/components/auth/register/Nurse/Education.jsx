@@ -15,7 +15,6 @@ const Education = ({ defaultValues, onNext, onBack }) => {
     educationCertificate: defaultValues.educationCertificate || null,
   });
 
-
   const handleFileSelect = (field, file) => {
     setData((prev) => ({ ...prev, [field]: file }));
   };
@@ -31,7 +30,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
       toast.error("Education certificate is require!");
       return;
     }
-    if (!data.isNursingInKenya === null) {
+    if (data.isNursingInKenya === null || data.isNursingInKenya === "") {
       toast.error(" Answer the nursing council question!");
       return;
     }
@@ -78,7 +77,9 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           icon={<FileText size={32} />}
           optional=""
           file={data.educationCertificate}
-          onFileSelect={(file) => handleFileSelect("educationCertificate", file)}
+          onFileSelect={(file) =>
+            handleFileSelect("educationCertificate", file)
+          }
         />
       </div>
 
@@ -91,7 +92,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           className="flex gap-4 mt-2"
           value={String(data.isNursingInKenya)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, isNursingInKenya: value ="true"}))
+            setData((prev) => ({ ...prev, isNursingInKenya: value === "true" }))
           }
         >
           <div className="flex items-center gap-2">

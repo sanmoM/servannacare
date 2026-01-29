@@ -149,8 +149,7 @@ const Nurse = ({ skills }) => {
       if (DOCUMENTS?.educationCertificate) {
         fd.append("educationCertificate", DOCUMENTS.educationCertificate);
       }
-
-      //number_two
+   
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -161,7 +160,7 @@ const Nurse = ({ skills }) => {
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
-          //todo 
+          //todo
           // localStorage.setItem("token", user?.token);
           //todo this localStorage
           // localStorage.setItem(
@@ -172,7 +171,7 @@ const Nurse = ({ skills }) => {
           //     institution: fd,
           //   }),
           // );
-                    localStorage.setItem(
+          localStorage.setItem(
             "user",
             JSON.stringify({
               ...user,

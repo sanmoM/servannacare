@@ -86,8 +86,8 @@ const HouseManager = () => {
       );
       fd.append("isHandelingPet", ADDITIONALDETAILS.isHandelingPet ? 1 : 0);
       fd.append("preferredRole", ADDITIONALDETAILS.preferredRole);
-      if (DOCUMENTSUPLOADS?.idCopy) {
-        fd.append("idCopy", DOCUMENTSUPLOADS.idCopy);
+      if (DOCUMENTSUPLOADS?.iDCopy) {
+        fd.append("idCopy", DOCUMENTSUPLOADS.iDCopy);
       }
       if (DOCUMENTSUPLOADS?.profilePhoto) {
         fd.append("profilePhoto", DOCUMENTSUPLOADS.profilePhoto);
@@ -111,10 +111,11 @@ const HouseManager = () => {
             "Content-Type": "multipart/form-data",
           },
         });
+        // console.log("form data", formData);
         if (res?.status === 200) {
-          console.log("res", res);
+          // console.log("res", res);
           toast.success("Registered Successfully!");
-          // router.push(`/dashboard/${user?.role}-profile`);
+          router.push(`/dashboard/${user?.role}-profile`);
           //todo
           // localStorage.setItem("token", user?.token);
           //todo this localStorage

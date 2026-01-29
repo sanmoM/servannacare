@@ -25,16 +25,10 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const requiredFields = [
-      "hospitalBasedCare",
-      "homeBasedCare",
-    ];
+    const requiredFields = ["hospitalBasedCare", "homeBasedCare"];
 
     for (let field of requiredFields) {
-      if (
-        !data[field] ||
-        (Array.isArray(data[field]) && data[field].length === 0)
-      ) {
+      if (!data[field] === null) {
         const formattedField = field
           .replace(/([A-Z])/g, " $1")
           .replace(/^./, (str) => str.toUpperCase());
@@ -48,6 +42,13 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
       data.hospitalBasedCare === "true" &&
       (!data.hospitalBasedYearsOfExperience ||
         !data.hospitalBasedReferenceContact)
+    ) {
+      toast.error("Please fill all Hospital Based Care fields!");
+      return;
+    }
+    if (
+      data.homeBasedCare === "true" &&
+      (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
     ) {
       toast.error("Please fill all Hospital Based Care fields!");
       return;
@@ -68,7 +69,10 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
           className="flex gap-4 mt-2"
           value={String(data.hospitalBasedCare)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, hospitalBasedCare: value ==="true"}))
+            setData((prev) => ({
+              ...prev,
+              hospitalBasedCare: value === "true",
+            }))
           }
         >
           <div className="flex items-center gap-2">
@@ -92,7 +96,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         </RadioGroup>
       </div>
 
-      {data.hospitalBasedCare === "true" && (
+      {data.hospitalBasedCare && (
         <div className="flex flex-col mb-8 sm:flex-row gap-4">
           <div className="flex-1">
             <Input
@@ -132,7 +136,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
           className="flex gap-4 mt-2"
           value={String(data.homeBasedCare)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, homeBasedCare: value ==="true"}))
+            setData((prev) => ({ ...prev, homeBasedCare: value === "true" }))
           }
         >
           <div className="flex items-center gap-2">
@@ -156,7 +160,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
         </RadioGroup>
       </div>
 
-      {data.homeBasedCare === "true" && (
+      {data.homeBasedCare && (
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <Input

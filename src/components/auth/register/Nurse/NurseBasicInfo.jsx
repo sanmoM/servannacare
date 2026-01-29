@@ -70,7 +70,6 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
       "experience",
       "location",
       "gender",
-      "canDrive",
       "preferredRole",
       "bio",
     ];

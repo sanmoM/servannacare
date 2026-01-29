@@ -50,8 +50,6 @@ export default function BookingFormClient() {
       patient_name: data?.patientName,
       patient_age: data?.age,
       patient_gender: data?.gender,
-      // category: category,
-      // services: "todo",
       relationship_to_booking_person: data?.relationship,
       price_id: 2,
       booking_amount: 1000,

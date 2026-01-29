@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import HouseManager from "@/components/updateProfile/HouseManager/HouseManager";
+import HouseManagerCreate from "@/components/updateProfile/HouseManager/HouseManagerCreate";
 import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/MedicalInstitution";
 import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
 import NurseAideUpdate from "@/components/updateProfile/NurseAide/NurseAide";
@@ -163,51 +164,21 @@ export default function ProfilePage() {
     <div>
       <div className="flex justify-between">
         <h1 className="sectionHeading mb-4">My Profile</h1>
-
-        <div className="text-xs text-gray-700 font-semibold gap-2 flex items-center">
-          <Calendar size={16} />
-          {/* <span>Joined {userInfo.joinedSince}</span> */}
-        </div>
       </div>
       <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
         <Info /> Your account is Under review .
       </p>
-      <div className="border flex  items-center md:items-start flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
-        {/* Profile Picture */}
-        <div className="flex flex-col justify-center  items-center">
-          <div className="relative h-36 w-36 lg:w-48 lg:h-48 rounded-full border-4 border-primary overflow-hidden shadow-lg">
-            {/* <img
-              className="object-cover w-full h-full"
-              src={userInfo.profilePic || "/user.png"}
-              alt="profile"
-            /> */}
-          </div>
-          <h1 className="text-center text-xl text-gray-600 font-semibold mt-4 break-words max-w-[180px]">
-            {/* {userInfo.name || "N/A"} */}
-          </h1>
-        </div>
 
+      <div className="border flex  items-center md:items-start flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
         {/* Info Fields */}
         <div className="w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {infoItems.map((item, index) => (
-              <div
-                key={index}
-                className="flex space-x-3 bg-white p-3 lg:p-4 rounded-lg"
-              >
-                {item.icon}
-                <div className="w-full">
-                  <p className="text-sm mb-1 text-gray-500">{item.label}</p>
-                  <p className="text-sm text-gray-700">
-                    {/* {userInfo[item.key] || "N/A"} */}
-                  </p>
-                </div>
-              </div>
+          {specialistDatas?.data?.houseManager?.subRole === "house-manager" &&
+            (specialistDatas?.data?.houseManager?.is_profile_completed ? (
+              <HouseManager data={specialistDatas?.data?.houseManager} />
+            ) : (
+              <HouseManagerCreate />
             ))}
-          </div>
-          {specialistDatas?.data?.houseManager?.subRole === "house-manager" && (
-            <HouseManager data={specialistDatas?.data?.houseManager} />
-          )}
+
           <div className="flex mt-6 justify-end">
             <Dialog>
               <DialogTrigger asChild>
