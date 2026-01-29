@@ -180,13 +180,13 @@ export default function ProfilePage() {
             ) : (
               <HouseManagerCreate />
             ))}
-          {specialistDatas?.data?.physiotherapist?.subRole ===
+          {/* {specialistDatas?.data?.physiotherapist?.subRole ===
             "physiotherapist" &&
             (specialistDatas?.data?.physiotherapist?.is_profile_completed ? (
               <Physiotherapist data={specialistDatas} />
             ) : (
               <Physiotherapist />
-            ))}
+            ))} */}
 
           <div className="flex mt-6 justify-end">
             <Dialog>

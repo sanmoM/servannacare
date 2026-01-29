@@ -19,6 +19,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const Physiotherapist = ({ data = {} }) => {
+  
   const { user } = useLocalUser();
   const router = useRouter()
   const [formData, setFormData] = useState({
