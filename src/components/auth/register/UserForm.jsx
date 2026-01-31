@@ -90,6 +90,9 @@ const UserForm = () => {
         "user",
         JSON.stringify({ role, is_profile_completed }),
       );
+      document.cookie = `token=${token}; path=/`;
+      document.cookie = `role=${role}; path=/`;
+
       setOpenOTP(false);
       router.push("/dashboard");
       toast.success("Account verified successfully!");
