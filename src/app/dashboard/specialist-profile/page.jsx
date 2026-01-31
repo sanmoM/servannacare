@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  console.log(specialistDatas?.data?.nurseAssistant);
+  // console.log(specialistDatas?.data?.nurseAssistant);
 
   const { user, loaded } = useLocalUser();
 
@@ -197,6 +197,14 @@ export default function ProfilePage() {
             ) : (
               // todo
               <Physiotherapist />
+            ))}
+
+          {specialistDatas?.data?.nurseAssistant?.subRole === "nurse-aide-or-assistant" &&
+            (specialistDatas?.data?.nurseAssistant?.is_profile_completed ? (
+              <NurseAideUpdate data={specialistDatas?.data?.nurseAssistant} />
+            ) : (
+              // todo
+              <NurseAideUpdate />
             ))}
 
           <div className="flex mt-6 justify-end">
