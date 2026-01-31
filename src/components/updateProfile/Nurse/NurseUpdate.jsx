@@ -1,3 +1,4 @@
+import FilePreview from "@/components/auth/register/FilePreview";
 import FileUpload from "@/components/auth/register/FileUpload";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
@@ -18,48 +19,47 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const NurseUpdate = ({ data = {} }) => {
+  console.log("datas", data);
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
     basicInfo: {
-      name: data.basicInfo.name || "",
-      location: data.basicInfo.location || "",
-      age: data.basicInfo.age || "",
-      gender: data.basicInfo.gender || "",
-      languages: data.basicInfo.languages || [],
-      canDrive: data.basicInfo.canDrive || "",
+      name: data?.name || "",
+      location: data?.location || "",
+      age: data?.age || "",
+      gender: data?.gender || "",
+      languages: data?.languages || [],
+      canDrive: data?.canDrive || "",
     },
     education: {
-      education: data.education.education || "",
-      isNursingInKenya: data.education.isNursingInKenya || "",
-      educationCertificate: data.education.educationCertificate || null,
+      education: data.education || "",
+      isNursingInKenya: data?.nurse?.isNursingInKenya || "",
+      registrationNumber: data?.nurse?.registrationNumber || "",
+      educationCertificate: data?.nurse?.educationCertificate || null,
     },
     experience: {
-      hospitalBasedCare: data.experience.hospitalBasedCare || "",
-      hospitalBasedYearsOfExperience:
-        data.experience.hospitalBasedYearsOfExperience || "",
-      hospitalBasedReferenceContact:
-        data.experience.hospitalBasedReferenceContact || "",
-      homeBasedCare: data.experience.homeBasedCare || "",
-      homeBasedYearsOfExperience:
-        data.experience.homeBasedYearsOfExperience || "",
-      homeBasedReferenceContact:
-        data.experience.homeBasedReferenceContact || "",
+      hospitalBasedCare: data.hospitalBasedCare || "",
+      hospitalBasedYearsOfExperience: data.hospitalBasedYearsOfExperience || "",
+      hospitalBasedReferenceContact: data.hospitalBasedReferenceContact || "",
+      homeBasedCare: data.homeBasedCare || "",
+      homeBasedYearsOfExperience: data.homeBasedYearsOfExperience || "",
+      homeBasedReferenceContact: data.homeBasedReferenceContact || "",
     },
     skillsServices: {
-      skills: data.skillsServices.skills || [],
-      // interested: data.skillsServices.interested || [],
-      mobilityYears: data.skillsServices.mobilityYears || "",
-      bathingYears: data.skillsServices.bathingYears || "",
-      feedingYears: data.skillsServices.feedingYears || "",
-      serviceFee: data.skillsServices.serviceFee || "",
+      skills: data.nurse.skills || [],
+
+      mobilityYears: data.nurse.mobilityYears || "",
+      bathingYears: data.nurse.bathingYears || "",
+      feedingYears: data.nurse.feedingYears || "",
+      serviceFeeDay: data.nurse.serviceFeeDay || "",
+      serviceFeeMonth: data.nurse.serviceFeeMonth || "",
     },
     documents: {
-      idCopy: data.documents.idCopy || null,
-      profilePhoto: data.documents.profilePhoto || null,
-      goodConductCertificate: data.documents.goodConductCertificate || null,
-      drivingLicense: data.documents.drivingLicense || null,
-      referenceLetter: data.documents.referenceLetter || null,
+      idCopy: data.idCopy || null,
+      profilePhoto: data.profilePhoto || null,
+      goodConductCertificate: data.goodConductCertificate || null,
+      drivingLicense: data.drivingLicense || null,
+      referenceLetter: data.referenceLetter || null,
     },
   });
 
@@ -151,7 +151,7 @@ const NurseUpdate = ({ data = {} }) => {
         ...user,
         name: formData.basicInfo.name,
         location: formData.basicInfo.location,
-      })
+      }),
     );
     toast.success("Profile Updated!");
     router.push("/dashboard");
@@ -265,29 +265,24 @@ const NurseUpdate = ({ data = {} }) => {
         <div>
           <Label className="mb-3 block">Can you drive?</Label>
           <RadioGroup
-            className="flex gap-4 "
-            value={formData.basicInfo?.canDrive}
+            className="flex gap-4"
+            value={
+              formData.basicInfo?.canDrive === null ||
+              formData.basicInfo?.canDrive === undefined
+                ? ""
+                : String(formData.basicInfo.canDrive)
+            }
             onValueChange={(value) =>
-              handleChange("basicInfo", "canDrive", value)
+              handleChange("basicInfo", "canDrive", value === "true")
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="d1" />
-              <Label
-                htmlFor="d1"
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                Yes
-              </Label>
+              <RadioGroupItem value="true" id="d1" />
+              <Label htmlFor="d1">Yes</Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="d2" />
-              <Label
-                htmlFor="d2"
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                No
-              </Label>
+              <RadioGroupItem value="false" id="d2" />
+              <Label htmlFor="d2">No</Label>
             </div>
           </RadioGroup>
         </div>
@@ -329,7 +324,7 @@ const NurseUpdate = ({ data = {} }) => {
             accept="application/pdf,image/*"
             icon={<FileText size={32} />}
             optional=""
-            // file={formData.education?.educationCertificate && formData.education?.educationCertificate }
+            file={formData.education?.educationCertificate}
             onFileSelect={(file) =>
               handleFileSelect("education", "educationCertificate", file)
             }
@@ -337,44 +332,80 @@ const NurseUpdate = ({ data = {} }) => {
         </div>
 
         {/* Nursing Council */}
-        <div>
+        {/* <div className="">
           <Label className="mb-3 block">
-            Are you registered with the Nursing Council of Kenya?
+            Are you registered with Physiotherapy Council of Kenya (PCK)?
           </Label>
+
           <RadioGroup
-            className="flex gap-4 mt-2"
-            value={formData.education.isNursingInKenya}
+            className="flex gap-4"
+            value={
+              formData.education.isRegisterPCK === null ||
+              formData.education.isRegisterPCK === undefined
+                ? ""
+                : formData.education.isRegisterPCK
+                  ? "Yes"
+                  : "No"
+            }
             onValueChange={(value) =>
-              handleChange("education", "isNursingInKenya", value)
+              handleChange("education", "isRegisterPCK", value === "Yes")
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="kenya1" />
-              <Label htmlFor="kenya1" className="text-gray-700 cursor-pointer">
-                Yes
-              </Label>
+              <RadioGroupItem value="Yes" id="pckYes" />
+              <Label htmlFor="pckYes">Yes</Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="kenya2" />
-              <Label htmlFor="kenya2" className="text-gray-700 cursor-pointer">
-                No
-              </Label>
+              <RadioGroupItem value="No" id="pckNo" />
+              <Label htmlFor="pckNo">No</Label>
             </div>
           </RadioGroup>
-        </div>
+        </div> */}
+
+        {/* Show Registration Number & License only if PCK = Yes */}
+        {/* {formData.education.isRegisterPCK && (
+          <div className="mt-6">
+            <Input
+              label="Registration Number"
+              placeholder="Registration Number"
+              type="text"
+              value={formData.education?.registrationNumber || ""}
+              onChange={(e) =>
+                handleChange("education", "registrationNumber", e.target.value)
+              }
+            />
+
+            <div className="mt-6">
+              <FileUpload
+                title="Practising License"
+                accept="application/pdf,image/*"
+                icon={<FileText size={32} />}
+                file={formData.education.practiceLicense}
+                onFileSelect={(file) =>
+                  handleFileSelect("education", "practiceLicense", file)
+                }
+              />
+            </div>
+          </div>
+        )} */}
 
         {/* experience */}
 
-        <h4 className="formHeading">Experience</h4>
+        <h2 className="formHeading">Experience</h2>
+        <div className="py-2">
+          <Label className="mb-3 block">Hospital Based Care</Label>
 
-        {/* Hospital Based Care */}
-        <div>
-          <Label className="mb-2 block">Hospital Based Care</Label>
           <RadioGroup
-            className="flex gap-4 mt-2"
-            value={formData.experience.hospitalBasedCare}
+            className="flex gap-x-4 flex-wrap"
+            value={
+              formData.experience?.hospitalBasedCare == null
+                ? ""
+                : formData.experience.hospitalBasedCare
+                  ? "Yes"
+                  : "No"
+            }
             onValueChange={(value) =>
-              handleChange("experience", "hospitalBasedCare", value)
+              handleChange("experience", "hospitalBasedCare", value === "Yes")
             }
           >
             <div className="flex items-center gap-2">
@@ -398,65 +429,72 @@ const NurseUpdate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        <div className="flex flex-col mb-8 sm:flex-row gap-4">
-          <div className="flex-1">
+        {/* Show these inputs only if hospitalBasedCare = true */}
+        {formData.experience?.hospitalBasedCare && (
+          <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
               type="number"
               label="Years of experience"
               name="hospitalBasedYearsOfExperience"
               placeholder="Experience"
               maxLength={2}
-              value={formData.experience.hospitalBasedYearsOfExperience}
+              value={formData.experience.hospitalBasedYearsOfExperience || ""}
               onChange={(e) => {
                 const val = e.target.value.replace(/\D/g, "").slice(0, 2);
                 handleChange(
                   "experience",
                   "hospitalBasedYearsOfExperience",
-                  val
+                  val,
                 );
               }}
             />
-          </div>
-          <div className="flex-1">
+
             <Input
               label="Reference contact"
               name="hospitalBasedReferenceContact"
               placeholder="Reference"
-              value={formData.experience.hospitalBasedReferenceContact}
+              value={formData.experience.hospitalBasedReferenceContact || ""}
               onChange={(e) =>
                 handleChange(
                   "experience",
                   "hospitalBasedReferenceContact",
-                  e.target.value
+                  e.target.value,
                 )
               }
             />
           </div>
-        </div>
+        )}
 
         {/* Home Based Care */}
-        <div>
-          <Label className="mb-2 block">Home Based Care</Label>
+        <div className="py-6">
+          <Label className="mb-3 block">Home Based Care</Label>
+
           <RadioGroup
-            className="flex gap-4 mt-2"
-            value={formData.experience.homeBasedCare}
+            className="flex gap-x-4 flex-wrap"
+            value={
+              formData.experience?.homeBasedCare == null
+                ? ""
+                : formData.experience.homeBasedCare
+                  ? "Yes"
+                  : "No"
+            }
             onValueChange={(value) =>
-              handleChange("experience", "homeBasedCare", value)
+              handleChange("experience", "homeBasedCare", value === "Yes")
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="r3" />
+              <RadioGroupItem value="Yes" id="d3" />
               <Label
-                htmlFor="r3"
+                htmlFor="d3"
                 className="text-gray-700 font-normal cursor-pointer"
               >
                 Yes
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="r4" />
+              <RadioGroupItem value="No" id="d4" />
               <Label
-                htmlFor="r4"
+                htmlFor="d4"
                 className="text-gray-700 font-normal cursor-pointer"
               >
                 No
@@ -465,37 +503,37 @@ const NurseUpdate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1">
+        {/* Show inputs only if homeBasedCare = true */}
+        {formData.experience?.homeBasedCare && (
+          <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
-              type={"number"}
+              type="number"
               label="Years of experience"
               name="homeBasedYearsOfExperience"
               placeholder="Experience"
               maxLength={2}
-              value={formData.experience.homeBasedYearsOfExperience}
+              value={formData.experience?.homeBasedYearsOfExperience || ""}
               onChange={(e) => {
                 const val = e.target.value.replace(/\D/g, "").slice(0, 2);
                 handleChange("experience", "homeBasedYearsOfExperience", val);
               }}
             />
-          </div>
-          <div className="flex-1">
+
             <Input
               label="Reference contact"
               name="homeBasedReferenceContact"
               placeholder="Reference"
-              value={formData.experience.homeBasedReferenceContact}
+              value={formData.experience?.homeBasedReferenceContact || ""}
               onChange={(e) =>
                 handleChange(
                   "experience",
                   "homeBasedReferenceContact",
-                  e.target.value
+                  e.target.value,
                 )
               }
             />
           </div>
-        </div>
+        )}
 
         {/* skill and services  */}
 
@@ -572,17 +610,29 @@ const NurseUpdate = ({ data = {} }) => {
         </div>
 
         {/* Service Fee */}
-        <div className="mt-4">
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label="Service Fee (KSh per day/month)"
+            label="Service Fee (Per Day - KSh)"
             type="number"
-            name="serviceFee"
+            name="serviceFeeDay"
             maxLength={5}
-            placeholder="e.g., 1500 per day or 35000 per month"
-            value={formData.skillsServices.serviceFee}
+            placeholder="e.g., 1500"
+            value={formData?.skillsServices.serviceFeeDay}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("skillsServices", "serviceFee", val);
+              handleChange("experience", "serviceFeeDay", val);
+            }}
+          />
+          <Input
+            label="Service Fee (Per Month - KSh)"
+            type="number"
+            name="serviceFeeMonth"
+            maxLength={6}
+            placeholder="e.g., 35000"
+            value={formData?.skillsServices?.serviceFeeMonth}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+              handleChange("experience", "serviceFeeMonth", val);
             }}
           />
         </div>
@@ -595,32 +645,39 @@ const NurseUpdate = ({ data = {} }) => {
             Upload PDF or images (max size: 2MB each)
           </span>
         </div>
+        <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
+          {documents.map((item, indx) => (
+            <div key={indx} className="border rounded-xl p-4">
+              <FileUpload
+                title={item.title}
+                accept={item.accept}
+                icon={item.icon}
+                optional={item.optional || false}
+                file={formData.documents[item.id]}
+                onFileSelect={(file) =>
+                  handleFileSelect("documents", item.id, file)
+                }
+              />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {documents.map((doc) => (
-            <FileUpload
-              key={doc.id}
-              title={doc.title}
-              accept={doc.accept}
-              icon={doc.icon}
-              optional={doc.optional || false}
-              //   file={files[doc.id]}
-              onFileSelect={(file) =>
-                handleFileSelect("documents", doc.id, file)
-              }
-            />
+              <FilePreview
+                file={formData.documents[item.id]}
+                alt={item.title}
+              />
+            </div>
           ))}
         </div>
 
         {/* submit button  */}
-        <div className="">
-          <Button
-            className={"w-full sm:absolute sm:b-0 sm:mt-4 sm:w-auto"}
-            size={"lg"}
-            type="submit"
-          >
-            Submit
-          </Button>
+        <div className="flex justify-end mt-4 b-0">
+          {!user?.is_profile_completed ? (
+            <Button size={"lg"} type="submit">
+              Submit
+            </Button>
+          ) : (
+            <Button size={"lg"} type="submit">
+              Update
+            </Button>
+          )}
         </div>
       </form>
     </div>

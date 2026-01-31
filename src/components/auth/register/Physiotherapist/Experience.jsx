@@ -20,7 +20,9 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact ?? "",
 
     preferred: defaultValues.preferred ?? [],
-    serviceFee: Number(defaultValues.serviceFee) || 0,
+    // serviceFee: Number(defaultValues.serviceFee) || 0,
+    serviceFeeDay: Number(defaultValues.serviceFeeDay) || 0,
+    serviceFeeMonth: Number(defaultValues.serviceFeeMonth) || 0,
   });
 
   const preferred = [
@@ -62,7 +64,12 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
     e.preventDefault();
 
     // Required field validation
-    const requiredFields = ["hospitalBasedCare", "homeBasedCare", "serviceFee"];
+    const requiredFields = [
+      "hospitalBasedCare",
+      "homeBasedCare",
+      "serviceFeeDay",
+      "serviceFeeMonth",
+    ];
 
     for (const field of requiredFields) {
       if (
@@ -78,7 +85,7 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       }
     }
 
-    if (!Number.isFinite(data.serviceFee) || data.serviceFee <= 0) {
+    if (!Number.isFinite(data.serviceFeeDay) || data.serviceFeeMonth <= 0) {
       toast.error("Service fee must be a valid number greater than 0");
       return;
     }
@@ -107,7 +114,7 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       toast.error("Please select at least one preferred area");
       return;
     }
-
+    console.log(data);
     onNext(data);
   };
 
@@ -244,36 +251,38 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
 
       {/* Service Fee */}
       <div className="mt-4">
-        {/* <Input
-          label="Service Fee (KSh)"
-          type="number"
-          name="serviceFee"
-          maxLength={5}
-          value={data.serviceFee}
-          onChange={(e) =>
-            handleChange({
-              target: {
-                name: "serviceFee",
-                value: e.target.value.replace(/\D/g, "").slice(0, 5),
-              },
-            })
-          }
-        /> */}
-
-        <Input
-          label="Service Fee (KSh)"
-          type="number"
-          name="serviceFee"
-          maxLength={5}
-          value={data.serviceFee}
-          onChange={(e) => {
-            const value = e.target.value;
-            setData((prev) => ({
-              ...prev,
-              serviceFee: value === "" ? "" : Number(value),
-            }));
-          }}
-        />
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Service Fee (Per Day - KSh)"
+            type="number"
+            name="serviceFeeDay"
+            maxLength={5}
+            placeholder="e.g., 1500"
+            value={data.serviceFeeDay}
+            onChange={(e) => {
+              const value = e.target.value;
+              setData((prev) => ({
+                ...prev,
+                serviceFeeDay: value === "" ? "" : Number(value),
+              }));
+            }}
+          />
+          <Input
+            label="Service Fee (Per Month - KSh)"
+            type="number"
+            name="serviceFeeMonth"
+            maxLength={6}
+            placeholder="e.g., 35000"
+            value={data.serviceFeeMonth}
+            onChange={(e) => {
+              const value = e.target.value;
+              setData((prev) => ({
+                ...prev,
+                serviceFeeMonth: value === "" ? "" : Number(value),
+              }));
+            }}
+          />
+        </div>
       </div>
 
       {/* Navigation */}

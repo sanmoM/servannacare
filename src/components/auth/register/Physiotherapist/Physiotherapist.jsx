@@ -87,7 +87,8 @@ const Physiotherapist = () => {
       fd.append("isRegisterPCK", EDUCATION.isRegisterPCK ? 1 : 0);
       fd.append("registrationNumber", EDUCATION.registrationNumber);
 
-      fd.append("serviceFee", EXPERIENCE.serviceFee);
+      fd.append("serviceFeeDay", EXPERIENCE.serviceFeeDay);
+      fd.append("serviceFeeMonth", EXPERIENCE.serviceFeeMonth);
       fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
       fd.append(
         "hospitalBasedYearsOfExperience",
@@ -143,7 +144,7 @@ const Physiotherapist = () => {
             "Content-Type": "multipart/form-data",
           },
         });
-     
+
         if (res?.status === 200) {
           // console.log("res", res);
           toast.success("Registered Successfully!");

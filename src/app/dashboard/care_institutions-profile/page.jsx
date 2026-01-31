@@ -38,7 +38,6 @@ export default function MedicalInstitutionProfile() {
 
   const [instituteData, setInstituteData] = useState(null);
 
-
   const { data, isLoading, error } = useFetch("/profile");
   useEffect(() => {
     if (data) {
@@ -134,8 +133,6 @@ export default function MedicalInstitutionProfile() {
     );
   };
 
-  
-
   return (
     <div>
       {/* <div className="flex justify-between">
@@ -153,7 +150,7 @@ export default function MedicalInstitutionProfile() {
       )}
 
       {user?.is_profile_completed ? (
-        <UpdateBasicInfo instituteData={instituteData?.data?.careInstitution}/>
+        <UpdateBasicInfo instituteData={instituteData?.data?.careInstitution} />
       ) : (
         <>
           <UpdateBasicInfo />

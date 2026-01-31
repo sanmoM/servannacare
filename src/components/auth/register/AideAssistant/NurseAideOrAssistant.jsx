@@ -118,7 +118,9 @@ const NurseAideOrAssistant = ({ skills }) => {
       fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
       fd.append("bathingYears", SKILLSERVICES.bathingYears);
       fd.append("feedingYears", SKILLSERVICES.feedingYears);
-      fd.append("serviceFee", SKILLSERVICES.serviceFee);
+
+      fd.append("serviceFeeDay", SKILLSERVICES.serviceFeeDay);
+      fd.append("serviceFeeMonth", SKILLSERVICES.serviceFeeMonth);
 
       if (DOCUMENTS?.idCopy) {
         fd.append("idCopy", DOCUMENTS.idCopy);
@@ -135,7 +137,7 @@ const NurseAideOrAssistant = ({ skills }) => {
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
-
+      console.log("formData", formData);
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -144,7 +146,7 @@ const NurseAideOrAssistant = ({ skills }) => {
         });
 
         if (res?.status === 200) {
-          console.log("after nurse aide assistant create profile", res);
+          console.log("res", res);
           toast.success("Registered Successfully!");
           localStorage.setItem(
             "user",

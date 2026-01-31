@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  console.log(specialistDatas?.data?.physiotherapist);
+  console.log(specialistDatas?.data?.nurseAssistant);
 
   const { user, loaded } = useLocalUser();
 
@@ -178,15 +178,26 @@ export default function ProfilePage() {
             (specialistDatas?.data?.houseManager?.is_profile_completed ? (
               <HouseManager data={specialistDatas?.data?.houseManager} />
             ) : (
+              // todo
               <HouseManagerCreate />
             ))}
-          {/* {specialistDatas?.data?.physiotherapist?.subRole ===
+
+          {specialistDatas?.data?.nurse?.subRole === "nurse" &&
+            (specialistDatas?.data?.nurse?.is_profile_completed ? (
+              <NurseUpdate data={specialistDatas?.data?.nurse} />
+            ) : (
+              // todo
+              <NurseUpdate />
+            ))}
+
+          {specialistDatas?.data?.physiotherapist?.subRole ===
             "physiotherapist" &&
             (specialistDatas?.data?.physiotherapist?.is_profile_completed ? (
-              <Physiotherapist data={specialistDatas} />
+              <Physiotherapist data={specialistDatas?.data?.physiotherapist} />
             ) : (
+              // todo
               <Physiotherapist />
-            ))} */}
+            ))}
 
           <div className="flex mt-6 justify-end">
             <Dialog>

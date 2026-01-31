@@ -8,13 +8,14 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
-  console.log("skil service",skills)
+  console.log("skil service", skills);
   const [data, setData] = useState({
     skills: defaultValues.skills || [],
     mobilityYears: defaultValues.mobilityYears || "",
     bathingYears: defaultValues.bathingYears || "",
     feedingYears: defaultValues.feedingYears || "",
-    serviceFee: defaultValues.serviceFee || "",
+    serviceFeeMonth: defaultValues.serviceFeeMonth || "",
+    serviceFeeDay: defaultValues.serviceFeeDay || "",
   });
 
   // const skills = [
@@ -53,7 +54,8 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
       "mobilityYears",
       "bathingYears",
       "feedingYears",
-      "serviceFee",
+      "serviceFeeDay",
+      "serviceFeeMonth",
     ];
 
     for (let field of requiredFields) {
@@ -144,17 +146,30 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
       </div>
 
       {/* Service Fee */}
-      <div className="mt-4">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
-          label="Service Fee (KSh per day/month)"
+          label="Service Fee (Per Day - KSh)"
           type="number"
-          name="serviceFee"
+          name="serviceFeeDay"
           maxLength={5}
-          placeholder="e.g., 1500 per day or 35000 per month"
-          value={data.serviceFee}
+          placeholder="e.g., 1500"
+          value={data.serviceFeeDay}
           onChange={(e) => {
             const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-            handleChange({ target: { name: "serviceFee", value: val } });
+            handleChange({ target: { name: "serviceFeeDay", value: val } });
+          }}
+        />
+
+        <Input
+          label="Service Fee (Per Month - KSh)"
+          type="number"
+          name="serviceFeeMonth"
+          maxLength={6}
+          placeholder="e.g., 35000"
+          value={data.serviceFeeMonth}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+            handleChange({ target: { name: "serviceFeeMonth", value: val } });
           }}
         />
       </div>

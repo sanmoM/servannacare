@@ -539,10 +539,10 @@ const HouseManager = ({ data = {} }) => {
                   onFileSelect={(file) => handleFileSelect(doc.id, file)}
                 />
 
-                <FilePreview
+                {/* <FilePreview
                   file={formData.documents[doc.id]}
                   alt={doc.title}
-                />
+                /> */}
               </div>
             ))}
           </div>

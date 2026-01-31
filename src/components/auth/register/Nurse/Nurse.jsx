@@ -131,7 +131,8 @@ const Nurse = ({ skills }) => {
       fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
       fd.append("bathingYears", SKILLSERVICES.bathingYears);
       fd.append("feedingYears", SKILLSERVICES.feedingYears);
-      fd.append("serviceFee", SKILLSERVICES.serviceFee);
+      fd.append("serviceFeeDay", SKILLSERVICES.serviceFeeDay);
+      fd.append("serviceFeeMonth", SKILLSERVICES.serviceFeeMonth);
 
       if (DOCUMENTS?.idCopy) {
         fd.append("idCopy", DOCUMENTS.idCopy);
@@ -164,7 +165,7 @@ const Nurse = ({ skills }) => {
         console.log("res", res);
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
-          // router.push(`/dashboard/${user?.role}-profile`);
+          router.push(`/dashboard/${user?.role}-profile`);
           //todo
           // localStorage.setItem("token", user?.token);
           //todo this localStorage
