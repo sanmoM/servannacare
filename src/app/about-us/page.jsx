@@ -1,6 +1,7 @@
 "use client";
 import MissionVision from "@/components/pageParts/aboutUsParts/MissionVision";
 import Container from "@/components/shared/Container";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import PageBanner from "@/components/shared/PageBanner";
 import { useFetch } from "@/hooks/useFetch";
 import { Handshake, Shield, Star } from "lucide-react";
@@ -11,7 +12,7 @@ const page = () => {
   const [abouts, setAbouts] = useState(null);
   console.log("abouts", abouts?.ourCore);
   const description = abouts?.about?.description || "";
-  const boldWords = ["Myhauzhelp", "Servana"];
+  const boldWords = ["Myhauzhelp", "Cervanna"];
   const { data, isLoading, error } = useFetch("/abouts");
 
   useEffect(() => {
@@ -20,7 +21,7 @@ const page = () => {
     }
   }, [data]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner/>;
   if (error) return <div>Error loading data</div>;
 
   const features = [

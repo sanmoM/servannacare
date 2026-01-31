@@ -1,6 +1,7 @@
 "use client";
 import Container from "@/components/shared/Container";
 import Input from "@/components/shared/Input";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import PageBanner from "@/components/shared/PageBanner";
 import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
@@ -17,7 +18,7 @@ const page = () => {
     }
   }, [data]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner/>;
   if (error) return <div>Error loading data</div>;
 
   return (

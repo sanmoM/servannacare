@@ -1,6 +1,7 @@
 "use client";
 import ServicesCard from "@/components/pageParts/homeParts/ServicesCard";
 import Container from "@/components/shared/Container";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import PageBanner from "@/components/shared/PageBanner";
 import { useFetch } from "@/hooks/useFetch";
 import React, { useEffect, useState } from "react";
@@ -16,7 +17,7 @@ const Page = () => {
     }
   }, [data]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
 
   return (
@@ -24,7 +25,6 @@ const Page = () => {
       <PageBanner />
       <Container>
         <div className="py-10 md:py-16">
-
           {/* Heading */}
           {serviceData?.serviceHeading && (
             <div className="mb-8 space-y-2 md:mb-12">
@@ -49,7 +49,6 @@ const Page = () => {
               <ServicesCard key={ser.id} services={ser} />
             ))}
           </div>
-
         </div>
       </Container>
     </div>

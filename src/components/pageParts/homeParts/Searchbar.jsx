@@ -102,11 +102,11 @@ const Searchbar = () => {
             </div>
           </div>
 
-          {/* Check-in */}
+          {/* Start Date */}
           <div className="flex items-center gap-3 pb-3 border-b">
             <Calendar className="w-5 h-5 text-gray-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-500">Check in</p>
+              <p className="text-xs text-gray-500">Start Date</p>
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="border-0 p-0 text-sm font-semibold text-gray-700 focus:ring-0 bg-transparent w-full text-left">
@@ -131,11 +131,11 @@ const Searchbar = () => {
             </div>
           </div>
 
-          {/* Check-out */}
+          {/* End Date */}
           <div className="flex items-center gap-3 pb-3">
             <Calendar className="w-5 h-5 text-gray-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-gray-500">Check out</p>
+              <p className="text-xs text-gray-500">End Date</p>
               <Popover>
                 <PopoverTrigger asChild>
                   <button className="border-0 p-0 text-sm font-semibold text-gray-700 focus:ring-0 bg-transparent w-full text-left">
@@ -199,7 +199,7 @@ const Searchbar = () => {
 
         <div className="hidden lg:block w-px h-12 bg-gray-200"></div>
 
-        {/* Check-in */}
+        {/* Start Date*/}
         <div
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => setIsCheckInOpen(true)}
@@ -207,7 +207,7 @@ const Searchbar = () => {
           <Calendar className="w-6 h-6 text-gray-600 flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-500 uppercase mb-2 tracking-wide">
-              Check in
+              Start Date
             </p>
             <Popover open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
               <PopoverTrigger asChild>
@@ -235,7 +235,7 @@ const Searchbar = () => {
 
         <div className="hidden lg:block w-px h-12 bg-gray-200"></div>
 
-        {/* Check-out */}
+        {/* Date End */}
         <div
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => setIsCheckOutOpen(true)}
@@ -243,7 +243,7 @@ const Searchbar = () => {
           <Calendar className="w-6 h-6 text-gray-600 flex-shrink-0" />
           <div className="flex-1 min-w-0">
             <p className="text-xs mb-2 text-gray-500 uppercase tracking-wide">
-              Check out
+              Date End
             </p>
             <Popover open={isCheckOutOpen} onOpenChange={setIsCheckOutOpen}>
               <PopoverTrigger asChild>

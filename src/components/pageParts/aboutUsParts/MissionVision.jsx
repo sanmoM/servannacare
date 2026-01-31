@@ -17,8 +17,8 @@ const MissionVision = (data) => {
         <div className="grid md:grid-cols-3 gap-8">
           {data?.data?.ourCore &&
             data?.data?.ourCore?.map((item, indx) => (
-              <div data-aos="fade-up" className="group">
-                <div className="bg-white rounded-2xl p-4 lg:p-8 shadow-sm hover:shadow-lg transition-all border border-slate-100 hover:border-blue-200 h-full">
+              <div className="group transform transition duration-700 hover:scale-105 hover:shadow-lg">
+                <div className="bg-white rounded-2xl p-4 lg:p-8 shadow-sm hover:shadow-lg transition-all border border-slate-100 hover:border-[#72275b] h-full">
                   <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-red-50 mb-4 group-hover:scale-110 transition-transform">
                     <span
                       dangerouslySetInnerHTML={{ __html: item.icon }}
@@ -44,15 +44,15 @@ const MissionVision = (data) => {
           <p className="text-center text-slate-600  mb-8 lg:mb-10 text-sm lg:text-base">
             {data?.data?.foundation?.subheading}
           </p>
-          <div className="grid lg:grid-cols-2 gap-8 ">
-            <div data-aos="fade-up">
+          <div className="grid lg:grid-cols-2 gap-8">
+            <div className="relative">
               {data?.data?.foundation?.image && (
                 <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${data?.data?.foundation?.image}`}
                   alt={data?.data?.foundation?.heading}
                   fill
                   // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover rounded-xl transition-transform duration-500 group-hover:scale-110"
+                  className="object-cover rounded-xl transition transform duration-500   hover:scale-105 hover:shadow-lg"
                 />
               )}
               {/* <Image
@@ -66,11 +66,11 @@ const MissionVision = (data) => {
                 className="h-full w-full rounded-xl"
               /> */}
             </div>
-            <div data-aos="fade-up" className="md:flex md:gap-4 lg:block">
-              <div className="group mb-4">
+            <div className="md:flex md:gap-4 lg:block">
+              <div className="group group transform transition duration-700 hover:scale-105 hover:shadow-lg mb-4">
                 <div className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow border border-blue-100">
                   <div className="mb-4">
-                    <span className="inline-block px-4 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-full tracking-wider">
+                    <span className="inline-block px-4 py-2 bg-orange-100 text-[#72275b] text-xs font-bold rounded-full tracking-wider">
                       VISION
                     </span>
                   </div>
@@ -83,10 +83,10 @@ const MissionVision = (data) => {
                 </div>
               </div>
 
-              <div data-aos="fade-up" className="group">
+              <div className="group transform transition duration-700 hover:scale-105 hover:shadow-lg">
                 <div className="bg-gradient-to-br from-primary to-secondary rounded-2xl p-8 shadow-sm hover:shadow-md transition-shadow border border-blue-700">
                   <div className="mb-4">
-                    <span className="inline-block px-4 py-2 bg-blue-500 text-white text-xs font-bold rounded-full tracking-wider">
+                    <span className="inline-block px-4 py-2 bg-emerald-400 text-white text-xs font-bold rounded-full tracking-wider">
                       MISSION
                     </span>
                   </div>

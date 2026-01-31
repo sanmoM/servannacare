@@ -7,12 +7,15 @@ import FileUpload from "../FileUpload";
 import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import Input from "@/components/shared/Input";
 
 const Education = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
     education: defaultValues.education || "",
     isNursingInKenya: defaultValues.isNursingInKenya || null,
     educationCertificate: defaultValues.educationCertificate || null,
+    registrationNumber: defaultValues.registrationNumber || "",
+    practiceLicense: defaultValues.practiceLicense || null,
   });
 
   const handleFileSelect = (field, file) => {
@@ -33,6 +36,17 @@ const Education = ({ defaultValues, onNext, onBack }) => {
     if (data.isNursingInKenya === null || data.isNursingInKenya === "") {
       toast.error(" Answer the nursing council question!");
       return;
+    }
+
+    if (data?.isNursingInKenya) {
+      if (!data.registrationNumber) {
+        toast.error("Registration Number is Required");
+        return;
+      }
+      if (!data.practiceLicense) {
+        toast.error("Practising Licence is Required");
+        return;
+      }
     }
     console.log("Education data:", data);
     onNext(data);
@@ -91,9 +105,16 @@ const Education = ({ defaultValues, onNext, onBack }) => {
         <RadioGroup
           className="flex gap-4 mt-2"
           value={String(data.isNursingInKenya)}
-          onValueChange={(value) =>
-            setData((prev) => ({ ...prev, isNursingInKenya: value === "true" }))
-          }
+          onValueChange={(value) => {
+            const isRegistered = value === "true";
+
+            setData((prev) => ({
+              ...prev,
+              isNursingInKenya: isRegistered,
+              registrationNumber: isRegistered ? prev.registrationNumber : "",
+              practiceLicense: isRegistered ? prev.practiceLicense : null,
+            }));
+          }}
         >
           <div className="flex items-center gap-2">
             <RadioGroupItem value="true" id="kenya1" />
@@ -109,6 +130,38 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
+
+      {data.isNursingInKenya && (
+        <div>
+          <Input
+            label={"Registration Number"}
+            placeholder="Registration Number"
+            type="number"
+            value={data.registrationNumber || ""}
+            onChange={(e) =>
+              setData((prev) => ({
+                ...prev,
+                registrationNumber: e.target.value,
+              }))
+            }
+          />
+
+          <div className="mt-6">
+            <FileUpload
+              title="Practising License"
+              accept="application/pdf,image/*"
+              icon={<FileText size={32} />}
+              file={data.practiceLicense}
+              onFileSelect={(file) =>
+                setData((prev) => ({
+                  ...prev,
+                  practiceLicense: file,
+                }))
+              }
+            />
+          </div>
+        </div>
+      )}
 
       {/* Navigation Buttons */}
       <div className="flex justify-between pt-6">

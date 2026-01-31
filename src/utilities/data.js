@@ -55,7 +55,7 @@ export const services = [
   {
     id: 1,
     title: "Pre & Post Pregnancy Care",
-    value:"certified-nursing-assistant",
+    value: "certified-nursing-assistant",
     description:
       "Gentle, personalized support for mothers and babies before and after childbirth.",
     icon: <Baby />,
@@ -65,7 +65,7 @@ export const services = [
   {
     id: 2,
     title: "Post Surgery Care",
-    value:"certified-nursing-assistant",
+    value: "certified-nursing-assistant",
     description:
       "Professional home recovery support, including wound care, mobility assistance, and medication monitoring.",
     icon: <Cross />,
@@ -75,7 +75,7 @@ export const services = [
   {
     id: 3,
     title: "Elderly Care",
-    value:"certified-nursing-assistant",
+    value: "certified-nursing-assistant",
     description:
       "Compassionate in-home care that promotes comfort, independence, and companionship for seniors.",
     icon: <HeartHandshake />,
@@ -85,7 +85,7 @@ export const services = [
   {
     id: 4,
     title: "Physiotherapy",
-    value:"physiotherapist",
+    value: "physiotherapist",
     description:
       "Personalized home sessions to restore mobility, relieve pain, and speed up physical recovery.",
     icon: <Activity />,
@@ -95,7 +95,7 @@ export const services = [
   {
     id: 5,
     title: "Nanny & Housekeeping",
-    value:"house-manager-nanny",
+    value: "house-manager-nanny",
     description:
       "Trusted home support — caring for your children and keeping your home in perfect balance.",
     icon: <HouseHeart />,
@@ -105,7 +105,7 @@ export const services = [
   {
     id: 6,
     title: "Special Needs Care",
-    value:"special-need-caregiver",
+    value: "special-need-caregiver",
     description:
       "Professional special needs caregivers in Kenya offering safe, compassionate home care for children and adults with developmental, physical, or sensory challenges.",
     icon: <HandHeart />,
@@ -428,13 +428,13 @@ export const languages = [
   { id: 7, value: "Other", text: "Other" },
 ];
 
-export  const physiotherapistServiceProvide = [
-  {id:"pediatric", value:"Pediatric"},
-  {id:"orthopedic", value:"Orthopedic"},
-  {id:"rehab", value:"Rehab"},
-  {id:"sports", value:"Sports"},
-  {id:"stroke", value:"Stroke"}
-]
+export const physiotherapistServiceProvide = [
+  { id: "pediatric", value: "Pediatric" },
+  { id: "orthopedic", value: "Orthopedic" },
+  { id: "rehab", value: "Rehab" },
+  { id: "sports", value: "Sports" },
+  { id: "stroke", value: "Stroke" },
+];
 
 export const fakeData = [
   {
@@ -443,7 +443,7 @@ export const fakeData = [
     name: "Milon Poddar",
     email: "john.doe@example.com",
     category: "House-Manager / Nanny",
-    service:["Live In","Dayburg"],
+    service: ["Live In", "Dayburg"],
     status: "available",
     education: "BSc Nursing",
     experience: 5,
@@ -457,7 +457,7 @@ export const fakeData = [
     name: "Jane Smith",
     email: "jane.smith@example.com",
     category: "Physiotherapist",
-    service:["Pediatric", "Orthopedic", "Rehab", "Sports", "Stroke"],
+    service: ["Pediatric", "Orthopedic", "Rehab", "Sports", "Stroke"],
     status: "not available",
     education: "MSc Physiotherapy",
     experience: 7,
@@ -471,7 +471,7 @@ export const fakeData = [
     name: "Michael Brown",
     email: "michael.brown@example.com",
     category: "House Manager / Nanny",
-    service:["Live In","Dayburg"],
+    service: ["Live In", "Dayburg"],
     status: "available",
     education: "Diploma in Hospitality",
     experience: 10,
@@ -520,7 +520,11 @@ export const fakeData = [
     name: "Laura Johnson",
     email: "laura.johnson@example.com",
     category: "Certified Nursing Assistant (C.N.A)",
-    service:["Pre and Post Pregnancy Care","Post Surgery Care","Elderly Care"],
+    service: [
+      "Pre and Post Pregnancy Care",
+      "Post Surgery Care",
+      "Elderly Care",
+    ],
     status: "available",
     education: "BSc Nursing",
     experience: 6,
@@ -534,7 +538,7 @@ export const fakeData = [
     name: "Daniel Martinez",
     email: "daniel.martinez@example.com",
     category: "Physiotherapist",
-    services:["Pediatric", "Orthopedic", "Rehab", "Sports", "Stroke"],
+    services: ["Pediatric", "Orthopedic", "Rehab", "Sports", "Stroke"],
     status: "available",
     education: "MSc Physiotherapy",
     experience: 4,
@@ -548,7 +552,7 @@ export const fakeData = [
     name: "Sophia Lee",
     email: "sophia.lee@example.com",
     category: "House Manager / Nanny",
-    service:["Live In","Dayburg"],
+    service: ["Live In", "Dayburg"],
     status: "not available",
     education: "Diploma in Hospitality",
     experience: 2,
@@ -575,7 +579,11 @@ export const fakeData = [
     name: "Olivia Thomas",
     email: "olivia.thomas@example.com",
     category: "Certified Nursing Assistant (C.N.A)",
-    service:["Pre and Post Pregnancy Care","Post Surgery Care","Elderly Care"],
+    service: [
+      "Pre and Post Pregnancy Care",
+      "Post Surgery Care",
+      "Elderly Care",
+    ],
     status: "available",
     education: "MBA",
     experience: 5,
@@ -609,10 +617,12 @@ export const tfbEvents = [
     title2: "Beyond Learning – Connection & Community",
     description2:
       "After the sessions, attendees enjoyed a warm meal and open networking on the scenic Nairobi Garage rooftop. Conversations flowed, stories were shared, and a sense of sisterhood was formed. Many expressed how seen and uplifted they felt—proof that Transformed for Better is more than an event; it is a movement.",
-    title3:"A Vision in Motion"  ,
-    description3:"This workshop marked a significant step toward reshaping how families value domestic workers, nurture children, and support mothers. The journey has just begun, and the call is clear:",
+    title3: "A Vision in Motion",
+    description3:
+      "This workshop marked a significant step toward reshaping how families value domestic workers, nurture children, and support mothers. The journey has just begun, and the call is clear:",
 
-   title4:"When homes are transformed for better, society is transformed for good.",
+    title4:
+      "When homes are transformed for better, society is transformed for good.",
 
     sponsor: [
       "KINGDOM BANK",
@@ -737,25 +747,27 @@ export const categoryFilters = {
 export const serviceCategory = [
   {
     mainCategory: "House Manager / Nanny",
-    value:"house-manager-nanny",
+    value: "house-manager-nanny",
     subCategory: ["Live In", "Dayburg"],
-    
   },
-    {
+  {
     mainCategory: "Nurse",
-    value:"nurse",
+    value: "nurse",
     subCategory: [
-      
+      "Pre and post pregnancy care",
+      "Post-surgery care",
+      "Palliative care",
+      "Elderly care",
     ],
   },
   {
     mainCategory: "Physiotherapist",
-    value:"physiotherapist",
+    value: "physiotherapist",
     subCategory: ["Pediatric", "Orthopedic", "Rehab", "Sports", "Stroke"],
   },
   {
     mainCategory: "Nurse Aide or Assistant",
-     value:"nurse-aide-assistant",
+    value: "nurse-aide-assistant",
     subCategory: [
       "Pre and Post Pregnancy Care",
       "Post Surgery Care",
@@ -764,7 +776,7 @@ export const serviceCategory = [
   },
   {
     mainCategory: "Special Need Caregiver",
-    value:"special-need-caregiver",
+    value: "special-need-caregiver",
     subCategory: [
       "Autism Spectrum Disorder (ASD)",
       "Speech Therapy",

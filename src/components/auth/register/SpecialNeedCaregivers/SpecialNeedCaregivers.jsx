@@ -83,15 +83,15 @@ const SpecialNeedCaregivers = () => {
       fd.append("number_two", BASICINFO.phone);
 
       fd.append("education", EDUCATION.educationLevel);
-      fd.append("isRegisterPCK", EXPERIENCE.isRegisterPCK ? 1 : 0);
-      fd.append("registrationNumber", EDUCATION.registrationNumber);
+      // fd.append("isRegisterPCK", EXPERIENCE.isRegisterPCK ? 1 : 0);
+      // fd.append("registrationNumber", EDUCATION.registrationNumber);
 
       if (EDUCATION?.educationCertificate) {
         fd.append("educationCertificate", EDUCATION.educationCertificate);
       }
-      if (EDUCATION?.practiceLicense) {
-        fd.append("practiceLicense", EDUCATION.practiceLicense);
-      }
+      // if (EDUCATION?.practiceLicense) {
+      //   fd.append("practiceLicense", EDUCATION.practiceLicense);
+      // }
 
       fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
       fd.append(

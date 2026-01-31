@@ -1,6 +1,7 @@
 "use client"
 import BlogCard from '@/components/pageParts/blogParts/BlogCard';
 import Container from '@/components/shared/Container'
+import LoadingSpinner from '@/components/shared/LoadingSpin';
 import PageBanner from '@/components/shared/PageBanner'
 import { useFetch } from '@/hooks/useFetch';
 import { blogs } from '@/utilities/data';
@@ -17,7 +18,7 @@ const page = () => {
     }
   }, [data]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingSpinner/>;
   if (error) return <div>Error loading data</div>;
 
   return (

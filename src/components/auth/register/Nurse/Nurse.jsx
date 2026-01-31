@@ -105,6 +105,7 @@ const Nurse = ({ skills }) => {
 
       fd.append("education", EDUCATION.education);
       fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
+      fd.append("registrationNumber", EDUCATION.registrationNumber);
 
       fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
       fd.append(
@@ -124,6 +125,7 @@ const Nurse = ({ skills }) => {
         "homeBasedReferenceContact",
         EXPERIENCE.homeBasedReferenceContact,
       );
+      EXPERIENCE.preferred.forEach((prep) => fd.append("preferred[]", prep));
 
       SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
       fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
@@ -146,10 +148,13 @@ const Nurse = ({ skills }) => {
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
-      if (DOCUMENTS?.educationCertificate) {
-        fd.append("educationCertificate", DOCUMENTS.educationCertificate);
+      if (EDUCATION?.educationCertificate) {
+        fd.append("educationCertificate", EDUCATION.educationCertificate);
       }
-   
+      if (EDUCATION?.practiceLicense) {
+        fd.append("practiceLicense", EDUCATION.practiceLicense);
+      }
+      console.log("form data", formData);
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -159,7 +164,7 @@ const Nurse = ({ skills }) => {
         console.log("res", res);
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
-          router.push(`/dashboard/${user?.role}-profile`);
+          // router.push(`/dashboard/${user?.role}-profile`);
           //todo
           // localStorage.setItem("token", user?.token);
           //todo this localStorage

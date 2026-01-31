@@ -4,6 +4,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
   const [data, setData] = useState({
@@ -15,11 +16,39 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
     homeBasedCare: defaultValues.homeBasedCare || null,
     homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience || "",
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact || "",
+    preferred: defaultValues.preferred || [],
   });
+
+  const preferred = [
+    {
+      title: "Pre and post pregnancy care",
+    },
+    {
+      title: "Post surgery cage",
+    },
+    {
+      title: "Palliative care",
+    },
+    {
+      title: "Elderly care",
+    },
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
+  };
+
+    const togglepreferred = (pref) => {
+    setData((prev) => {
+      const alreadySelected = prev.preferred.includes(pref);
+      return {
+        ...prev,
+        preferred: alreadySelected
+          ? prev.preferred.filter((l) => l !== pref)
+          : [...prev.preferred, pref],
+      };
+    });
   };
 
   const handleSubmit = (e) => {
@@ -51,6 +80,11 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
       (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
     ) {
       toast.error("Please fill all Hospital Based Care fields!");
+      return;
+    }
+
+      if (data.preferred.length === 0) {
+      toast.error("Please select what you preferred");
       return;
     }
 
@@ -189,6 +223,29 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
           </div>
         </div>
       )}
+
+      <div>
+        <Label className={"mb-3 mt-6"}>
+          What are your preferred areas of intervention
+        </Label>
+        <div className="flex flex-wrap flex-col gap-2 ">
+          {preferred.map((lan, indx) => (
+            <div key={indx} className="flex items-center gap-2">
+              <Checkbox
+                id={lan.title}
+                checked={data.preferred.includes(lan.title)}
+                onCheckedChange={() => togglepreferred(lan.title)}
+              />
+              <Label
+                htmlFor={lan.title}
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                {lan.title}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Navigation */}
       <div className="flex justify-between pt-6">

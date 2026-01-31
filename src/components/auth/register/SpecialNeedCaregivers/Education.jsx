@@ -12,7 +12,6 @@ import Input from "@/components/shared/Input";
 const Education = ({ defaultValues, onNext, onBack }) => {
   const [data, setData] = useState({
     educationLevel: defaultValues.educationLevel || "",
-    isRegisterPCK: defaultValues.isRegisterPCK || null,
     registrationNumber: defaultValues.registrationNumber || "",
     practiceLicense: defaultValues.practiceLicense || null,
     educationCertificate: defaultValues.educationCertificate || null,
@@ -22,43 +21,17 @@ const Education = ({ defaultValues, onNext, onBack }) => {
     setData((prev) => ({ ...prev, [field]: file }));
   };
 
-  // Handle PCK Yes/No
-  const handlePCKChange = (value) => {
-    if (value === "true") {
-      setData((prev) => ({
-        ...prev,
-        isRegisterPCK: value,
-        registrationNumber: undefined,
-        practiceLicense: undefined,
-      }));
-    } else {
-      setData((prev) => ({
-        ...prev,
-        isRegisterPCK: value,
-      }));
-    }
-  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-   if(!data.educationLevel)
-    return toast.error("Select Education Level!");
-   
-   
-   if(!data.educationCertificate)
-    return toast.error("Select file")
-    
-    if (!data.isRegisterPCK)
-      return toast.error("Answer the PCK registration question!");
+    if (!data.educationLevel) return toast.error("Select Education Level!");
 
-    //  Validate only if Yes
-    if (data.isRegisterPCK === "Yes") {
-      if (!data.registrationNumber)
-        return toast.error("Registration number required!");
-      if (!data.practiceLicense)
-        return toast.error("Practicing license is required!");
-    }
+    if (!data.educationCertificate) return toast.error("Select file");
+
+
+
 
     // Filter out unwanted fields if PCK = No
     const finalData = { ...data };
@@ -87,7 +60,10 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value=" Degree In Special Needs Education (SNE)" id="edu1" />
+            <RadioGroupItem
+              value=" Degree In Special Needs Education (SNE)"
+              id="edu1"
+            />
             <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
               Degree In Special Needs Education (SNE)
             </Label>
@@ -104,9 +80,12 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           </div>
 
           <div className="flex items-center  gap-2">
-            <RadioGroupItem value="Diploma In Special Needs Education (SNE)" id="edu3" />
+            <RadioGroupItem
+              value="Diploma In Special Needs Education (SNE)"
+              id="edu3"
+            />
             <Label htmlFor="edu3" className="text-gray-700 cursor-pointer">
-             Diploma In Special Needs Education (SNE)
+              Diploma In Special Needs Education (SNE)
             </Label>
           </div>
 
@@ -166,7 +145,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
       </div>
 
       {/* PCK Registration */}
-      <div className="py-6">
+      {/* <div className="py-6">
         <Label className="mb-3 block">
           Are you registered with Physiotherapy Council of Kenya (PCK)?
         </Label>
@@ -185,10 +164,10 @@ const Education = ({ defaultValues, onNext, onBack }) => {
             <Label htmlFor="pckNo">No</Label>
           </div>
         </RadioGroup>
-      </div>
+      </div> */}
 
       {/* Show only when PCK = true */}
-      {data.isRegisterPCK === "true" && (
+      {/* {data.isRegisterPCK === "true" && (
         <div>
           <Input
             label={"Registration Number"}
@@ -218,7 +197,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
             />
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Navigation Buttons */}
       <div className="flex justify-between pt-6">

@@ -106,7 +106,7 @@ const Faq = ({ homeData }) => {
                     {item.question}
                   </span>
                 </AccordionTrigger>
-                <AccordionContent className="pb-4 text-muted-foreground">
+                <AccordionContent className="pb-4 text-white">
                   {item.answer}
                 </AccordionContent>
               </AccordionItem>
