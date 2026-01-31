@@ -27,8 +27,9 @@ export function middleware(req) {
   }
 
 
-  const token = req.cookies.get("token")?.value;
-  const role = req.cookies.get("role")?.value;
+  const token = localStorage.getItem("token")
+  const role = localStorage.getItem("role")
+
 
 
   if (!token || !role) {
