@@ -95,8 +95,7 @@ const SignUpStart = ({ onSuccess }) => {
         "user",
         JSON.stringify({ role, subRole, is_profile_completed }),
       );
-      document.cookie = `token=${token}; path=/`;
-      document.cookie = `role=${role}; path=/`;
+
 
       setOpenOTP(false);
       onSuccess({ role, subRole, is_profile_completed });

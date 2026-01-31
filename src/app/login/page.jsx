@@ -64,11 +64,8 @@ const Page = () => {
           is_profile_verified,
         }),
       );
-      document.cookie = `token=${token}; path=/`;
-      document.cookie = `role=${role}; path=/`;
 
       toast.success("Login successful!");
-
       router.push("/dashboard");
       // router.push(`/dashboard/${role}-profile`);
       // if (is_profile_completed) {
