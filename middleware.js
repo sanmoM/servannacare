@@ -39,13 +39,13 @@ export function middleware(req) {
 
   
   if (!allowedRoutes) {
-    return NextResponse.rewrite(new URL("/", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
 
   const isAllowed = matchRoute(pathname, allowedRoutes);
   if (!isAllowed) {
-    return NextResponse.rewrite(new URL("/", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
 

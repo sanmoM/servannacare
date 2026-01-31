@@ -65,6 +65,7 @@ const Page = () => {
         }),
       );
       toast.success("Login successful!");
+
       router.push("/dashboard");
       // if (is_profile_completed) {
       //   router.push("/dashboard");
