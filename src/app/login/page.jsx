@@ -66,7 +66,8 @@ const Page = () => {
       );
       toast.success("Login successful!");
 
-      router.push("/dashboard");
+      // router.push("/dashboard");
+      router.push(`/dashboard/${role}-profile`);
       // if (is_profile_completed) {
       //   router.push("/dashboard");
       //   return;
