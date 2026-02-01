@@ -40,7 +40,8 @@ const SearchContent = () => {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [sortBy, setSortBy] = useState("");
-  const [setMobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
+  const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
+  
 
 
 
@@ -264,7 +265,7 @@ const SearchContent = () => {
       {/* Overlay */}
       <div
         className={`fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300 ${
-          setMobileFilterSidebar ? "opacity-100 visible" : "opacity-0 invisible"
+          mobileFilterSidebar ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={() => setMobileFilterSidebarOpen(false)}
       ></div>
@@ -272,7 +273,7 @@ const SearchContent = () => {
       {/* Sidebar Drawer */}
       <div
         className={`fixed top-0 right-0 h-full  w-3/4 p-4 lg:hidden sm:w-1/2 bg-white shadow-lg  z-50 transform transition-transform duration-300 ${
-          setMobileFilterSidebar ? "translate-x-0" : "translate-x-full"
+          mobileFilterSidebar ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full justify-between ">
