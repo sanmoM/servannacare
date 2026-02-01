@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import BookingFormClient from "./BookingFormClient";
-
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 export default function Page() {
   return (
-    <Suspense fallback={<div>Loading booking form...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <BookingFormClient />
     </Suspense>
   );

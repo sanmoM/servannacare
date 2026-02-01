@@ -2,52 +2,70 @@
 
 import FileUpload from "@/components/auth/register/FileUpload";
 import Input from "@/components/shared/Input";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
+import { useFetch } from "@/hooks/useFetch";
+import useLocalUser from "@/hooks/useLocalUser";
 import { Calendar, Camera, Mail, MapPin, Phone, User, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function ProfilePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Static user (no localStorage)
-  const [userInfo, setUserInfo] = useState({
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    phone: "+2541234567",
-    location: "Nairobi, Kenya",
-    joinedSince: "Jan 2025",
-    profilePic: "/user.png",
-  });
-
-  // modal form state
+  const [userInfo, setUserInfo] = useState(null);
   const [form, setForm] = useState({
-    name: userInfo.name,
-    phone: userInfo.phone,
-    location: userInfo.location,
+    name: "",
+    email: "",
+    phone: "",
+    profilePhoto: "",
   });
+  const { user, loaded } = useLocalUser();
+  const { data, isLoading, error } = useFetch("/profile");
+
+
+  useEffect(() => {
+    if (data?.data) {
+      setUserInfo(data?.data?.data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (userInfo) {
+      setForm({
+        name: userInfo.name || "",
+        email: userInfo.email || "",
+        phone: userInfo.number || "",
+        profilePhoto: userInfo.profilePhoto || "",
+      });
+    }
+  }, [userInfo]);
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
+
 
   const infoItems = [
     {
       icon: <User className="w-5 h-5 text-primary" />,
       label: "Name",
-      value: userInfo.name,
+      value: form.name,
     },
     {
       icon: <Mail className="w-5 h-5 text-primary" />,
       label: "Email Address",
-      value: userInfo.email,
+      value: form.email,
     },
     {
       icon: <Phone className="w-5 h-5 text-primary" />,
       label: "Phone Number",
-      value: userInfo.phone,
+      value: form.phone,
     },
-    {
-      icon: <MapPin className="w-5 h-5 text-primary" />,
-      label: "Location",
-      value: userInfo.location,
-    },
+    // {
+    //   icon: <MapPin className="w-5 h-5 text-primary" />,
+    //   label: "Location",
+    //   value: form.location,
+    // },
   ];
 
   // open modal
@@ -55,7 +73,6 @@ export default function ProfilePage() {
     setForm({
       name: userInfo.name,
       phone: userInfo.phone,
-      location: userInfo.location,
     });
     setIsModalOpen(true);
   };
@@ -73,7 +90,7 @@ export default function ProfilePage() {
   //  save changes (state only)
   const handleSave = () => {
     if (!form.name.trim()) return toast.error("Name is required");
-    if (!form.location.trim()) return toast.error("Location is required");
+    // if (!form.location.trim()) return toast.error("Location is required");
     if (!form.phone || form.phone.length !== 11)
       return toast.error("Phone number must be 11 digits");
 
@@ -81,7 +98,7 @@ export default function ProfilePage() {
       ...prev,
       name: form.name,
       phone: form.phone,
-      location: form.location,
+      // location: form.location,
     }));
 
     toast.success("Profile updated!");
@@ -99,6 +116,7 @@ export default function ProfilePage() {
     toast.success("Profile photo updated!");
   };
 
+
   return (
     <div>
       {/* Header */}
@@ -106,7 +124,7 @@ export default function ProfilePage() {
         <h1 className="sectionHeading mb-4">My Profile</h1>
         <div className="text-xs text-gray-700 font-semibold gap-2 flex items-center">
           <Calendar size={16} />
-          <span>Joined {userInfo.joinedSince}</span>
+          {/* <span>Joined {userInfo.joinedSince}</span> */}
         </div>
       </div>
 
@@ -116,13 +134,13 @@ export default function ProfilePage() {
           <div className="relative h-36 w-36 lg:w-48 lg:h-48 rounded-full border-4 border-primary overflow-hidden shadow-lg">
             <img
               className="object-cover w-full h-full"
-              src={userInfo.profilePic}
+              src={form.profilePic}
               alt="profile"
             />
           </div>
 
           <h1 className="text-center text-xl text-gray-600 font-semibold mt-4 break-words max-w-[180px]">
-            {userInfo.name}
+            {form.name}
           </h1>
         </div>
 
@@ -197,12 +215,28 @@ export default function ProfilePage() {
                 }}
               />
 
+            <Input
+                label="Email"
+                placeholder="Enter Email"
+                value={form.email}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, email: e.target.value }))
+                }
+              />
               <Input
                 label="Location"
                 placeholder="Enter location"
                 value={form.location}
                 onChange={(e) =>
                   setForm((prev) => ({ ...prev, location: e.target.value }))
+                }
+              />
+              <Input
+                label="Email"
+                placeholder="Enter Email"
+                value={form.email}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, email: e.target.value }))
                 }
               />
             </div>

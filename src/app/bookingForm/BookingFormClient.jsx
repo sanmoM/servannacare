@@ -19,12 +19,21 @@ import { format } from "date-fns";
 import { postApi } from "@/lib/apiHandler";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import { useEffect, useState } from "react";
+import { useFetch } from "@/hooks/useFetch";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 export default function BookingFormClient() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const id = searchParams.get("id");
   const router = useRouter();
+
+  const [price, setPrice] = useState(null);
+  const [selectedPrice, setSelectedPrice] = useState(null);
+  const [bookingAmount, setBookingAmount] = useState(0);
+
+  const { data, isLoading, error } = useFetch("/price");
   const {
     register,
     watch,
@@ -37,22 +46,71 @@ export default function BookingFormClient() {
       allergies: [],
     },
   });
+
   const conditions = watch("conditions") || [];
 
   const watchMedication = watch("onMedication");
   const allergies = watch("allergies") || [];
   const careType = watch("careFrequency");
+  const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
+  const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
+
+  const calculateDays = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    const diffTime = endDate - startDate;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  };
+
+  const calculateMonths = (start, end) => {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    return (
+      (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+      (endDate.getMonth() - startDate.getMonth()) +
+      1
+    );
+  };
+
+  const startDate = watch("startDate");
+  const endDate = watch("endDate");
+  const startMonth = watch("startMonth");
+  const endMonth = watch("endMonth");
+
+  useEffect(() => {
+    if (!selectedPrice) return;
+
+    if (isDaily && startDate && endDate) {
+      const days = calculateDays(startDate, endDate);
+      setBookingAmount(days * selectedPrice.price);
+    }
+
+    if (isMonthly && startMonth && endMonth) {
+      const months = calculateMonths(startMonth, endMonth);
+      setBookingAmount(months * selectedPrice.price);
+    }
+  }, [startDate, endDate, startMonth, endMonth, selectedPrice]);
+
+  useEffect(() => {
+    if (data) {
+      setPrice(data?.data?.data ?? data?.data?.data);
+    }
+  }, [data]);
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
 
   const onSubmit = async (data) => {
-    console.log(data);
+    // console.log(data);
     const payload = {
       specialist_id: id,
       patient_name: data?.patientName,
       patient_age: data?.age,
       patient_gender: data?.gender,
       relationship_to_booking_person: data?.relationship,
-      price_id: 2,
-      booking_amount: 1000,
+
+      price_id: selectedPrice?.id,
+      booking_amount: bookingAmount,
       patient_have_any_conditions: data?.conditions,
       patient_currently_on_medication: data?.onMedication,
       patient_currently_on_medication_data: data?.medications,
@@ -64,10 +122,12 @@ export default function BookingFormClient() {
       // care_start_date: data?.startMonth,
       // care_end_date: data?.endMonth,
 
-      care_start_date:
-        data?.careFrequency === "daily" ? data?.startDate : data?.startMonth,
-      care_end_date:
-        data?.careFrequency === "daily" ? data?.endDate : data?.endMonth,
+      // care_start_date:
+      //   data?.careFrequency === "daily" ? data?.startDate : data?.startMonth,
+      // care_end_date:
+      //   data?.careFrequency === "daily" ? data?.endDate : data?.endMonth,
+      care_start_date: isDaily ? startDate : startMonth,
+      care_end_date: isDaily ? endDate : endMonth,
 
       location_of_care: data?.location,
       emergency_contact_name: data?.emergencyName,
@@ -76,14 +136,14 @@ export default function BookingFormClient() {
       primary_doctor_number: data?.doctorContact,
       primary_hospital: data?.hospital,
     };
-    console.log("payload",payload)
+    console.log("payload", payload);
     try {
       const res = await postApi("/booking", payload);
 
       if (res?.status === 200) {
         toast.success("Booking Successfully!");
         console.log("response", res);
-        router.push("/specialist");
+        router.push("/dashboard");
       } else {
         toast.error(
           res?.data?.message || "Something went wrong. Please try again.",
@@ -452,10 +512,15 @@ export default function BookingFormClient() {
               render={({ field }) => (
                 <RadioGroup
                   value={field.value}
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    const priceObj = price.find((p) => String(p.id) === value);
+                    setSelectedPrice(priceObj);
+                    setBookingAmount(0);
+                  }}
                   className="flex gap-6"
                 >
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <RadioGroupItem value="daily" id="daily" />
                     <Label htmlFor="daily">Daily</Label>
                   </div>
@@ -463,107 +528,67 @@ export default function BookingFormClient() {
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="monthly" id="monthly" />
                     <Label htmlFor="monthly">Monthly</Label>
-                  </div>
+                  </div> */}
+                  {price?.map((item, indx) => (
+                    <div key={item.id} className="flex items-center gap-2">
+                      <RadioGroupItem
+                        value={String(item.id)}
+                        id={`price-${item.id}`}
+                      />
+                      <Label htmlFor={`price-${item.id}`}>
+                        {item.name} (KES {item.price})
+                      </Label>
+                    </div>
+                  ))}
                 </RadioGroup>
               )}
             />
 
             {/* Start and End Date / Month */}
-            {watch("careFrequency") && (
+            {selectedPrice && (
               <div className="grid md:grid-cols-2 gap-4">
-                {/* Care Start */}
-                {watch("careFrequency") === "daily" ? (
-                  <Controller
-                    name="startDate"
-                    control={control}
-                    rules={{ required: "Please select start date" }}
-                    render={({ field }) => (
-                      <div className="space-y-1">
-                        <Label>Start Date</Label>
-                        <Input
-                          type="date"
-                          {...field}
-                          value={field.value || ""}
-                          onChange={(e) => field.onChange(e.target.value)}
-                        />
-                        {errors.startDate && (
-                          <p className="text-sm text-red-500">
-                            {errors.startDate.message}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  />
-                ) : (
-                  <Controller
-                    name="startMonth"
-                    control={control}
-                    rules={{ required: "Please select start month" }}
-                    render={({ field }) => (
-                      <div className="space-y-1">
-                        <Label>Start Month</Label>
-                        <Input
-                          type="month"
-                          {...field}
-                          value={field.value || ""}
-                          onChange={(e) => field.onChange(e.target.value)}
-                        />
-                        {errors.startMonth && (
-                          <p className="text-sm text-red-500">
-                            {errors.startMonth.message}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  />
-                )}
+                {isDaily ? (
+                  <>
+                    {/* Start Date */}
+                    <Controller
+                      name="startDate"
+                      control={control}
+                      rules={{ required: "Start date required" }}
+                      render={({ field }) => <Input type="date" {...field} />}
+                    />
 
-                {/* Care End */}
-                {watch("careFrequency") === "daily" ? (
-                  <Controller
-                    name="endDate"
-                    control={control}
-                    rules={{ required: "Please select end date" }}
-                    render={({ field }) => (
-                      <div className="space-y-1">
-                        <Label>End Date</Label>
-                        <Input
-                          type="date"
-                          {...field}
-                          value={field.value || ""}
-                          onChange={(e) => field.onChange(e.target.value)}
-                        />
-                        {errors.endDate && (
-                          <p className="text-sm text-red-500">
-                            {errors.endDate.message}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  />
+                    {/* End Date */}
+                    <Controller
+                      name="endDate"
+                      control={control}
+                      rules={{ required: "End date required" }}
+                      render={({ field }) => <Input type="date" {...field} />}
+                    />
+                  </>
                 ) : (
-                  <Controller
-                    name="endMonth"
-                    control={control}
-                    rules={{ required: "Please select end month" }}
-                    render={({ field }) => (
-                      <div className="space-y-1">
-                        <Label>End Month</Label>
-                        <Input
-                          type="month"
-                          {...field}
-                          value={field.value || ""}
-                          onChange={(e) => field.onChange(e.target.value)}
-                        />
-                        {errors.endMonth && (
-                          <p className="text-sm text-red-500">
-                            {errors.endMonth.message}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  />
+                  <>
+                    {/* Start Month */}
+                    <Controller
+                      name="startMonth"
+                      control={control}
+                      rules={{ required: "Start month required" }}
+                      render={({ field }) => <Input type="month" {...field} />}
+                    />
+
+                    {/* End Month */}
+                    <Controller
+                      name="endMonth"
+                      control={control}
+                      rules={{ required: "End month required" }}
+                      render={({ field }) => <Input type="month" {...field} />}
+                    />
+                  </>
                 )}
+              </div>
+            )}
+            {bookingAmount > 0 && (
+              <div className="text-lg font-semibold text-primary">
+                Total Amount: KES {bookingAmount}
               </div>
             )}
 

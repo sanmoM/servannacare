@@ -23,6 +23,9 @@ import {
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { SubscriptionPlans } from "./shared/Plan";
 import CustomModal from "./shared/CustomModal";
+import { useRouter } from "next/navigation";
+import useLocalUser from "@/hooks/useLocalUser";
+import toast from "react-hot-toast";
 
 const InfoItem = ({ icon: Icon, label, value }) => (
   <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -34,7 +37,25 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
-  const [openModal, setOpenModal] = useState(false);
+  const router = useRouter();
+  const { user, loaded } = useLocalUser();
+
+  const handleBookNow = () => {
+    if (!loaded) return;
+
+    const bookingUrl = `/bookingForm?category=${profile.category.toLowerCase()}&id=${profile.id}`;
+
+    if (!user) {
+      router.push(`/login?redirect=${encodeURIComponent(bookingUrl)}`);
+      return;
+    }
+
+    if (user.role != "user") {
+      toast.error(`${user?.subRole} can't make Booking`);
+      return;
+    }
+    router.push(bookingUrl);
+  };
   return (
     <div
       data-aos="fade-up"
@@ -115,20 +136,14 @@ const ProfileCard = ({ profile }) => {
             </Link>
           </div>
           <div className="flex-1">
-            <Link
-              href={{
-                pathname: "/bookingForm",
-                query: {
-                  category: profile.category.toLowerCase(),
-                  id: profile.id,
-                },
-              }}
+            <Button
+              onClick={handleBookNow}
+              disabled={!loaded}
+              className="w-full cursor-pointer"
             >
-              <Button className="w-full cursor-pointer">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Book Now
-              </Button>
-            </Link>
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Book Now
+            </Button>
           </div>
 
           {/* <div className="flex-1">

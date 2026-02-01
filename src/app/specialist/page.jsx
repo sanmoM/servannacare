@@ -33,6 +33,7 @@ import { Label } from "@/components/ui/label";
 import { Filter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { useFetch } from "@/hooks/useFetch";
 
 const SearchContent = () => {
   const searchParams = useSearchParams();
@@ -41,20 +42,25 @@ const SearchContent = () => {
   const [sortBy, setSortBy] = useState("");
   const [setMobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
 
+
+
   useEffect(() => {
+
     const category = searchParams.get("category");
     const filterCategory = serviceCategory.find(
-      (cat) => cat.value === category
+      (cat) => cat.value === category,
     );
 
     if (filterCategory) {
       setSelectedCategory(filterCategory.mainCategory);
     }
-  }, [searchParams]);
+  }, [ searchParams]);
+
+
 
   const handleCategoryChange = (mainCategory) => {
     const selected = serviceCategory.find(
-      (cat) => cat.mainCategory === mainCategory
+      (cat) => cat.mainCategory === mainCategory,
     );
 
     if (!selected) return;
@@ -74,18 +80,18 @@ const SearchContent = () => {
     filteredData = filteredData.filter(
       (item) =>
         item.category?.toLocaleLowerCase() ===
-        selectedCategory.toLocaleLowerCase()
+        selectedCategory.toLocaleLowerCase(),
     );
   }
 
   if (sortBy === "experience") {
     filteredData = [...filteredData].sort(
-      (a, b) => b.experience - a.experience
+      (a, b) => b.experience - a.experience,
     );
   }
 
   const selectedCategoryObj = serviceCategory.find(
-    (cate) => cate.mainCategory === selectedCategory
+    (cate) => cate.mainCategory === selectedCategory,
   );
 
   console.log(selectedCategory);
@@ -293,36 +299,38 @@ const SearchContent = () => {
             </select>
 
             {selectedCategory ? (
-            <div className="mt-6">
-              <h2 className="text-lg border-b mb-4  font-semibold">Services</h2>
-              <div className="space-y-2">
-                {selectedCategoryObj.subCategory.map((cat, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <Checkbox id={cat} />
-                    <Label htmlFor={cat}>{cat}</Label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div>
-              <h2 className="text-lg border-b mb-4  font-semibold">Services</h2>
-              <div className="space-y-2">
-                {serviceCategory
-                  .flatMap((cat) => cat.subCategory)
-                  .map((sub, i) => (
+              <div className="mt-6">
+                <h2 className="text-lg border-b mb-4  font-semibold">
+                  Services
+                </h2>
+                <div className="space-y-2">
+                  {selectedCategoryObj.subCategory.map((cat, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <Checkbox id={sub} />
-                      <Label htmlFor={sub}>{sub}</Label>
+                      <Checkbox id={cat} />
+                      <Label htmlFor={cat}>{cat}</Label>
                     </div>
                   ))}
+                </div>
               </div>
-            </div>
-          )}
-
+            ) : (
+              <div>
+                <h2 className="text-lg border-b mb-4  font-semibold">
+                  Services
+                </h2>
+                <div className="space-y-2">
+                  {serviceCategory
+                    .flatMap((cat) => cat.subCategory)
+                    .map((sub, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Checkbox id={sub} />
+                        <Label htmlFor={sub}>{sub}</Label>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          
           <div className="">
             <Button className={"w-full"} size={"lg"}>
               Search

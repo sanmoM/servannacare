@@ -207,7 +207,7 @@ export default function ProfilePage() {
               // todo
               <NurseAideUpdate />
             ))}
-            
+
           {specialistDatas?.data?.specialNeed?.subRole ===
             "special-need-caregivers" &&
             (specialistDatas?.data?.specialNeed?.is_profile_completed ? (
@@ -218,53 +218,6 @@ export default function ProfilePage() {
               // todo
               <SpecialNeedCaregiversUpdate />
             ))}
-
-          <div className="flex mt-6 justify-end">
-            <Dialog>
-              <DialogTrigger asChild>
-                {/* <Button className={"w-full sm:w-auto"} size={"lg"}>
-                  Update Profile?
-                </Button> */}
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
-                <DialogHeader>
-                  <DialogTitle className={"text-center"}>
-                    Update your profile
-                  </DialogTitle>
-                  <DialogDescription></DialogDescription>
-                </DialogHeader>
-                <div>
-                  {specialistDatas?.subRole === "housemanager" && (
-                    <HouseManager data={specialistDatas} />
-                  )}
-                  {specialistDatas?.subRole === "nurse" && (
-                    <NurseUpdate data={specialistDatas} />
-                  )}
-                  {specialistDatas?.subRole === "physiotherapist" && (
-                    <Physiotherapist data={specialistDatas} />
-                  )}
-                  {specialistDatas?.subRole === "nurse aide assistant" && (
-                    <NurseAideUpdate data={specialistDatas} />
-                  )}
-                  {specialistDatas?.subRole === "special need caregivers" && (
-                    <SpecialNeedCaregiversUpdate data={specialistDatas} />
-                  )}
-                </div>
-                <DialogFooter className="sm:justify-end">
-                  <DialogClose asChild>
-                    <Button
-                      className={""}
-                      size={"lg"}
-                      type="button"
-                      variant="secondary"
-                    >
-                      Cancel
-                    </Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
         </div>
       </div>
 

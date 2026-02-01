@@ -7,6 +7,7 @@ import { SubscriptionPlans } from "@/components/shared/Plan";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Building, Check, Mail, Phone } from "lucide-react";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const Profile = () => {
@@ -32,7 +33,7 @@ const Profile = () => {
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = `https://placehold.co/160x160/6366f1/white?text=${profile.name.charAt(
-                  0
+                  0,
                 )}`;
               }}
             />
@@ -73,9 +74,29 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          <Button onClick={() => setOpenModal(true)} className={"w-full mt-6"} size={"lg"}>
+          <Button
+            onClick={() => setOpenModal(true)}
+            className={"w-full mt-6"}
+            size={"lg"}
+          >
             Book Now
           </Button>
+          {/* <div className="flex-1">
+            <Link
+              href={{
+                pathname: "/bookingForm",
+                query: {
+                  category: profile.category.toLowerCase(),
+                  id: profile.id,
+                },
+              }}
+            >
+              <Button className="w-full cursor-pointer">
+                <CheckCircle className="w-4 h-4 mr-2" />
+                Book Now
+              </Button>
+            </Link>
+          </div> */}
         </div>
         <div className=" md:col-span-4 ">
           <h2 className="subHeading border-b border-primary mb-4">BIO</h2>

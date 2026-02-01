@@ -11,18 +11,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { userRole } from "@/utilities/data";
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const Page = () => {
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, loaded, refreshUser } = useLocalUser();
+
+  const [redirectUrl, setRedirectUrl] = useState(null);
+
+  useEffect(() => {
+    const r = searchParams.get("redirect");
+    if (r) setRedirectUrl(r);
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (!loaded || !user) return;
+
+    if (user.role === "user") {
+      router.replace(redirectUrl || "/dashboard");
+    } else {
+ 
+      if (redirectUrl?.includes("bookingForm")) {
+        toast.error(`${user.role} can't make a booking`);
+      }
+      router.replace("/dashboard");
+    }
+  }, [user, loaded, redirectUrl, router]);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -66,12 +90,13 @@ const Page = () => {
       );
 
       toast.success("Login successful!");
-      router.push("/dashboard");
+      // router.push("/dashboard");
       // router.push(`/dashboard/${role}-profile`);
       // if (is_profile_completed) {
       //   router.push("/dashboard");
       //   return;
       // }
+      if (refreshUser) refreshUser();
     } catch (error) {
       toast.error(
         error?.response?.data?.message || "Invalid email or password",
