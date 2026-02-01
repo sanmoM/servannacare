@@ -136,6 +136,10 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
             setData((prev) => ({
               ...prev,
               hospitalBasedCare: value === "true",
+              hospitalBasedYearsOfExperience:
+                value === "true" ? prev.hospitalBasedYearsOfExperience : "",
+              hospitalBasedReferenceContact:
+                value === "true" ? prev.hospitalBasedReferenceContact : "",
             }))
           }
         >
@@ -186,6 +190,10 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
             setData((prev) => ({
               ...prev,
               homeBasedCare: value === "true",
+              homeBasedYearsOfExperience:
+                value === "true" ? prev.homeBasedYearsOfExperience : "",
+              homeBasedReferenceContact:
+                value === "true" ? prev.homeBasedReferenceContact : "",
             }))
           }
         >

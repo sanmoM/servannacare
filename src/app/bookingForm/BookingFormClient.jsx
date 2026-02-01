@@ -76,6 +76,7 @@ export default function BookingFormClient() {
       primary_doctor_number: data?.doctorContact,
       primary_hospital: data?.hospital,
     };
+    console.log("payload",payload)
     try {
       const res = await postApi("/booking", payload);
 

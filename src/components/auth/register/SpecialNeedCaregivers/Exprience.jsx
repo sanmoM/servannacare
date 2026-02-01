@@ -8,17 +8,18 @@ import toast from "react-hot-toast";
 
 const Experience = ({ defaultValues = {}, onNext, onBack }) => {
   const [data, setData] = useState({
-    hospitalBasedCare: defaultValues.hospitalBasedCare || "",
+    hospitalBasedCare: defaultValues.hospitalBasedCare ?? null,
+    homeBasedCare: defaultValues.homeBasedCare ?? null,
     hospitalBasedYearsOfExperience:
       defaultValues.hospitalBasedYearsOfExperience || "",
     hospitalBasedReferenceContact:
       defaultValues.hospitalBasedReferenceContact || "",
-    homeBasedCare: defaultValues.homeBasedCare || "",
+
     homeBasedYearsOfExperience: defaultValues.homeBasedYearsOfExperience || "",
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact || "",
     preferred: defaultValues.preferred || [],
 
-    serviceFee: defaultValues.serviceFee || "",
+ 
   });
 
   const preferred = [
@@ -75,25 +76,40 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       "homeBasedCare",
       // "homeBasedYearsOfExperience",
       // "homeBasedReferenceContact",
-      "serviceFee",
+      "serviceFeeDay",
+      "serviceFeeMonth",
     ];
 
-    for (let field of requiredFields) {
+    for (const field of requiredFields) {
       if (
-        !data[field] ||
-        (Array.isArray(data[field]) && data[field].length === 0)
+        data[field] === null ||
+        (typeof data[field] === "string" && data[field].trim() === "")
       ) {
-        const formattedField = field
+        const label = field
           .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (str) => str.toUpperCase());
+          .replace(/^./, (s) => s.toUpperCase());
 
-        toast.error(`${formattedField} is required!`);
+        toast.error(`${label} is required!`);
         return;
       }
     }
 
+    const dayFee = Number(data.serviceFeeDay);
+    const monthFee = Number(data.serviceFeeMonth);
+
     if (
-      data.hospitalBasedCare === "Yes" &&
+      !Number.isFinite(dayFee) ||
+      !Number.isFinite(monthFee) ||
+      dayFee <= 0 ||
+      monthFee <= 0
+    ) {
+      toast.error("Service fee must be a valid number greater than 0");
+      return;
+    }
+
+    // Hospital-based conditional validation
+    if (
+      data.hospitalBasedCare === true &&
       (!data.hospitalBasedYearsOfExperience ||
         !data.hospitalBasedReferenceContact)
     ) {
@@ -101,8 +117,9 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       return;
     }
 
+    // Home-based conditional validation
     if (
-      data.homeBasedCare === "Yes" &&
+      data.homeBasedCare === true &&
       (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
     ) {
       toast.error("Please fill all Home Based Care fields!");
@@ -121,55 +138,57 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
   return (
     <form onSubmit={handleSubmit}>
       <h2 className="formHeading">Experience</h2>
-      <div className="my-6">
+      <div className="mt-6">
         <Label className="mb-3 block">Hospital Based Care</Label>
         <RadioGroup
-          className="flex gap-x-4 flex-wrap "
-          value={data.hospitalBasedCare}
+          className="flex gap-4"
+          value={
+            data.hospitalBasedCare === null
+              ? ""
+              : String(data.hospitalBasedCare)
+          }
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, hospitalBasedCare: value }))
+            setData((prev) => ({
+              ...prev,
+              hospitalBasedCare: value === "true",
+              hospitalBasedYearsOfExperience:
+                value === "true" ? prev.homeBasedYearsOfExperience : "",
+              hospitalBasedReferenceContact:
+                value === "true" ? prev.hospitalBasedReferenceContact : "",
+            }))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="d1" />
-            <Label
-              htmlFor="d1"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
+            <RadioGroupItem value="true" id="hospital-yes" />
+            <Label htmlFor="hospital-yes">Yes</Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="d2" />
-            <Label
-              htmlFor="d2"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
+            <RadioGroupItem value="false" id="hospital-no" />
+            <Label htmlFor="hospital-no">No</Label>
           </div>
         </RadioGroup>
       </div>
-      {data.hospitalBasedCare === "Yes" && (
-        <div className="flex gap-6 sm:flex-row mb-6 flex-col sm:gap-4">
+
+      {data.hospitalBasedCare && (
+        <div className="flex gap-6 my-6 flex-col sm:flex-row">
           <Input
-            type={"number"}
+            type="number"
             label="Years of experience"
             name="hospitalBasedYearsOfExperience"
-            placeholder="Experience"
             maxLength={2}
             value={data.hospitalBasedYearsOfExperience}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+            onChange={(e) =>
               handleChange({
-                target: { name: "hospitalBasedYearsOfExperience", value: val },
-              });
-            }}
+                target: {
+                  name: "hospitalBasedYearsOfExperience",
+                  value: e.target.value.replace(/\D/g, "").slice(0, 2),
+                },
+              })
+            }
           />
           <Input
             label="Reference contact"
             name="hospitalBasedReferenceContact"
-            placeholder="Reference"
             value={data.hospitalBasedReferenceContact}
             onChange={handleChange}
           />
@@ -179,60 +198,57 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       <div className="my-6">
         <Label className="mb-3 block">Home Based Care</Label>
         <RadioGroup
-          className="flex gap-x-4 flex-wrap "
-          value={data.homeBasedCare}
+          className="flex gap-4"
+          value={data.homeBasedCare === null ? "" : String(data.homeBasedCare)}
           onValueChange={(value) =>
-            setData((prev) => ({ ...prev, homeBasedCare: value }))
+            setData((prev) => ({
+              ...prev,
+              homeBasedCare: value === "true",
+              homeBasedYearsOfExperience:
+                value === "true" ? prev.homeBasedYearsOfExperience : "",
+              homeBasedReferenceContact:
+                value === "true" ? prev.homeBasedReferenceContact : "",
+            }))
           }
         >
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="Yes" id="d3" />
-            <Label
-              htmlFor="d3"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              Yes
-            </Label>
+            <RadioGroupItem value="true" id="home-yes" />
+            <Label htmlFor="home-yes">Yes</Label>
           </div>
           <div className="flex items-center gap-2">
-            <RadioGroupItem value="No" id="d4" />
-            <Label
-              htmlFor="d4"
-              className="text-gray-700 font-normal cursor-pointer"
-            >
-              No
-            </Label>
+            <RadioGroupItem value="false" id="home-no" />
+            <Label htmlFor="home-no">No</Label>
           </div>
         </RadioGroup>
       </div>
 
-      {data.homeBasedCare === "Yes" && (
-        <div className="flex gap-6 sm:flex-row flex-col my-6 sm:gap-4">
+      {data.homeBasedCare && (
+        <div className="flex gap-6 my-6 flex-col sm:flex-row">
           <Input
-            type={"number"}
+            type="number"
             label="Years of experience"
             name="homeBasedYearsOfExperience"
-            placeholder="Experience"
             maxLength={2}
             value={data.homeBasedYearsOfExperience}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+            onChange={(e) =>
               handleChange({
-                target: { name: "homeBasedYearsOfExperience", value: val },
-              });
-            }}
+                target: {
+                  name: "homeBasedYearsOfExperience",
+                  value: e.target.value.replace(/\D/g, "").slice(0, 2),
+                },
+              })
+            }
           />
           <Input
             label="Reference contact"
             name="homeBasedReferenceContact"
-            placeholder="Reference"
             value={data.homeBasedReferenceContact}
             onChange={handleChange}
           />
         </div>
       )}
 
-      <div className="">
+      <div>
         <Label className={"mb-3"}>
           What are your preferred areas of intervention
         </Label>
@@ -256,7 +272,7 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       </div>
 
       {/* Service Fee */}
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <Input
           label="Service Fee (KSh per day/month)"
           type="number"
@@ -269,6 +285,40 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
             handleChange({ target: { name: "serviceFee", value: val } });
           }}
         />
+      </div> */}
+      <div className="mt-4">
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Service Fee (Per Day - KSh)"
+            type="number"
+            name="serviceFeeDay"
+            maxLength={5}
+            placeholder="e.g., 1500"
+            value={data.serviceFeeDay}
+            onChange={(e) => {
+              const value = e.target.value;
+              setData((prev) => ({
+                ...prev,
+                serviceFeeDay: value === "" ? "" : Number(value),
+              }));
+            }}
+          />
+          <Input
+            label="Service Fee (Per Month - KSh)"
+            type="number"
+            name="serviceFeeMonth"
+            maxLength={6}
+            placeholder="e.g., 35000"
+            value={data.serviceFeeMonth}
+            onChange={(e) => {
+              const value = e.target.value;
+              setData((prev) => ({
+                ...prev,
+                serviceFeeMonth: value === "" ? "" : Number(value),
+              }));
+            }}
+          />
+        </div>
       </div>
 
       {/* Navigation */}

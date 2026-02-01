@@ -436,6 +436,29 @@ export const physiotherapistServiceProvide = [
   { id: "stroke", value: "Stroke" },
 ];
 
+export const educationLevels = [
+  {
+    id: "edu1",
+    value: "Degree In Special Needs Education (SNE)",
+    label: "Degree In Special Needs Education (SNE)",
+  },
+  {
+    id: "edu2",
+    value: "Degree In Early Childhood Development (ECD) with SNE units",
+    label: "Degree In Early Childhood Development (ECD) with SNE units",
+  },
+  {
+    id: "edu3",
+    value: "Diploma In Special Needs Education (SNE)",
+    label: "Diploma In Special Needs Education (SNE)",
+  },
+  {
+    id: "edu4",
+    value: "Diploma In Early Childhood Development (ECD) with SNE units",
+    label: "Diploma In Early Childhood Development (ECD) with SNE units",
+  },
+];
+
 export const fakeData = [
   {
     id: 1,

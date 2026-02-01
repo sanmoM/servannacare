@@ -37,7 +37,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  // console.log(specialistDatas?.data?.nurseAssistant);
+  console.log(specialistDatas?.data?.specialNeed?.subRole);
 
   const { user, loaded } = useLocalUser();
 
@@ -199,12 +199,24 @@ export default function ProfilePage() {
               <Physiotherapist />
             ))}
 
-          {specialistDatas?.data?.nurseAssistant?.subRole === "nurse-aide-or-assistant" &&
+          {specialistDatas?.data?.nurseAssistant?.subRole ===
+            "nurse-aide-or-assistant" &&
             (specialistDatas?.data?.nurseAssistant?.is_profile_completed ? (
               <NurseAideUpdate data={specialistDatas?.data?.nurseAssistant} />
             ) : (
               // todo
               <NurseAideUpdate />
+            ))}
+            
+          {specialistDatas?.data?.specialNeed?.subRole ===
+            "special-need-caregivers" &&
+            (specialistDatas?.data?.specialNeed?.is_profile_completed ? (
+              <SpecialNeedCaregiversUpdate
+                data={specialistDatas?.data?.specialNeed}
+              />
+            ) : (
+              // todo
+              <SpecialNeedCaregiversUpdate />
             ))}
 
           <div className="flex mt-6 justify-end">

@@ -38,6 +38,7 @@ const nextConfig = {
         protocol: "https",
         hostname: "cervannacare.testorbis.com",
       },
+   
     ],
   },
 };

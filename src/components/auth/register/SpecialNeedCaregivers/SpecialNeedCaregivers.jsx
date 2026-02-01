@@ -112,6 +112,8 @@ const SpecialNeedCaregivers = () => {
         EXPERIENCE.homeBasedReferenceContact,
       );
       EXPERIENCE.preferred.forEach((pref) => fd.append("preferred[]", pref));
+      fd.append("serviceFeeDay", EXPERIENCE.serviceFeeDay);
+      fd.append("serviceFeeMonth", EXPERIENCE.serviceFeeMonth);
 
       if (DOCUMENTS?.idCopy) {
         fd.append("idCopy", DOCUMENTS.idCopy);
@@ -128,6 +130,7 @@ const SpecialNeedCaregivers = () => {
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
+      console.log("form Data", formData);
 
       try {
         const res = await postApi("/create-profile", fd, {
@@ -137,7 +140,7 @@ const SpecialNeedCaregivers = () => {
         });
 
         if (res?.status === 200) {
-          console.log("after nurse aide assistant create profile", res);
+          console.log("res", res);
           toast.success("Registered Successfully!");
           localStorage.setItem(
             "user",

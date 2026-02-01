@@ -76,7 +76,10 @@ const NurseDetails = ({
     mobilityYears: "",
     bathingYears: "",
     feedingYears: "",
-    serviceFee: "",
+    // serviceFeeDay: "",
+    // serviceFeeMonth: "",
+    serviceFeeDay: Number(defaultValues.serviceFeeDay) || 0,
+    serviceFeeMonth: Number(defaultValues.serviceFeeMonth) || 0,
     bio: "",
     idCopy: null,
     profilePhoto: null,
@@ -345,8 +348,8 @@ const NurseDetails = ({
         </RadioGroup>
       </div>
 
-{/* todo */}
-       {/* Show only when PCK = Yes */}
+      {/* todo */}
+      {/* Show only when PCK = Yes */}
       {/* {data.isNursingInKenya === "true" && (
         <div>
           <Input
@@ -547,7 +550,7 @@ const NurseDetails = ({
       </div>
 
       {/* Salary Range */}
-      <Input
+      {/* <Input
         label="Service Fee (KSh per day/month)"
         type="text"
         name="serviceFee"
@@ -562,7 +565,40 @@ const NurseDetails = ({
             },
           });
         }}
-      />
+      /> */}
+
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          label="Service Fee (Per Day - KSh)"
+          type="number"
+          name="serviceFeeDay"
+          maxLength={5}
+          placeholder="e.g., 1500"
+          value={data.serviceFeeDay}
+          onChange={(e) => {
+            const value = e.target.value;
+            setData((prev) => ({
+              ...prev,
+              serviceFeeDay: value === "" ? "" : Number(value),
+            }));
+          }}
+        />
+        <Input
+          label="Service Fee (Per Month - KSh)"
+          type="number"
+          name="serviceFeeMonth"
+          maxLength={6}
+          placeholder="e.g., 35000"
+          value={data.serviceFeeMonth}
+          onChange={(e) => {
+            const value = e.target.value;
+            setData((prev) => ({
+              ...prev,
+              serviceFeeMonth: value === "" ? "" : Number(value),
+            }));
+          }}
+        />
+      </div>
 
       <div className="mt-6">
         <label htmlFor="bio">Bio</label>
