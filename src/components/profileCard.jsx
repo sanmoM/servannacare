@@ -38,14 +38,14 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
-  console.log(profile.id);
+  // console.log(profile);
   const router = useRouter();
   const { user, loaded } = useLocalUser();
 
   const handleBookNow = () => {
     if (!loaded) return;
 
-    const bookingUrl = `/bookingForm?category=${profile.category?.toLowerCase() ?? "unknown"}&id=${profile.id}`;
+    const bookingUrl = `/bookingForm?category=${profile.subRole?.toLowerCase() ?? "unknown"}&id=${profile.id}`;
 
     if (!user) {
       router.push(`/login?redirect=${encodeURIComponent(bookingUrl)}`);
@@ -140,15 +140,15 @@ const ProfileCard = ({ profile }) => {
 
         <div className="flex gap-4 mt-5 pt-5 border-t border-gray-100">
           <div className="flex-1">
-            {/* <Link
-              href={`/profile?category=${profile.category.toLowerCase()}&id=${
+            <Link
+              href={`/profile?category=${profile.subRole?.toLowerCase()}&id=${
                 profile.id
               }`}
             >
               <Button className="w-full cursor-pointer" variant="outline">
                 View Profile
               </Button>
-            </Link> */}
+            </Link>
           </div>
           <div className="flex-1">
             <Button

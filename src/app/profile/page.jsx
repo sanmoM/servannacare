@@ -2,16 +2,69 @@
 
 import Container from "@/components/shared/Container";
 import CustomModal from "@/components/shared/CustomModal";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import PageBanner from "@/components/shared/PageBanner";
 import { SubscriptionPlans } from "@/components/shared/Plan";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useFetch } from "@/hooks/useFetch";
+import useLocalUser from "@/hooks/useLocalUser";
 import { Building, Check, Mail, Phone } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const Profile = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+  const id = searchParams.get("id");
+
+  const router = useRouter();
+  const { user, loaded } = useLocalUser();
+  const [userDatas, setUserDatas] = useState(null);
+  const [matchedData, setMatchedData] = useState(null);
+
+  const handleBookNow = () => {
+    if (!loaded) return;
+
+    const bookingUrl = `/bookingForm?category=${userDatas?.subRole?.toLowerCase() ?? "unknown"}&id=${userDatas.id}`;
+
+    if (!user) {
+      router.push(`/login?redirect=${encodeURIComponent(bookingUrl)}`);
+      return;
+    }
+
+    if (user.role != "user") {
+      toast.error(`${user?.subRole} can't make Booking`);
+      return;
+    }
+    router.push(bookingUrl);
+  };
+
+  const { data, isLoading, error } = useFetch("/specialist");
+
+  useEffect(() => {
+    if (data) {
+      setUserDatas(data?.data?.data ?? data?.data?.data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (userDatas && id && category) {
+      const matchedId = Number(id);
+      const matched = userDatas.find(
+        (item) => item.id === matchedId && item.subRole === category,
+      );
+
+      setMatchedData(matched);
+    }
+  }, [userDatas, id, category]);
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
+  if (!matchedData) return <div>No matching data found</div>;
+
+  console.log(matchedData);
 
   return (
     <>
@@ -26,13 +79,11 @@ const Profile = () => {
           <div className="p-4 rounded-md items-center relative border-t-primary justify-center  border flex flex-col border-t-4">
             <img
               className="object-cover h-40 w-40 lg:w-60 lg:h-60  rounded-full border-4 border-white shadow-lg"
-              src={
-                "https://images.unsplash.com/photo-1672843192615-5913ef88bf17?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              }
+              src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${matchedData?.profilePhoto}`}
               alt={`profile`}
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = `https://placehold.co/160x160/6366f1/white?text=${profile.name.charAt(
+                e.target.src = `https://placehold.co/160x160/6366f1/white?text=${matchedData?.name?.charAt(
                   0,
                 )}`;
               }}
@@ -42,10 +93,10 @@ const Profile = () => {
             </span>
 
             <h2 className="text-2xl mt-4 lg:text-3xl text-gray-800 font-semibold">
-              Jhon Doe
+              {matchedData?.name}
             </h2>
             <p className="text-sm mt-2 font-semibold text-primary">
-              House Manager
+              {matchedData?.subRole}
             </p>
           </div>
           <div className="p-4 mt-6 rounded-md border">
@@ -54,7 +105,9 @@ const Profile = () => {
               <Phone />
               <div>
                 <Label className={"text-xs"}>Phone</Label>
-                <p className="text-sm mt-1 text-gray-600">+ (123) 1800-567</p>
+                <p className="text-sm mt-1 text-gray-600">
+                  {matchedData?.number}
+                </p>
               </div>
             </div>
 
@@ -62,7 +115,9 @@ const Profile = () => {
               <Building />
               <div>
                 <Label className={"text-xs"}>Office</Label>
-                <p className="text-sm mt-1 text-gray-600">+ (123) 1800-567</p>
+                <p className="text-sm mt-1 text-gray-600">
+                  {matchedData?.location}
+                </p>
               </div>
             </div>
 
@@ -70,17 +125,22 @@ const Profile = () => {
               <Mail />
               <div>
                 <Label className={"text-xs"}>Mail</Label>
-                <p className="text-sm mt-1 text-gray-600">example@ex.com</p>
+                <p className="text-sm mt-1 text-gray-600">
+                  {matchedData?.email}
+                </p>
               </div>
             </div>
           </div>
-          <Button
-            onClick={() => setOpenModal(true)}
-            className={"w-full mt-6"}
-            size={"lg"}
-          >
-            Book Now
-          </Button>
+          <div className="flex-1">
+            <Button
+              onClick={handleBookNow}
+              disabled={!loaded}
+              className="w-full cursor-pointer"
+            >
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Book Now
+            </Button>
+          </div>
           {/* <div className="flex-1">
             <Link
               href={{
@@ -188,9 +248,9 @@ const Profile = () => {
       </Container>
 
       {/* Custom Modal */}
-      <CustomModal isOpen={openModal} onClose={() => setOpenModal(false)}>
+      {/* <CustomModal isOpen={openModal} onClose={() => setOpenModal(false)}>
         <SubscriptionPlans />
-      </CustomModal>
+      </CustomModal> */}
     </>
   );
 };

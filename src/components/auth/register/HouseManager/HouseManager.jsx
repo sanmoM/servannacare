@@ -79,7 +79,7 @@ const HouseManager = () => {
       BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
       fd.append("phone", BASICINFO.phone);
       fd.append("salaryRange", BASICINFO.salaryRange);
-      fd.append("serviceOffered", BASICINFO.serviceOffered);
+      BASICINFO.preferred.forEach((prep) => fd.append("preferred[]", prep));
       fd.append("isMother", ADDITIONALDETAILS.isMother ? 1 : 0);
       ADDITIONALDETAILS.ageOfKids.forEach((age) =>
         fd.append("ageOfKids[]", age),

@@ -20,7 +20,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     education: defaultValues.education || "",
     experience: defaultValues.experience || "",
     salaryRange: defaultValues.salaryRange || "",
-    serviceOffered: defaultValues.serviceOffered || "",
+    preferred: defaultValues.preferred || [],
     location: defaultValues.location || "",
     languages: defaultValues.languages || [],
     phone: defaultValues.phone || "",
@@ -55,6 +55,26 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     });
   };
 
+  const preferred = [
+    {
+      title: "Live In",
+    },
+    {
+      title: "DayBurg",
+    },
+  ];
+
+
+  const togglepreferred = (pref) => {
+    setData((prev) => ({
+      ...prev,
+      preferred: prev.preferred.includes(pref)
+        ? []  
+        : [pref],  
+    }));
+  };
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -85,9 +105,13 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       return;
     }
 
+    if (data?.preferred?.length === 0) {
+      toast.error("Please select at least one service preference!");
+      return;
+    }
+
     onNext(data);
   };
-
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -204,22 +228,23 @@ const BasicInfo = ({ defaultValues, onNext }) => {
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Service Offered
           </label>
-          <Select
-            value={data.serviceOffered}
-            onValueChange={(value) =>
-              setData((prev) => ({ ...prev, serviceOffered: value }))
-            }
-          >
-            <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
-              <SelectValue placeholder="Select service offered" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="Live In">Live In</SelectItem>
-                <SelectItem value="Dayburg">Dayburg </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap flex-col gap-2 ">
+            {preferred.map((lan, indx) => (
+              <div key={indx} className="flex items-center gap-2">
+                <Checkbox
+                  id={lan.title}
+                  checked={data.preferred.includes(lan.title)}
+                  onCheckedChange={() => togglepreferred(lan.title)}
+                />
+                <Label
+                  htmlFor={lan.title}
+                  className="text-gray-700 font-normal cursor-pointer"
+                >
+                  {lan.title}
+                </Label>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -38,7 +38,7 @@ const HouseManager = ({ data = {} }) => {
       experience: data?.house_manager?.experience || "",
       salaryRange: data?.house_manager?.salaryRange || "",
       location: data?.location || "",
-      serviceOffered: data?.house_manager?.serviceOffered || "",
+      preferred: data?.house_manager?.preferred || "",
       languages: data?.languages || [],
     },
 
@@ -143,44 +143,21 @@ const HouseManager = ({ data = {} }) => {
     { id: "drivingLicense", title: "Driving License", required: false },
   ];
 
-  // const docs = [
-  //   {
-  //     id: "firstAidCertificate",
-  //     title: "First Aid Certificate",
-  //     accept: "application/pdf,image/*",
-  //     icon: <Cross size={32} />,
-  //     required: true,
-  //   },
-  //   {
-  //     id: "goodConductCertificate",
-  //     title: "Good Conduct Certificate",
-  //     accept: "application/pdf,image/*",
-  //     icon: <FileText size={32} />,
-  //     required: true,
-  //   },
-  //   {
-  //     id: "iDCopy",
-  //     title: "ID Copy",
-  //     accept: "application/pdf,image/*",
-  //     icon: <IdCardLanyard size={32} />,
-  //     required: true,
-  //   },
-  //   {
-  //     id: "profilePhoto",
-  //     title: "Profile Photo",
-  //     accept: "image/*",
-  //     icon: <ImageIcon size={32} />,
-  //     required: true,
-  //   },
-  //   {
-  //     id: "drivingLicense",
-  //     title: "Driving License (Optional)",
-  //     accept: "application/pdf,image/*",
-  //     icon: <IdCard size={32} />,
-  //     required: false,
-  //     optional: true,
-  //   },
-  // ];
+  const preferred = [
+    {
+      title: "Live In",
+    },
+    {
+      title: "DayBurg",
+    },
+  ];
+
+  const togglepreferred = (pref) => {
+    setData((prev) => ({
+      ...prev,
+      preferred: prev.preferred.includes(pref) ? [] : [pref],
+    }));
+  };
 
   const handleUpdate = (e) => {
     e.preventDefault();
@@ -304,23 +281,23 @@ const HouseManager = ({ data = {} }) => {
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Service Offered
             </label>
-            <Select
-              value={formData?.basicInfo?.serviceOffered}
-              onValueChange={(v) => handleSelect("serviceOffered", v)}
-              // onValueChange={(value) =>
-              //   setData((prev) => ({ ...prev, serviceOffered: value }))
-              // }
-            >
-              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
-                <SelectValue placeholder="Select service offered" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="Live In">Live In</SelectItem>
-                  <SelectItem value="Dayburg">Dayburg </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap flex-col gap-2 ">
+              {preferred.map((lan, indx) => (
+                <div key={indx} className="flex items-center gap-2">
+                  <Checkbox
+                    id={lan.title}
+                    checked={data.preferred.includes(lan.title)}
+                    onCheckedChange={() => togglepreferred(lan.title)}
+                  />
+                  <Label
+                    htmlFor={lan.title}
+                    className="text-gray-700 font-normal cursor-pointer"
+                  >
+                    {lan.title}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
