@@ -144,7 +144,7 @@ const page = () => {
           <Section id="accounts" title="User Accounts">
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                Users must maintain the confidentiality of their login
+                client must maintain the confidentiality of their login
                 credentials.
               </li>
               <li>
@@ -239,7 +239,7 @@ const page = () => {
               </li>
               <li>Cervanna does not own the underlying software IP.</li>
               <li>
-                Users acknowledge that interruptions or limitations may occur
+                client acknowledge that interruptions or limitations may occur
                 due to third-party systems.
               </li>
               <li>
@@ -331,7 +331,7 @@ const page = () => {
                 All fees and commissions are exclusive of applicable taxes.
               </li>
               <li>
-                Users are responsible for PAYE, NHIF, NSSF, VAT, or any
+                client are responsible for PAYE, NHIF, NSSF, VAT, or any
                 statutory taxes related to their engagements.
               </li>
               <li>
@@ -365,7 +365,7 @@ const page = () => {
 
           <Section id="reviews" title="Ratings and Reviews">
             <p>
-              Users may submit ratings and reviews provided they are truthful,
+              client may submit ratings and reviews provided they are truthful,
               non-defamatory, professional, and based on actual experience.
             </p>
             <p>
@@ -375,7 +375,7 @@ const page = () => {
           </Section>
 
           <Section id="prohibited" title="Prohibited Activities">
-            <p>Users may not:</p>
+            <p>client may not:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>provide false or misleading information;</li>
               <li>misuse or attempt to hack the Platform;</li>
@@ -407,11 +407,11 @@ const page = () => {
                 engagements;
               </li>
               <li>interruptions caused by Third-Party Providers;</li>
-              <li>inaccurate information provided by users.</li>
+              <li>inaccurate information provided by client.</li>
             </ul>
 
             <p className="mt-4">
-              Users shall indemnify and hold Cervanna harmless from any claims,
+              client shall indemnify and hold Cervanna harmless from any claims,
               losses, damages, costs, or liabilities arising from breach of
               these Terms, illegal conduct or negligence, incorrect information
               submitted, or misuse of the Platform.
@@ -431,7 +431,7 @@ const page = () => {
               <li>failure to pay fees or commissions, or</li>
               <li>legal requirements.</li>
             </ul>
-            <p>Users may close their accounts at any time.</p>
+            <p>client may close their accounts at any time.</p>
           </Section>
 
           <Section id="data" title="Data Protection">
@@ -451,7 +451,7 @@ const page = () => {
               obligations.
             </p>
             <p>
-              Users acknowledge that continued use of the Platform constitutes
+              client acknowledge that continued use of the Platform constitutes
               ongoing consent to the processing of personal data in accordance
               with these Terms and the Privacy Policy.
             </p>
@@ -483,7 +483,7 @@ const page = () => {
 
           <Section id="amendments" title="Amendments">
             <p>
-              Cervanna may update these Terms from time to time. Users will be
+              Cervanna may update these Terms from time to time. client will be
               notified of material changes, and continued use constitutes
               acceptance.
             </p>

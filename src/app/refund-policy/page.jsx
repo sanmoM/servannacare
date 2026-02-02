@@ -41,7 +41,7 @@ const page = () => {
           </p> */}
 
           <p className="mt-4 text-gray-700">
-            This Cancellation and Refund Policy (“Policy”) applies to all users
+            This Cancellation and Refund Policy (“Policy”) applies to all client
             of the Cervanna Care Platform, including Clients, Service Providers,
             domestic workers, domestic worker agencies, nurses, nurse aides,
             physiotherapists, and medical institutions.
@@ -221,7 +221,7 @@ const page = () => {
           </Section>
 
           <Section id="how-to-cancel" title="How to Cancel">
-            <p>Users may cancel their subscription via:</p>
+            <p>client may cancel their subscription via:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Account settings on the Platform, or</li>
               <li>Written notice to Cervanna Care via email</li>
@@ -229,7 +229,7 @@ const page = () => {
 
             <p>
               Cancellations take effect at the end of the current billing cycle.
-              Users remain liable for fees and commissions accrued prior to the
+              client remain liable for fees and commissions accrued prior to the
               cancellation effective date.
             </p>
           </Section>

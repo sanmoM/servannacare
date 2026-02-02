@@ -38,14 +38,14 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
-  console.log(profile.profilePhoto);
+  console.log(profile.id);
   const router = useRouter();
   const { user, loaded } = useLocalUser();
 
   const handleBookNow = () => {
     if (!loaded) return;
 
-    const bookingUrl = `/bookingForm?category=${profile.category.toLowerCase()}&id=${profile.id}`;
+    const bookingUrl = `/bookingForm?category=${profile.category?.toLowerCase() ?? "unknown"}&id=${profile.id}`;
 
     if (!user) {
       router.push(`/login?redirect=${encodeURIComponent(bookingUrl)}`);
@@ -73,7 +73,7 @@ const ProfileCard = ({ profile }) => {
 
         {/* Image on top */}
         <div className="relative z-10">
-          <img
+          {/* <img
             className="object-cover w-40 h-40 rounded-full border-4 border-white shadow-lg"
             src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${profile?.profilePhoto}`}
             alt={`Photo of ${profile.name}`}
@@ -82,6 +82,17 @@ const ProfileCard = ({ profile }) => {
               e.target.src = `https://placehold.co/160x160/6366f1/white?text=${profile.name.charAt(
                 0,
               )}`;
+            }}
+          /> */}
+
+          <img
+            className="object-cover w-40 h-40 rounded-full border-4 border-white shadow-lg"
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${profile?.profilePhoto}`}
+            alt={`Photo of ${profile?.name ?? "User"}`}
+            onError={(e) => {
+              e.target.onerror = null;
+              const firstChar = profile?.name ? profile.name.charAt(0) : "U";
+              e.target.src = `https://placehold.co/160x160/6366f1/white?text=${firstChar}`;
             }}
           />
         </div>

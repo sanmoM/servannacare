@@ -191,7 +191,7 @@ const page = () => {
             <ul className="list-disc pl-6 space-y-2">
               <li>Performance of a contract (subscriptions, services)</li>
               <li>Compliance with legal obligations</li>
-              <li>Consent from users</li>
+              <li>Consent from client</li>
               <li>
                 Legitimate interests (fraud prevention, analytics, service
                 improvement)
@@ -273,7 +273,7 @@ const page = () => {
             </ul>
             <p>
               While we implement strong measures, no system can be guaranteed to
-              be completely secure. Users are encouraged to protect their own
+              be completely secure. client are encouraged to protect their own
               devices, accounts, and login credentials.
             </p>
           </Section>
@@ -326,7 +326,7 @@ const page = () => {
 
           <Section id="rights" title="User Rights">
             <p>
-              Users have the following rights regarding their personal data:
+              client have the following rights regarding their personal data:
             </p>
             <ul className="list-disc pl-6 space-y-2">
               <li>
@@ -390,7 +390,7 @@ const page = () => {
               Some features may use automated systems to assist with matching,
               recommendations, or other platform functions.
             </p>
-            <p>Users have the right to:</p>
+            <p>client have the right to:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>
                 Request a human review of any automated decision affecting them

@@ -35,9 +35,12 @@ const SearchContent = () => {
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedServices, setSelectedServices] = useState([]);
-  const [sortBy, setSortBy] = useState("");
+  const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
+  const ITEMS_PER_PAGE = 5;
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const buildQuery = () => {
     const query = new URLSearchParams();
@@ -65,7 +68,8 @@ const SearchContent = () => {
 
   useEffect(() => {
     setHasFetched(false);
-  }, [selectedCategory, selectedServices]);
+    setCurrentPage(1);
+  }, [selectedCategory, selectedServices, sortBy]);
 
   const specialists = React.useMemo(() => {
     if (!data || !Array.isArray(data?.data?.data)) return [];
@@ -116,28 +120,48 @@ const SearchContent = () => {
 
   const sortedSpecialists = React.useMemo(() => {
     let sorted = [...specialists];
-    if (sortBy === "experience")
-      sorted.sort((a, b) => b.experience - a.experience);
-    if (sortBy === "rating") sorted.sort((a, b) => b.rating - a.rating);
-    return sorted;
+
+    switch (sortBy) {
+      case "rating":
+        return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+
+      case "experience":
+        return sorted.sort((a, b) => (b.experience ?? 0) - (a.experience ?? 0));
+
+      case "newest":
+        return sorted.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at),
+        );
+
+      case "name-asc":
+        return sorted.sort((a, b) =>
+          (a.name ?? "").localeCompare(b.name ?? ""),
+        );
+      case "name-desc":
+        return sorted.sort((a, b) =>
+          (b.name ?? "").localeCompare(a.name ?? ""),
+        );
+
+      case "relevance":
+      default:
+        return specialists;
+    }
   }, [specialists, sortBy]);
 
-  // console.log({
-  //   selectedCategory,
-  //   selectedCategoryObj,
-  //   specialistsLength: specialists.length,
+  const totalPages = Math.ceil(sortedSpecialists.length / ITEMS_PER_PAGE);
 
-  //  console.log("category", selectedCategory);
-  // console.log("service", selectedServices);
-  // });
+  const paginatedSpecialists = React.useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    return sortedSpecialists.slice(start, end);
+  }, [sortedSpecialists, currentPage]);
+
   return (
     <>
       <PageBanner title="Our Specialist" />
       <Container className="lg:py-16 py-12">
         {/* Filter & Sort Header */}
         <div className="pb-8 flex border-b items-center gap-4 justify-end">
-         
-
           {/* Mobile Filter Toggle */}
           <div
             onClick={() => setMobileFilterSidebarOpen(true)}
@@ -147,14 +171,19 @@ const SearchContent = () => {
           </div>
 
           {/* Sort Dropdown */}
-          <Select onValueChange={(value) => setSortBy(value)}>
-            <SelectTrigger className="w-[180px] border-primary">
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-[200px] border-primary">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
+
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="experience">Years of Experience</SelectItem>
-                <SelectItem value="rating">Rating</SelectItem>
+                <SelectItem value="relevance">Relevance</SelectItem>
+                <SelectItem value="rating">Highest Rated</SelectItem>
+                <SelectItem value="experience">Most Experienced</SelectItem>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="name-asc">Name (A–Z)</SelectItem>
+                <SelectItem value="name-desc">Name (Z–A)</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -233,8 +262,8 @@ const SearchContent = () => {
               <div className="col-span-2 text-center py-20">
                 <LoadingSpinner />
               </div>
-            ) : specialists.length > 0 ? (
-              specialists.map((profile, i) => (
+            ) : paginatedSpecialists.length > 0 ? (
+              paginatedSpecialists.map((profile, i) => (
                 <ProfileCard key={profile.id} profile={profile} />
               ))
             ) : hasFetched ? (
@@ -244,6 +273,52 @@ const SearchContent = () => {
             ) : null}
           </div>
         </div>
+        {totalPages > 1 && (
+          <div className="col-span-5 mt-6 flex justify-end">
+            <Pagination>
+              <PaginationContent>
+                {/* Previous button */}
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    className={
+                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                    }
+                  />
+                </PaginationItem>
+
+                {/* Page numbers */}
+                {[...Array(totalPages)].map((_, i) => {
+                  const page = i + 1;
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        isActive={page === currentPage}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+
+                {/* Next button */}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage((p) => Math.min(totalPages, p + 1))
+                    }
+                    className={
+                      currentPage === totalPages
+                        ? "pointer-events-none opacity-50"
+                        : ""
+                    }
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </Container>
     </>
   );

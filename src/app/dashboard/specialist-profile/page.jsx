@@ -165,9 +165,15 @@ export default function ProfilePage() {
       <div className="flex justify-between">
         <h1 className="sectionHeading mb-4">My Profile</h1>
       </div>
-      {!user?.is_profile_verified && (
+      {!user?.is_profile_completed && (
         <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
-          <Info /> Your account is Under review .
+          <Info /> Your account is not complete. 
+        </p>
+      )}
+
+      {user?.is_profile_completed && !user?.is_profile_verified && (
+        <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+          <Info /> Your account is Under review.
         </p>
       )}
 

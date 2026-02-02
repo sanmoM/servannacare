@@ -108,7 +108,6 @@ export default function BookingFormClient() {
       patient_age: data?.age,
       patient_gender: data?.gender,
       relationship_to_booking_person: data?.relationship,
-
       price_id: selectedPrice?.id,
       booking_amount: bookingAmount,
       patient_have_any_conditions: data?.conditions,
