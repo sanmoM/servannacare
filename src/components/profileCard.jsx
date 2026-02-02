@@ -37,6 +37,7 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
+  console.log(profile)
   const router = useRouter();
   const { user, loaded } = useLocalUser();
 
@@ -103,7 +104,7 @@ const ProfileCard = ({ profile }) => {
                 className="w-4 h-4 mr-1 text-yellow-500"
                 fill="currentColor"
               />
-              {profile.rating.toFixed(1)}
+              {/* {profile.rating.toFixed(1)} */}
             </div>
           </div>
 
@@ -125,7 +126,7 @@ const ProfileCard = ({ profile }) => {
 
         <div className="flex gap-4 mt-5 pt-5 border-t border-gray-100">
           <div className="flex-1">
-            <Link
+            {/* <Link
               href={`/profile?category=${profile.category.toLowerCase()}&id=${
                 profile.id
               }`}
@@ -133,7 +134,7 @@ const ProfileCard = ({ profile }) => {
               <Button className="w-full cursor-pointer" variant="outline">
                 View Profile
               </Button>
-            </Link>
+            </Link> */}
           </div>
           <div className="flex-1">
             <Button

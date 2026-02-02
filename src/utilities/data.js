@@ -461,7 +461,7 @@ export const educationLevels = [
 
 export const fakeData = [
   {
-    id: 1,
+    id: 113,
     rating: 4.5,
     name: "Milon Poddar",
     email: "john.doe@example.com",
@@ -475,7 +475,7 @@ export const fakeData = [
       "https://plus.unsplash.com/premium_photo-1683121366070-5ceb7e007a97?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    id: 2,
+    id: 114,
     rating: 4.2,
     name: "Jane Smith",
     email: "jane.smith@example.com",
@@ -489,7 +489,7 @@ export const fakeData = [
       "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?q=80&w=1335&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
-    id: 3,
+    id: 120,
     rating: 4.8,
     name: "Michael Brown",
     email: "michael.brown@example.com",
@@ -770,7 +770,7 @@ export const categoryFilters = {
 export const serviceCategory = [
   {
     mainCategory: "House Manager / Nanny",
-    value: "house-manager-nanny",
+    value: "house-manager",
     subCategory: ["Live In", "Dayburg"],
   },
   {
