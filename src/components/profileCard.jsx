@@ -26,6 +26,7 @@ import CustomModal from "./shared/CustomModal";
 import { useRouter } from "next/navigation";
 import useLocalUser from "@/hooks/useLocalUser";
 import toast from "react-hot-toast";
+import Image from "next/image";
 
 const InfoItem = ({ icon: Icon, label, value }) => (
   <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -37,7 +38,7 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
-  console.log(profile)
+  console.log(profile.profilePhoto);
   const router = useRouter();
   const { user, loaded } = useLocalUser();
 
@@ -74,7 +75,7 @@ const ProfileCard = ({ profile }) => {
         <div className="relative z-10">
           <img
             className="object-cover w-40 h-40 rounded-full border-4 border-white shadow-lg"
-            src={profile.photo}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${profile?.profilePhoto}`}
             alt={`Photo of ${profile.name}`}
             onError={(e) => {
               e.target.onerror = null;
@@ -96,7 +97,7 @@ const ProfileCard = ({ profile }) => {
                 {profile.name}
               </h2>
               <p className="text-sm font-medium text-primary">
-                {profile.category}
+                {profile.subRole}
               </p>
             </div>
             <div className="flex items-center px-2.5 py-1 text-sm font-semibold text-yellow-800 bg-yellow-100 rounded-lg border border-yellow-300 shrink-0">
@@ -110,11 +111,13 @@ const ProfileCard = ({ profile }) => {
 
           {/* Details */}
           <div className="space-y-2.5 mt-4">
-            <InfoItem
-              icon={Briefcase}
-              label="Experience"
-              value={`${profile.experience} years`}
-            />
+            {profile.experience && (
+              <InfoItem
+                icon={Briefcase}
+                label="Experience"
+                value={`${profile.experience} years`}
+              />
+            )}
             <InfoItem
               icon={GraduationCap}
               label="Education"

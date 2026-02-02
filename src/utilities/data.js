@@ -790,7 +790,7 @@ export const serviceCategory = [
   },
   {
     mainCategory: "Nurse Aide or Assistant",
-    value: "nurse-aide-assistant",
+    value: "nurse-aide-or-assistant",
     subCategory: [
       "Pre and Post Pregnancy Care",
       "Post Surgery Care",
@@ -799,7 +799,7 @@ export const serviceCategory = [
   },
   {
     mainCategory: "Special Need Caregiver",
-    value: "special-need-caregiver",
+    value: "special-need-caregivers",
     subCategory: [
       "Autism Spectrum Disorder (ASD)",
       "Speech Therapy",

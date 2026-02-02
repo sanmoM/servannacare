@@ -39,9 +39,6 @@ const SearchContent = () => {
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
 
-  console.log("category", selectedCategory);
-  console.log("service", selectedServices);
-
   const buildQuery = () => {
     const query = new URLSearchParams();
     if (selectedCategory) query.set("subRole", selectedCategory);
@@ -61,10 +58,14 @@ const SearchContent = () => {
   const { data, isLoading, error } = useFetch(fetchUrl);
 
   useEffect(() => {
-    if (data) {
+    if (!isLoading && data) {
       setHasFetched(true);
     }
-  }, [data]);
+  }, [isLoading, data]);
+
+  useEffect(() => {
+    setHasFetched(false);
+  }, [selectedCategory, selectedServices]);
 
   const specialists = React.useMemo(() => {
     if (!data || !Array.isArray(data?.data?.data)) return [];
@@ -79,24 +80,25 @@ const SearchContent = () => {
 
   useEffect(() => {
     const category = searchParams.get("category");
-    const filterCategory = serviceCategory.find(
-      (cat) => cat.value === category,
-    );
-    if (filterCategory) setSelectedCategory(filterCategory.mainCategory);
+    if (category) {
+      setSelectedCategory(category);
+    }
+    // const filterCategory = serviceCategory.find(
+    //   (cat) => cat.value === category,
+    // );
+    // if (filterCategory) setSelectedCategory(filterCategory.mainCategory);
   }, [searchParams]);
 
-  const handleCategoryChange = (mainCategory) => {
-    const selected = serviceCategory.find(
-      (cat) => cat.mainCategory === mainCategory,
-    );
+  const handleCategoryChange = (value) => {
+    const selected = serviceCategory.find((cat) => cat.value === value);
     if (!selected) return;
 
     const params = new URLSearchParams(searchParams.toString());
-    params.set("category", selected.value);
+    params.set("category", value);
 
     router.push(`?${params.toString()}`, { scroll: false });
 
-    setSelectedCategory(mainCategory);
+    setSelectedCategory(value);
     setSelectedServices([]);
   };
 
@@ -109,7 +111,7 @@ const SearchContent = () => {
   };
 
   const selectedCategoryObj = serviceCategory.find(
-    (cate) => cate.mainCategory === selectedCategory,
+    (cate) => cate.value === selectedCategory,
   );
 
   const sortedSpecialists = React.useMemo(() => {
@@ -120,15 +122,21 @@ const SearchContent = () => {
     return sorted;
   }, [specialists, sortBy]);
 
+  // console.log({
+  //   selectedCategory,
+  //   selectedCategoryObj,
+  //   specialistsLength: specialists.length,
+
+  //  console.log("category", selectedCategory);
+  // console.log("service", selectedServices);
+  // });
   return (
     <>
       <PageBanner title="Our Specialist" />
       <Container className="lg:py-16 py-12">
         {/* Filter & Sort Header */}
-        <div className="pb-8 flex border-b items-center gap-4 justify-between">
-          <h2 className="font-medium hidden lg:block text-sm md:text-base">
-            Showing {sortedSpecialists.length} services
-          </h2>
+        <div className="pb-8 flex border-b items-center gap-4 justify-end">
+         
 
           {/* Mobile Filter Toggle */}
           <div
@@ -152,15 +160,15 @@ const SearchContent = () => {
           </Select>
         </div>
 
-        <div className="grid lg:grid-cols-7 gap-6 items-start">
+        <div className="grid lg:grid-cols-7 gap-6 items-start mt-6">
           {/* Desktop Sidebar */}
           <div className="col-span-2 hidden w-full lg:flex sticky top-5 h-[95vh] rounded-md border">
             <div className="flex flex-col w-full justify-between">
               <div className="p-6 space-y-6">
                 {/* Category Selector */}
                 <div>
-                  <h2 className="text-lg border-b mb-4 font-semibold">
-                    Category
+                  <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                    Specialist
                   </h2>
                   <select
                     className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
@@ -168,10 +176,10 @@ const SearchContent = () => {
                     onChange={(e) => handleCategoryChange(e.target.value)}
                   >
                     <option value="" disabled hidden>
-                      Select Category
+                      Select Specialist
                     </option>
                     {serviceCategory.map((cat, indx) => (
-                      <option key={indx} value={cat.mainCategory}>
+                      <option key={cat.value} value={cat.value}>
                         {cat.mainCategory}
                       </option>
                     ))}
@@ -181,7 +189,7 @@ const SearchContent = () => {
                 {/* Services Selector */}
                 {selectedCategoryObj && (
                   <div>
-                    <h2 className="text-lg border-b mb-4 font-semibold">
+                    <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
                       Services
                     </h2>
                     <div className="space-y-2">
@@ -198,9 +206,14 @@ const SearchContent = () => {
                     </div>
                   </div>
                 )}
+                {!selectedCategoryObj && (
+                  <p className="text-sm text-gray-500">
+                    Please select a specialist to see services
+                  </p>
+                )}
               </div>
 
-              <div className="mx-6 mb-6">
+              {/* <div className="mx-6 mb-6">
                 <Button
                   className="w-full"
                   size="lg"
@@ -210,7 +223,7 @@ const SearchContent = () => {
                 >
                   Search
                 </Button>
-              </div>
+              </div> */}
             </div>
           </div>
 
