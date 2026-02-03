@@ -48,68 +48,78 @@ export default function DashboardLayout({ children }) {
     agency: "/dashboard/agency-employee",
   };
 
-  useEffect(() => {
-    if (!loaded) return;
-    if (token === null) return;
+ useEffect(() => {
+  if (!loaded) return;
+  if (token === null) return;
 
-    if (!token) {
-      router.push("/login");
-      return;
+  if (!token) {
+    router.push("/login");
+    return;
+  }
+
+  const role = user?.role;
+  if (!role) return;
+
+  const profilePath = `/dashboard/${role}-profile`;
+
+  // Define allowed routes if profile is not completed
+  const incompleteProfileAllowedRoutes = {
+    specialist: [profilePath, "/dashboard/specialist-schedule"],
+    agency: [profilePath, "/dashboard/agency-employee"],
+    care_institutions: [profilePath, "/dashboard/care-institution-nurses"],
+    user: [profilePath], // only profile for normal user
+  };
+
+  const allowedRoutes = incompleteProfileAllowedRoutes[role] || [];
+
+  if (!isProfileCompleted) {
+    if (!allowedRoutes.includes(pathname)) {
+      router.replace(profilePath);
     }
+    return;
+  }
 
-    const role = user?.role;
-    if (!role) {
-      return;
-    }
-
-    const profilePath = `/dashboard/${role}-profile`;
+  // For roles that require verification
+  if (role !== "user" && isProfileCompleted && !isProfileVerified) {
     const secondaryPath = roleSecondaryRoute[role];
+    const allowedPaths = [profilePath, secondaryPath].filter(Boolean);
 
-    if (!isProfileCompleted) {
-      if (pathname !== profilePath) {
-        router.replace(profilePath);
-      }
-      return;
+    if (!allowedPaths.includes(pathname)) {
+      router.replace(profilePath);
     }
+    return;
+  }
 
-    if (role !== "user" && isProfileCompleted && !isProfileVerified) {
-      const allowedPaths = [profilePath, secondaryPath].filter(Boolean);
+  // USER routes
+  if (
+    (pathname === "/dashboard/my-appointment" ||
+      pathname === "/dashboard/book-history" ||
+      pathname === "/dashboard/payment-history" ||
+      pathname.startsWith("/dashboard/user")) &&
+    role !== "user"
+  ) {
+    notFound();
+  }
 
-      if (!allowedPaths.includes(pathname)) {
-        router.replace(profilePath);
-      }
-      return;
-    }
+  // SPECIALIST routes
+  if (pathname.startsWith("/dashboard/specialist") && role !== "specialist") {
+    notFound();
+  }
 
-    // USER routes
-    if (
-      (pathname === "/dashboard/my-appointment" ||
-        pathname === "/dashboard/book-history" ||
-        pathname === "/dashboard/payment-history" ||
-        pathname.startsWith("/dashboard/user")) &&
-      role !== "user"
-    ) {
-      notFound();
-    }
+  // AGENCY routes
+  if (pathname.startsWith("/dashboard/agency") && role !== "agency") {
+    notFound();
+  }
 
-    // SPECIALIST routes
-    if (pathname.startsWith("/dashboard/specialist") && role !== "specialist") {
-      notFound();
-    }
+  // CARE INSTITUTION routes
+  if (
+    pathname.startsWith("/dashboard/care-institution") &&
+    role !== "care_institutions"
+  ) {
+    notFound();
+  }
+}, [loaded, user, pathname, router, token]);
 
-    // AGENCY routes
-    if (pathname.startsWith("/dashboard/agency") && role !== "agency") {
-      notFound();
-    }
-
-    // CARE INSTITUTION routes
-    if (
-      pathname.startsWith("/dashboard/care-institution") &&
-      role !== "care_institutions"
-    ) {
-      notFound();
-    }
-  }, [loaded, user, pathname, router]);
 
   if (!loaded) {
     return (

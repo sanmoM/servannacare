@@ -19,7 +19,6 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const NurseCreate = ({ data = {} }) => {
-
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -142,22 +141,137 @@ const NurseCreate = ({ data = {} }) => {
     }));
   };
 
+  const handleCreate = async (e) => {
+    // e.preventDefault();
+    // localStorage.setItem("specialist", JSON.stringify(formData));
+    // localStorage.setItem(
+    //   "user",
+    //   JSON.stringify({
+    //     ...user,
+    //     name: formData.basicInfo.name,
+    //     location: formData.basicInfo.location,
+    //   }),
+    // );
+    // toast.success("Profile Updated!");
+    //   console.log("create data", formData);
 
+    const fd = new FormData();
+    const BASICINFO = formData.basicInfo;
+    const EDUCATION = formData.education;
+    const EXPERIENCE = formData.experience;
+    const SKILLSERVICES = formData.skillsServices;
+    const DOCUMENTS = formData.documents;
 
-  const handleCreate = (e) => {
-    e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
+    fd.append("name", BASICINFO.name);
+    fd.append("location", BASICINFO.location);
+    fd.append("age", BASICINFO.age);
+    fd.append("experience", BASICINFO.experience);
+    fd.append("gender", BASICINFO.gender);
+    fd.append("preferredRole", BASICINFO.preferredRole);
+    BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
+    fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
+    fd.append("bio", BASICINFO.bio);
+    fd.append("number_two", BASICINFO.phone);
+
+    fd.append("education", EDUCATION.education);
+    fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
+    fd.append("registrationNumber", EDUCATION.registrationNumber);
+
+    fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
+    fd.append(
+      "hospitalBasedYearsOfExperience",
+      EXPERIENCE.hospitalBasedYearsOfExperience,
     );
-    toast.success("Profile Updated!");
-      console.log("create data", formData);
-    // router.push("/dashboard");
+    fd.append(
+      "hospitalBasedReferenceContact",
+      EXPERIENCE.hospitalBasedReferenceContact,
+    );
+    fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
+    fd.append(
+      "homeBasedYearsOfExperience",
+      EXPERIENCE.homeBasedYearsOfExperience,
+    );
+    fd.append(
+      "homeBasedReferenceContact",
+      EXPERIENCE.homeBasedReferenceContact,
+    );
+    EXPERIENCE.preferred.forEach((prep) => fd.append("preferred[]", prep));
+
+    SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
+    fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
+    fd.append("bathingYears", SKILLSERVICES.bathingYears);
+    fd.append("feedingYears", SKILLSERVICES.feedingYears);
+    fd.append("serviceFeeDay", SKILLSERVICES.serviceFeeDay);
+    fd.append("serviceFeeMonth", SKILLSERVICES.serviceFeeMonth);
+
+    if (DOCUMENTS?.idCopy) {
+      fd.append("idCopy", DOCUMENTS.idCopy);
+    }
+    if (DOCUMENTS?.profilePhoto) {
+      fd.append("profilePhoto", DOCUMENTS.profilePhoto);
+    }
+    if (DOCUMENTS?.goodConductCertificate) {
+      fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
+    }
+    if (DOCUMENTS?.drivingLicense) {
+      fd.append("drivingLicense", DOCUMENTS.drivingLicense);
+    }
+    if (DOCUMENTS?.referenceLetter) {
+      fd.append("referenceLetter", DOCUMENTS.referenceLetter);
+    }
+    if (EDUCATION?.educationCertificate) {
+      fd.append("educationCertificate", EDUCATION.educationCertificate);
+    }
+    if (EDUCATION?.practiceLicense) {
+      fd.append("practiceLicense", EDUCATION.practiceLicense);
+    }
+    console.log("form data", formData);
+    try {
+      const res = await postApi("/create-profile", fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("res", res);
+      if (res?.status === 200) {
+        toast.success("Registered Successfully!");
+        // router.push(`/dashboard/${user?.role}-profile`);
+        //todo
+        // localStorage.setItem("token", user?.token);
+        //todo this localStorage
+        // localStorage.setItem(
+        //   "user",
+        //   JSON.stringify({
+        //     ...user,
+        //     role: user?.role,
+        //     institution: fd,
+        //   }),
+        // );
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          }),
+        );
+      } else {
+        toast.error(
+          res?.data?.message || "Something went wrong. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.error("Error creating profile:", error);
+      if (error.response) {
+        toast.error(
+          error.response.data?.message || `Error: ${error.response.status}`,
+        );
+      } else if (error.request) {
+        toast.error("No response from server. Please check your connection.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
   };
 
   return (

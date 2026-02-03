@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 import Review from "./Review";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
-import { generateToken } from "@/utilities/helperFunction";
+
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
 

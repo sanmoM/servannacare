@@ -10,14 +10,14 @@ const page = () => {
   const [activeTab, setActiveTab] = useState("daily");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // --- Daily State (Full Day Availability) ---
+  
   const [dailyDays, setDailyDays] = useState([]);
 
-  // --- Monthly State (Specific Days + Specific Hours) ---
+  
   const [monthlyDays, setMonthlyDays] = useState([]);
-  const [monthlySlots, setMonthlySlots] = useState([{ id: Date.now(), start: "08:00", end: "17:00" }]);
+  const [monthlySlots, setMonthlySlots] = useState([]);
 
-  // --- Display State ---
+  
   const [activeSchedules, setActiveSchedules] = useState([]);
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
@@ -44,7 +44,7 @@ const page = () => {
 
     console.log("payload",payload)
 
-    // Simulate API Call
+    
     setTimeout(() => {
       setActiveSchedules([payload, ...activeSchedules]);
       if (isDaily) setDailyDays([]); else setMonthlyDays([]);
@@ -58,7 +58,7 @@ const page = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-4 space-y-8">
-      {/* Header */}
+
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl border shadow-sm">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Set Availability</h1>
@@ -70,7 +70,7 @@ const page = () => {
         </Button>
       </div>
 
-      {/* --- ACTIVE PLANS SECTION --- */}
+   
       <div className="space-y-4">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <CheckCircle className="text-green-500" size={20} /> Published Schedules
@@ -108,7 +108,7 @@ const page = () => {
         </div>
       </div>
 
-      {/* --- CONFIGURATION TABS --- */}
+
       <Tabs defaultValue="daily" onValueChange={setActiveTab} className="bg-white rounded-2xl border shadow-sm">
         <TabsList className="grid w-full grid-cols-2 h-14 bg-gray-50 border-b rounded-t-2xl">
           <TabsTrigger value="daily" className="data-[state=active]:text-primary font-bold">
@@ -144,7 +144,7 @@ const page = () => {
 
           <TabsContent value="monthly">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-              {/* Day Selection */}
+           
               <div className="space-y-4 border-r pr-6">
                 <h3 className="font-bold text-primary flex items-center gap-2">
                    <CalendarDays size={18} /> KSH 100/mo Recurring Days
@@ -164,7 +164,7 @@ const page = () => {
                 </div>
               </div>
 
-              {/* Time Selection */}
+
               <div className="lg:col-span-2 space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="font-bold text-gray-700 flex items-center gap-2"><Clock size={18} /> Specify Working Hours</h3>

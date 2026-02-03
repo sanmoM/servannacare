@@ -20,7 +20,7 @@ import toast from "react-hot-toast";
 const NurseBasicInfo = ({ defaultValues, onNext }) => {
   const [data, setData] = useState({
     name: defaultValues.name || "",
-    phone: defaultValues.phone || "", 
+    phone: defaultValues.phone || "",
     location: defaultValues.location || "",
     age: defaultValues.age || "",
     experience: defaultValues.experience || "",
@@ -37,16 +37,16 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
   };
 
   const handlePhoneChange = (e) => {
-  let value = e.target.value;
-  if (!value.startsWith("+254")) {
-    value = "+254";
-  }
-  value = "+254" + value.slice(4).replace(/\D/g, "");
-  if (value.length > 11) {
-    value = value.slice(0, 11);
-  }
-  setData((prev) => ({ ...prev, phone: value }));
-};
+    let value = e.target.value;
+    if (!value.startsWith("+254")) {
+      value = "+254";
+    }
+    value = "+254" + value.slice(4).replace(/\D/g, "");
+    if (value.length > 11) {
+      value = value.slice(0, 11);
+    }
+    setData((prev) => ({ ...prev, phone: value }));
+  };
 
   const toggleLanguage = (lan) => {
     setData((prev) => {
@@ -109,8 +109,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <h4 className="formHeading">Basic Information</h4>
-
-      {/*GRID: Name + Phone */}
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <Input
           label="Full Name (as per ID)"
@@ -120,19 +119,18 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
           onChange={handleChange}
         />
 
-    
-                <Input
-                  label="Phone Number"
-                  name="phone"
-                  type="tel"
-                  placeholder="+254xxxxxxx"
-                  value={data?.phone}
-                  maxLength={11}
-                  onFocus={() => {
-                    if (!data?.phone) setData((prev)=>({...prev,phone:"+254"}))
-                  }}
-                  onChange={handlePhoneChange}
-                />
+        <Input
+          label="Phone Number"
+          name="phone"
+          type="tel"
+          placeholder="+254xxxxxxx"
+          value={data?.phone}
+          maxLength={11}
+          onFocus={() => {
+            if (!data?.phone) setData((prev) => ({ ...prev, phone: "+254" }));
+          }}
+          onChange={handlePhoneChange}
+        />
       </div>
 
       {/* GRID: Age + Experience */}
@@ -223,7 +221,7 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
             className="flex gap-4"
             value={String(data.canDrive)}
             onValueChange={(value) =>
-              setData((prev) => ({ ...prev, canDrive: value==="true" }))
+              setData((prev) => ({ ...prev, canDrive: value === "true" }))
             }
           >
             <div className="flex items-center gap-2">
@@ -249,22 +247,22 @@ const NurseBasicInfo = ({ defaultValues, onNext }) => {
       </div>
 
       {/* preferredRole */}
-        <div className="flex-1 ">
-          <Label className={"mb-2"}>Preferred Role?</Label>
-          <RadioGroup
-            value={data.preferredRole}
-             onValueChange={(value) =>
-              setData((prev) => ({ ...prev, preferredRole: value }))
-            }
-            className="flex gap-4"
-          >
-            <RadioGroupItem value="Medical Nurse" id={`r3`} />
-            <Label htmlFor={`r3`}>Medical Nurse</Label>
+      <div className="flex-1 ">
+        <Label className={"mb-2"}>Preferred Role?</Label>
+        <RadioGroup
+          value={data.preferredRole}
+          onValueChange={(value) =>
+            setData((prev) => ({ ...prev, preferredRole: value }))
+          }
+          className="flex gap-4"
+        >
+          <RadioGroupItem value="Medical Nurse" id={`r3`} />
+          <Label htmlFor={`r3`}>Medical Nurse</Label>
 
-            <RadioGroupItem value="Nurse Aide" id={`r4`} />
-            <Label htmlFor={`r4`}>Nurse Aide</Label>
-          </RadioGroup>
-        </div>
+          <RadioGroupItem value="Nurse Aide" id={`r4`} />
+          <Label htmlFor={`r4`}>Nurse Aide</Label>
+        </RadioGroup>
+      </div>
 
       {/* Languages */}
       <div>

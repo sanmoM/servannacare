@@ -12,6 +12,7 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 import { postApi } from "@/lib/apiHandler";
+import useLocalUser from "@/hooks/useLocalUser";
 
 const validateEmployee = (data) => {
   const errors = [];
@@ -47,7 +48,7 @@ const Agency = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 3;
-  const [user, setUser] = useState({});
+  const { user, loaded } = useLocalUser();
   const [employees, setEmployees] = useState([1]);
   const router = useRouter();
   const [formData, setFormData] = useState({
