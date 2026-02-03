@@ -10,9 +10,8 @@ import { Plus } from "lucide-react";
 import Review from "./ReviewAndSubmit";
 import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
-import { generateToken } from "@/utilities/helperFunction";
+
 import { postApi } from "@/lib/apiHandler";
-import useLocalUser from "@/hooks/useLocalUser";
 
 const validateEmployee = (data) => {
   const errors = [];
@@ -48,7 +47,7 @@ const Agency = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 3;
-  const { user, loaded } = useLocalUser();
+  const [user, setUser] = useState({});
   const [employees, setEmployees] = useState([1]);
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -57,7 +56,9 @@ const Agency = () => {
   });
 
   const handleSignupSuccess = (accountData) => {
+    console.log("acount data", accountData);
     setStarted(true);
+    setUser(accountData);
   };
 
   const handleNext = async () => {

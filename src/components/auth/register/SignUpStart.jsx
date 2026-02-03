@@ -89,19 +89,20 @@ const SignUpStart = ({ onSuccess }) => {
         email: temUser?.email,
         otp,
       });
-      const { token, role, is_profile_completed } = res?.data?.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ role, subRole, is_profile_completed }),
-      );
+      if (res?.data?.status) {
+        const { token, role, is_profile_completed } = res?.data?.data;
+        localStorage.setItem("token", token);
 
-
-      setOpenOTP(false);
-      onSuccess({ role, subRole, is_profile_completed });
-      toast.success("Account verified successfully!");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ role, subRole, is_profile_completed }),
+        );
+        setOpenOTP(false);
+        onSuccess({ role, subRole, is_profile_completed });
+        toast.success("Account verified successfully!");
+      }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Invalid OtP");
+      toast.error(error?.response?.data?.message || "Invalid Otp");
     }
   };
 
