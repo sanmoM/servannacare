@@ -49,7 +49,6 @@ const UserForm = () => {
       return;
     }
 
-    const token = generateToken();
 
     const userInfo = {
       name,

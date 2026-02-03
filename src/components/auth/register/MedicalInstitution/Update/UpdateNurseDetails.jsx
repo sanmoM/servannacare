@@ -26,7 +26,6 @@ const UpdateNurseDetails = ({
   onDataChange,
   defaultValues = {},
 }) => {
-  // Document Types
   const documents = [
     {
       id: "idCopy",
@@ -523,14 +522,9 @@ const UpdateNurseDetails = ({
         name="serviceFee"
         placeholder="e.g., 1500 per day or 35000 per month"
         value={data.serviceFee}
-        onKeyDown={blockInvalidKeys}
         onChange={(e) => {
-          handleChange({
-            target: {
-              name: "serviceFee",
-              value: numericInputFilter(e.target.value, 5),
-            },
-          });
+          const value = e.target.value;
+          setData((prev) => ({ ...prev, serviceFee: value }));
         }}
       />
 

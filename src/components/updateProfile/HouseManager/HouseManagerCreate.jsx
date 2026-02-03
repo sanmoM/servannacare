@@ -155,25 +155,26 @@ const HouseManagerCreate = ({ data = {} }) => {
     },
   ];
 
-  const handleUpdate = (e) => {
+  const handleCreate = (e) => {
     e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
-    );
-    toast.success("Profile Updated!");
-    router.push("/dashboard");
+    console.log("form data",formData)
+    // localStorage.setItem("specialist", JSON.stringify(formData));
+    // localStorage.setItem(
+    //   "user",
+    //   JSON.stringify({
+    //     ...user,
+    //     name: formData.basicInfo.name,
+    //     location: formData.basicInfo.location,
+    //   }),
+    // );
+    // toast.success("Profile Updated!");
+    // router.push("/dashboard");
   };
 
 
   return (
     <div>
-      <form onSubmit={handleUpdate} className="space-y-6 relative">
+      <form onSubmit={handleCreate} className="space-y-6 relative">
         <h4 className="formHeading">Basic Information create</h4>
 
         <div className="flex flex-col sm:flex-row gap-6">

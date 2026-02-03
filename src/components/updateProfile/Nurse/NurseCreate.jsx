@@ -142,7 +142,7 @@ const NurseCreate = ({ data = {} }) => {
   };
 
   const handleCreate = async (e) => {
-    // e.preventDefault();
+    e.preventDefault();
     // localStorage.setItem("specialist", JSON.stringify(formData));
     // localStorage.setItem(
     //   "user",
@@ -235,18 +235,6 @@ const NurseCreate = ({ data = {} }) => {
       console.log("res", res);
       if (res?.status === 200) {
         toast.success("Registered Successfully!");
-        // router.push(`/dashboard/${user?.role}-profile`);
-        //todo
-        // localStorage.setItem("token", user?.token);
-        //todo this localStorage
-        // localStorage.setItem(
-        //   "user",
-        //   JSON.stringify({
-        //     ...user,
-        //     role: user?.role,
-        //     institution: fd,
-        //   }),
-        // );
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -289,7 +277,6 @@ const NurseCreate = ({ data = {} }) => {
               label="Full Name (as per ID)"
               name="name"
               placeholder="Enter your name"
-              value={formData.basicInfo?.name}
               onChange={(e) =>
                 handleChange("basicInfo", "name", e.target.value)
               }
@@ -300,7 +287,6 @@ const NurseCreate = ({ data = {} }) => {
               label="Your Location"
               name="location"
               placeholder="Type your location.."
-              value={formData.basicInfo?.location}
               onChange={(e) =>
                 handleChange("basicInfo", "location", e.target.value)
               }
@@ -317,7 +303,6 @@ const NurseCreate = ({ data = {} }) => {
               name="age"
               placeholder="Your age"
               maxLength={2}
-              value={formData.basicInfo?.age}
               onChange={(e) => {
                 const val = e.target.value.replace(/\D/g, "").slice(0, 2);
                 handleChange("basicInfo", "age", val);
@@ -787,13 +772,9 @@ const NurseCreate = ({ data = {} }) => {
 
         {/* submit button  */}
         <div className="flex justify-end mt-4 b-0">
-          {!user?.is_profile_completed ? (
+          {!user?.is_profile_completed && (
             <Button size={"lg"} type="submit">
               Submit
-            </Button>
-          ) : (
-            <Button size={"lg"} type="submit">
-              Update
             </Button>
           )}
         </div>

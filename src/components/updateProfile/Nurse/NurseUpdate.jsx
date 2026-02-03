@@ -142,19 +142,119 @@ const NurseUpdate = ({ data = {} }) => {
     }));
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
-    );
-    toast.success("Profile Updated!");
-    router.push("/dashboard");
+    // const fd = new FormData();
+    // const BASICINFO = formData.basicInfo;
+    // const EDUCATION = formData.education;
+    // const EXPERIENCE = formData.experience;
+    // const SKILLSERVICES = formData.skillsServices;
+    // const DOCUMENTS = formData.documents;
+
+    // fd.append("name", BASICINFO.name);
+    // fd.append("location", BASICINFO.location);
+    // fd.append("age", BASICINFO.age);
+    // fd.append("experience", BASICINFO.experience);
+    // fd.append("gender", BASICINFO.gender);
+    // fd.append("preferredRole", BASICINFO.preferredRole);
+    // BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
+    // fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
+    // fd.append("bio", BASICINFO.bio);
+    // fd.append("number_two", BASICINFO.phone);
+
+    // fd.append("education", EDUCATION.education);
+    // for (let pair of fd.entries()) {
+    //   console.log(pair[0], ":", pair[1]);
+    // }
+    // fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
+    // fd.append("registrationNumber", EDUCATION.registrationNumber);
+
+    // fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
+    // fd.append(
+    //   "hospitalBasedYearsOfExperience",
+    //   EXPERIENCE.hospitalBasedYearsOfExperience,
+    // );
+    // fd.append(
+    //   "hospitalBasedReferenceContact",
+    //   EXPERIENCE.hospitalBasedReferenceContact,
+    // );
+    // fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
+    // fd.append(
+    //   "homeBasedYearsOfExperience",
+    //   EXPERIENCE.homeBasedYearsOfExperience,
+    // );
+    // fd.append(
+    //   "homeBasedReferenceContact",
+    //   EXPERIENCE.homeBasedReferenceContact,
+    // );
+    // EXPERIENCE.preferred.forEach((prep) => fd.append("preferred[]", prep));
+
+    // SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
+    // fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
+    // fd.append("bathingYears", SKILLSERVICES.bathingYears);
+    // fd.append("feedingYears", SKILLSERVICES.feedingYears);
+    // fd.append("serviceFeeDay", SKILLSERVICES.serviceFeeDay);
+    // fd.append("serviceFeeMonth", SKILLSERVICES.serviceFeeMonth);
+
+    // if (DOCUMENTS?.idCopy) {
+    //   fd.append("idCopy", DOCUMENTS.idCopy);
+    // }
+    // if (DOCUMENTS?.profilePhoto) {
+    //   fd.append("profilePhoto", DOCUMENTS.profilePhoto);
+    // }
+    // if (DOCUMENTS?.goodConductCertificate) {
+    //   fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
+    // }
+    // if (DOCUMENTS?.drivingLicense) {
+    //   fd.append("drivingLicense", DOCUMENTS.drivingLicense);
+    // }
+    // if (DOCUMENTS?.referenceLetter) {
+    //   fd.append("referenceLetter", DOCUMENTS.referenceLetter);
+    // }
+    // if (EDUCATION?.educationCertificate) {
+    //   fd.append("educationCertificate", EDUCATION.educationCertificate);
+    // }
+    // if (EDUCATION?.practiceLicense) {
+    //   fd.append("practiceLicense", EDUCATION.practiceLicense);
+    // }
+    console.log("form data", formData);
+    // try {
+    //   const res = await postApi("/update-profile", fd, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   });
+    //   console.log("res", res);
+    //   if (res?.status === 200) {
+    //     toast.success("data Updated Successfully!");
+    //   } else {
+    //     toast.error(
+    //       res?.data?.message || "Something went wrong. Please try again.",
+    //     );
+    //   }
+    // } catch (error) {
+    //   console.error("Error creating profile:", error);
+    //   if (error.response) {
+    //     toast.error(
+    //       error.response.data?.message || `Error: ${error.response.status}`,
+    //     );
+    //   } else if (error.request) {
+    //     toast.error("No response from server. Please check your connection.");
+    //   } else {
+    //     toast.error("An unexpected error occurred.");
+    //   }
+    // }
+    // localStorage.setItem("specialist", JSON.stringify(formData));
+    // localStorage.setItem(
+    //   "user",
+    //   JSON.stringify({
+    //     ...user,
+    //     name: formData.basicInfo.name,
+    //     location: formData.basicInfo.location,
+    //   }),
+    // );
+    // toast.success("Profile Updated!");
+    // router.push("/dashboard");
   };
 
   return (
@@ -669,11 +769,7 @@ const NurseUpdate = ({ data = {} }) => {
 
         {/* submit button  */}
         <div className="flex justify-end mt-4 b-0">
-          {!user?.is_profile_completed ? (
-            <Button size={"lg"} type="submit">
-              Submit
-            </Button>
-          ) : (
+          {user?.is_profile_completed && (
             <Button size={"lg"} type="submit">
               Update
             </Button>
