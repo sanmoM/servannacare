@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import HouseManager from "@/components/updateProfile/HouseManager/HouseManager";
 import HouseManagerCreate from "@/components/updateProfile/HouseManager/HouseManagerCreate";
 import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/MedicalInstitution";
+import NurseCreate from "@/components/updateProfile/Nurse/NurseCreate";
 import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
 import NurseAideUpdate from "@/components/updateProfile/NurseAide/NurseAide";
 import Physiotherapist from "@/components/updateProfile/Physiotherapist/Physiotherapist";
@@ -37,7 +38,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  console.log(specialistDatas?.data?.specialNeed?.subRole);
+  console.log(specialistDatas);
 
   const { user, loaded } = useLocalUser();
 
@@ -167,7 +168,7 @@ export default function ProfilePage() {
       </div>
       {!user?.is_profile_completed && (
         <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
-          <Info /> Your account is not complete. 
+          <Info /> Your account is not complete.
         </p>
       )}
 
@@ -193,7 +194,7 @@ export default function ProfilePage() {
               <NurseUpdate data={specialistDatas?.data?.nurse} />
             ) : (
               // todo
-              <NurseUpdate />
+              <NurseCreate />
             ))}
 
           {specialistDatas?.data?.physiotherapist?.subRole ===

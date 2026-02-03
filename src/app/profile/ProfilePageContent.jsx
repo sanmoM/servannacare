@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useFetch } from "@/hooks/useFetch";
 import useLocalUser from "@/hooks/useLocalUser";
-import { Building, Check, Mail, Phone } from "lucide-react";
+import { Building, Check, CheckCircle, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ const ProfilePageContent = () => {
   const { user, loaded } = useLocalUser();
   const [userDatas, setUserDatas] = useState(null);
   const [matchedData, setMatchedData] = useState(null);
+  console.log("datas",matchedData)
 
   const handleBookNow = () => {
     if (!loaded) return;
@@ -181,11 +182,11 @@ const ProfilePageContent = () => {
             </h2>
             <span className="flex gap-1 flex-wrap ">
               <Label>Location :</Label>{" "}
-              <p className="text-sm text-gray-500">USA</p>
+              <p className="text-sm text-gray-500">{matchedData?.location}</p>
             </span>
             <span className="flex gap-1 my-1 flex-wrap ">
               <Label>Age :</Label>{" "}
-              <p className="text-sm text-gray-500">30 years old</p>
+              <p className="text-sm text-gray-500">{matchedData?.age}</p>
             </span>
             <span className="flex gap-1 flex-wrap ">
               <Label>Language Spoken :</Label>{" "}

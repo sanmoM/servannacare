@@ -18,8 +18,8 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const NurseUpdate = ({ data = {} }) => {
-  console.log("datas", data);
+const NurseCreate = ({ data = {} }) => {
+
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -142,7 +142,9 @@ const NurseUpdate = ({ data = {} }) => {
     }));
   };
 
-  const handleUpdate = (e) => {
+
+
+  const handleCreate = (e) => {
     e.preventDefault();
     localStorage.setItem("specialist", JSON.stringify(formData));
     localStorage.setItem(
@@ -154,12 +156,14 @@ const NurseUpdate = ({ data = {} }) => {
       }),
     );
     toast.success("Profile Updated!");
-    router.push("/dashboard");
+      console.log("create data", formData);
+    // router.push("/dashboard");
   };
 
   return (
     <div>
-      <form onSubmit={handleUpdate} className="space-y-6 relative">
+      <h2>Create Profile Data</h2>
+      <form onSubmit={handleCreate} className="space-y-6 relative">
         {/* basic info  */}
 
         <h4 className="formHeading">Basic Information</h4>
@@ -684,4 +688,4 @@ const NurseUpdate = ({ data = {} }) => {
   );
 };
 
-export default NurseUpdate;
+export default NurseCreate;

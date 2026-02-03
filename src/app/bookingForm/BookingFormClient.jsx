@@ -44,6 +44,7 @@ export default function BookingFormClient() {
     defaultValues: {
       conditions: [],
       allergies: [],
+      selectedDays: [],
     },
   });
 
@@ -52,8 +53,12 @@ export default function BookingFormClient() {
   const watchMedication = watch("onMedication");
   const allergies = watch("allergies") || [];
   const careType = watch("careFrequency");
+  const selectedDays = watch("selectedDays") || [];
   const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
   const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
+  const isSelectedDays =
+  selectedPrice?.name?.toLowerCase().replace(/\s+/g, "") === "selecteddays";
+
 
   const calculateDays = (start, end) => {
     const startDate = new Date(start);
@@ -72,24 +77,54 @@ export default function BookingFormClient() {
     );
   };
 
+  const weekDays = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
   const startDate = watch("startDate");
   const endDate = watch("endDate");
   const startMonth = watch("startMonth");
   const endMonth = watch("endMonth");
 
+  // useEffect(() => {
+  //   if (!selectedPrice) return;
+
+  //   if (isDaily && startDate && endDate) {
+  //     const days = calculateDays(startDate, endDate);
+  //     setBookingAmount(days * selectedPrice.price);
+  //   }
+
+  //   if (isMonthly && startMonth && endMonth) {
+  //     const months = calculateMonths(startMonth, endMonth);
+  //     setBookingAmount(months * selectedPrice.price);
+  //   }
+  // }, [startDate, endDate, startMonth, endMonth, selectedPrice]);
+
   useEffect(() => {
     if (!selectedPrice) return;
 
+    // Daily
     if (isDaily && startDate && endDate) {
       const days = calculateDays(startDate, endDate);
       setBookingAmount(days * selectedPrice.price);
     }
 
+    // Monthly
     if (isMonthly && startMonth && endMonth) {
       const months = calculateMonths(startMonth, endMonth);
       setBookingAmount(months * selectedPrice.price);
     }
-  }, [startDate, endDate, startMonth, endMonth, selectedPrice]);
+
+    if (isSelectedDays && selectedDays.length > 0) {
+      setBookingAmount(selectedDays.length * selectedPrice.price);
+    }
+  }, [startDate, endDate, startMonth, endMonth, selectedDays, selectedPrice]);
 
   useEffect(() => {
     if (data) {
@@ -101,7 +136,6 @@ export default function BookingFormClient() {
   if (error) return <div>Error loading data</div>;
 
   const onSubmit = async (data) => {
-    // console.log(data);
     const payload = {
       specialist_id: id,
       patient_name: data?.patientName,
@@ -109,22 +143,15 @@ export default function BookingFormClient() {
       patient_gender: data?.gender,
       relationship_to_booking_person: data?.relationship,
       price_id: selectedPrice?.id,
+      selected_days: isSelectedDays ? selectedDays : null,
       booking_amount: bookingAmount,
+
       patient_have_any_conditions: data?.conditions,
       patient_currently_on_medication: data?.onMedication,
       patient_currently_on_medication_data: data?.medications,
       patient_have_any_known_allergies: data?.allergyType,
       patient_have_any_known_allergies_details: data?.allergyDetails,
       mobility_status_of_patient: data?.mobility,
-      // care_start_date: data?.startDate,
-      // care_end_date: data?.endDate,
-      // care_start_date: data?.startMonth,
-      // care_end_date: data?.endMonth,
-
-      // care_start_date:
-      //   data?.careFrequency === "daily" ? data?.startDate : data?.startMonth,
-      // care_end_date:
-      //   data?.careFrequency === "daily" ? data?.endDate : data?.endMonth,
       care_start_date: isDaily ? startDate : startMonth,
       care_end_date: isDaily ? endDate : endMonth,
 
@@ -135,7 +162,7 @@ export default function BookingFormClient() {
       primary_doctor_number: data?.doctorContact,
       primary_hospital: data?.hospital,
     };
-    console.log("payload", payload);
+    // console.log("payload", payload);
     try {
       const res = await postApi("/booking", payload);
 
@@ -519,15 +546,6 @@ export default function BookingFormClient() {
                   }}
                   className="flex gap-6"
                 >
-                  {/* <div className="flex items-center gap-2">
-                    <RadioGroupItem value="daily" id="daily" />
-                    <Label htmlFor="daily">Daily</Label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="monthly" id="monthly" />
-                    <Label htmlFor="monthly">Monthly</Label>
-                  </div> */}
                   {price?.map((item, indx) => (
                     <div key={item.id} className="flex items-center gap-2">
                       <RadioGroupItem
@@ -543,12 +561,11 @@ export default function BookingFormClient() {
               )}
             />
 
-            {/* Start and End Date / Month */}
             {selectedPrice && (
-              <div className="grid md:grid-cols-2 gap-4">
-                {isDaily ? (
-                  <>
-                    {/* Start Date */}
+              <>
+                {/* DAILY → DATE RANGE */}
+                {isDaily && (
+                  <div className="grid md:grid-cols-2 gap-4">
                     <Controller
                       name="startDate"
                       control={control}
@@ -556,35 +573,70 @@ export default function BookingFormClient() {
                       render={({ field }) => <Input type="date" {...field} />}
                     />
 
-                    {/* End Date */}
                     <Controller
                       name="endDate"
                       control={control}
                       rules={{ required: "End date required" }}
                       render={({ field }) => <Input type="date" {...field} />}
                     />
-                  </>
-                ) : (
-                  <>
-                    {/* Start Month */}
-                    <Controller
-                      name="startMonth"
-                      control={control}
-                      rules={{ required: "Start month required" }}
-                      render={({ field }) => <Input type="month" {...field} />}
-                    />
-
-                    {/* End Month */}
-                    <Controller
-                      name="endMonth"
-                      control={control}
-                      rules={{ required: "End month required" }}
-                      render={({ field }) => <Input type="month" {...field} />}
-                    />
-                  </>
+                  </div>
                 )}
-              </div>
+
+                {/* SELECTED DAYS → WEEKDAYS */}
+                {isSelectedDays && (
+                  <Controller
+                    name="selectedDays"
+                    control={control}
+                    rules={{
+                      validate: (value) =>
+                        value.length > 0 || "Please select at least one day",
+                    }}
+                    render={({ field }) => (
+                      <div className="space-y-3">
+                        <Label className="font-medium">
+                          Select Days of the Week{" "}
+                          <span className="text-red-500">*</span>
+                        </Label>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {weekDays.map((day) => {
+                            const checked = field.value.includes(day);
+
+                            return (
+                              <div
+                                key={day}
+                                className="flex items-center gap-2"
+                              >
+                                <Checkbox
+                                  checked={checked}
+                                  onCheckedChange={(isChecked) => {
+                                    if (isChecked) {
+                                      field.onChange([...field.value, day]);
+                                    } else {
+                                      field.onChange(
+                                        field.value.filter((d) => d !== day),
+                                      );
+                                    }
+                                  }}
+                                />
+                                <Label>{day}</Label>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {errors.selectedDays && (
+                          <p className="text-sm text-red-500">
+                            {errors.selectedDays.message}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  />
+                )}
+              </>
             )}
+
             {bookingAmount > 0 && (
               <div className="text-lg font-semibold text-primary">
                 Total Amount: KES {bookingAmount}
