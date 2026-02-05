@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useLocalUser from "@/hooks/useLocalUser";
+import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import {
   Camera,
@@ -20,7 +21,7 @@ import toast from "react-hot-toast";
 
 const NurseCreate = ({ data = {} }) => {
   const router = useRouter();
-  const { user } = useLocalUser();
+  const { user, loaded } = useLocalUser();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
@@ -28,22 +29,35 @@ const NurseCreate = ({ data = {} }) => {
       age: data?.age || "",
       gender: data?.gender || "",
       languages: data?.languages || [],
-      canDrive: data?.canDrive || "",
+      canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
     },
     education: {
       education: data.education || "",
-      isNursingInKenya: data?.nurse?.isNursingInKenya || "",
+
+      isNursingInKenya:
+        data?.nurse?.isNursingInKenya === undefined
+          ? null
+          : Boolean(data?.nurse?.isNursingInKenya),
+    },
+
+    experience: {
+      hospitalBasedCare:
+        data?.hospitalBasedCare === undefined
+          ? null
+          : Boolean(data.hospitalBasedCare),
+      hospitalBasedYearsOfExperience:
+        data?.hospitalBasedYearsOfExperience || "",
+      hospitalBasedReferenceContact: data?.hospitalBasedReferenceContact || "",
+      homeBasedCare:
+        data?.homeBasedCare === undefined ? null : Boolean(data.homeBasedCare),
+      homeBasedYearsOfExperience: data?.homeBasedYearsOfExperience || "",
+      homeBasedReferenceContact: data?.homeBasedReferenceContact || "",
+      preferred: data?.preferred || [],
       registrationNumber: data?.nurse?.registrationNumber || "",
+      practiceLicense: data?.nurse?.practiceLicense || null,
       educationCertificate: data?.nurse?.educationCertificate || null,
     },
-    experience: {
-      hospitalBasedCare: data.hospitalBasedCare || "",
-      hospitalBasedYearsOfExperience: data.hospitalBasedYearsOfExperience || "",
-      hospitalBasedReferenceContact: data.hospitalBasedReferenceContact || "",
-      homeBasedCare: data.homeBasedCare || "",
-      homeBasedYearsOfExperience: data.homeBasedYearsOfExperience || "",
-      homeBasedReferenceContact: data.homeBasedReferenceContact || "",
-    },
+
     skillsServices: {
       skills: data?.nurse?.skills || [],
 
@@ -70,6 +84,21 @@ const NurseCreate = ({ data = {} }) => {
     "Special needs children caregiving",
     "Elderly caregiving",
     "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
+  ];
+
+  const preferred = [
+    {
+      title: "Pre and post pregnancy care",
+    },
+    {
+      title: "Post surgery cage",
+    },
+    {
+      title: "Palliative care",
+    },
+    {
+      title: "Elderly care",
+    },
   ];
 
   const documents = [
@@ -119,16 +148,33 @@ const NurseCreate = ({ data = {} }) => {
     }));
   };
 
-  const toggleArrayItem = (section, field, item) => {
+  const toggleLanguage = (lan) => {
     setFormData((prev) => {
-      const arr = prev[section][field];
+      const alreadySelected = prev.basicInfo.languages.includes(lan);
+
       return {
         ...prev,
-        [section]: {
-          ...prev[section],
-          [field]: arr.includes(item)
-            ? arr.filter((i) => i !== item)
-            : [...arr, item],
+        basicInfo: {
+          ...prev.basicInfo,
+          languages: alreadySelected
+            ? prev.basicInfo.languages.filter((l) => l !== lan)
+            : [...prev.basicInfo.languages, lan],
+        },
+      };
+    });
+  };
+
+  const togglePreferred = (pref) => {
+    setFormData((prev) => {
+      const alreadySelected = prev.experience.preferred.includes(pref);
+
+      return {
+        ...prev,
+        experience: {
+          ...prev.experience,
+          preferred: alreadySelected
+            ? prev.experience.preferred.filter((p) => p !== pref)
+            : [...prev.experience.preferred, pref],
         },
       };
     });
@@ -141,8 +187,45 @@ const NurseCreate = ({ data = {} }) => {
     }));
   };
 
+  const togglepreferred = (pref) => {
+    setFormData((prev) => {
+      const alreadySelected = prev.preferred.includes(pref);
+      return {
+        ...prev,
+        preferred: alreadySelected
+          ? prev.preferred.filter((l) => l !== pref)
+          : [...prev.preferred, pref],
+      };
+    });
+  };
+
+  const toggleArrayItem = (section, field, value) => {
+    setFormData((prev) => {
+      const arr = prev[section][field] || [];
+      const exists = arr.includes(value);
+
+      return {
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [field]: exists ? arr.filter((v) => v !== value) : [...arr, value],
+        },
+      };
+    });
+  };
+
   const handleCreate = async (e) => {
     e.preventDefault();
+
+    if (formData.experience.preferred.length === 0) {
+      toast.error("Please select at least one preferred area");
+      return;
+    }
+
+    if (formData?.basicInfo?.languages?.length === 0) {
+      toast.error("Please select at least one language!");
+      return;
+    }
     // localStorage.setItem("specialist", JSON.stringify(formData));
     // localStorage.setItem(
     //   "user",
@@ -167,11 +250,8 @@ const NurseCreate = ({ data = {} }) => {
     fd.append("age", BASICINFO.age);
     fd.append("experience", BASICINFO.experience);
     fd.append("gender", BASICINFO.gender);
-    fd.append("preferredRole", BASICINFO.preferredRole);
     BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
     fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
-    fd.append("bio", BASICINFO.bio);
-    fd.append("number_two", BASICINFO.phone);
 
     fd.append("education", EDUCATION.education);
     fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
@@ -235,6 +315,7 @@ const NurseCreate = ({ data = {} }) => {
       console.log("res", res);
       if (res?.status === 200) {
         toast.success("Registered Successfully!");
+        router.push("/dashboard");
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -294,7 +375,7 @@ const NurseCreate = ({ data = {} }) => {
           </div>
         </div>
 
-        {/* Age + Gender */}
+        {/* Age */}
         <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
           <div className="flex-1">
             <Input
@@ -310,7 +391,7 @@ const NurseCreate = ({ data = {} }) => {
             />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 mt-2">
             <Label className="mb-3 block">Gender</Label>
             <RadioGroup
               className="flex gap-4 mt-2"
@@ -349,10 +430,8 @@ const NurseCreate = ({ data = {} }) => {
               <div key={lan.id} className="flex items-center gap-2">
                 <Checkbox
                   id={lan.value}
-                  checked={formData.basicInfo?.languages.includes(lan.value)}
-                  onCheckedChange={() =>
-                    toggleArrayItem("basicInfo", "languages", lan.value)
-                  }
+                  checked={formData?.basicInfo?.languages?.includes(lan.value)}
+                  onCheckedChange={() => toggleLanguage(lan.value)}
                 />
                 <Label
                   htmlFor={lan.value}
@@ -370,10 +449,11 @@ const NurseCreate = ({ data = {} }) => {
           <RadioGroup
             className="flex gap-4"
             value={
-              formData.basicInfo?.canDrive === null ||
-              formData.basicInfo?.canDrive === undefined
-                ? ""
-                : String(formData.basicInfo.canDrive)
+              formData.basicInfo.canDrive === true
+                ? "true"
+                : formData.basicInfo.canDrive === false
+                  ? "false"
+                  : ""
             }
             onValueChange={(value) =>
               handleChange("basicInfo", "canDrive", value === "true")
@@ -435,38 +515,38 @@ const NurseCreate = ({ data = {} }) => {
         </div>
 
         {/* Nursing Council */}
-        {/* <div className="">
+        <div className="">
           <Label className="mb-3 block">
-            Are you registered with Physiotherapy Council of Kenya (PCK)?
+            Are you registered with Nursing Council of Kenya (NCK)?
           </Label>
 
           <RadioGroup
             className="flex gap-4"
             value={
-              formData.education.isRegisterPCK === null ||
-              formData.education.isRegisterPCK === undefined
+              formData.education.isNursingInKenya === null ||
+              formData.education.isNursingInKenya === undefined
                 ? ""
-                : formData.education.isRegisterPCK
-                  ? "Yes"
-                  : "No"
+                : formData.education.isNursingInKenya
+                  ? "true"
+                  : "false"
             }
             onValueChange={(value) =>
-              handleChange("education", "isRegisterPCK", value === "Yes")
+              handleChange("education", "isNursingInKenya", value === "true")
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="pckYes" />
+              <RadioGroupItem value="true" id="pckYes" />
               <Label htmlFor="pckYes">Yes</Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="pckNo" />
+              <RadioGroupItem value="false" id="pckNo" />
               <Label htmlFor="pckNo">No</Label>
             </div>
           </RadioGroup>
-        </div> */}
+        </div>
 
         {/* Show Registration Number & License only if PCK = Yes */}
-        {/* {formData.education.isRegisterPCK && (
+        {formData.education.isNursingInKenya && (
           <div className="mt-6">
             <Input
               label="Registration Number"
@@ -490,7 +570,7 @@ const NurseCreate = ({ data = {} }) => {
               />
             </div>
           </div>
-        )} */}
+        )}
 
         {/* experience */}
 
@@ -504,15 +584,15 @@ const NurseCreate = ({ data = {} }) => {
               formData.experience?.hospitalBasedCare == null
                 ? ""
                 : formData.experience.hospitalBasedCare
-                  ? "Yes"
-                  : "No"
+                  ? "true"
+                  : "false"
             }
             onValueChange={(value) =>
-              handleChange("experience", "hospitalBasedCare", value === "Yes")
+              handleChange("experience", "hospitalBasedCare", value === "true")
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="hos1" />
+              <RadioGroupItem value="true" id="hos1" />
               <Label
                 htmlFor="hos1"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -521,7 +601,7 @@ const NurseCreate = ({ data = {} }) => {
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="hos2" />
+              <RadioGroupItem value="false" id="hos2" />
               <Label
                 htmlFor="hos2"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -638,11 +718,34 @@ const NurseCreate = ({ data = {} }) => {
           </div>
         )}
 
-        {/* skill and services  */}
-
         {/* Skills Section */}
         <div>
           <h2 className="formHeading mb-4">Skills & Services</h2>
+          {/* preferred */}
+
+          <div>
+            <Label className={"mb-3 mt-6"}>
+              What are your preferred areas of intervention
+            </Label>
+            <div className="flex flex-wrap flex-col gap-2 ">
+              {preferred.map((lan, indx) => (
+                <div key={indx} className="flex items-center gap-2">
+                  <Checkbox
+                    id={lan.title}
+                    checked={formData.experience.preferred.includes(lan.title)}
+                    onCheckedChange={() => togglePreferred(lan.title)}
+                  />
+
+                  <Label
+                    htmlFor={lan.title}
+                    className="text-gray-700 font-normal cursor-pointer"
+                  >
+                    {lan.title}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
           <div>
             <Label className="mb-2 mt-4 block">
               Do you have experience in :
@@ -657,6 +760,7 @@ const NurseCreate = ({ data = {} }) => {
                       toggleArrayItem("skillsServices", "skills", area)
                     }
                   />
+
                   <Label
                     htmlFor={area}
                     className="text-gray-700 font-normal cursor-pointer"
@@ -723,7 +827,7 @@ const NurseCreate = ({ data = {} }) => {
             value={formData?.skillsServices.serviceFeeDay}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFeeDay", val);
+              handleChange("skillsServices", "serviceFeeDay", val);
             }}
           />
           <Input
@@ -735,7 +839,7 @@ const NurseCreate = ({ data = {} }) => {
             value={formData?.skillsServices?.serviceFeeMonth}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFeeMonth", val);
+              handleChange("skillsServices", "serviceFeeMonth", val);
             }}
           />
         </div>

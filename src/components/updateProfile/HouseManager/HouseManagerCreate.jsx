@@ -26,7 +26,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const HouseManagerCreate = ({ data = {} }) => {
-  console.log("datas", data);
+  // console.log("datas", data);
   const router = useRouter();
   const { user } = useLocalUser();
 

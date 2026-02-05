@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useLocalUser from "@/hooks/useLocalUser";
+import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import {
   Camera,
@@ -29,22 +30,34 @@ const NurseUpdate = ({ data = {} }) => {
       age: data?.age || "",
       gender: data?.gender || "",
       languages: data?.languages || [],
-      canDrive: data?.canDrive || "",
+      canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
     },
     education: {
       education: data.education || "",
-      isNursingInKenya: data?.nurse?.isNursingInKenya || "",
       registrationNumber: data?.nurse?.registrationNumber || "",
+      practiceLicense: data?.nurse?.practiceLicense || null,
       educationCertificate: data?.nurse?.educationCertificate || null,
+      isNursingInKenya:
+        data?.nurse?.isNursingInKenya === undefined
+          ? null
+          : Boolean(data?.nurse?.isNursingInKenya),
     },
+
     experience: {
-      hospitalBasedCare: data.hospitalBasedCare || "",
-      hospitalBasedYearsOfExperience: data.hospitalBasedYearsOfExperience || "",
-      hospitalBasedReferenceContact: data.hospitalBasedReferenceContact || "",
-      homeBasedCare: data.homeBasedCare || "",
-      homeBasedYearsOfExperience: data.homeBasedYearsOfExperience || "",
-      homeBasedReferenceContact: data.homeBasedReferenceContact || "",
+      hospitalBasedCare:
+        data?.hospitalBasedCare === undefined
+          ? null
+          : Boolean(data.hospitalBasedCare),
+      hospitalBasedYearsOfExperience:
+        data?.hospitalBasedYearsOfExperience || "",
+      hospitalBasedReferenceContact: data?.hospitalBasedReferenceContact || "",
+      homeBasedCare:
+        data?.homeBasedCare === undefined ? null : Boolean(data.homeBasedCare),
+      homeBasedYearsOfExperience: data?.homeBasedYearsOfExperience || "",
+      homeBasedReferenceContact: data?.homeBasedReferenceContact || "",
+      preferred: data?.preferred || [],
     },
+
     skillsServices: {
       skills: data?.nurse?.skills || [],
 
@@ -62,6 +75,21 @@ const NurseUpdate = ({ data = {} }) => {
       referenceLetter: data.referenceLetter || null,
     },
   });
+
+  const preferred = [
+    {
+      title: "Pre and post pregnancy care",
+    },
+    {
+      title: "Post surgery cage",
+    },
+    {
+      title: "Palliative care",
+    },
+    {
+      title: "Elderly care",
+    },
+  ];
 
   const skills = [
     "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
@@ -135,6 +163,21 @@ const NurseUpdate = ({ data = {} }) => {
     });
   };
 
+  const togglepreferred = (pref) => {
+    setFormData((prev) => {
+      const alreadySelected = prev.experience.preferred.includes(pref);
+      return {
+        ...prev,
+        experience: {
+          ...prev.experience,
+          preferred: alreadySelected
+            ? prev.experience.preferred.filter((l) => l !== pref)
+            : [...prev.experience.preferred, pref],
+        },
+      };
+    });
+  };
+
   const handleFileSelect = (section, field, file) => {
     setFormData((prev) => ({
       ...prev,
@@ -142,108 +185,132 @@ const NurseUpdate = ({ data = {} }) => {
     }));
   };
 
+  if (data.preferred.length === 0) {
+    toast.error("Please select what you preferred");
+    return;
+  }
+
   const handleUpdate = async (e) => {
     e.preventDefault();
-    // const fd = new FormData();
-    // const BASICINFO = formData.basicInfo;
-    // const EDUCATION = formData.education;
-    // const EXPERIENCE = formData.experience;
-    // const SKILLSERVICES = formData.skillsServices;
-    // const DOCUMENTS = formData.documents;
+    const fd = new FormData();
+    const BASICINFO = formData.basicInfo;
+    const EDUCATION = formData.education;
+    const EXPERIENCE = formData.experience;
+    const SKILLSERVICES = formData.skillsServices;
+    const DOCUMENTS = formData.documents;
 
-    // fd.append("name", BASICINFO.name);
-    // fd.append("location", BASICINFO.location);
-    // fd.append("age", BASICINFO.age);
-    // fd.append("experience", BASICINFO.experience);
-    // fd.append("gender", BASICINFO.gender);
-    // fd.append("preferredRole", BASICINFO.preferredRole);
-    // BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
-    // fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
-    // fd.append("bio", BASICINFO.bio);
-    // fd.append("number_two", BASICINFO.phone);
+    fd.append("name", BASICINFO.name);
+    fd.append("location", BASICINFO.location);
+    fd.append("age", BASICINFO.age);
+    fd.append("experience", BASICINFO.experience);
+    fd.append("gender", BASICINFO.gender);
+    fd.append("preferredRole", BASICINFO.preferredRole);
+    BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
+    fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
+    fd.append("bio", BASICINFO.bio);
+    fd.append("number_two", BASICINFO.phone);
 
-    // fd.append("education", EDUCATION.education);
+    fd.append("education", EDUCATION.education);
+
+    fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
+    fd.append("registrationNumber", EDUCATION.registrationNumber);
+
+    fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
+    fd.append(
+      "hospitalBasedYearsOfExperience",
+      EXPERIENCE.hospitalBasedYearsOfExperience,
+    );
+    fd.append(
+      "hospitalBasedReferenceContact",
+      EXPERIENCE.hospitalBasedReferenceContact,
+    );
+    fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
+    fd.append(
+      "homeBasedYearsOfExperience",
+      EXPERIENCE.homeBasedYearsOfExperience,
+    );
+    fd.append(
+      "homeBasedReferenceContact",
+      EXPERIENCE.homeBasedReferenceContact,
+    );
+
+    EXPERIENCE.preferred.forEach((prep) => fd.append("preferred[]", prep));
     // for (let pair of fd.entries()) {
     //   console.log(pair[0], ":", pair[1]);
     // }
-    // fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
-    // fd.append("registrationNumber", EDUCATION.registrationNumber);
 
-    // fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
-    // fd.append(
-    //   "hospitalBasedYearsOfExperience",
-    //   EXPERIENCE.hospitalBasedYearsOfExperience,
-    // );
-    // fd.append(
-    //   "hospitalBasedReferenceContact",
-    //   EXPERIENCE.hospitalBasedReferenceContact,
-    // );
-    // fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
-    // fd.append(
-    //   "homeBasedYearsOfExperience",
-    //   EXPERIENCE.homeBasedYearsOfExperience,
-    // );
-    // fd.append(
-    //   "homeBasedReferenceContact",
-    //   EXPERIENCE.homeBasedReferenceContact,
-    // );
-    // EXPERIENCE.preferred.forEach((prep) => fd.append("preferred[]", prep));
+    SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
+    fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
+    fd.append("bathingYears", SKILLSERVICES.bathingYears);
+    fd.append("feedingYears", SKILLSERVICES.feedingYears);
+    fd.append("serviceFeeDay", SKILLSERVICES.serviceFeeDay);
+    fd.append("serviceFeeMonth", SKILLSERVICES.serviceFeeMonth);
 
-    // SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
-    // fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
-    // fd.append("bathingYears", SKILLSERVICES.bathingYears);
-    // fd.append("feedingYears", SKILLSERVICES.feedingYears);
-    // fd.append("serviceFeeDay", SKILLSERVICES.serviceFeeDay);
-    // fd.append("serviceFeeMonth", SKILLSERVICES.serviceFeeMonth);
+    if (DOCUMENTS?.idCopy instanceof File) {
+      fd.append("idCopy", DOCUMENTS.idCopy);
+    }
+if (DOCUMENTS?.profilePhoto instanceof File) {
+  fd.append("profilePhoto", DOCUMENTS.profilePhoto);
+}
 
-    // if (DOCUMENTS?.idCopy) {
-    //   fd.append("idCopy", DOCUMENTS.idCopy);
-    // }
-    // if (DOCUMENTS?.profilePhoto) {
-    //   fd.append("profilePhoto", DOCUMENTS.profilePhoto);
-    // }
-    // if (DOCUMENTS?.goodConductCertificate) {
-    //   fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
-    // }
-    // if (DOCUMENTS?.drivingLicense) {
-    //   fd.append("drivingLicense", DOCUMENTS.drivingLicense);
-    // }
-    // if (DOCUMENTS?.referenceLetter) {
-    //   fd.append("referenceLetter", DOCUMENTS.referenceLetter);
-    // }
-    // if (EDUCATION?.educationCertificate) {
-    //   fd.append("educationCertificate", EDUCATION.educationCertificate);
-    // }
-    // if (EDUCATION?.practiceLicense) {
-    //   fd.append("practiceLicense", EDUCATION.practiceLicense);
-    // }
+if (DOCUMENTS?.goodConductCertificate instanceof File) {
+  fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
+}
+
+if (DOCUMENTS?.drivingLicense instanceof File) {
+  fd.append("drivingLicense", DOCUMENTS.drivingLicense);
+}
+
+if (DOCUMENTS?.referenceLetter instanceof File) {
+  fd.append("referenceLetter", DOCUMENTS.referenceLetter);
+}
+
+if (EDUCATION?.educationCertificate instanceof File) {
+  fd.append("educationCertificate", EDUCATION.educationCertificate);
+}
+
+if (EDUCATION?.practiceLicense instanceof File) {
+  fd.append("practiceLicense", EDUCATION.practiceLicense);
+}
+
+
+    fd.append(
+      "educationCertificate",
+      DOCUMENTS.educationCertificate instanceof File
+        ? DOCUMENTS.educationCertificate
+        : "",
+    );
+
+    if (EDUCATION?.practiceLicense) {
+      fd.append("practiceLicense", EDUCATION.practiceLicense);
+    }
     console.log("form data", formData);
-    // try {
-    //   const res = await postApi("/update-profile", fd, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   });
-    //   console.log("res", res);
-    //   if (res?.status === 200) {
-    //     toast.success("data Updated Successfully!");
-    //   } else {
-    //     toast.error(
-    //       res?.data?.message || "Something went wrong. Please try again.",
-    //     );
-    //   }
-    // } catch (error) {
-    //   console.error("Error creating profile:", error);
-    //   if (error.response) {
-    //     toast.error(
-    //       error.response.data?.message || `Error: ${error.response.status}`,
-    //     );
-    //   } else if (error.request) {
-    //     toast.error("No response from server. Please check your connection.");
-    //   } else {
-    //     toast.error("An unexpected error occurred.");
-    //   }
-    // }
+    try {
+      const res = await postApi("/update-profile", fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("res", res);
+      if (res?.status === 200) {
+        toast.success("data Updated Successfully!");
+      } else {
+        toast.error(
+          res?.data?.message || "Something went wrong. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.error("Error creating profile:", error);
+      if (error.response) {
+        toast.error(
+          error.response.data?.message || `Error: ${error.response.status}`,
+        );
+      } else if (error.request) {
+        toast.error("No response from server. Please check your connection.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
     // localStorage.setItem("specialist", JSON.stringify(formData));
     // localStorage.setItem(
     //   "user",
@@ -254,7 +321,7 @@ const NurseUpdate = ({ data = {} }) => {
     //   }),
     // );
     // toast.success("Profile Updated!");
-    // router.push("/dashboard");
+    router.push("/dashboard");
   };
 
   return (
@@ -263,6 +330,7 @@ const NurseUpdate = ({ data = {} }) => {
         {/* basic info  */}
 
         <h4 className="formHeading">Basic Information</h4>
+        <h1>update</h1>
 
         {/* Name + Location */}
         <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
@@ -432,7 +500,7 @@ const NurseUpdate = ({ data = {} }) => {
         </div>
 
         {/* Nursing Council */}
-        {/* <div className="">
+        <div className="">
           <Label className="mb-3 block">
             Are you registered with Physiotherapy Council of Kenya (PCK)?
           </Label>
@@ -440,30 +508,30 @@ const NurseUpdate = ({ data = {} }) => {
           <RadioGroup
             className="flex gap-4"
             value={
-              formData.education.isRegisterPCK === null ||
-              formData.education.isRegisterPCK === undefined
+              formData.education.isNursingInKenya === null ||
+              formData.education.isNursingInKenya === undefined
                 ? ""
-                : formData.education.isRegisterPCK
-                  ? "Yes"
-                  : "No"
+                : formData.education.isNursingInKenya
+                  ? "true"
+                  : "false"
             }
             onValueChange={(value) =>
-              handleChange("education", "isRegisterPCK", value === "Yes")
+              handleChange("education", "isNursingInKenya", value === "true")
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="pckYes" />
+              <RadioGroupItem value="true" id="pckYes" />
               <Label htmlFor="pckYes">Yes</Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="pckNo" />
+              <RadioGroupItem value="false" id="pckNo" />
               <Label htmlFor="pckNo">No</Label>
             </div>
           </RadioGroup>
-        </div> */}
+        </div>
 
         {/* Show Registration Number & License only if PCK = Yes */}
-        {/* {formData.education.isRegisterPCK && (
+        {formData.education.isNursingInKenya && (
           <div className="mt-6">
             <Input
               label="Registration Number"
@@ -480,14 +548,14 @@ const NurseUpdate = ({ data = {} }) => {
                 title="Practising License"
                 accept="application/pdf,image/*"
                 icon={<FileText size={32} />}
-                file={formData.education.practiceLicense}
+                file={formData?.education?.practiceLicense}
                 onFileSelect={(file) =>
                   handleFileSelect("education", "practiceLicense", file)
                 }
               />
             </div>
           </div>
-        )} */}
+        )}
 
         {/* experience */}
 
@@ -634,6 +702,31 @@ const NurseUpdate = ({ data = {} }) => {
             />
           </div>
         )}
+
+        <div>
+          <Label className={"mb-3 mt-6"}>
+            What are your preferred areas of intervention
+          </Label>
+          <div className="flex flex-wrap flex-col gap-2 ">
+            {preferred.map((lan, indx) => (
+              <div key={indx} className="flex items-center gap-2">
+                <Checkbox
+                  id={lan.title}
+                  checked={
+                    formData.experience?.preferred?.includes(lan.title) || false
+                  }
+                  onCheckedChange={() => togglepreferred(lan.title)}
+                />
+                <Label
+                  htmlFor={lan.title}
+                  className="text-gray-700 font-normal cursor-pointer"
+                >
+                  {lan.title}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* skill and services  */}
 
