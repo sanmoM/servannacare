@@ -5,7 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import useLocalUser from "@/hooks/useLocalUser";
+import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import {
   Camera,
@@ -19,7 +28,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const NurseAideUpdate = ({ data = {} }) => {
-  console.log("datas", data?.nurse_assistant?.educationCertificate);
+  console.log("datas", data);
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -28,14 +37,18 @@ const NurseAideUpdate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      experience: data?.nurse_assistant?.experience || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive || "",
+      number: data?.number || "",
+      phone: data?.number_two || "",
+      email: data?.email || "",
+      bio: data?.bio || "",
     },
     education: {
       education: data.education || "",
-      //   isNursingInKenya: data.education.isNursingInKenya || "",
-      educationCertificate: data?.nurse_assistant?.educationCertificate || null,
     },
+
     experience: {
       hospitalBasedCare: data.hospitalBasedCare || "",
       hospitalBasedYearsOfExperience: data.hospitalBasedYearsOfExperience || "",
@@ -60,9 +73,9 @@ const NurseAideUpdate = ({ data = {} }) => {
       goodConductCertificate: data.goodConductCertificate || null,
       drivingLicense: data.drivingLicense || null,
       referenceLetter: data.referenceLetter || null,
+      educationCertificate: data?.nurse_assistant?.educationCertificate || null,
     },
   });
-  console.log(formData?.basicInfo?.languages);
 
   const preferred = [
     {
@@ -152,19 +165,108 @@ const NurseAideUpdate = ({ data = {} }) => {
     }));
   };
 
-  const handleUpdate = (e) => {
+  const handlePhoneChange = async (e) => {
+    let value = e.target.value;
+
+    if (!value.startsWith("+254")) {
+      value = "+254";
+    }
+
+    let digits = value.slice(4).replace(/\D/g, "");
+
+    if (digits.length > 9) digits = digits.slice(0, 9);
+
+    setFormData((prev) => ({
+      ...prev,
+      basicInfo: { ...prev.basicInfo, phone: "+254" + digits },
+    }));
+  };
+
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
+
+    const fd = new FormData();
+    const BASICINFO = formData.basicInfo;
+    const EDUCATION = formData.education;
+    const EXPERIENCE = formData.experience;
+    const SKILLSERVICES = formData.skillsServices;
+    const DOCUMENTS = formData.documents;
+
+    fd.append("name", BASICINFO.name);
+    fd.append("location", BASICINFO.location);
+    fd.append("age", BASICINFO.age);
+    fd.append("experience", BASICINFO.experience);
+    fd.append("gender", BASICINFO.gender);
+    BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
+    fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
+    fd.append("bio", BASICINFO.bio);
+    fd.append("number_two", BASICINFO.phone);
+
+    fd.append("education", EDUCATION.education);
+    if (EDUCATION?.educationCertificate) {
+      fd.append("educationCertificate", EDUCATION.educationCertificate);
+    }
+
+    fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
+    fd.append(
+      "hospitalBasedYearsOfExperience",
+      EXPERIENCE.hospitalBasedYearsOfExperience,
     );
-    toast.success("Profile Updated!");
-    router.push("/dashboard");
+    fd.append(
+      "hospitalBasedReferenceContact",
+      EXPERIENCE.hospitalBasedReferenceContact,
+    );
+    fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
+    fd.append(
+      "homeBasedYearsOfExperience",
+      EXPERIENCE.homeBasedYearsOfExperience,
+    );
+    fd.append(
+      "homeBasedReferenceContact",
+      EXPERIENCE.homeBasedReferenceContact,
+    );
+    EXPERIENCE.preferred.forEach((pref) => fd.append("preferred[]", pref));
+
+    SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
+    fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
+    fd.append("bathingYears", SKILLSERVICES.bathingYears);
+    fd.append("feedingYears", SKILLSERVICES.feedingYears);
+
+    fd.append("serviceFeeDay", SKILLSERVICES.serviceFeeDay);
+    fd.append("serviceFeeMonth", SKILLSERVICES.serviceFeeMonth);
+
+    const documentKeys = [
+      "idCopy",
+      "profilePhoto",
+      "goodConductCertificate",
+      "drivingLicense",
+      "referenceLetter",
+      "educationCertificate",
+    ];
+
+    documentKeys.forEach((key) => {
+      const value = formData.documents[key];
+
+      if (value instanceof File) {
+        fd.append(key, value);
+      } else if (typeof value === "string" && value !== "") {
+        fd.append(key, value);
+      }
+    });
+
+    try {
+      const res = await postApi("/update-profile", fd);
+
+      if (res?.status === 200) {
+        toast.success("Profile Updated Successfully!");
+        router.push("/dashboard");
+      } else {
+        toast.error(res?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Upload failed. Check console.");
+    }
   };
 
   return (
@@ -245,6 +347,98 @@ const NurseAideUpdate = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:gap-6 sm:gap-4">
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Primary Number: (You can't change it.)
+            </label>
+            <Input
+              name="phone"
+              type="tel"
+              placeholder="+254xxxxxxx"
+              value={formData?.basicInfo?.number || "+254"}
+              maxLength={11}
+              // onFocus={() => {
+              //   if (!formData.basicInfo.phone) {
+              //     setFormData((prev) => ({
+              //       ...prev,
+              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
+              //     }));
+              //   }
+              // }}
+              // onChange={handlePhoneChange}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              label="Alternative Number:"
+              name="phone"
+              type="tel"
+              placeholder="+254xxxxxxx"
+              value={formData.basicInfo.phone || "+254"}
+              maxLength={11}
+              onFocus={() => {
+                if (!formData.basicInfo.phone) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    basicInfo: { ...prev.basicInfo, phone: "+254" },
+                  }));
+                }
+              }}
+              onChange={handlePhoneChange}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:gap-6 sm:gap-4">
+          <div className="w-1/2">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Primary Email: (You can't change it.)
+            </label>
+            <Input
+              name="email"
+              type="email"
+              placeholder="housemanager@gmail.com"
+              value={formData.basicInfo.email}
+
+              // onFocus={() => {
+              //   if (!formData.basicInfo.phone) {
+              //     setFormData((prev) => ({
+              //       ...prev,
+              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
+              //     }));
+              //   }
+              // }}
+              // onChange={handlePhoneChange}
+            />
+          </div>
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Experience (Years)
+            </label>
+            <Select
+              value={formData.basicInfo.experience}
+              onValueChange={(value) =>
+                handleChange("basicInfo", "experience", value)
+              }
+            >
+              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                <SelectValue placeholder="Select years of experience" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="1">1 year</SelectItem>
+                  <SelectItem value="2">2 years</SelectItem>
+                  <SelectItem value="3">3 years</SelectItem>
+                  <SelectItem value="4">4 years</SelectItem>
+                  <SelectItem value="5">5 years</SelectItem>
+                  <SelectItem value="more">More than 5 years</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -334,9 +528,9 @@ const NurseAideUpdate = ({ data = {} }) => {
             accept="application/pdf,image/*"
             icon={<FileText size={32} />}
             optional=""
-            file={formData?.education?.educationCertificate}
+            file={formData?.documents?.educationCertificate}
             onFileSelect={(file) =>
-              handleFileSelect("education", "educationCertificate", file)
+              handleFileSelect("documents", "educationCertificate", file)
             }
           />
         </div>
@@ -626,7 +820,7 @@ const NurseAideUpdate = ({ data = {} }) => {
             value={formData?.skillsServices?.serviceFeeDay}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFeeDay", val);
+              handleChange("skillsServices", "serviceFeeDay", val);
             }}
           />
           <Input
@@ -638,7 +832,7 @@ const NurseAideUpdate = ({ data = {} }) => {
             value={formData?.skillsServices?.serviceFeeMonth}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFeeMonth", val);
+              handleChange("skillsServices", "serviceFeeMonth", val);
             }}
           />
         </div>
@@ -675,13 +869,9 @@ const NurseAideUpdate = ({ data = {} }) => {
         </div>
 
         {/* submit button  */}
-        <div className="flex justify-end mt-4 b-0 ">
-          {!user?.is_profile_completed ? (
-            <Button className="cursor-pointer" size={"lg"} type="submit">
-              Submit
-            </Button>
-          ) : (
-            <Button className="cursor-pointer" size={"lg"} type="submit">
+        <div className="flex justify-end mt-4 b-0">
+          {user?.is_profile_completed && (
+            <Button size={"lg"} type="submit">
               Update
             </Button>
           )}

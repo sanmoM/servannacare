@@ -55,23 +55,6 @@ const NurseAideOrAssistant = ({ skills }) => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // const token = generateToken();
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     ...user,
-      //     location: formData.basicInfo.location,
-      //     name: formData.basicInfo.name,
-      //     profilePic: null,
-      //     role: "specialist",
-      //     subRole: "nurse aide assistant",
-      //     status: "under review",
-      //     token,
-      //   }),
-      // );
-      // localStorage.setItem("specialist", JSON.stringify(formData));
-      // toast.success("Register Sucessfully!");
-      // router.push("/dashboard");
       const fd = new FormData();
       const BASICINFO = formData.basicInfo;
       const EDUCATION = formData.education;

@@ -190,7 +190,6 @@ const HouseManager = ({ data = {} }) => {
 
     const fd = new FormData();
 
-    // -------- BASIC INFO --------
     fd.append("name", formData.basicInfo.name);
     fd.append("education", formData.basicInfo.education);
     fd.append("experience", formData.basicInfo.experience);
@@ -360,7 +359,7 @@ const HouseManager = ({ data = {} }) => {
           </div>
           <div>
             <label className="block mb-2 text-sm font-medium text-gray-700">
-              Primary Email:
+              Primary Email: (You can't change it.)
             </label>
             <Input
               name="email"
@@ -669,13 +668,8 @@ const HouseManager = ({ data = {} }) => {
             ))}
           </div>
         </div>
-
         <div className="flex justify-end mt-4 b-0">
-          {!user?.is_profile_completed ? (
-            <Button size={"lg"} type="submit">
-              Submit
-            </Button>
-          ) : (
+          {user?.is_profile_completed && (
             <Button size={"lg"} type="submit">
               Update
             </Button>

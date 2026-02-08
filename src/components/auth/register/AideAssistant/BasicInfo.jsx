@@ -34,9 +34,20 @@ const BasicInfo = ({ defaultValues, onNext }) => {
   };
 
   const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    value = value.slice(0, 10);
-    setData((prev) => ({ ...prev, phone: value }));
+    let value = e.target.value;
+
+    if (!value.startsWith("+254")) {
+      value = "+254";
+    }
+
+    let digits = value.slice(4).replace(/\D/g, "");
+
+    if (digits.length > 9) digits = digits.slice(0, 9);
+
+    setData((prev) => ({
+      ...prev,
+      phone: "+254" + digits,
+    }));
   };
 
   const toggleLanguage = (lan) => {
@@ -77,8 +88,8 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     }
 
     //  validate mobile number (10 digits only)
-    if (data.phone.length !== 10) {
-      toast.error("Mobile number must be exactly 10 digits.");
+    if (data.phone.length !== 11) {
+      toast.error("Mobile number must be exactly 11 digits.");
       return;
     }
 
@@ -129,13 +140,31 @@ const BasicInfo = ({ defaultValues, onNext }) => {
 
       {/* GRID: Phone + Experience */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <Input
+        {/* <Input
           label="Mobile Number"
           name="phone"
           type="tel"
           placeholder="07xxxxxxxx"
           value={data.phone}
           maxLength={10}
+          onChange={handlePhoneChange}
+        /> */}
+
+        <Input
+          label="Mobile Number"
+          name="phone"
+          type="tel"
+          placeholder="+254xxxxxxx"
+          value={data.phone || "+254"}
+          maxLength={11}
+          onFocus={() => {
+            if (!data.phone) {
+              setData((prev) => ({
+                ...prev,
+                phone: "+254",
+              }));
+            }
+          }}
           onChange={handlePhoneChange}
         />
 

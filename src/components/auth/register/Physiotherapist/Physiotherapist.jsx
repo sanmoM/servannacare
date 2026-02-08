@@ -49,23 +49,7 @@ const Physiotherapist = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // const token = generateToken();
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     ...user,
-      //     location: formData.basicInfo.location,
-      //     name: formData.basicInfo.name,
-      //     profilePic: null,
-      //     role: "specialist",
-      //     subRole: "physiotherapist",
-      //     status: "under review",
-      //     token,
-      //   }),
-      // );
-      // localStorage.setItem("specialist", JSON.stringify(formData));
-      // toast.success("Register Sucessfully!");
-      // router.push("/dashboard");
+
 
       const fd = new FormData();
       const BASICINFO = formData.basicInfo;
@@ -109,12 +93,6 @@ const Physiotherapist = () => {
       );
       EXPERIENCE.preferred.forEach((prep) => fd.append("preferred[]", prep));
 
-      // SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
-      // fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
-      // fd.append("bathingYears", SKILLSERVICES.bathingYears);
-      // fd.append("feedingYears", SKILLSERVICES.feedingYears);
-      // fd.append("serviceFee", SKILLSERVICES.serviceFee);
-
       if (DOCUMENTS?.idCopy) {
         fd.append("idCopy", DOCUMENTS.idCopy);
       }
@@ -137,7 +115,7 @@ const Physiotherapist = () => {
         fd.append("practiceLicense", EDUCATION.practiceLicense);
       }
 
-      // console.log("form Data", formData);
+      console.log("form Data", formData);
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {

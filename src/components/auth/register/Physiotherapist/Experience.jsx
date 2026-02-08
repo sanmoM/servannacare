@@ -20,9 +20,16 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
     homeBasedReferenceContact: defaultValues.homeBasedReferenceContact ?? "",
 
     preferred: defaultValues.preferred ?? [],
-    // serviceFee: Number(defaultValues.serviceFee) || 0,
-    serviceFeeDay: Number(defaultValues.serviceFeeDay) || 0,
-    serviceFeeMonth: Number(defaultValues.serviceFeeMonth) || 0,
+    serviceFeeDay:
+      defaultValues.serviceFeeDay !== undefined &&
+      defaultValues.serviceFeeDay !== ""
+        ? Number(defaultValues.serviceFeeDay)
+        : "",
+    serviceFeeMonth:
+      defaultValues.serviceFeeMonth !== undefined &&
+      defaultValues.serviceFeeMonth !== ""
+        ? Number(defaultValues.serviceFeeMonth)
+        : "",
   });
 
   const preferred = [

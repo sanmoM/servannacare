@@ -212,7 +212,9 @@ const HouseManagerCreate = ({ data = {} }) => {
     fd.append("experience", formData.basicInfo.experience);
     fd.append("salaryRange", formData.basicInfo.salaryRange);
     fd.append("location", formData.basicInfo.location);
-    formData?.basicInfo.preferred.forEach((prep) => fd.append("preferred[]", prep));
+    formData?.basicInfo.preferred.forEach((prep) =>
+      fd.append("preferred[]", prep),
+    );
     fd.append("number", formData.basicInfo.phone);
 
     formData.basicInfo.languages.forEach((lan) =>
@@ -610,14 +612,11 @@ const HouseManagerCreate = ({ data = {} }) => {
           ))}
         </div>
 
+        {/* submit button  */}
         <div className="flex justify-end mt-4 b-0">
-          {!user?.is_profile_completed ? (
+          {!user?.is_profile_completed && (
             <Button size={"lg"} type="submit">
               Submit
-            </Button>
-          ) : (
-            <Button size={"lg"} type="submit">
-              Update
             </Button>
           )}
         </div>
