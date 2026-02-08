@@ -5,16 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import useLocalUser from "@/hooks/useLocalUser";
-import { postApi } from "@/lib/apiHandler";
 import { educationLevels, languages } from "@/utilities/data";
 import {
   Camera,
@@ -27,7 +18,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
+const SpecialNeedCaregiversCreate = ({ data = {} }) => {
   console.log("datas", data);
   const router = useRouter();
   const { user } = useLocalUser();
@@ -37,16 +28,12 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
-      experience: data?.special_need?.experience || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive || "",
-      number: data?.number || "",
-      phone: data?.number_two || "",
-      email: data?.email || "",
-      bio: data?.bio || "",
     },
     education: {
       education: data?.education || "",
+      educationCertificate: data?.special_need?.educationCertificate || null,
     },
     experience: {
       hospitalBasedCare: data?.hospitalBasedCare || "",
@@ -67,7 +54,6 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
       goodConductCertificate: data?.goodConductCertificate || null,
       drivingLicense: data?.drivingLicense || null,
       referenceLetter: data?.referenceLetter || null,
-      educationCertificate: data?.special_need?.educationCertificate || null,
     },
   });
 
@@ -166,98 +152,19 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
     }));
   };
 
-  const handlePhoneChange = async (e) => {
-    let value = e.target.value;
-
-    if (!value.startsWith("+254")) {
-      value = "+254";
-    }
-
-    let digits = value.slice(4).replace(/\D/g, "");
-
-    if (digits.length > 9) digits = digits.slice(0, 9);
-
-    setFormData((prev) => ({
-      ...prev,
-      basicInfo: { ...prev.basicInfo, phone: "+254" + digits },
-    }));
-  };
-
-  const handleUpdate = async (e) => {
+  const handleUpdate = (e) => {
     e.preventDefault();
-
-    const fd = new FormData();
-    const BASICINFO = formData.basicInfo;
-    const EDUCATION = formData.education;
-    const EXPERIENCE = formData.experience;
-    const DOCUMENTS = formData.documents;
-
-    fd.append("name", BASICINFO.name);
-    fd.append("location", BASICINFO.location);
-    fd.append("age", BASICINFO.age);
-    fd.append("experience", BASICINFO.experience);
-    fd.append("gender", BASICINFO.gender);
-    BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
-    fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
-    fd.append("bio", BASICINFO.bio);
-    fd.append("number_two", BASICINFO.phone);
-
-    fd.append("education", EDUCATION.educationLevel);
-
-    fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
-    fd.append(
-      "hospitalBasedYearsOfExperience",
-      EXPERIENCE.hospitalBasedYearsOfExperience,
+    localStorage.setItem("specialist", JSON.stringify(formData));
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        ...user,
+        name: formData.basicInfo.name,
+        location: formData.basicInfo.location,
+      }),
     );
-    fd.append(
-      "hospitalBasedReferenceContact",
-      EXPERIENCE.hospitalBasedReferenceContact,
-    );
-    fd.append("homeBasedCare", EXPERIENCE.homeBasedCare ? 1 : 0);
-    fd.append(
-      "homeBasedYearsOfExperience",
-      EXPERIENCE.homeBasedYearsOfExperience,
-    );
-    fd.append(
-      "homeBasedReferenceContact",
-      EXPERIENCE.homeBasedReferenceContact,
-    );
-    EXPERIENCE.preferred.forEach((pref) => fd.append("preferred[]", pref));
-    fd.append("serviceFeeDay", EXPERIENCE.serviceFeeDay);
-    fd.append("serviceFeeMonth", EXPERIENCE.serviceFeeMonth);
-
-    const documentKeys = [
-      "idCopy",
-      "profilePhoto",
-      "goodConductCertificate",
-      "drivingLicense",
-      "referenceLetter",
-      "educationCertificate",
-    ];
-
-    documentKeys.forEach((key) => {
-      const value = formData.documents[key];
-
-      if (value instanceof File) {
-        fd.append(key, value);
-      } else if (typeof value === "string" && value !== "") {
-        fd.append(key, value);
-      }
-    });
-
-    try {
-      const res = await postApi("/update-profile", fd);
-
-      if (res?.status === 200) {
-        toast.success("Profile Updated Successfully!");
-        router.push("/dashboard");
-      } else {
-        toast.error(res?.data?.message || "Something went wrong.");
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Upload failed. Check console.");
-    }
+    toast.success("Profile Updated!");
+    router.push("/dashboard");
   };
   return (
     <div>
@@ -303,7 +210,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
               }
             />
           </div>
-          <div className="flex-1 mt-3">
+          <div className="flex-1">
             <Label className={"mb-2"}>Gender?</Label>
             <RadioGroup
               className={"flex gap-4"}
@@ -331,98 +238,6 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:gap-6 sm:gap-4">
-          <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Primary Number: (You can't change it.)
-            </label>
-            <Input
-              name="phone"
-              type="tel"
-              placeholder="+254xxxxxxx"
-              value={formData?.basicInfo?.number || "+254"}
-              maxLength={11}
-              // onFocus={() => {
-              //   if (!formData.basicInfo.phone) {
-              //     setFormData((prev) => ({
-              //       ...prev,
-              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
-              //     }));
-              //   }
-              // }}
-              // onChange={handlePhoneChange}
-            />
-          </div>
-          <div className="flex-1">
-            <Input
-              label="Alternative Number:"
-              name="phone"
-              type="tel"
-              placeholder="+254xxxxxxx"
-              value={formData.basicInfo.phone || "+254"}
-              maxLength={11}
-              onFocus={() => {
-                if (!formData.basicInfo.phone) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    basicInfo: { ...prev.basicInfo, phone: "+254" },
-                  }));
-                }
-              }}
-              onChange={handlePhoneChange}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row sm:gap-6 sm:gap-4">
-          <div className="w-1/2">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Primary Email: (You can't change it.)
-            </label>
-            <Input
-              name="email"
-              type="email"
-              placeholder="housemanager@gmail.com"
-              value={formData.basicInfo.email}
-
-              // onFocus={() => {
-              //   if (!formData.basicInfo.phone) {
-              //     setFormData((prev) => ({
-              //       ...prev,
-              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
-              //     }));
-              //   }
-              // }}
-              // onChange={handlePhoneChange}
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Experience (Years)
-            </label>
-            <Select
-              value={formData.basicInfo.experience}
-              onValueChange={(value) =>
-                handleChange("basicInfo", "experience", value)
-              }
-            >
-              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
-                <SelectValue placeholder="Select years of experience" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="1">1 year</SelectItem>
-                  <SelectItem value="2">2 years</SelectItem>
-                  <SelectItem value="3">3 years</SelectItem>
-                  <SelectItem value="4">4 years</SelectItem>
-                  <SelectItem value="5">5 years</SelectItem>
-                  <SelectItem value="more">More than 5 years</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
           </div>
         </div>
 
@@ -507,9 +322,9 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
             accept="application/pdf,image/*"
             icon={<FileText size={32} />}
             optional=""
-            file={formData?.documents?.educationCertificate}
+            file={formData?.education?.educationCertificate}
             onFileSelect={(file) =>
-              handleFileSelect("documents", "educationCertificate", file)
+              handleFileSelect("education", "educationCertificate", file)
             }
           />
         </div>
@@ -762,21 +577,6 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
             }}
           />
         </div>
-
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="bio">Bio</label>
-            <textarea
-              value={formData?.basicInfo?.bio}
-              name="bio"
-              placeholder="Write a brief bio about yourself and the services you offer.."
-              className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
-              rows={6}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
         <h2 className="formHeading">Document Uploads</h2>
         <div className="p-3 bg-primary/20 my-6 rounded-xl flex gap-2 items-center">
           <FileText />
@@ -807,9 +607,9 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
         </div>
         {/* submit button  */}
         <div className="flex justify-end mt-4 b-0">
-          {user?.is_profile_completed && (
+          {!user?.is_profile_completed && (
             <Button size={"lg"} type="submit">
-              Update
+              Submit
             </Button>
           )}
         </div>
@@ -818,4 +618,4 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
   );
 };
 
-export default SpecialNeedCaregiversUpdate;
+export default SpecialNeedCaregiversCreate;

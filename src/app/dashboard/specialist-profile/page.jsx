@@ -20,6 +20,7 @@ import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/Me
 import NurseCreate from "@/components/updateProfile/Nurse/NurseCreate";
 import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
 import NurseAideUpdate from "@/components/updateProfile/NurseAide/NurseAide";
+import NurseAideCreate from "@/components/updateProfile/NurseAide/NurseAideCreate";
 import Physiotherapist from "@/components/updateProfile/Physiotherapist/Physiotherapist";
 import SpecialNeedCaregiversUpdate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversUpdate";
 import { useFetch } from "@/hooks/useFetch";
@@ -212,7 +213,7 @@ export default function ProfilePage() {
               <NurseAideUpdate data={specialistDatas?.data?.nurseAssistant} />
             ) : (
               // todo
-              <NurseAideUpdate />
+              <NurseAideCreate />
             ))}
 
           {specialistDatas?.data?.specialNeed?.subRole ===

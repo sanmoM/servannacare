@@ -837,6 +837,20 @@ const NurseAideUpdate = ({ data = {} }) => {
           />
         </div>
 
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="bio">Bi</label>
+            <textarea
+              value={formData?.basicInfo?.bio}
+              name="bio"
+              placeholder="Write a brief bio about yourself and the services you offer.."
+              className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+              rows={6}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
         <h2 className="formHeading mb-4">Document Uploads</h2>
 
         <div className="p-3 bg-primary/20 rounded-xl flex gap-2 items-center mb-4">
