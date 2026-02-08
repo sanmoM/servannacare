@@ -235,9 +235,6 @@ const NurseUpdate = ({ data = {} }) => {
     );
 
     EXPERIENCE.preferred.forEach((prep) => fd.append("preferred[]", prep));
-    // for (let pair of fd.entries()) {
-    //   console.log(pair[0], ":", pair[1]);
-    // }
 
     SKILLSERVICES.skills.forEach((skill) => fd.append("skills[]", skill));
     fd.append("mobilityYears", SKILLSERVICES.mobilityYears);
@@ -249,30 +246,29 @@ const NurseUpdate = ({ data = {} }) => {
     if (DOCUMENTS?.idCopy instanceof File) {
       fd.append("idCopy", DOCUMENTS.idCopy);
     }
-if (DOCUMENTS?.profilePhoto instanceof File) {
-  fd.append("profilePhoto", DOCUMENTS.profilePhoto);
-}
+    if (DOCUMENTS?.profilePhoto instanceof File) {
+      fd.append("profilePhoto", DOCUMENTS.profilePhoto);
+    }
 
-if (DOCUMENTS?.goodConductCertificate instanceof File) {
-  fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
-}
+    if (DOCUMENTS?.goodConductCertificate instanceof File) {
+      fd.append("goodConductCertificate", DOCUMENTS.goodConductCertificate);
+    }
 
-if (DOCUMENTS?.drivingLicense instanceof File) {
-  fd.append("drivingLicense", DOCUMENTS.drivingLicense);
-}
+    if (DOCUMENTS?.drivingLicense instanceof File) {
+      fd.append("drivingLicense", DOCUMENTS.drivingLicense);
+    }
 
-if (DOCUMENTS?.referenceLetter instanceof File) {
-  fd.append("referenceLetter", DOCUMENTS.referenceLetter);
-}
+    if (DOCUMENTS?.referenceLetter instanceof File) {
+      fd.append("referenceLetter", DOCUMENTS.referenceLetter);
+    }
 
-if (EDUCATION?.educationCertificate instanceof File) {
-  fd.append("educationCertificate", EDUCATION.educationCertificate);
-}
+    if (EDUCATION?.educationCertificate instanceof File) {
+      fd.append("educationCertificate", EDUCATION.educationCertificate);
+    }
 
-if (EDUCATION?.practiceLicense instanceof File) {
-  fd.append("practiceLicense", EDUCATION.practiceLicense);
-}
-
+    if (EDUCATION?.practiceLicense instanceof File) {
+      fd.append("practiceLicense", EDUCATION.practiceLicense);
+    }
 
     fd.append(
       "educationCertificate",

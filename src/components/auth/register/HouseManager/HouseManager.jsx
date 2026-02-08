@@ -77,7 +77,7 @@ const HouseManager = () => {
       fd.append("experience", BASICINFO.experience);
       fd.append("location", BASICINFO.location);
       BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
-      fd.append("phone", BASICINFO.phone);
+      fd.append("number_two", BASICINFO.phone);
       fd.append("salaryRange", BASICINFO.salaryRange);
       BASICINFO.preferred.forEach((prep) => fd.append("preferred[]", prep));
       fd.append("isMother", ADDITIONALDETAILS.isMother ? 1 : 0);

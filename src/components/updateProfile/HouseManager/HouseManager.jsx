@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useLocalUser from "@/hooks/useLocalUser";
+import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import {
   Cross,
@@ -23,11 +24,11 @@ import {
   ImageIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const HouseManager = ({ data = {} }) => {
-  // console.log("datas", data);
+  console.log("datas", data);
   const router = useRouter();
   const { user } = useLocalUser();
 
@@ -38,8 +39,11 @@ const HouseManager = ({ data = {} }) => {
       experience: data?.house_manager?.experience || "",
       salaryRange: data?.house_manager?.salaryRange || "",
       location: data?.location || "",
-      preferred: data?.house_manager?.preferred || "",
+      preferred: Array.isArray(data?.preferred) ? data?.preferred : [],
       languages: data?.languages || [],
+      number: data?.number || "",
+      phone: data?.number_two || "",
+      email: data?.email || "",
     },
 
     additionalDetails: {
@@ -57,13 +61,29 @@ const HouseManager = ({ data = {} }) => {
       drivingLicense: data?.drivingLicense || "",
     },
   });
-  // console.log(formData?.documents?.firstAidCertificate);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({
       ...p,
       basicInfo: { ...p.basicInfo, [name]: value },
+    }));
+  };
+
+  const handlePhoneChange = (e) => {
+    let value = e.target.value;
+
+    if (!value.startsWith("+254")) {
+      value = "+254";
+    }
+
+    let digits = value.slice(4).replace(/\D/g, "");
+
+    if (digits.length > 9) digits = digits.slice(0, 9);
+
+    setFormData((prev) => ({
+      ...prev,
+      basicInfo: { ...prev.basicInfo, phone: "+254" + digits },
     }));
   };
 
@@ -153,25 +173,87 @@ const HouseManager = ({ data = {} }) => {
   ];
 
   const togglepreferred = (pref) => {
-    setData((prev) => ({
-      ...prev,
-      preferred: prev.preferred.includes(pref) ? [] : [pref],
-    }));
+    setFormData((prev) => {
+      const exists = prev.basicInfo.preferred.includes(pref);
+      return {
+        ...prev,
+        basicInfo: {
+          ...prev.basicInfo,
+          preferred: exists ? [] : [pref],
+        },
+      };
+    });
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
+
+    const fd = new FormData();
+
+    // -------- BASIC INFO --------
+    fd.append("name", formData.basicInfo.name);
+    fd.append("education", formData.basicInfo.education);
+    fd.append("experience", formData.basicInfo.experience);
+    fd.append("salaryRange", formData.basicInfo.salaryRange);
+    fd.append("number", formData.basicInfo.number);
+    fd.append("number_two", formData.basicInfo.phone);
+    fd.append("location", formData.basicInfo.location);
+    fd.append("email", formData.basicInfo.email);
+
+    formData.basicInfo.preferred.forEach((p) => fd.append("preferred[]", p));
+
+    formData.basicInfo.languages.forEach((l) => fd.append("languages[]", l));
+
+    fd.append(
+      "isMother",
+      formData.additionalDetails.isMother === "true" ? 1 : 0,
     );
-    toast.success("Profile Updated!");
-    router.push("/dashboard");
+
+    fd.append(
+      "isHandelingPet",
+      formData.additionalDetails.isHandelingPet === "true" ? 1 : 0,
+    );
+
+    fd.append("preferredRole", formData.additionalDetails.preferredRole);
+
+    formData.additionalDetails.ageOfKids.forEach((age) =>
+      fd.append("ageOfKids[]", age),
+    );
+
+    Object.entries(formData.documents).forEach(([key, value]) => {
+      if (value instanceof File) {
+        const backendKey = key === "iDCopy" ? "idCopy" : key;
+        fd.append(backendKey, value);
+      }
+    });
+
+    // console.log("FORMDATA PAYLOAD");
+    // for (let pair of fd.entries()) {
+    //   console.log(pair[0], pair[1]);
+    // }
+
+    try {
+      const res = await postApi("/update-profile", fd);
+
+      if (res?.status === 200) {
+        toast.success("Profile Updated Successfully!");
+        router.push("/dashboard");
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          }),
+        );
+      } else {
+        toast.error(res?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Upload failed. Check console.");
+    }
   };
 
   return (
@@ -276,6 +358,27 @@ const HouseManager = ({ data = {} }) => {
               onChange={handleChange}
             />
           </div>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Primary Email:
+            </label>
+            <Input
+              name="email"
+              type="email"
+              placeholder="housemanager@gmail.com"
+              value={formData.basicInfo.email}
+
+              // onFocus={() => {
+              //   if (!formData.basicInfo.phone) {
+              //     setFormData((prev) => ({
+              //       ...prev,
+              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
+              //     }));
+              //   }
+              // }}
+              // onChange={handlePhoneChange}
+            />
+          </div>
 
           <div className="flex-1">
             <label className="block mb-2 text-sm font-medium text-gray-700">
@@ -286,9 +389,10 @@ const HouseManager = ({ data = {} }) => {
                 <div key={indx} className="flex items-center gap-2">
                   <Checkbox
                     id={lan.title}
-                    checked={data.preferred.includes(lan.title)}
+                    checked={formData.basicInfo.preferred.includes(lan.title)}
                     onCheckedChange={() => togglepreferred(lan.title)}
                   />
+
                   <Label
                     htmlFor={lan.title}
                     className="text-gray-700 font-normal cursor-pointer"
@@ -298,6 +402,47 @@ const HouseManager = ({ data = {} }) => {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Primary Number:
+            </label>
+            <Input
+              name="phone"
+              type="tel"
+              placeholder="+254xxxxxxx"
+              value={formData.basicInfo.number || "+254"}
+              maxLength={11}
+              // onFocus={() => {
+              //   if (!formData.basicInfo.phone) {
+              //     setFormData((prev) => ({
+              //       ...prev,
+              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
+              //     }));
+              //   }
+              // }}
+              // onChange={handlePhoneChange}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              label="Alternative Number:"
+              name="phone"
+              type="tel"
+              placeholder="+254xxxxxxx"
+              value={formData.basicInfo.phone || "+254"}
+              maxLength={11}
+              onFocus={() => {
+                if (!formData.basicInfo.phone) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    basicInfo: { ...prev.basicInfo, phone: "+254" },
+                  }));
+                }
+              }}
+              onChange={handlePhoneChange}
+            />
           </div>
         </div>
 

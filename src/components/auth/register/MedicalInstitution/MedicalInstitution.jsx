@@ -33,7 +33,8 @@ const validateNurse = (data) => {
     "mobilityYears",
     "bathingYears",
     "feedingYears",
-    "serviceFee",
+    "serviceFeeDay",
+    "serviceFeeMonth",
     "bio",
   ];
 
@@ -54,7 +55,7 @@ const validateNurse = (data) => {
     errors.push("Age must be 25 or above");
   }
 
-  if (data.serviceFee && isNaN(data.serviceFee)) {
+  if (data.serviceFeeDay && isNaN(data.serviceFeeMonth)) {
     errors.push("Service Fee must be a valid number");
   }
 
@@ -176,7 +177,8 @@ const MedicalInstitution = ({ skills }) => {
           `institutionNurses[${i}][preferredRole]`,
           nurse.preferredRole,
         );
-        fd.append(`institutionNurses[${i}][serviceFee]`, nurse.serviceFee);
+        fd.append(`institutionNurses[${i}][serviceFeeDay]`, nurse.serviceFeeDay);
+        fd.append(`institutionNurses[${i}][serviceFeeMonth]`, nurse.serviceFeeMonth);
         fd.append(`institutionNurses[${i}][bio]`, nurse.bio);
 
         (nurse.languages || []).forEach((lang) => {

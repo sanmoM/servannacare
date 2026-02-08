@@ -76,8 +76,7 @@ const NurseDetails = ({
     mobilityYears: "",
     bathingYears: "",
     feedingYears: "",
-    // serviceFeeDay: "",
-    // serviceFeeMonth: "",
+ 
     serviceFeeDay: Number(defaultValues.serviceFeeDay) || 0,
     serviceFeeMonth: Number(defaultValues.serviceFeeMonth) || 0,
     bio: "",

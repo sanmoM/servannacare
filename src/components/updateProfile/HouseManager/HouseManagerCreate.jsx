@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useLocalUser from "@/hooks/useLocalUser";
+import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import {
   Cross,
@@ -37,14 +38,15 @@ const HouseManagerCreate = ({ data = {} }) => {
       experience: data.basicInfo?.experience || "",
       salaryRange: data.basicInfo?.salaryRange || "",
       location: data.basicInfo?.location || "",
-      serviceOffered: data.basicInfo?.serviceOffered || "",
+      preferred: data.preferred || [],
       languages: data.basicInfo?.languages || [],
+      phone: data.phone || "",
     },
 
     additionalDetails: {
-      isMother: data.additionalDetails?.isMother || "",
+      isMother: data.additionalDetails?.isMother ?? null,
       ageOfKids: data.additionalDetails?.ageOfKids || [],
-      isHandelingPet: data.additionalDetails?.isHandelingPet || "",
+      isHandelingPet: data.additionalDetails?.isHandelingPet ?? null,
       preferredRole: data.additionalDetails?.preferredRole || "",
     },
 
@@ -62,6 +64,27 @@ const HouseManagerCreate = ({ data = {} }) => {
     setFormData((p) => ({
       ...p,
       basicInfo: { ...p.basicInfo, [name]: value },
+    }));
+  };
+  const handlePhoneChange = (e) => {
+    let value = e.target.value;
+
+    if (!value.startsWith("+254")) {
+      value = "+254";
+    }
+
+    value = "+254" + value.slice(4).replace(/\D/g, "");
+
+    if (value.length > 13) {
+      value = value.slice(0, 13);
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      basicInfo: {
+        ...prev.basicInfo,
+        phone: value,
+      },
     }));
   };
 
@@ -116,6 +139,28 @@ const HouseManagerCreate = ({ data = {} }) => {
     }));
   };
 
+  const togglepreferred = (pref) => {
+    setFormData((prev) => {
+      const exists = prev.basicInfo.preferred.includes(pref);
+      return {
+        ...prev,
+        basicInfo: {
+          ...prev.basicInfo,
+          preferred: exists ? [] : [pref],
+        },
+      };
+    });
+  };
+
+  const preferred = [
+    {
+      title: "Live In",
+    },
+    {
+      title: "DayBurg",
+    },
+  ];
+
   const docs = [
     {
       id: "firstAidCertificate",
@@ -155,22 +200,102 @@ const HouseManagerCreate = ({ data = {} }) => {
     },
   ];
 
-  const handleCreate = (e) => {
+  const handleCreate = async (e) => {
     e.preventDefault();
-    console.log("form data",formData)
-    // localStorage.setItem("specialist", JSON.stringify(formData));
-    // localStorage.setItem(
-    //   "user",
-    //   JSON.stringify({
-    //     ...user,
-    //     name: formData.basicInfo.name,
-    //     location: formData.basicInfo.location,
-    //   }),
-    // );
-    // toast.success("Profile Updated!");
-    // router.push("/dashboard");
-  };
 
+    console.log("form data", formData);
+
+    const fd = new FormData();
+
+    fd.append("name", formData.basicInfo.name);
+    fd.append("education", formData.basicInfo.education);
+    fd.append("experience", formData.basicInfo.experience);
+    fd.append("salaryRange", formData.basicInfo.salaryRange);
+    fd.append("location", formData.basicInfo.location);
+    formData?.basicInfo.preferred.forEach((prep) => fd.append("preferred[]", prep));
+    fd.append("number", formData.basicInfo.phone);
+
+    formData.basicInfo.languages.forEach((lan) =>
+      fd.append("languages[]", lan),
+    );
+
+    fd.append("isMother", formData.additionalDetails.isMother === true ? 1 : 0);
+
+    fd.append(
+      "isHandelingPet",
+      formData.additionalDetails.isHandelingPet === true ? 1 : 0,
+    );
+
+    // fd.append("isMother", formData.additionalDetails.isMother);
+    // fd.append("isHandelingPet", formData.additionalDetails.isHandelingPet);
+    fd.append("preferredRole", formData.additionalDetails.preferredRole);
+
+    for (let pair of fd.entries()) {
+      console.log(pair[0], ":", pair[1]);
+    }
+
+    formData.additionalDetails.ageOfKids.forEach((age) =>
+      fd.append("ageOfKids[]", age),
+    );
+
+    const docs = formData.documents;
+
+    if (docs.firstAidCertificate instanceof File) {
+      fd.append("firstAidCertificate", docs.firstAidCertificate);
+    }
+
+    if (docs.goodConductCertificate instanceof File) {
+      fd.append("goodConductCertificate", docs.goodConductCertificate);
+    }
+
+    if (docs.iDCopy instanceof File) {
+      fd.append("idCopy", docs.iDCopy);
+    }
+
+    if (docs.profilePhoto instanceof File) {
+      fd.append("profilePhoto", docs.profilePhoto);
+    }
+
+    if (docs.drivingLicense instanceof File) {
+      fd.append("drivingLicense", docs.drivingLicense);
+    }
+
+    try {
+      const res = await postApi("/create-profile", fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res?.status === 200) {
+        toast.success("Registered Successfully!");
+        router.push("/dashboard");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          }),
+        );
+      } else {
+        toast.error(
+          res?.data?.message || "Something went wrong. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.error("Error creating profile:", error);
+      if (error.response) {
+        toast.error(
+          error.response.data?.message || `Error: ${error.response.status}`,
+        );
+      } else if (error.request) {
+        toast.error("No response from server. Please check your connection.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
+  };
 
   return (
     <div>
@@ -184,7 +309,6 @@ const HouseManagerCreate = ({ data = {} }) => {
               name="name"
               placeholder="Enter your name"
               defaultValue={formData?.basicInfo?.name}
-              
               onChange={handleChange}
             />
           </div>
@@ -275,29 +399,52 @@ const HouseManagerCreate = ({ data = {} }) => {
               onChange={handleChange}
             />
           </div>
+
           <div className="flex-1">
-            {/* service offered */}
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Service Offered
             </label>
-            <Select
-              value={formData.basicInfo.serviceOffered}
-              onValueChange={(v) => handleSelect("serviceOffered", v)}
-            >
-              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
-                <SelectValue placeholder="Select service offered" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="Live In (month rate pay)">
-                    Live In (month rate pay)
-                  </SelectItem>
-                  <SelectItem value="Dayburg (daily rate pay)">
-                    Dayburg (daily rate pay)
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap flex-col gap-2 ">
+              {preferred.map((lan, indx) => (
+                <div key={indx} className="flex items-center gap-2">
+                  <Checkbox
+                    id={lan.title}
+                    checked={formData.basicInfo.preferred.includes(lan.title)}
+                    onCheckedChange={() => togglepreferred(lan.title)}
+                  />
+
+                  <Label
+                    htmlFor={lan.title}
+                    className="text-gray-700 font-normal cursor-pointer"
+                  >
+                    {lan.title}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex-1">
+            <Input
+              label="Phone Number"
+              name="phone"
+              type="tel"
+              placeholder="+254XXXXXXXXX"
+              value={formData.basicInfo.phone}
+              maxLength={11}
+              onFocus={() => {
+                if (!formData.basicInfo.phone) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    basicInfo: {
+                      ...prev.basicInfo,
+                      phone: "+254",
+                    },
+                  }));
+                }
+              }}
+              onChange={handlePhoneChange}
+            />
           </div>
         </div>
 
@@ -331,11 +478,13 @@ const HouseManagerCreate = ({ data = {} }) => {
             <Label>Are you a mother?</Label>
             <RadioGroup
               className="flex gap-4 mt-3"
-              value={formData.additionalDetails.isMother}
-              onValueChange={(v) => handleAdditionalSelect("isMother", v)}
+              value={String(formData.additionalDetails.isMother)}
+              onValueChange={(v) =>
+                handleAdditionalSelect("isMother", v === "true")
+              }
             >
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="yes" id="r1" />
+                <RadioGroupItem value="true" id="r1" />
                 <Label
                   htmlFor="r1"
                   className="text-gray-700 font-normal cursor-pointer"
@@ -344,7 +493,7 @@ const HouseManagerCreate = ({ data = {} }) => {
                 </Label>
               </div>
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="no" id="r2" />
+                <RadioGroupItem value="false" id="r2" />
                 <Label
                   htmlFor="r2"
                   className="text-gray-700 font-normal cursor-pointer"
@@ -384,11 +533,13 @@ const HouseManagerCreate = ({ data = {} }) => {
             <Label>Are you okay handling pets?</Label>
             <RadioGroup
               className="flex gap-4 mt-3"
-              value={formData.additionalDetails.isHandelingPet}
-              onValueChange={(v) => handleAdditionalSelect("isHandelingPet", v)}
+              value={String(formData.additionalDetails.isHandelingPet)}
+              onValueChange={(v) =>
+                handleAdditionalSelect("isHandelingPet", v === "true")
+              }
             >
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="yes" id="p1" />
+                <RadioGroupItem value="true" id="p1" />
                 <Label
                   htmlFor="p1"
                   className="text-gray-700 font-normal cursor-pointer"
@@ -397,7 +548,7 @@ const HouseManagerCreate = ({ data = {} }) => {
                 </Label>
               </div>
               <div className="flex items-center gap-3">
-                <RadioGroupItem value="no" id="p2" />
+                <RadioGroupItem value="false" id="p2" />
                 <Label
                   htmlFor="p2"
                   className="text-gray-700 font-normal cursor-pointer"
@@ -453,7 +604,7 @@ const HouseManagerCreate = ({ data = {} }) => {
               accept={doc.accept}
               icon={doc.icon}
               optional={doc.optional}
-              // file={formData?.documents[doc.id]}
+              file={formData.documents[doc.id]}
               onFileSelect={(file) => handleFileSelect(doc.id, file)}
             />
           ))}

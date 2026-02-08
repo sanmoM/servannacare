@@ -19,12 +19,12 @@ const FileUpload = ({
   const isFileObject = file instanceof File;
   const isString = typeof file === "string" && file.length > 0;
 
-  // 🔒 SAFE image check
+
   const isImage =
     (isFileObject && file.type?.startsWith("image/")) ||
     (isString && file.match(/\.(jpg|jpeg|png|gif|webp)$/i));
 
-  // 🔒 SAFE preview source
+
   const previewSrc = isFileObject
     ? URL.createObjectURL(file)
     : isString
