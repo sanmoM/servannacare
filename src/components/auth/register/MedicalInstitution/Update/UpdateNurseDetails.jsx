@@ -20,12 +20,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import FileUpload from "../../FileUpload";
+import useLocalUser from "@/hooks/useLocalUser";
+import { Button } from "@/components/ui/button";
 
 const UpdateNurseDetails = ({
   nurseNumber = 1,
   onDataChange,
   defaultValues = {},
 }) => {
+  const { user, loaded } = useLocalUser();
   const documents = [
     {
       id: "idCopy",
@@ -562,6 +565,14 @@ const UpdateNurseDetails = ({
             />
           ))}
         </div>
+      </div>
+
+      <div className="flex justify-end">
+        {!user?.is_profile_completed && (
+          <Button className="w-full sm:w-auto" size="lg" type="submit">
+            submit
+          </Button>
+        )}
       </div>
     </div>
   );
