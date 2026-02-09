@@ -1,7 +1,10 @@
 "use client";
 
 import AgencyBasicInfo from "@/components/auth/register/Agency/AgencyBasicInfo";
+import UpdateBasicInfo from "@/components/auth/register/Agency/Update/UpdateBasicInfo";
+import UpdateEmployeeDetails from "@/components/auth/register/Agency/Update/UpdateEmployee";
 import Input from "@/components/shared/Input";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -15,6 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import AgencyUpdate from "@/components/updateProfile/Agency/AgencyUpdate";
+import { useFetch } from "@/hooks/useFetch";
+import useLocalUser from "@/hooks/useLocalUser";
 import {
   Calendar,
   Camera,
@@ -31,22 +36,37 @@ import toast from "react-hot-toast";
 
 export default function AgencyProfile() {
   const [userInfo, setUserInfo] = useState({});
+  const { user, loaded } = useLocalUser();
 
-  // Load saved data
+  const [agencyData, setAgencyData] = useState({});
+
+  console.log("agency", agencyData?.agency);
+
+  const { data, isLoading, error } = useFetch("/profile");
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      try {
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          setUserInfo(JSON.parse(savedUser));
-        }
-      } catch (error) {
-        console.error("Invalid JSON:", error);
-      }
-    }, 0);
+    if (data) {
+      setAgencyData(data?.data ?? data);
+    }
+  }, [data]);
 
-    return () => clearTimeout(timer);
-  }, []);
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
+
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     try {
+  //       const savedUser = localStorage.getItem("user");
+  //       if (savedUser) {
+  //         setUserInfo(JSON.parse(savedUser));
+  //       }
+  //     } catch (error) {
+  //       console.error("Invalid JSON:", error);
+  //     }
+  //   }, 0);
+
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   const formatLabel = (key) =>
     key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
@@ -137,27 +157,45 @@ export default function AgencyProfile() {
   return (
     <div>
       <div className="flex justify-between">
-        <h1 className="sectionHeading mb-4">My Profile</h1>
+        <h1 className="sectionHeading mb-4">Agency Profile</h1>
         <div className="text-xs text-gray-700 font-semibold gap-2 flex items-center">
-          <Calendar size={16} />
-          <span>Joined {userInfo.joinedSince}</span>
+          {/* <Calendar size={16} /> */}
+          {/* <span>Joined {userInfo.joinedSince}</span> */}
         </div>
       </div>
 
-      <p className="p-4 mb-4 text-sm flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
-        <Info /> Your account is Under review .
-      </p>
+      {!user?.is_profile_completed && (
+        <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+          <Info /> Your account is not complete.
+        </p>
+      )}
+
+      {user?.is_profile_completed && !user?.is_profile_verified && (
+        <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+          <Info /> Your account is Under review.
+        </p>
+      )}
+
+      {user?.is_profile_completed ? (
+        <UpdateBasicInfo agencyData={agencyData?.agency} />
+      ) : (
+        <>
+          <UpdateBasicInfo />
+          <UpdateEmployeeDetails />
+          {/* <UpdateReview/> */}
+        </>
+      )}
 
       <div>
         {/*  Render all form sections */}
         {userInfo.agency &&
           typeof userInfo.agency === "object" &&
           Object.entries(userInfo).map(([sectionKey, sectionValue]) =>
-            renderSection(sectionKey, sectionValue)
+            renderSection(sectionKey, sectionValue),
           )}
       </div>
 
-      <div className=" flex justify-end mt-6">
+      {/* <div className=" flex justify-end mt-6">
         <Dialog>
           <DialogTrigger asChild>
             <Button className={"w-full sm:w-auto"} size={"lg"}>
@@ -188,7 +226,7 @@ export default function AgencyProfile() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
+      </div> */}
     </div>
   );
 }

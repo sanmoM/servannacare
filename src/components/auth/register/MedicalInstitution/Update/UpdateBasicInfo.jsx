@@ -12,7 +12,6 @@ import useLocalUser from "@/hooks/useLocalUser";
 const UpdateBasicInfo = ({ instituteData }) => {
   const { user, loaded } = useLocalUser();
 
-
   const [data, setData] = useState({
     companyName: "",
     kraPin: "",
@@ -21,7 +20,6 @@ const UpdateBasicInfo = ({ instituteData }) => {
     phone: "",
     registrationDocument: null,
   });
-
 
   useEffect(() => {
     if (instituteData) {
@@ -37,23 +35,19 @@ const UpdateBasicInfo = ({ instituteData }) => {
     }
   }, [instituteData]);
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/\D/g, "").slice(0, 10);
     setData((prev) => ({ ...prev, phone: value }));
   };
 
-
   const handleFileSelect = (file) => {
     setData((prev) => ({ ...prev, registrationDocument: file }));
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -78,10 +72,10 @@ const UpdateBasicInfo = ({ instituteData }) => {
       return;
     }
 
- 
     const payload = {
       ...data,
-      registrationDocument: data.registrationDocument || instituteData.registrationDocument,
+      registrationDocument:
+        data.registrationDocument || instituteData.registrationDocument,
     };
 
     console.log("Updated institute data:", payload);
@@ -92,7 +86,6 @@ const UpdateBasicInfo = ({ instituteData }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <h2 className="formHeading">Institution Details Update</h2>
 
-    
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
         <Input
           type="text"
@@ -111,7 +104,6 @@ const UpdateBasicInfo = ({ instituteData }) => {
           onChange={handleChange}
         />
       </div>
-
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-6">
         <Input
@@ -172,7 +164,7 @@ const UpdateBasicInfo = ({ instituteData }) => {
             ) : typeof instituteData.registrationDocument === "string" ? (
               // Existing file from server
               instituteData.registrationDocument.match(
-                /\.(jpeg|jpg|gif|png|webp)$/i
+                /\.(jpeg|jpg|gif|png|webp)$/i,
               ) ? (
                 <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${instituteData.registrationDocument}`}

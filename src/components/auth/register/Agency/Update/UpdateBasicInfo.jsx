@@ -3,25 +3,31 @@
 import Input from "@/components/shared/Input";
 import { Label } from "@/components/ui/label";
 import React, { useEffect, useState } from "react";
-import FileUpload from "../FileUpload";
 import { FileText } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import FileUpload from "../../FileUpload";
+import useLocalUser from "@/hooks/useLocalUser";
+import { postApi } from "@/lib/apiHandler";
+import { useRouter } from "next/navigation";
 
-const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
+const UpdateBasicInfo = ({ agencyData }) => {
+  const router = useRouter();
+  const { user, loaded } = useLocalUser();
   const [data, setData] = useState({
-    companyName: defaultValues.companyName || "",
-    kraPin: defaultValues.kraPin || "",
-    companyRegistrationNumber: defaultValues.companyRegistrationNumber || "",
-    phone: defaultValues.phone || "",
-    businessLocation: defaultValues.businessLocation || "",
-    trainingAreas: defaultValues.trainingAreas || [],
-    registrationDocument: defaultValues.registrationDocument || null,
-    placementFee: defaultValues.placementFee || "",
-    replacementWindow: defaultValues.replacementWindow || "",
-    numberOfReplacement: defaultValues.numberOfReplacement || "",
+    companyName: agencyData?.companyName || "",
+    kraPin: agencyData?.kraPin || "",
+    companyRegistrationNumber: agencyData?.companyRegistrationNumber || "",
+    number: agencyData?.number || "",
+    businessLocation: agencyData?.businessLocation || "",
+    agency_services: agencyData?.agency_services || [],
+    registrationDocument: agencyData?.registrationDocument || null,
+    placementFee: agencyData?.placementFee || "",
+    replacementWindow: agencyData?.replacementWindow || "",
+    numberOfReplacement: agencyData?.numberOfReplacement || "",
   });
+  console.log("areas", data?.number);
 
   const train = [
     "Cooking",
@@ -33,11 +39,10 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
   ];
 
   useEffect(() => {
-    if (defaultValues && Object.keys(defaultValues).length > 0) {
-      setData((prev) => ({ ...prev, ...defaultValues }));
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (agencyData && Object.keys(agencyData).length > 0) {
+      setData((prev) => ({ ...prev, ...agencyData }));
     }
-  }, [defaultValues]);
+  }, [agencyData]);
 
   // Handle Input Changes
   const handleChange = (e) => {
@@ -58,19 +63,19 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
 
     setData((prev) => ({
       ...prev,
-      phone: "+254" + digits,
+      number: "+254" + digits,
     }));
   };
 
   // Handle Checkbox Toggle
   const toggleTraining = (item) => {
     setData((prev) => {
-      const alreadySelected = prev.trainingAreas.includes(item);
+      const alreadySelected = prev.agency_services.includes(item);
       return {
         ...prev,
-        trainingAreas: alreadySelected
-          ? prev.trainingAreas.filter((t) => t !== item)
-          : [...prev.trainingAreas, item],
+        agency_services: alreadySelected
+          ? prev.agency_services.filter((t) => t !== item)
+          : [...prev.agency_services, item],
       };
     });
   };
@@ -81,17 +86,17 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
   };
 
   // Validation + Submit
-  const handleSubmit = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
     const requiredFields = [
       "companyName",
       "kraPin",
       "companyRegistrationNumber",
-      "phone",
+      "number",
       "businessLocation",
       "registrationDocument",
-      "trainingAreas",
+      "agency_services",
       "placementFee",
       "replacementWindow",
       "numberOfReplacement",
@@ -110,20 +115,57 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
       }
     }
 
-    if (data.phone.length !== 11) {
+    if (data.number.length !== 11) {
       toast.error("Mobile number must be exactly 11 digits.");
       return;
     }
 
     console.log("Agency Data:", data);
-    onNext(data);
+
+    const fd = new FormData();
+
+    fd.append("companyName", data?.companyName);
+    fd.append("kraPin", data?.kraPin);
+    fd.append("companyRegistrationNumber", data?.companyRegistrationNumber);
+    fd.append("number", data?.number);
+    fd.append("businessLocation", data?.businessLocation);
+    data?.agency_services.forEach((ser) => fd.append("agency_services[]", ser));
+    fd.append("placementFee", data?.placementFee);
+    fd.append("replacementWindow", data?.replacementWindow);
+    fd.append("numberOfReplacement", data?.numberOfReplacement);
+
+    const documentKeys = ["registrationDocument"];
+
+    documentKeys.forEach((key) => {
+      const value = data[key];
+
+      if (value instanceof File) {
+        fd.append(key, value);
+      } else if (typeof value === "string" && value !== "") {
+        fd.append(key, value);
+      }
+    });
+
+    try {
+      const res = await postApi("/update-profile", fd);
+
+      if (res?.status === 200) {
+        toast.success("Profile Updated Successfully!");
+        router.push("/dashboard");
+      } else {
+        toast.error(res?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Upload failed. Check console.");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleUpdate}>
       {/* Agency Details */}
       <div>
-        <h2 className="formHeading">Agency Details</h2>
+        <h2 className="formHeading">Agency Details update</h2>
 
         <div className="flex pt-6 flex-col sm:flex-row gap-6 sm:gap-4">
           <Input
@@ -154,16 +196,16 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
 
           <Input
             label="Mobile Number"
-            name="phone"
+            name="number"
             type="tel"
             placeholder="+254xxxxxxx"
-            value={data.phone || "+254"}
+            value={data.number || "+254"}
             maxLength={11}
             onFocus={() => {
-              if (!data.phone) {
+              if (!data.number) {
                 setData((prev) => ({
                   ...prev,
-                  phone: "+254",
+                  number: "+254",
                 }));
               }
             }}
@@ -201,7 +243,7 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
               <div key={indx} className="flex items-center gap-2">
                 <Checkbox
                   id={`train-${indx}`}
-                  checked={data.trainingAreas.includes(item)}
+                  checked={data.agency_services.includes(item)}
                   onCheckedChange={() => toggleTraining(item)}
                 />
                 <Label
@@ -247,14 +289,16 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
         </div>
       </div>
 
-      {/* Submit */}
-      <div className="flex justify-end mt-6">
-        <Button type="submit" size="lg">
-          Next
-        </Button>
+      {/* Submit button */}
+      <div className="flex justify-end">
+        {user?.is_profile_completed && (
+          <Button className="w-full sm:w-auto" size="lg" type="submit">
+            Update
+          </Button>
+        )}
       </div>
     </form>
   );
 };
 
-export default AgencyBasicInfo;
+export default UpdateBasicInfo;
