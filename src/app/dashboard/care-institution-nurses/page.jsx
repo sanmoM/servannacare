@@ -1,3 +1,5 @@
+"use client";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import MedicalInstitutionNurse from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionNurse";
+import { useFetch } from "@/hooks/useFetch";
 import { DialogClose } from "@radix-ui/react-dialog";
 import {
   Edit,
@@ -20,9 +23,33 @@ import {
   UserRoundCog,
   UsersRound,
 } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const page = () => {
+  const [employees, setNurses] = useState([]);
+  const { data, isLoading, refetch } = useFetch("/profile");
+
+  useEffect(() => {
+    if (data) {
+      setNurses(data?.data?.institutionNurses || data?.institutionNurses || []);
+    }
+  }, [data]);
+
+  const handleDelete = async (id) => {
+    const loadingToast = toast.loading("Deleting employee...");
+    try {
+      await axios.delete(`/api/agency/employee/${id}`);
+      toast.success("Employee removed successfully", { id: loadingToast });
+      refetch();
+    } catch (err) {
+      toast.error("Failed to delete. Please try again.", { id: loadingToast });
+
+      setNurses((prev) => prev.filter((e) => e.id !== id));
+    }
+  };
+
+  if (isLoading) return <LoadingSpinner />;
+
   const Nurse = [
     {
       id: 1,
@@ -214,7 +241,7 @@ const page = () => {
                     <Button>
                       <Eye />
                     </Button>
-                    
+
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button className={"bg-green-500 hover:bg-green-400"}>

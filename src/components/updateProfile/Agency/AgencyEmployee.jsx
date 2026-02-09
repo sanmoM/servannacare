@@ -1,3 +1,4 @@
+"use client";
 import FileUpload from "@/components/auth/register/FileUpload";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
@@ -21,54 +22,252 @@ import {
   IdCard,
   IdCardLanyard,
 } from "lucide-react";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { postApi } from "@/lib/apiHandler";
 
-const AgencyEmployee = () => {
+const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
+  const [ready, setReady] = useState(!isUpdate);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    educationLevel: "",
+    location: "",
+    experience: "",
+    salaryRange: "",
+    isMother: "",
+    kidAges: [],
+    handlePets: "",
+    preferredRole: "",
+    languages: [],
+    cooking: "",
+    housekeeping: "",
+    childcare: "",
+    liveType: "",
+    documents: {
+      aidCertificate: null,
+      goodConductCertificate: null,
+      idCopy: null,
+      profilePhoto: null,
+      drivingLicense: null,
+    },
+  });
+
+  useEffect(() => {
+    if (initialData && isUpdate) {
+      setFormData({
+        name: initialData.name || "",
+        educationLevel: initialData.educationLevel || "",
+        location: initialData.location || "",
+        experience: initialData.experience || "",
+        salaryRange: initialData.salaryRange || "",
+        preferredRole: initialData.preferredRole || "",
+        liveType: initialData.liveType || "",
+        cooking: initialData.cooking || "",
+        housekeeping: initialData.housekeeping || "",
+        childcare: initialData.childcare || "",
+
+        isMother: initialData.isMother === 1 ? "Yes" : "No",
+        handlePets: initialData.handlePets === 1 ? "Yes" : "No",
+
+        kidAges: initialData.kidAges || [],
+        languages: initialData.languages || [],
+
+        documents: {
+          aidCertificate:
+            initialData.aidCertificate !== "null"
+              ? initialData.aidCertificate
+              : null,
+          goodConductCertificate:
+            initialData.goodConductCertificate !== "null"
+              ? initialData.goodConductCertificate
+              : null,
+          idCopy: initialData.idCopy !== "null" ? initialData.idCopy : null,
+          profilePhoto:
+            initialData.profilePhoto !== "null"
+              ? initialData.profilePhoto
+              : null,
+          drivingLicense:
+            initialData.drivingLicense !== "null"
+              ? initialData.drivingLicense
+              : null,
+        },
+      });
+
+      setReady(true);
+    }
+  }, [initialData, isUpdate]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name, value) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const toggleArray = (key, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: prev[key].includes(value)
+        ? prev[key].filter((item) => item !== value)
+        : [...prev[key], value],
+    }));
+  };
+
+  const normalizeValue = (key, value) => {
+    if (key === "isMother" || key === "handlePets") {
+      return value === "Yes";
+    }
+    return value;
+  };
+
+  const handleFileSelect = (section, field, file) => {
+    setFormData((prev) => ({
+      ...prev,
+      [section]: { ...prev[section], [field]: file },
+    }));
+  };
+
+  // Build payload for create (all required fields)
+  const buildCreatePayload = (data) => {
+    const payload = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "documents") return;
+
+      const normalized = normalizeValue(key, value);
+      if (Array.isArray(normalized)) {
+        normalized.forEach((v) => payload.append(`${key}[]`, v));
+      } else if (normalized !== null && normalized !== undefined) {
+        payload.append(key, normalized);
+      }
+    });
+
+    const requiredDocs = [
+      "aidCertificate",
+      "goodConductCertificate",
+      "idCopy",
+      "profilePhoto",
+    ];
+    const optionalDocs = ["drivingLicense"];
+
+    requiredDocs.forEach((doc) => {
+      if (!data.documents[doc]) {
+        throw new Error(`Missing required document: ${doc}`);
+      }
+      if (data.documents[doc] instanceof File)
+        payload.append(doc, data.documents[doc]);
+    });
+
+    optionalDocs.forEach((doc) => {
+      if (data.documents[doc] instanceof File)
+        payload.append(doc, data.documents[doc]);
+    });
+
+    return payload;
+  };
+
+  // Build payload for update (send only changed files)
+  const buildUpdatePayload = (data) => {
+    const payload = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "documents") return;
+
+      const normalized = normalizeValue(key, value);
+      if (Array.isArray(normalized)) {
+        normalized.forEach((v) => payload.append(`${key}[]`, v));
+      } else if (normalized !== null && normalized !== undefined) {
+        payload.append(key, normalized);
+      }
+    });
+
+    Object.entries(data.documents).forEach(([key, value]) => {
+      if (value instanceof File) payload.append(key, value);
+    });
+
+    return payload;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const loadingToast = toast.loading(isUpdate ? "Updating..." : "Adding...");
+
+    try {
+      const payload = isUpdate
+        ? buildUpdatePayload(formData)
+        : buildCreatePayload(formData);
+
+      if (isUpdate) {
+        await postApi(`/agency-employee/${initialData.id}`, payload);
+        toast.success("Employee updated!", { id: loadingToast });
+      } else {
+        await postApi("/agency-employee", payload);
+        toast.success("Employee added!", { id: loadingToast });
+      }
+
+      onSuccess?.();
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "Operation failed", { id: loadingToast });
+    }
+  };
+
+  if (!ready) return null;
+
   const documents = [
     {
-      id: 1,
+      id: "aidCertificate",
       title: "First Aid Certificate",
       accept: "application/pdf,image/*",
-      icon: <Cross size={32} />,
+      icon: <Cross size={32} className="text-primary" />,
+      required: true,
     },
     {
-      id: 2,
-      title: "Good Conduct Certificate / Letter from Chief",
+      id: "goodConductCertificate",
+      title: "Good Conduct Certificate",
       accept: "application/pdf,image/*",
       icon: <FileText size={32} />,
+      required: true,
     },
     {
-      id: 3,
+      id: "idCopy",
       title: "ID Copy",
       accept: "application/pdf,image/*",
       icon: <IdCardLanyard size={32} />,
+      required: true,
     },
     {
-      id: 4,
+      id: "profilePhoto",
       title: "Profile Photo",
       accept: "image/*",
       icon: <Camera size={32} />,
+      required: true,
     },
     {
-      id: 5,
+      id: "drivingLicense",
       title: "Driving License (Optional)",
       accept: "application/pdf,image/*",
       icon: <IdCard size={32} />,
+      required: false,
       optional: true,
     },
   ];
+
   return (
     <div>
-      <form className="relative" action="">
-        {/* Name & Education */}
+      <form className="relative pb-16" onSubmit={handleSubmit}>
         <div className="flex sm:gap-4 gap-6 flex-col sm:flex-row">
           <div className="flex-1">
             <Input
               placeholder="Name"
               name="name"
               label="Full Name (as per ID)"
-              //   value={data.name}
-              //   onChange={handleChange}
+              value={formData.name}
+              onChange={handleChange}
+              required
             />
           </div>
           <div className="flex-1">
@@ -76,20 +275,21 @@ const AgencyEmployee = () => {
               Education Level
             </Label>
             <Select
-            //   value={data.educationLevel || ""}
-            //   onValueChange={(v) => handleSelect("educationLevel", v)}
+              value={formData.educationLevel}
+              onValueChange={(v) => handleSelectChange("educationLevel", v)}
             >
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select education" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="Primary">Primary</SelectItem>
-                  <SelectItem value="Secondary">Secondary</SelectItem>
-                  <SelectItem value="Diploma">Diploma</SelectItem>
-                  <SelectItem value="Bachelor">Bachelor</SelectItem>
-                  <SelectItem value="Bachelor">Bachelor</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  {["Primary", "Secondary", "Diploma", "Bachelor", "Other"].map(
+                    (edu) => (
+                      <SelectItem key={edu} value={edu}>
+                        {edu}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -103,56 +303,56 @@ const AgencyEmployee = () => {
               placeholder="Type your location."
               label="Location"
               name="location"
-              //   value={data.location}
-              //   onChange={handleChange}
+              value={formData.location}
+              onChange={handleChange}
             />
           </div>
           <div className="flex-1 flex gap-2">
             <div className="w-1/2">
               <Label className="block mb-2 text-sm font-medium text-gray-700">
-                Experience (Years)
+                Experience
               </Label>
-
               <Select
-              // value={data.experience || ""}
-              // onValueChange={(v) => handleSelect("experience", v)}
+                value={formData.experience}
+                onValueChange={(v) => handleSelectChange("experience", v)}
               >
-                <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                <SelectTrigger className="py-5.5 shadow-none">
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="1 year">1 year</SelectItem>
-                    <SelectItem value="2 years">2 years</SelectItem>
-                    <SelectItem value="3 years">3 years</SelectItem>
-                    <SelectItem value="4 years">4 years</SelectItem>
-                    <SelectItem value="5 years">5 years</SelectItem>
-                    <SelectItem value="More than 5+ years">
-                      More than 5 years
+                  {[
+                    "1 year",
+                    "2 years",
+                    "3 years",
+                    "4 years",
+                    "5 years",
+                    "More than 5+ years",
+                  ].map((y) => (
+                    <SelectItem key={y} value={y}>
+                      {y}
                     </SelectItem>
-                  </SelectGroup>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="w-1/2">
               <Label className="block mb-2 text-sm font-medium text-gray-700">
-                Salary Range (KSh)
+                Salary (KSh)
               </Label>
-
               <Select
-              // value={data.salaryRange || ""}
-              // onValueChange={(v) => handleSelect("salaryRange", v)}
+                value={formData.salaryRange}
+                onValueChange={(v) => handleSelectChange("salaryRange", v)}
               >
-                <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
-                  <SelectValue placeholder="Select salary range" />
+                <SelectTrigger className="py-5.5 shadow-none">
+                  <SelectValue placeholder="Salary range" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="10-20">$10,000 - $20,000</SelectItem>
-                    <SelectItem value="20-30">$20,000 - $30,000</SelectItem>
-                    <SelectItem value="30-40">$30,000 - $40,000</SelectItem>
-                    <SelectItem value="40-50">$40,000 - $50,000</SelectItem>
-                    <SelectItem value="50+">$50,000+</SelectItem>
+                    <SelectItem value="200-400">200 - 400</SelectItem>
+                    <SelectItem value="400-600">400 - 600</SelectItem>
+                    <SelectItem value="600-800">600 - 800</SelectItem>
+                    <SelectItem value="800-1000">800 - 1000</SelectItem>
+                    <SelectItem value="1000+">More than 1000</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -160,38 +360,42 @@ const AgencyEmployee = () => {
           </div>
         </div>
 
-        {/* Radio & Checkboxes */}
+        {/* Motherhood & Kid Ages */}
         <div className="flex flex-col py-8 sm:flex-row sm:gap-4 gap-8">
           <div className="flex-1">
-            <Label className="mb-3">Are you a mother?</Label>
+            <Label className="mb-3 block text-sm font-medium">
+              Are you a mother?
+            </Label>
             <RadioGroup
-            //   value={data.isMother || ""}
-            //   onValueChange={(v) => handleRadio("isMother", v)}
+              value={formData.isMother}
+              onValueChange={(v) => handleSelectChange("isMother", v)}
             >
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="Yes" id={`motherYes`} />
-                  <Label htmlFor={`motherYes`}>Yes</Label>
+                  <RadioGroupItem value="Yes" id="mYes" />
+                  <Label htmlFor="mYes">Yes</Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="No" id={`motherNo`} />
-                  <Label htmlFor={`motherNo`}>No</Label>
+                  <RadioGroupItem value="No" id="mNo" />
+                  <Label htmlFor="mNo">No</Label>
                 </div>
               </div>
             </RadioGroup>
           </div>
 
           <div className="flex-1">
-            <Label className="mb-3">Preferred kid ages to work with </Label>
+            <Label className="mb-3 block text-sm font-medium">
+              Preferred kid ages
+            </Label>
             <div className="flex flex-wrap gap-y-2 gap-x-4">
               {["0-3", "4-10", "11+"].map((age) => (
                 <div key={age} className="flex items-center gap-2">
                   <Checkbox
-                    id={`${age}`}
-                    // checked={data.kidAges.includes(age)}
-                    // onCheckedChange={() => toggleArray("kidAges", age)}
+                    id={age}
+                    checked={formData.kidAges.includes(age)}
+                    onCheckedChange={() => toggleArray("kidAges", age)}
                   />
-                  <Label htmlFor={`${age}`}>{age} years</Label>
+                  <Label htmlFor={age}>{age} years</Label>
                 </div>
               ))}
             </div>
@@ -201,82 +405,88 @@ const AgencyEmployee = () => {
         {/* Pets & Role */}
         <div className="flex flex-col sm:flex-row sm:gap-4 gap-8">
           <div className="flex-1">
-            <Label className="mb-3">Are you okay handling pets?</Label>
-
+            <Label className="mb-3 block text-sm font-medium">
+              Handle pets?
+            </Label>
             <RadioGroup
-            //   value={data.handlePets || ""}
-            //   onValueChange={(v) => handleRadio("handlePets", v)}
+              value={formData.handlePets}
+              onValueChange={(v) => handleSelectChange("handlePets", v)}
             >
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="Yes" id={`petsYes`} />
-                  <Label htmlFor={`petsYes`}>Yes</Label>
+                  <RadioGroupItem value="Yes" id="pYes" />
+                  <Label htmlFor="pYes">Yes</Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="No" id={`petsNo`} />
-                  <Label htmlFor={`petsNo`}>No</Label>
+                  <RadioGroupItem value="No" id="pNo" />
+                  <Label htmlFor="pNo">No</Label>
                 </div>
               </div>
             </RadioGroup>
           </div>
-
           <div className="flex-1">
-            <Label className="mb-3">Preferred Role</Label>
+            <Label className="mb-3 block text-sm font-medium">
+              Preferred Role
+            </Label>
             <RadioGroup
-            //   value={data.preferredRole || ""}
-            //   onValueChange={(v) => handleRadio("preferredRole", v)}
+              value={formData.preferredRole}
+              onValueChange={(v) => handleSelectChange("preferredRole", v)}
             >
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="Nanny" id={`roleNanny`} />
-                  <Label htmlFor={`roleNanny`}>Nanny</Label>
+                  <RadioGroupItem value="Nanny" id="rNanny" />
+                  <Label htmlFor="rNanny">Nanny</Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="Housekeeper" id={`roleHousekeeper`} />
-                  <Label htmlFor={`roleHousekeeper`}>Housekeeper</Label>
+                  <RadioGroupItem value="Housekeeper" id="rHK" />
+                  <Label htmlFor="rHK">Housekeeper</Label>
                 </div>
               </div>
             </RadioGroup>
           </div>
         </div>
 
-        {/* Languages */}
+        {/* Languages Checkboxes */}
         <div className="pt-8">
-          <Label className="mb-3">Languages Spoken</Label>
+          <Label className="mb-3 block text-sm font-medium">
+            Languages Spoken
+          </Label>
           <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {languages.map((lan, i) => (
-              <div key={i} className="flex items-center gap-2">
+            {languages.map((lan) => (
+              <div key={lan.value} className="flex items-center gap-2">
                 <Checkbox
-                  id={`${lan.value}`}
-                  //   checked={data.languages.includes(lan.value)}
-                  //   onCheckedChange={() => toggleArray("languages", lan.value)}
+                  id={lan.value}
+                  checked={formData.languages.includes(lan.value)}
+                  onCheckedChange={() => toggleArray("languages", lan.value)}
                 />
-                <Label htmlFor={`${lan.value}`}>{lan.text}</Label>
+                <Label htmlFor={lan.value}>{lan.text}</Label>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Skills */}
+        {/* Proficiency Selects */}
         <div className="pt-6">
-          <Label className="mb-3">Skill Proficiency</Label>
+          <Label className="mb-3 block text-sm font-medium text-primary">
+            Skill Proficiency
+          </Label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {["cooking", "housekeeping", "childcare"].map((skill) => (
               <div key={skill}>
-                <Label className="block mb-2 capitalize">{skill}</Label>
+                <Label className="block mb-2 capitalize text-xs font-semibold">
+                  {skill}
+                </Label>
                 <Select
-                //   value={data.skills[skill] || ""}
-                //   onValueChange={(v) => handleSkillChange(skill, v)}
+                  value={formData[skill]}
+                  onValueChange={(v) => handleSelectChange(skill, v)}
                 >
-                  <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
-                    <SelectValue placeholder="Select proficiency" />
+                  <SelectTrigger className="py-5.5 shadow-none">
+                    <SelectValue placeholder="Proficiency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="Strong">Strong</SelectItem>
-                      <SelectItem value="Average">Average</SelectItem>
-                      <SelectItem value="Weak">Weak</SelectItem>
-                    </SelectGroup>
+                    <SelectItem value="Strong">Strong</SelectItem>
+                    <SelectItem value="Average">Average</SelectItem>
+                    <SelectItem value="Weak">Weak</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -286,53 +496,63 @@ const AgencyEmployee = () => {
 
         {/* Live Type */}
         <div className="py-6">
-          <Label className="mb-3">Live Preference</Label>
-
+          <Label className="mb-3 block text-sm font-medium">
+            Live Preference
+          </Label>
           <RadioGroup
-          // value={data.liveType || ""}
-          // onValueChange={(v) => handleRadio("liveType", v)}
+            value={formData.liveType}
+            onValueChange={(v) => handleSelectChange("liveType", v)}
           >
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="Live-In" id={`liveIn`} />
-                <Label htmlFor={`liveIn`}>Live In</Label>
+                <RadioGroupItem value="Live-In" id="lIn" />
+                <Label htmlFor="lIn">Live In</Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="Dayburg" id={`dayburg`} />
-                <Label htmlFor={`dayburg`}>Dayburg</Label>
+                <RadioGroupItem value="Dayburg" id="lDay" />
+                <Label htmlFor="lDay">Dayburg</Label>
               </div>
             </div>
           </RadioGroup>
         </div>
 
-        {/* Documents */}
-        <div className="p-3 bg-primary/20 rounded-xl flex gap-2 items-center">
-          <ClipboardPlus />
-          <span className="text-sm text-gray-700">
-            Please upload the following documents
+        {/* Documents Section */}
+        <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl flex gap-2 items-center mb-4">
+          <ClipboardPlus className="text-primary" />
+          <span className="text-sm font-medium text-primary">
+            Update or upload documents
           </span>
         </div>
 
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
-          {documents.map((doc) => (
-            <FileUpload
-              key={doc.id}
-              title={doc.title}
-              accept={doc.accept}
-              icon={doc.icon}
-              optional={doc.optional}
-              //   file={data.documents[doc.id] || null}
-              //   onFileSelect={(file) => handleFileSelect(doc.id, file)}
-            />
+          {documents.map((item, indx) => (
+            <div key={indx} className="border rounded-xl p-4">
+              <FileUpload
+                title={item.title}
+                accept={item.accept}
+                icon={item.icon}
+                optional={item.optional || false}
+                file={formData.documents[item.id]}
+                onFileSelect={(file) =>
+                  handleFileSelect("documents", item.id, file)
+                }
+              />
+
+              {/* <FilePreview
+        file={formData.documents[item.id]}  
+        alt={item.title}
+      /> */}
+            </div>
           ))}
         </div>
-        <div className="">
+
+        <div className="pt-8">
           <Button
-            className={"w-full sm:absolute sm:b-0 sm:mt-4 sm:w-auto"}
-            size={"lg"}
+            className="w-full sm:w-48 bg-primary hover:bg-primary/90"
+            size="lg"
             type="submit"
           >
-            Add
+            {isUpdate ? "Save Changes" : "Register Employee"}
           </Button>
         </div>
       </form>

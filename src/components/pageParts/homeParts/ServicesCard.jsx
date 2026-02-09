@@ -1,19 +1,15 @@
 
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const ServicesCard = ({ services }) => {
 
   return (
     <>
+     <Link href={"/specialist"}>
       <div className="group  relative overflow-hidden rounded-xl  transition-all duration-500 ">
         <div className="relative h-80 w-full overflow-hidden rounded-xl bg-background">
-          {/* <Image
-            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${services?.image}`}
-            alt={services.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
-          /> */}
           <div className="relative h-64 w-full group">
             <Image
               src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${services?.image}`}
@@ -42,10 +38,11 @@ const ServicesCard = ({ services }) => {
           <p className="text-sm group-hover:text-white text-gray-700 leading-relaxed">
                “{services?.subtitle?.split(" ").slice(0, 10).join(" ")}
             {services?.subtitle?.split(" ").length > 10 ? "..." : ""}”
-            {/* {services.subtitle} */}
+  
           </p>
         </div>
       </div>
+     </Link>
     </>
   );
 };

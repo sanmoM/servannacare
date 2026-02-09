@@ -36,20 +36,21 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function AgencyProfile() {
- const { user, loaded } = useLocalUser();
- 
-   const [agencyData, setAgencyData] = useState(null);
- 
-   const { data, isLoading, error } = useFetch("/profile");
-   useEffect(() => {
-     if (data) {
-       setAgencyData(data?.data?.data ?? data);
-     }
-   }, [data]);
- 
-   if (isLoading) return <LoadingSpinner />;
-   if (error) return <div>Error loading data</div>;
+  const { user, loaded } = useLocalUser();
 
+  const [agencyData, setAgencyData] = useState(null);
+
+  const { data, isLoading, error } = useFetch("/profile");
+  useEffect(() => {
+    if (data) {
+      setAgencyData(data?.data?.data ?? data);
+    }
+  }, [data]);
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
+
+  
   return (
     <div>
       <div className="flex justify-between">
