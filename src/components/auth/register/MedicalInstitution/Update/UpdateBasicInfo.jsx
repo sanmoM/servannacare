@@ -8,8 +8,11 @@ import FileUpload from "../../FileUpload";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import useLocalUser from "@/hooks/useLocalUser";
+import { postApi } from "@/lib/apiHandler";
+import { useRouter } from "next/navigation";
 
 const UpdateBasicInfo = ({ instituteData }) => {
+  const router = useRouter();
   const { user, loaded } = useLocalUser();
 
   const [data, setData] = useState({
@@ -41,15 +44,27 @@ const UpdateBasicInfo = ({ instituteData }) => {
   };
 
   const handlePhoneChange = (e) => {
-    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
-    setData((prev) => ({ ...prev, phone: value }));
+    let value = e.target.value;
+
+    if (!value.startsWith("+254")) {
+      value = "+254";
+    }
+
+    let digits = value.slice(4).replace(/\D/g, "");
+
+    if (digits.length > 9) digits = digits.slice(0, 9);
+
+    setData((prev) => ({
+      ...prev,
+      phone: "+254" + digits,
+    }));
   };
 
   const handleFileSelect = (file) => {
     setData((prev) => ({ ...prev, registrationDocument: file }));
   };
 
-  const handleSubmit = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
     const requiredFields = [
@@ -67,23 +82,48 @@ const UpdateBasicInfo = ({ instituteData }) => {
       }
     }
 
-    if (data.phone.length !== 10) {
-      toast.error("Phone number must be exactly 10 digits");
+    if (data.phone.length !== 11) {
+      toast.error("Phone number must be exactly 11 digits");
       return;
     }
 
-    const payload = {
-      ...data,
-      registrationDocument:
-        data.registrationDocument || instituteData.registrationDocument,
-    };
+    const fd = new FormData();
 
-    console.log("Updated institute data:", payload);
-    toast.success("Institution details updated successfully!");
+    fd.append("companyName", data?.companyName);
+    fd.append("kraPin", data?.kraPin);
+    fd.append("companyRegistrationNumber", data?.companyRegistrationNumber);
+    fd.append("number", data?.phone);
+    fd.append("businessLocation", data?.businessLocation);
+
+    const documentKeys = ["registrationDocument"];
+
+    documentKeys.forEach((key) => {
+      const value = data[key];
+
+      if (value instanceof File) {
+        fd.append(key, value);
+      } else if (typeof value === "string" && value !== "") {
+        fd.append(key, value);
+      }
+    });
+
+    try {
+      const res = await postApi("/update-profile", fd);
+
+      if (res?.status === 200) {
+        toast.success("Institute Data Updated Successfully!");
+        router.push("/dashboard");
+      } else {
+        toast.error(res?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Upload failed. Check console.");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleUpdate} className="space-y-6">
       <h2 className="formHeading">Institution Details Update</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
@@ -115,12 +155,20 @@ const UpdateBasicInfo = ({ instituteData }) => {
         />
 
         <Input
-          label="Phone Number"
+          label="Mobile Number"
           name="phone"
           type="tel"
-          placeholder="07xxxxxxxx"
-          value={data.phone}
-          maxLength={10}
+          placeholder="+254xxxxxxx"
+          value={data.phone || "+254"}
+          maxLength={11}
+          onFocus={() => {
+            if (!data.phone) {
+              setData((prev) => ({
+                ...prev,
+                phone: "+254",
+              }));
+            }
+          }}
           onChange={handlePhoneChange}
         />
       </div>

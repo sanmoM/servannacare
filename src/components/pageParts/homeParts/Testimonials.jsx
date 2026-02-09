@@ -11,10 +11,52 @@ import { testimonials } from "@/utilities/data";
 import Container from "@/components/shared/Container";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
+import { postApi } from "@/lib/apiHandler";
+import toast from "react-hot-toast";
 
 export default function Testimonials({ homeData }) {
   const [startCount, setStartCount] = useState(false);
   const sectionRef = useRef(null);
+
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleSubscribe = async () => {
+    if (!email) {
+      toast.error("Email is required");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await postApi("subscribe", {
+        email,
+      });
+
+      if (!res.status) {
+        throw new Error();
+      }
+
+      toast.success("Thanks for subscribing!");
+      setEmail("");
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -23,7 +65,7 @@ export default function Testimonials({ homeData }) {
           setStartCount(true);
         }
       },
-      { threshold: 0.4 }, //
+      { threshold: 0.4 },
     );
 
     if (sectionRef.current) {
@@ -115,15 +157,18 @@ export default function Testimonials({ homeData }) {
               <Input
                 type="email"
                 placeholder="Enter Your Email"
-                className={"rounded-full"}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="rounded-full"
               />
-              {/* todo: email send in admin panel. */}
+
               <Button
-                size={"lg"}
-                variant={"outline"}
-                className={"rounded-full hover:bg-secondary w-full sm:w-auto"}
+                size="lg"
+                onClick={handleSubscribe}
+                disabled={loading}
+                className="rounded-full hover:bg-secondary w-full sm:w-auto cursor-pointer"
               >
-                SUBSCRIBE
+                {loading ? "SUBSCRIBING..." : "SUBSCRIBE"}
               </Button>
             </div>
           </div>

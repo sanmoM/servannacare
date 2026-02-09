@@ -150,7 +150,7 @@ const UpdateBasicInfo = ({ agencyData }) => {
       const res = await postApi("/update-profile", fd);
 
       if (res?.status === 200) {
-        toast.success("Profile Updated Successfully!");
+        toast.success("agency data Updated Successfully!");
         router.push("/dashboard");
       } else {
         toast.error(res?.data?.message || "Something went wrong.");

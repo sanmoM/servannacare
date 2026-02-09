@@ -23,11 +23,21 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // phone handler (digits only + max 10)
   const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    value = value.slice(0, 10);
-    setData((prev) => ({ ...prev, phone: value }));
+    let value = e.target.value;
+
+    if (!value.startsWith("+254")) {
+      value = "+254";
+    }
+
+    let digits = value.slice(4).replace(/\D/g, "");
+
+    if (digits.length > 9) digits = digits.slice(0, 9);
+
+    setData((prev) => ({
+      ...prev,
+      phone: "+254" + digits,
+    }));
   };
 
   useEffect(() => {
@@ -51,7 +61,7 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
       "kraPin",
       "companyRegistrationNumber",
       "businessLocation",
-      "phone", 
+      "phone",
       "registrationDocument",
     ];
 
@@ -65,8 +75,8 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
       }
     }
 
-    if (data.phone.length !== 10) {
-      toast.error("Phone number must be exactly 10 digits.");
+    if (data.phone.length !== 11) {
+      toast.error("Phone number must be exactly 11 digits.");
       return;
     }
 
@@ -109,12 +119,20 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
           />
 
           <Input
-            label="Phone Number"
+            label="Mobile Number"
             name="phone"
             type="tel"
-            placeholder="07xxxxxxxx"
-            value={data.phone}
-            maxLength={10}
+            placeholder="+254xxxxxxx"
+            value={data.phone || "+254"}
+            maxLength={11}
+            onFocus={() => {
+              if (!data.phone) {
+                setData((prev) => ({
+                  ...prev,
+                  phone: "+254",
+                }));
+              }
+            }}
             onChange={handlePhoneChange}
           />
         </div>
