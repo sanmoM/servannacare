@@ -34,7 +34,6 @@ import {
 import { useEffect, useState } from "react";
 
 export default function MedicalInstitutionProfile() {
-  const [userInfo, setUserInfo] = useState({});
   const { user, loaded } = useLocalUser();
 
   const [instituteData, setInstituteData] = useState(null);
@@ -51,6 +50,10 @@ export default function MedicalInstitutionProfile() {
 
   return (
     <div>
+      <div className="flex justify-between">
+        <h1 className="sectionHeading mb-4">Institute Profile</h1>
+      </div>
+
       {!user?.is_profile_completed && (
         <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
           <Info /> Your account is not complete.
