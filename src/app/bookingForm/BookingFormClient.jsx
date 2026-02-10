@@ -168,7 +168,7 @@ export default function BookingFormClient() {
       if (res?.status === 200) {
         toast.success("Booking Successfully!");
         console.log("response", res);
-        router.push("/dashboard");
+        router.push("/dashboard/my-appointment");
       } else {
         toast.error(
           res?.data?.message || "Something went wrong. Please try again.",
@@ -191,7 +191,7 @@ export default function BookingFormClient() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="max-w-4xl mx-auto space-y-8"
+      className="max-w-4xl mx-auto space-y-8 my-12"
     >
       <Card className="shadow-xl border-muted">
         <CardHeader>

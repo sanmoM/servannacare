@@ -277,7 +277,6 @@ const Physiotherapist = ({ data = {} }) => {
     <div>
       <form onSubmit={handleUpdate} className="space-y-6 relative">
         <h2 className="formHeading">Basic Information</h2>
-        <span>update</span>
         <div className="flex flex-col  md:flex-row md:gap-4 gap-6">
           <div className="flex-1">
             <Input

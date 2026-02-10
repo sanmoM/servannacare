@@ -94,7 +94,7 @@ export default function DashboardLayout({ children }) {
     if (
       role !== "user" &&
       (
-        pathname === "/dashboard/my-appointment" ||
+  
         pathname === "/dashboard/book-history" ||
         pathname === "/dashboard/payment-history" ||
         pathname.startsWith("/dashboard/user")
@@ -135,7 +135,7 @@ export default function DashboardLayout({ children }) {
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/user-profile", icon: User },
     { name: "Find Services", href: "/specialist?", icon: Search },
-    { name: "My Appointments", href: "/dashboard/my-appointment", icon: Calendar },
+
     { name: "Book History", href: "/dashboard/book-history", icon: ClipboardClock },
     { name: "Payment History", href: "/dashboard/payment-history", icon: History },
   ];

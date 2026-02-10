@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -17,8 +17,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useFetch } from "@/hooks/useFetch";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
-const page = () => {
+const BookingHistoryPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -26,97 +28,33 @@ const page = () => {
   const currentPage = Number(searchParams.get("page")) || 1;
   const filterStatus = searchParams.get("status") || "All";
 
-  const bookingHistory = [
-    {
-      id: 1,
-      serviceName: "Nurse Care",
-      specialist: "Jassy Jea",
-      bookingDate: "15 Jan 2025",
-      startDate: "23 Jan 2025",
-      endDate: "10 Feb 2025",
-      totalDays: 18,
-      status: "Pending",
-      amountPaid: "KSh 25,000",
-    },
-    {
-      id: 2,
-      serviceName: "Elderly Assistance",
-      specialist: "Maria Simon",
-      bookingDate: "25 Jan 2025",
-      startDate: "01 Feb 2025",
-      endDate: "12 Feb 2025",
-      totalDays: 11,
-      status: "Completed",
-      amountPaid: "KSh 15,000",
-    },
-    {
-      id: 3,
-      serviceName: "Medical Nurse",
-      specialist: "Kelvin Mark",
-      bookingDate: "05 Jan 2025",
-      startDate: "10 Jan 2025",
-      endDate: "20 Jan 2025",
-      totalDays: 10,
-      status: "Ongoing",
-      amountPaid: "KSh 20,000",
-    },
-    {
-      id: 4,
-      serviceName: "Home Care Support",
-      specialist: "Sofia Rahman",
-      bookingDate: "30 Jan 2025",
-      startDate: "05 Feb 2025",
-      endDate: "15 Feb 2025",
-      totalDays: 10,
-      status: "Cancelled",
-      amountPaid: "KSh 1200",
-    },
-    {
-      id: 5,
-      serviceName: "Post-Surgery Assistance",
-      specialist: "David Kim",
-      bookingDate: "10 Mar 2025",
-      startDate: "12 Mar 2025",
-      endDate: "22 Mar 2025",
-      totalDays: 10,
-      status: "Pending",
-      amountPaid: "KSh 30,000",
-    },
-    {
-      id: 6,
-      serviceName: "Pediatric Care",
-      specialist: "Anna Lee",
-      bookingDate: "15 Mar 2025",
-      startDate: "18 Mar 2025",
-      endDate: "25 Mar 2025",
-      totalDays: 7,
-      status: "Completed",
-      amountPaid: "KSh 18,000",
-    },
-    {
-      id: 7,
-      serviceName: "Physiotherapy",
-      specialist: "Mark Anthony",
-      bookingDate: "20 Mar 2025",
-      startDate: "01 Apr 2025",
-      endDate: "10 Apr 2025",
-      totalDays: 9,
-      status: "Pending",
-      amountPaid: "KSh 22,000",
-    },
-  ];
+  const [bookings, setBookings] = useState([]);
+  console.log("bookings", bookings);
+  const { data, isLoading, error } = useFetch("/user-booking");
+  console.log("data", data);
+  useEffect(() => {
+    if (data) {
+   
+      setBookings(Array.isArray(data?.data?.data) ? data?.data?.data : []);
+    }
+  }, [data]);
 
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div className="text-red-500">Error loading data</div>;
+
+  // Filter bookings by status
   const filteredBookings =
     filterStatus !== "All"
-      ? bookingHistory.filter((b) => b.status === filterStatus)
-      : bookingHistory;
+      ? bookings.filter(
+          (b) => b.booking_status.toLowerCase() === filterStatus.toLowerCase(),
+        )
+      : bookings;
 
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-
   const currentBookings = filteredBookings.slice(
     startIndex,
-    startIndex + itemsPerPage
+    startIndex + itemsPerPage,
   );
 
   const goToPage = (page) => {
@@ -128,107 +66,106 @@ const page = () => {
   };
 
   const statusColors = {
-    Pending: "bg-amber-300",
-    Completed: "bg-green-300",
-    Ongoing: "bg-blue-300",
-    Cancelled: "bg-red-300",
+    pending: "bg-yellow-100 text-yellow-800",
+    approved: "bg-green-100 text-green-800",
+    rejected: "bg-red-100 text-red-800",
   };
 
   return (
-    <div>
-      <h1 className="sectionHeading">Booking History</h1>
+    <div className="p-4">
+      <h1 className="sectionHeading mb-4">Booking History</h1>
 
-      <div className="flex justify-end">
+      {/* Filter */}
+      <div className="flex justify-end mb-4">
         <Select value={filterStatus} onValueChange={onFilterChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort By" />
+            <SelectValue placeholder="Filter By Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Sort By</SelectLabel>
+              <SelectLabel>Status</SelectLabel>
               <SelectItem value="All">All</SelectItem>
-              <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Completed">Completed</SelectItem>
-              <SelectItem value="Ongoing">Ongoing</SelectItem>
-              <SelectItem value="Cancelled">Cancelled</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="mt-6 overflow-x-auto w-full">
-        <table className="min-w-[700px] w-full text-sm text-left text-gray-700 border rounded-xl shadow">
-          <thead className="bg-gray-100 border-b">
-            <tr className="text-xs sm:text-sm lg:text-base">
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Service Name
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Specialist Name
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Booked At
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Start Date
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                End Date
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Total Days
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Amount (KSh)
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Status
-              </th>
+      {/* Table */}
+      <div className="overflow-x-auto w-full">
+        <table className="min-w-[900px] w-full table-auto text-sm text-left text-gray-700 border rounded-xl shadow-md divide-y divide-gray-200">
+          <thead className="bg-gray-100">
+            <tr className="text-xs sm:text-sm lg:text-base font-semibold text-gray-700">
+              <th className="px-6 py-3">Patient</th>
+              <th className="px-6 py-3">Specialist</th>
+              <th className="px-6 py-3">Care Start</th>
+              <th className="px-6 py-3">Care End</th>
+              <th className="px-6 py-3">Total Days</th>
+              <th className="px-6 py-3">Amount (KSh)</th>
+              <th className="px-6 py-3">Status</th>
             </tr>
           </thead>
-
-          <tbody>
-            {currentBookings?.map((row) => (
-              <tr
-                key={row.id}
-                className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"
-              >
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.serviceName}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.specialist}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.bookingDate}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.startDate}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.endDate}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.totalDays}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.amountPaid}
-                </td>
-
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  <span
-                    className={`${
-                      statusColors[row.status]
-                    } text-white px-3 py-1 rounded-full text-xs sm:text-sm`}
-                  >
-                    {row.status}
-                  </span>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {currentBookings.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="text-center py-4 text-gray-500">
+                  No bookings found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              currentBookings.map((row) => {
+                const start = new Date(row.care_start_date);
+                const end = new Date(row.care_end_date);
+                const totalDays = Math.ceil(
+                  (end - start) / (1000 * 60 * 60 * 24) + 1,
+                );
+
+                return (
+                  <tr
+                    key={row.id}
+                    className="hover:bg-gray-50 transition cursor-pointer"
+                  >
+                    {/* Patient */}
+                    <td className="px-6 py-4">
+                      <div className="font-medium">{row.patient_name}</div>
+                      <div className="text-gray-500 text-xs">
+                        Age: {row.patient_age}, {row.patient_gender}
+                      </div>
+                    </td>
+
+                    {/* Specialist */}
+                    <td className="px-6 py-4">{row.specialist?.name}</td>
+
+                    {/* Dates */}
+                    <td className="px-6 py-4">{row.care_start_date}</td>
+                    <td className="px-6 py-4">{row.care_end_date}</td>
+                    <td className="px-6 py-4">{totalDays}</td>
+
+                    {/* Amount */}
+                    <td className="px-6 py-4">{row.booking_amount}</td>
+
+                    {/* Status */}
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          statusColors[row.booking_status.toLowerCase()] ||
+                          "bg-gray-200 text-gray-700"
+                        }`}
+                      >
+                        {row.booking_status.charAt(0).toUpperCase() +
+                          row.booking_status.slice(1)}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
 
+        {/* Pagination */}
         {totalPages > 1 && (
           <Pagination className="mt-6 flex justify-center md:justify-end">
             <PaginationContent>
@@ -236,7 +173,6 @@ const page = () => {
                 disabled={currentPage === 1}
                 onClick={() => goToPage(currentPage - 1)}
               />
-
               {Array.from({ length: totalPages }, (_, i) => (
                 <PaginationLink
                   key={i}
@@ -246,7 +182,6 @@ const page = () => {
                   {i + 1}
                 </PaginationLink>
               ))}
-
               <PaginationNext
                 disabled={currentPage === totalPages}
                 onClick={() => goToPage(currentPage + 1)}
@@ -259,4 +194,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default BookingHistoryPage;

@@ -38,7 +38,7 @@ const SearchContent = () => {
   const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
-  const ITEMS_PER_PAGE = 5;
+  const ITEMS_PER_PAGE = 6;
 
   const [currentPage, setCurrentPage] = useState(1);
 
