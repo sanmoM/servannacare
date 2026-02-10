@@ -1,32 +1,46 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import MedicalInstitutionNurse from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionNurse";
 import { useFetch } from "@/hooks/useFetch";
-import { DialogClose } from "@radix-ui/react-dialog";
 import {
-  Edit,
   Eye,
-  Plus,
+  Edit,
   Trash,
-  UserLock,
-  UserRoundCheck,
-  UserRoundCog,
-  UsersRound,
+  Plus,
+  MapPin,
+  Briefcase,
+  Calendar,
+  GraduationCap,
+  Languages,
+  Heart,
+  ShieldCheck,
+  Baby,
+  User,
+  Stethoscope,
+  Car,
+  Flag,
+  Hospital,
+  Home,
+  Move,
+  Bath,
+  Utensils,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
-const page = () => {
-  const [employees, setNurses] = useState([]);
+const InstitutionNursePage = () => {
+  const [nurses, setNurses] = useState([]);
   const { data, isLoading, refetch } = useFetch("/profile");
 
   useEffect(() => {
@@ -36,283 +50,361 @@ const page = () => {
   }, [data]);
 
   const handleDelete = async (id) => {
-    const loadingToast = toast.loading("Deleting employee...");
+    const loadingToast = toast.loading("Deleting nurse...");
     try {
-      await axios.delete(`/api/agency/employee/${id}`);
-      toast.success("Employee removed successfully", { id: loadingToast });
+      await axios.delete(`/api/institution/nurse/${id}`);
+      toast.success("Nurse removed successfully", { id: loadingToast });
       refetch();
     } catch (err) {
-      toast.error("Failed to delete. Please try again.", { id: loadingToast });
-
-      setNurses((prev) => prev.filter((e) => e.id !== id));
+      toast.error("Failed to delete nurse.", { id: loadingToast });
     }
   };
 
   if (isLoading) return <LoadingSpinner />;
 
-  const Nurse = [
-    {
-      id: 1,
-      name: "John Williams",
-      role: "Nurse",
-      location: "Dhaka",
-      status: "Booked",
-    },
-    {
-      id: 2,
-      name: "Sarah Ahmed",
-      role: "Aide Assistant",
-      location: "Chittagong",
-      status: "Available",
-    },
-    {
-      id: 3,
-      name: "Mahfuz Rahman",
-      role: "Nurse",
-      location: "Khulna",
-      status: "Work",
-    },
-    {
-      id: 4,
-      name: "Ayesha Khan",
-      role: "Nurse",
-      location: "Sylhet",
-      status: "Booked",
-    },
-    {
-      id: 5,
-      name: "Jamal Uddin",
-      role: "Aide Assistant",
-      location: "Dhaka",
-      status: "Available",
-    },
-    {
-      id: 6,
-      name: "Nadia Islam",
-      role: "Nurse",
-      location: "Rajshahi",
-      status: "Work",
-    },
-  ];
-  const statusColors = {
-    Booked: "bg-amber-300",
-    Available: "bg-green-300",
-    Work: "bg-blue-300",
+
+
+    const buildFileUrl = (path) => {
+    if (!path) return null;
+
+    if (path.startsWith("http")) return path;
+
+    return `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${path}`;
+  };
+
+  const openFile = (path) => {
+    const url = buildFileUrl(path);
+    if (!url) return;
+
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div>
-      <div className="mb-10">
-        <h1 className="sectionHeading">All Nurses</h1>
-      </div>
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="border   w-full bg-purple-300 flex gap-4 overflow-hidden items-center rounded-md ">
-          <div className="bg-purple-600">
-            <UsersRound className="w-full text-white h-full p-4" size={"40"} />
-          </div>
-          <div className="text-white">
-            <h2 className="font-semibold  mb-1 text-sm">Total</h2>
-            <span className="text-2xl  font-semibold">43</span>
-          </div>
+    <div className="p-4 lg:p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Institution Nurse Management
+          </h1>
+          <p className="text-sm text-gray-500">
+            View, update, and manage your nursing staff.
+          </p>
         </div>
-        <div className="border   w-full bg-amber-300 flex gap-4 overflow-hidden items-center rounded-md ">
-          <div className="bg-yellow-600">
-            <UserLock className="w-full text-white h-full p-4" size={"40"} />
-          </div>
-          <div className="text-white">
-            <h2 className="font-semibold  mb-1 text-sm">Upcoming Booked</h2>
-            <span className="text-2xl  font-semibold">4</span>
-          </div>
-        </div>
-        <div className="border  w-full bg-blue-300 flex gap-4 overflow-hidden items-center rounded-md ">
-          <div className="bg-blue-600">
-            <UserRoundCheck
-              className="w-full text-white h-full p-4"
-              size={"40"}
-            />
-          </div>
-          <div className="text-white">
-            <h2 className="font-semibold  mb-1 text-sm">In Work</h2>
-            <span className="text-2xl  font-semibold">5</span>
-          </div>
-        </div>
-        <div className="border  w-full bg-green-300 flex gap-4 overflow-hidden items-center rounded-md ">
-          <div className="bg-green-600">
-            <UserRoundCog
-              className="w-full text-white h-full p-4"
-              size={"40"}
-            />
-          </div>
-          <div className="text-white">
-            <h2 className="font-semibold  mb-1 text-sm">Available </h2>
-            <span className="text-2xl  font-semibold">12</span>
-          </div>
-        </div>
-      </div>
-      <div className="flex justify-end mt-10">
+
         <Dialog>
           <DialogTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={"w-full sm:w-auto"}
-              size={"lg"}
-            >
-              <Plus /> Add Nurse
+            <Button className="bg-primary shadow-sm w-full sm:w-auto">
+              <Plus className="mr-2" size={18} /> Add New Nurse
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
+          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className={"text-center"}>Upload Nurse</DialogTitle>
-              <DialogDescription></DialogDescription>
+              <DialogTitle>Register New Nurse</DialogTitle>
             </DialogHeader>
-            <div>
-              <MedicalInstitutionNurse />
-            </div>
-            <DialogFooter className="sm:justify-end">
-              <DialogClose asChild>
-                <Button
-                  className={""}
-                  size={"lg"}
-                  type="button"
-                  variant="secondary"
-                >
-                  Cancel
-                </Button>
-              </DialogClose>
-            </DialogFooter>
+
+            <MedicalInstitutionNurse
+              onSuccess={() => {
+                refetch();
+              }}
+            />
           </DialogContent>
         </Dialog>
       </div>
-      <div>
-        <div className="mt-6 overflow-x-auto w-full">
-          <table className="min-w-[700px] w-full text-sm text-left text-gray-700 border rounded-xl shadow">
-            <thead className="bg-gray-100 border-b">
-              <tr className="text-xs sm:text-sm lg:text-base">
-                <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                  No
-                </th>
-                <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                  Name
-                </th>
-                <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                  Role
-                </th>
-                <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                  Location
-                </th>
-                <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                  Status
-                </th>
-                <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                  Action
-                </th>
+
+      {/* Table */}
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold tracking-wider">
+              <tr>
+                <th className="px-6 py-4">Nurse Details</th>
+                <th className="px-6 py-4">Role</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
 
-            <tbody>
-              {Nurse.map((row) => (
-                <tr
-                  key={row.id}
-                  className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"
-                >
-                  <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                    {row.id}
-                  </td>
-                  <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                    {row.name}
-                  </td>
-                  <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                    {row.role}
-                  </td>
-                  <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                    {row.location}
-                  </td>
-
-                  <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                    <span
-                      className={`${
-                        statusColors[row.status]
-                      } text-white px-3 py-1 rounded-full text-xs sm:text-sm`}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="px-6 space-x-2 py-4 lg:py-6 whitespace-nowrap">
-                    <Button>
-                      <Eye />
-                    </Button>
-
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className={"bg-green-500 hover:bg-green-400"}>
-                          <Edit />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-5xl  lg:px-12 max-h-[80vh] overflow-y-scroll">
-                        <DialogHeader>
-                          <DialogTitle className={"text-center"}>
-                            Update Nurse
-                          </DialogTitle>
-                          <DialogDescription></DialogDescription>
-                        </DialogHeader>
-                        <div>
-                          <MedicalInstitutionNurse />
+            <tbody className="divide-y divide-gray-100">
+              {nurses.length > 0 ? (
+                nurses.map((nurse) => (
+                  <tr
+                    key={nurse.id}
+                    className="hover:bg-gray-50/50 transition-colors"
+                  >
+                    {/* Nurse Info */}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-purple-100 border overflow-hidden">
+                          <img
+                            src={
+                              nurse?.profilePhoto
+                                ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${nurse.profilePhoto}`
+                                : `https://ui-avatars.com/api/?name=${nurse.name}`
+                            }
+                            alt={nurse.name}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
-                        <DialogFooter className="sm:justify-end">
-                          <DialogClose asChild>
-                            <Button
-                              className={""}
-                              size={"lg"}
-                              type="button"
-                              variant="secondary"
-                            >
-                              Cancel
-                            </Button>
-                          </DialogClose>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button className={"bg-red-500 hover:bg-red-400"}>
-                          <Trash />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-xl  ">
-                        <DialogHeader>
-                          <DialogTitle className={"text-center"}>
-                            Delete Nurse
-                          </DialogTitle>
-                          <DialogDescription></DialogDescription>
-                        </DialogHeader>
                         <div>
-                          <p className="text-sm text-gray-700">
-                            Do you want to sure?
+                          <p className="font-semibold text-gray-900 leading-none">
+                            {nurse.fullName}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                            <MapPin size={12} /> {nurse.location}
                           </p>
                         </div>
-                        <DialogFooter className="sm:justify-end">
-                          <DialogClose asChild>
+                      </div>
+                    </td>
+
+                    {/* Role */}
+                    <td className="px-6 py-4">
+                      <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                        <Briefcase size={14} className="text-purple-500" />
+                        {nurse.preferredRole}
+                      </span>
+                    </td>
+
+                    {/* Status */}
+                    <td className="px-6 py-4">
+                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                        {nurse.status || "Available"}
+                      </span>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-1">
+                        {/* View */}
+                        <Dialog>
+                          <DialogTrigger asChild>
                             <Button
-                              className={""}
-                              size={"lg"}
-                              type="button"
-                              variant="secondary"
+                              variant="ghost"
+                              size="icon"
+                              className="text-blue-600 hover:bg-blue-50"
                             >
-                              Cancel
+                              <Eye size={18} />
                             </Button>
-                          </DialogClose>
-                          <DialogClose asChild>
-                            <Button className={""} size={"lg"} type="button">
-                              Confirm
+                          </DialogTrigger>
+
+                          <DialogContent className="sm:max-w-4xl">
+                            <DialogHeader>
+                              <DialogTitle className="flex items-center gap-2">
+                                <span className="text-primary">
+                                  Nurse Profile:
+                                </span>
+                                {nurse.fullName}
+                              </DialogTitle>
+                            </DialogHeader>
+
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                              <InfoTile
+                                icon={<User size={16} />}
+                                label="Gender"
+                                value={nurse.gender}
+                              />
+                              <InfoTile
+                                icon={<Calendar size={16} />}
+                                label="Age"
+                                value={`${nurse.age} years`}
+                              />
+                              <InfoTile
+                                icon={<MapPin size={16} />}
+                                label="Location"
+                                value={nurse.location}
+                              />
+                              <InfoTile
+                                icon={<Stethoscope size={16} />}
+                                label="Role"
+                                value={nurse.preferredRole}
+                              />
+                              <InfoTile
+                                icon={<Briefcase size={16} />}
+                                label="Experience"
+                                value={`${nurse.experience} years`}
+                              />
+                              <InfoTile
+                                icon={<Car size={16} />}
+                                label="Can Drive"
+                                value={nurse.canDrive ? "Yes" : "No"}
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                              <InfoTile
+                                icon={<GraduationCap size={16} />}
+                                label="Education"
+                                value={nurse.education}
+                              />
+                              <InfoTile
+                                icon={<Languages size={16} />}
+                                label="Languages"
+                                value={nurse.languages?.join(", ")}
+                              />
+                              <InfoTile
+                                icon={<Flag size={16} />}
+                                label="Nursing in Kenya"
+                                value={nurse.isNursingInKenya ? "Yes" : "No"}
+                              />
+                            </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                              <InfoTile
+                                icon={<Hospital size={16} />}
+                                label="Hospital Based Care"
+                                value={nurse.hospitalBasedCare ? "Yes" : "No"}
+                              />
+                              <InfoTile
+                                icon={<Home size={16} />}
+                                label="Home Based Care"
+                                value={nurse.homeBasedCare ? "Yes" : "No"}
+                              />
+                              {nurse.hospitalBasedYearsOfExperience && (
+                                <InfoTile
+                                  icon={<Briefcase size={16} />}
+                                  label="Hospital Experience"
+                                  value={`${nurse.hospitalBasedYearsOfExperience} years`}
+                                />
+                              )}
+                            </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                              <InfoTile
+                                icon={<Move size={16} />}
+                                label="Mobility Care"
+                                value={`${nurse.mobilityYears} years`}
+                              />
+                              <InfoTile
+                                icon={<Bath size={16} />}
+                                label="Bathing Care"
+                                value={`${nurse.bathingYears} years`}
+                              />
+                              <InfoTile
+                                icon={<Utensils size={16} />}
+                                label="Feeding Care"
+                                value={`${nurse.feedingYears} years`}
+                              />
+                            </div>
+
+                            {/* SERVICES */}
+                            {nurse.services?.length > 0 && (
+                              <div className="mt-6">
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                  Services Provided
+                                </h4>
+                                <div className="flex flex-wrap gap-2">
+                                  {nurse.services.map((service, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="px-3 py-1 text-xs rounded-full bg-purple-100 text-primary"
+                                    >
+                                      {service}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* DOCUMENTS */}
+                            <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
+                              {nurse.idCopy && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() => openFile(nurse.idCopy)}
+                                >
+                                  View ID Copy
+                                </Button>
+                              )}
+
+                              {nurse.educationCertificate && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() =>
+                                    openFile(nurse.educationCertificate)
+                                  }
+                                >
+                                  Education Certificate
+                                </Button>
+                              )}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+
+                        {/* Edit */}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-emerald-600 hover:bg-emerald-50"
+                            >
+                              <Edit size={18} />
                             </Button>
-                          </DialogClose>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+                            <DialogHeader>
+                              <DialogTitle>Update Nurse</DialogTitle>
+                            </DialogHeader>
+
+                            <MedicalInstitutionNurse
+                              initialData={nurse}
+                              isUpdate
+                              onSuccess={() => refetch()}
+                            />
+                          </DialogContent>
+                        </Dialog>
+
+                        {/* Delete */}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-red-500 hover:bg-red-50"
+                            >
+                              <Trash size={18} />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                              <DialogTitle className="text-red-600">
+                                Permanently Delete?
+                              </DialogTitle>
+                            </DialogHeader>
+
+                            <p className="text-sm text-gray-600 py-4">
+                              Remove <strong>{nurse.name}</strong> permanently?
+                            </p>
+
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="outline">Cancel</Button>
+                              </DialogClose>
+                              <Button
+                                variant="destructive"
+                                onClick={() => handleDelete(nurse.id)}
+                              >
+                                Confirm Delete
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="px-6 py-10 text-center text-gray-500"
+                  >
+                    No nurses found. Add your first nurse.
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
@@ -321,4 +413,18 @@ const page = () => {
   );
 };
 
-export default page;
+const InfoTile = ({ label, value, icon }) => (
+  <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+    <div className="flex items-center gap-2 text-primary mb-1">
+      {icon}
+      <span className="text-[10px] uppercase font-bold text-gray-400">
+        {label}
+      </span>
+    </div>
+    <p className="text-sm font-semibold text-gray-800 break-words">
+      {value || "Not Specified"}
+    </p>
+  </div>
+);
+
+export default InstitutionNursePage;

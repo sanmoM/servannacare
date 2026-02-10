@@ -54,10 +54,10 @@ const Education = ({ defaultValues, onNext, onBack }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Section Title */}
+   
       <h4 className="formHeading">Education & Registration</h4>
 
-      {/* Education Level */}
+  
       <div>
         <Label className="mb-3 block">Level of Education</Label>
         <RadioGroup

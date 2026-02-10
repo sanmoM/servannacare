@@ -76,7 +76,7 @@ const NurseDetails = ({
     mobilityYears: "",
     bathingYears: "",
     feedingYears: "",
- 
+
     serviceFeeDay: Number(defaultValues.serviceFeeDay) || 0,
     serviceFeeMonth: Number(defaultValues.serviceFeeMonth) || 0,
     bio: "",
@@ -347,9 +347,8 @@ const NurseDetails = ({
         </RadioGroup>
       </div>
 
-      {/* todo */}
       {/* Show only when PCK = Yes */}
-      {/* {data.isNursingInKenya === "true" && (
+      {data.isNursingInKenya && (
         <div>
           <Input
             label={"Registration Number"}
@@ -379,7 +378,7 @@ const NurseDetails = ({
             />
           </div>
         </div>
-      )} */}
+      )}
 
       {/* Hospital Based Care */}
       <div className="mb-6">

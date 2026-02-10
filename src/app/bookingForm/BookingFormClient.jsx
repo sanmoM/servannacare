@@ -57,8 +57,7 @@ export default function BookingFormClient() {
   const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
   const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
   const isSelectedDays =
-  selectedPrice?.name?.toLowerCase().replace(/\s+/g, "") === "selecteddays";
-
+    selectedPrice?.name?.toLowerCase().replace(/\s+/g, "") === "selecteddays";
 
   const calculateDays = (start, end) => {
     const startDate = new Date(start);
@@ -645,14 +644,13 @@ export default function BookingFormClient() {
 
             <Label>Care duration::</Label>
             <RadioGroup className="grid md:grid-cols-3 gap-2">
-              {["Hourly", "Daily", "Overnight", "Live-in", "Long-term"].map(
-                (d) => (
-                  <div key={d} className="flex items-center gap-2">
-                    <RadioGroupItem value={d} {...register("duration")} />
-                    <Label>{d}</Label>
-                  </div>
-                ),
-              )}
+              {/* {["Hourly", "Daily", "Overnight", "Live-in", "Long-term"].map( */}
+              {["Daily", "Live-in"].map((d) => (
+                <div key={d} className="flex items-center gap-2">
+                  <RadioGroupItem value={d} {...register("duration")} />
+                  <Label>{d}</Label>
+                </div>
+              ))}
             </RadioGroup>
 
             <Label>Location of care:</Label>

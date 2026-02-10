@@ -56,6 +56,21 @@ const EmployeePage = () => {
 
   if (isLoading) return <LoadingSpinner />;
 
+  const buildFileUrl = (path) => {
+    if (!path) return null;
+
+    if (path.startsWith("http")) return path;
+
+    return `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${path}`;
+  };
+
+  const openFile = (path) => {
+    const url = buildFileUrl(path);
+    if (!url) return;
+
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
       {/* Header Section */}
@@ -111,7 +126,7 @@ const EmployeePage = () => {
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-purple-100 flex-shrink-0 border overflow-hidden">
                           <img
-                            src={emp.profilePhoto}
+                            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${emp?.profilePhoto}`}
                             alt={emp.name}
                             className="h-full w-full object-cover"
                             onError={(e) => {
@@ -263,24 +278,36 @@ const EmployeePage = () => {
                               />
                             </div>
                             <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
-                              <Button
-                                variant="outline"
-                                className="text-xs h-8"
-                                asChild
-                              >
-                                <a href={emp.idCopy} target="_blank">
+                              {emp.idCopy && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() => openFile(emp.idCopy)}
+                                >
                                   View ID Copy
-                                </a>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                className="text-xs h-8"
-                                asChild
-                              >
-                                <a href={emp.aidCertificate} target="_blank">
+                                </Button>
+                              )}
+
+                              {emp.aidCertificate && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() => openFile(emp.aidCertificate)}
+                                >
                                   Aid Certificate
-                                </a>
-                              </Button>
+                                </Button>
+                              )}
+                              {emp.goodConductCertificate && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() =>
+                                    openFile(emp.goodConductCertificate)
+                                  }
+                                >
+                                  good Conduct Certificate
+                                </Button>
+                              )}
                             </div>
                           </DialogContent>
                         </Dialog>
@@ -298,11 +325,9 @@ const EmployeePage = () => {
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
-                              <DialogTitle>
-                                Update Employee Data
-                              </DialogTitle>
+                              <DialogTitle>Update Employee Data</DialogTitle>
                             </DialogHeader>
-                          
+
                             <AgencyEmployee
                               initialData={emp}
                               isUpdate={true}

@@ -164,6 +164,7 @@ const MedicalInstitution = ({ skills }) => {
           `institutionNurses[${i}][isNursingInKenya]`,
           nurse.isNursingInKenya ? 1 : 0,
         );
+
         fd.append(
           `institutionNurses[${i}][hospitalBasedCare]`,
           nurse.hospitalBasedCare ? 1 : 0,
@@ -177,8 +178,14 @@ const MedicalInstitution = ({ skills }) => {
           `institutionNurses[${i}][preferredRole]`,
           nurse.preferredRole,
         );
-        fd.append(`institutionNurses[${i}][serviceFeeDay]`, nurse.serviceFeeDay);
-        fd.append(`institutionNurses[${i}][serviceFeeMonth]`, nurse.serviceFeeMonth);
+        fd.append(
+          `institutionNurses[${i}][serviceFeeDay]`,
+          nurse.serviceFeeDay,
+        );
+        fd.append(
+          `institutionNurses[${i}][serviceFeeMonth]`,
+          nurse.serviceFeeMonth,
+        );
         fd.append(`institutionNurses[${i}][bio]`, nurse.bio);
 
         (nurse.languages || []).forEach((lang) => {
@@ -196,6 +203,17 @@ const MedicalInstitution = ({ skills }) => {
         );
         fd.append(`institutionNurses[${i}][bathingYears]`, nurse.bathingYears);
         fd.append(`institutionNurses[${i}][feedingYears]`, nurse.feedingYears);
+
+        if (nurse.isNursingInKenya) {
+          fd.append(
+            `institutionNurses[${i}][registrationNumber]`,
+            nurse.registrationNumber,
+          );
+          fd.append(
+            `institutionNurses[${i}][practiceLicense]`,
+            nurse.practiceLicense,
+          );
+        }
 
         if (nurse.hospitalBasedCare) {
           fd.append(
@@ -226,6 +244,7 @@ const MedicalInstitution = ({ skills }) => {
         fd.append(`institutionNurses[${i}][idCopy]`, nurse.idCopy);
         fd.append(`institutionNurses[${i}][profilePhoto]`, nurse.profilePhoto);
       });
+      console.log("form data", formData);
 
       try {
         const res = await postApi("/create-profile", fd, {

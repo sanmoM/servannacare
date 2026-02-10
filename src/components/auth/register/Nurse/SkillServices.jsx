@@ -8,7 +8,6 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
-  console.log("skil service", skills);
   const [data, setData] = useState({
     skills: defaultValues.skills || [],
     mobilityYears: defaultValues.mobilityYears || "",
