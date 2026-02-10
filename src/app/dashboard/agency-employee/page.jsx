@@ -33,6 +33,10 @@ import toast from "react-hot-toast";
 
 const EmployeePage = () => {
   const [employees, setEmployees] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const [editModalId, setEditModalId] = useState(null);
+
   const { data, isLoading, refetch } = useFetch("/profile");
 
   useEffect(() => {
@@ -83,7 +87,7 @@ const EmployeePage = () => {
             View, update, and manage your agency's workforce.
           </p>
         </div>
-        <Dialog>
+        <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
           <DialogTrigger asChild>
             <Button className="bg-primary shadow-sm w-full sm:w-auto">
               <Plus className="mr-2" size={18} /> Add New Employee
@@ -96,6 +100,7 @@ const EmployeePage = () => {
             <AgencyEmployee
               onSuccess={() => {
                 refetch();
+                setShowAddModal(false);
               }}
             />
           </DialogContent>
@@ -313,16 +318,21 @@ const EmployeePage = () => {
                         </Dialog>
 
                         {/* UPDATE DIALOG */}
-                        <Dialog>
+                        <Dialog
+                          open={editModalId === emp.id}
+                          onOpenChange={(open) => !open && setEditModalId(null)}
+                        >
                           <DialogTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
                               className="text-emerald-600 hover:bg-emerald-50"
+                              onClick={() => setEditModalId(emp.id)}
                             >
                               <Edit size={18} />
                             </Button>
                           </DialogTrigger>
+
                           <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
                               <DialogTitle>Update Employee Data</DialogTitle>
@@ -331,7 +341,10 @@ const EmployeePage = () => {
                             <AgencyEmployee
                               initialData={emp}
                               isUpdate={true}
-                              onSuccess={() => refetch()}
+                              onSuccess={() => {
+                                refetch();
+                                setEditModalId(null);
+                              }}
                             />
                           </DialogContent>
                         </Dialog>

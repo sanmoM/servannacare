@@ -1,274 +1,144 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Check, Clock, Save, Loader2, Calendar as CalIcon, ArrowRight, Trash2, Lock, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import { CheckCircle, Trash2, Calendar as CalIcon, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import { format, parseISO, startOfToday, eachDayOfInterval, getDay } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
 
-// --- Date Picker ---
-import DatePicker from "react-multi-date-picker";
-import "react-multi-date-picker/styles/colors/purple.css";
-
-const SchedulePage = () => {
+const ProfessionalSchedule = () => {
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState("daily");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // --- Selection States ---
-  const [dailyDays, setDailyDays] = useState([]); 
-  const [monthlyDates, setMonthlyDates] = useState([]); 
-  const [slot, setSlot] = useState({ start: "09:00", end: "17:00" });
-  const [activeSchedules, setActiveSchedules] = useState([]);
-
-  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const today = startOfToday();
+  const [selectedDates, setSelectedDates] = useState([]); // Array of ISO strings
 
   useEffect(() => { setMounted(true); }, []);
 
-  // --- Logic: Identify Occupied Slots ---
-  const activeRegistry = useMemo(() => {
-    const dates = new Set();
-    const recurringDays = new Set();
-    activeSchedules.forEach(s => {
-      if (s.details.days) s.details.days.forEach(day => recurringDays.add(day));
-      if (s.details.dates) Object.keys(s.details.dates).forEach(d => dates.add(d));
+  // --- Toggle Logic ---
+  const handleDateClick = (arg) => {
+    const dateStr = arg.dateStr; // Format: "YYYY-MM-DD"
+    
+    setSelectedDates((prev) => {
+      if (prev.includes(dateStr)) {
+        // Unselect (2nd click)
+        return prev.filter((d) => d !== dateStr);
+      } else {
+        // Select (1st click)
+        return [...prev, dateStr];
+      }
     });
-    return { dates, recurringDays };
-  }, [activeSchedules]);
-
-  const toggleDailyDay = (day) => {
-    if (activeRegistry.recurringDays.has(day)) {
-      return toast.error(`${day} is already published.`);
-    }
-    setDailyDays((prev) => 
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
-    );
   };
 
-  const handleSave = async () => {
-    const isDaily = activeTab === "daily";
-    if (isDaily && dailyDays.length === 0) return toast.error("Select at least one day");
-    if (!isDaily && monthlyDates.length === 0) return toast.error("Select dates on the calendar");
-
-    setIsSubmitting(true);
-    let monthlyPayload = {};
-
-    if (!isDaily) {
-      monthlyDates.forEach((dateInstance) => {
-        const dArray = Array.isArray(dateInstance) ? dateInstance : [dateInstance, dateInstance];
-        const start = dArray[0]?.toDate();
-        const end = dArray[1]?.toDate() || start;
-        eachDayOfInterval({ start, end }).forEach(d => {
-          monthlyPayload[format(d, "yyyy-MM-dd")] = [{ ...slot }];
-        });
-      });
-    }
-
-    setTimeout(() => {
-      const payload = {
-        id: Date.now(),
-        type: isDaily ? "Daily Recurring" : "Specific Range",
-        price: isDaily ? "KSH 4" : "KSH 100",
-        color: isDaily ? "bg-primary" : "bg-purple-600",
-        details: isDaily ? { days: dailyDays } : { dates: monthlyPayload }
-      };
-      setActiveSchedules([payload, ...activeSchedules]);
-      setDailyDays([]);
-      setMonthlyDates([]);
-      setIsSubmitting(false);
-      toast.success("Availability Published Successfully");
-    }, 600);
+  const handlePublish = () => {
+    if (selectedDates.length === 0) return toast.error("Select dates first");
+    console.log("Published Dates:", selectedDates);
+    toast.success(`Successfully published ${selectedDates.length} days!`);
   };
+
+  // Convert our simple strings into FullCalendar events
+  const events = selectedDates.map((date) => ({
+    start: date,
+    allDay: true,
+    display: "background",
+    backgroundColor: "#2563eb", // bg-primary
+    classNames: ["selected-date-glow"],
+  }));
 
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-10 font-sans text-slate-900">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-50 p-6 md:p-12">
+      <div className="max-w-6xl mx-auto space-y-6">
         
-        {/* --- Unified Header --- */}
-        <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[2rem] border shadow-sm gap-6">
+        {/* Header Area */}
+        <div className="bg-white rounded-[2rem] p-8 border shadow-sm flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-4">
-            <div className="bg-primary/10 p-4 rounded-2xl text-primary">
-              <Sparkles size={28} />
+            <div className="bg-primary p-3 rounded-2xl text-white shadow-lg">
+              <CalIcon size={24} />
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-tight">Set Availability</h1>
-              <p className="text-sm text-slate-500 font-medium">Configure your working windows and rates</p>
+              <h1 className="text-xl font-black">Availability Specialist</h1>
+              <p className="text-sm text-slate-500 font-medium">Click dates to toggle selection</p>
             </div>
           </div>
           
-          <div className="flex bg-slate-100 p-1.5 rounded-2xl w-full md:w-auto">
-            <button 
-              onClick={() => setActiveTab("daily")} 
-              className={`flex-1 md:px-8 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === "daily" ? "bg-primary text-white shadow-md" : "text-slate-500 hover:text-slate-700"}`}
-            >
-              Daily
-            </button>
-            <button 
-              onClick={() => setActiveTab("monthly")} 
-              className={`flex-1 md:px-8 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === "monthly" ? "bg-purple-600 text-white shadow-md" : "text-slate-500 hover:text-slate-700"}`}
-            >
-              Monthly
-            </button>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+                <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Active selection</span>
+                <span className="text-lg font-black text-primary">{selectedDates.length} Days</span>
+            </div>
+            <Button onClick={handlePublish} className="bg-primary cursor-pointer h-12 px-8 rounded-xl font-bold shadow-md transition-all active:scale-95">
+              <CheckCircle size={18} className="mr-2" /> Publish
+            </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* --- Main Workspace (Left) --- */}
-          <div className="lg:col-span-8 space-y-6">
-            <div className="bg-white rounded-[2.5rem] border shadow-sm min-h-[550px] overflow-hidden flex flex-col">
-              
-              {activeTab === "daily" ? (
-                <div className="p-10 flex-1 space-y-8 animate-in fade-in duration-500">
-                  <div className="border-b pb-6">
-                    <h2 className="text-xl font-bold">Recurring Working Days</h2>
-                    <p className="text-sm text-slate-400">Select days that repeat every week at KSH 4/day</p>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {daysOfWeek.map(day => {
-                      const isActive = activeRegistry.recurringDays.has(day);
-                      const isSelected = dailyDays.includes(day);
-                      return (
-                        <button 
-                          key={day} 
-                          disabled={isActive}
-                          onClick={() => toggleDailyDay(day)} 
-                          className={`group h-32 rounded-3xl border-2 transition-all flex flex-col items-center justify-center gap-3 ${
-                            isActive ? "bg-slate-50 border-slate-100 text-slate-300 opacity-60 grayscale cursor-not-allowed" :
-                            isSelected ? "bg-primary border-primary text-white shadow-xl shadow-blue-200 -translate-y-1" : "bg-white border-slate-100 text-slate-400 hover:border-primary/30"
-                          }`}
-                        >
-                          <span className="text-xs font-black uppercase tracking-widest">{day.substring(0, 3)}</span>
-                          {isActive ? <Lock size={18} /> : isSelected ? <Check size={20} className="bg-white/20 p-1 rounded-full" /> : <div className="h-2 w-2 rounded-full bg-slate-200 group-hover:bg-primary/40" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col md:flex-row flex-1 animate-in fade-in duration-500">
-                  {/* Calendar Sidebar - AUTO OPENED via 'inline' */}
-                  <div className="md:w-[400px] p-10 bg-slate-50 border-r flex flex-col items-center gap-6">
-                    <div className="w-full text-center md:text-left">
-                      <h3 className="text-purple-600 font-black text-xs uppercase tracking-widest">1. Select Dates</h3>
-                      <p className="text-xs text-slate-400">Drag to select a range</p>
-                    </div>
-                    <div className="bg-white p-4 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
-                      <DatePicker
-                        multiple range inline
-                        value={monthlyDates}
-                        onChange={setMonthlyDates}
-                        minDate={today}
-                        className="purple"
-                        mapDays={({ date }) => {
-                          const dateString = date.format("YYYY-MM-DD");
-                          const dayName = daysOfWeek[getDay(date.toDate())];
-                          if (activeRegistry.dates.has(dateString) || activeRegistry.recurringDays.has(dayName)) {
-                            return { disabled: true, style: { color: "#ccc", textDecoration: "line-through", opacity: 0.5 } };
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Time Config */}
-                  <div className="flex-1 p-10 space-y-8">
-                    <div>
-                      <h3 className="font-bold text-slate-800">2. Define Hours</h3>
-                      <p className="text-xs text-slate-400">Applies to all selected dates</p>
-                    </div>
-                    <div className="bg-slate-50 p-8 rounded-3xl border border-dashed border-slate-200 space-y-6">
-                      <div className="flex items-center gap-4 bg-white p-5 rounded-2xl border shadow-sm">
-                        <div className="flex-1">
-                          <label className="text-[10px] font-black text-slate-400 block mb-1">START TIME</label>
-                          <input type="time" value={slot.start} onChange={(e) => setSlot({...slot, start: e.target.value})} className="font-bold text-xl bg-transparent outline-none w-full" />
-                        </div>
-                        <ArrowRight className="text-slate-300 mt-4" />
-                        <div className="flex-1">
-                          <label className="text-[10px] font-black text-slate-400 block mb-1">END TIME</label>
-                          <input type="time" value={slot.end} onChange={(e) => setSlot({...slot, end: e.target.value})} className="font-bold text-xl bg-transparent outline-none w-full" />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-purple-600 bg-purple-50 p-3 rounded-xl">
-                 
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="p-6 bg-slate-50/50 border-t flex justify-end px-10">
-                <Button 
-                  onClick={handleSave} 
-                  disabled={isSubmitting} 
-                  className={`rounded-2xl h-14 px-12 font-bold shadow-lg transition-all active:scale-95 ${activeTab === 'daily' ? 'bg-primary hover:bg-primary/90' : 'bg-purple-600 hover:bg-purple-700'}`}
-                >
-                  {isSubmitting ? <Loader2 className="animate-spin mr-2" /> : <Save size={20} className="mr-2" />}
-                  Publish Schedule
-                </Button>
-              </div>
-            </div>
+        {/* Big Calendar Section */}
+        <div className="bg-white rounded-[2.5rem] border shadow-xl p-8 md:p-10 relative overflow-hidden">
+          <div className="absolute top-8 left-10 flex items-center gap-2 text-slate-400 z-10">
+            <Info size={14} />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Click individual dates or select across days</span>
           </div>
 
-          {/* --- History / Preview (Right) --- */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-[#1e293b] rounded-[2.5rem] p-8 text-white shadow-2xl flex flex-col h-full min-h-[600px]">
-              <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
-                <div className="flex items-center gap-3">
-                  <CalIcon className="text-primary" />
-                  <h2 className="text-xl font-bold tracking-tight">Active Plans</h2>
-                </div>
-                <span className="text-[10px] font-black bg-white/10 px-3 py-1 rounded-full border border-white/10">{activeSchedules.length}</span>
-              </div>
-              
-              <div className="flex-1 space-y-4 overflow-y-auto pr-2 custom-scroll">
-                {activeSchedules.length === 0 ? (
-                  <div className="h-full flex flex-col items-center justify-center opacity-20 gap-4">
-                    <CalIcon size={48} strokeWidth={1} />
-                    <p className="text-xs font-bold uppercase tracking-[0.2em]">No Plans Published</p>
-                  </div>
-                ) : (
-                  activeSchedules.map(s => (
-                    <div key={s.id} className="bg-white/5 border border-white/10 p-5 rounded-3xl relative hover:bg-white/10 transition-colors">
-                      <button onClick={() => setActiveSchedules(activeSchedules.filter(x => x.id !== s.id))} className="absolute top-5 right-5 text-white/30 hover:text-red-400"><Trash2 size={16} /></button>
-                      <div className="mb-4">
-                        <p className="text-2xl font-black">{s.price}</p>
-                        <p className={`text-[10px] font-black uppercase tracking-widest ${s.color === 'bg-primary' ? 'text-primary' : 'text-purple-400'}`}>{s.type}</p>
-                      </div>
-                      
-                      <div className="flex flex-wrap gap-1.5">
-                        {s.details.days?.map(d => <span key={d} className="bg-primary/20 text-primary-foreground px-3 py-1 rounded-xl text-[10px] font-bold border border-primary/20">Every {d}</span>)}
-                        {s.details.dates && Object.keys(s.details.dates).map(date => (
-                          <div key={date} className="w-full flex justify-between items-center text-[10px] bg-black/40 p-3 rounded-2xl mt-1 border border-white/5">
-                            <span className="text-slate-400 font-medium">{format(parseISO(date), "MMM dd, yyyy")}</span>
-                            <span className="text-purple-400 font-black">{s.details.dates[date][0].start}—{s.details.dates[date][0].end}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+          <div className="calendar-container">
+            <FullCalendar
+              plugins={[dayGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              selectable={true}
+              dateClick={handleDateClick}
+              events={events}
+              headerToolbar={{
+                left: "title",
+                center: "",
+                right: "prev,next",
+              }}
+              height="auto"
+              fixedWeekCount={false}
+              dayMaxEvents={true}
+            />
           </div>
 
+          <div className="mt-8 pt-8 border-t flex justify-between items-center">
+            <button 
+              onClick={() => setSelectedDates([])}
+              className="text-xs font-bold text-slate-400 hover:text-red-500 flex items-center gap-2 transition-colors"
+            >
+              <Trash2 size={14} /> Reset Selection
+            </button>
+            <p className="text-[11px] font-medium text-slate-400 italic">
+              Blue cells indicate your confirmed availability.
+            </p>
+          </div>
         </div>
       </div>
 
       <style jsx global>{`
-        .rmdp-container { width: 100% !important; }
-        .rmdp-calendar { border: none !important; box-shadow: none !important; background: transparent !important; padding: 0 !important; }
-        .rmdp-day span { font-size: 13px !important; font-weight: 800 !important; }
-        .rmdp-range { background-color: #9333ea !important; box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4) !important; border-radius: 8px !important; }
-        .rmdp-today span { background-color: #f1f5f9 !important; color: #0f172a !important; border: 1px solid #e2e8f0 !important; }
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        /* FullCalendar Customization */
+        .fc { --fc-border-color: #f1f5f9; font-family: inherit; }
+        .fc-toolbar-title { font-size: 1.25rem !important; font-weight: 900 !important; color: #1e293b; text-transform: capitalize; }
+        .fc-button-primary { background-color: white !important; border-color: #e2e8f0 !important; color: #64748b !important; padding: 8px 12px !important; border-radius: 12px !important; }
+        .fc-button-primary:hover { background-color: #f8fafc !important; color: #1e293b !important; }
+        .fc-col-header-cell { padding: 12px 0 !important; background: #f8fafc; }
+        .fc-col-header-cell-cushion { font-size: 11px !important; font-weight: 800 !important; color: #94a3b8 !important; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        /* Cell Styling */
+        .fc-daygrid-day { transition: all 0.2s ease; cursor: pointer; }
+        .fc-daygrid-day:hover { background-color: #f1f7ff; }
+        .fc-daygrid-day-number { font-weight: 800 !important; font-size: 14px !important; color: #475569; padding: 10px !important; }
+        
+        /* The "Selected" look */
+        .selected-date-glow {
+          opacity: 0.8;
+          border: 2px solid #2563eb !important;
+          box-shadow: inset 0 0 20px rgba(37, 99, 235, 0.1);
+        }
+
+        .fc-day-today { background: #f8fafc !important; }
+        .fc-day-today .fc-daygrid-day-number { color: #2563eb; background: #eff6ff; border-radius: 8px; }
       `}</style>
     </div>
   );
 };
 
-export default SchedulePage;
+export default ProfessionalSchedule;

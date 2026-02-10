@@ -25,8 +25,10 @@ import {
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { postApi } from "@/lib/apiHandler";
+import { useRouter } from "next/navigation";
 
 const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
+  const router=useRouter()
   const [ready, setReady] = useState(!isUpdate);
 
   const [formData, setFormData] = useState({
@@ -35,9 +37,9 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     location: "",
     experience: "",
     salaryRange: "",
-    isMother: "",
+    isMother: null,
     kidAges: [],
-    handlePets: "",
+    handlePets: null,
     preferredRole: "",
     languages: [],
     cooking: "",
@@ -53,6 +55,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     },
   });
 
+  // console.log("dfdfdfdf",typeof(formData.isMother))
+
   useEffect(() => {
     if (initialData && isUpdate) {
       setFormData({
@@ -67,8 +71,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         housekeeping: initialData.housekeeping || "",
         childcare: initialData.childcare || "",
 
-        isMother: initialData.isMother === 1 ? "Yes" : "No",
-        handlePets: initialData.handlePets === 1 ? "Yes" : "No",
+        isMother: initialData.isMother === 1,
+        handlePets: initialData.handlePets === 1,
 
         kidAges: initialData.kidAges || [],
         languages: initialData.languages || [],
@@ -116,12 +120,12 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     }));
   };
 
-  const normalizeValue = (key, value) => {
-    if (key === "isMother" || key === "handlePets") {
-      return value === "Yes";
-    }
-    return value;
-  };
+  // const normalizeValue = (key, value) => {
+  //   if (key === "isMother" || key === "handlePets") {
+  //     return value === "Yes";
+  //   }
+  //   return value;
+  // };
 
   const handleFileSelect = (section, field, file) => {
     setFormData((prev) => ({
@@ -130,18 +134,23 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     }));
   };
 
-  // Build payload for create (all required fields)
   const buildCreatePayload = (data) => {
     const payload = new FormData();
+
+    const booleanToNumber = (value) => {
+      if (typeof value === "boolean") return value ? 1 : 0;
+      return value;
+    };
 
     Object.entries(data).forEach(([key, value]) => {
       if (key === "documents") return;
 
-      const normalized = normalizeValue(key, value);
-      if (Array.isArray(normalized)) {
-        normalized.forEach((v) => payload.append(`${key}[]`, v));
-      } else if (normalized !== null && normalized !== undefined) {
-        payload.append(key, normalized);
+      const finalValue = booleanToNumber(value);
+
+      if (Array.isArray(finalValue)) {
+        finalValue.forEach((v) => payload.append(`${key}[]`, v));
+      } else if (finalValue !== null && finalValue !== undefined) {
+        payload.append(key, finalValue);
       }
     });
 
@@ -169,18 +178,23 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     return payload;
   };
 
-  // Build payload for update (send only changed files)
   const buildUpdatePayload = (data) => {
     const payload = new FormData();
+
+    const booleanToNumber = (value) => {
+      if (typeof value === "boolean") return value ? 1 : 0;
+      return value;
+    };
 
     Object.entries(data).forEach(([key, value]) => {
       if (key === "documents") return;
 
-      const normalized = normalizeValue(key, value);
-      if (Array.isArray(normalized)) {
-        normalized.forEach((v) => payload.append(`${key}[]`, v));
-      } else if (normalized !== null && normalized !== undefined) {
-        payload.append(key, normalized);
+      const finalValue = booleanToNumber(value);
+
+      if (Array.isArray(finalValue)) {
+        finalValue.forEach((v) => payload.append(`${key}[]`, v));
+      } else if (finalValue !== null && finalValue !== undefined) {
+        payload.append(key, finalValue);
       }
     });
 
@@ -190,6 +204,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
 
     return payload;
   };
+
+  // console.log("form data", formData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -205,6 +221,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         toast.success("Employee updated!", { id: loadingToast });
       } else {
         await postApi("/agency-employee", payload);
+        router.push("/dashboard/agency-employee");
         toast.success("Employee added!", { id: loadingToast });
       }
 
@@ -367,16 +384,22 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
               Are you a mother?
             </Label>
             <RadioGroup
-              value={formData.isMother}
-              onValueChange={(v) => handleSelectChange("isMother", v)}
+              value={
+                formData.isMother === null
+                  ? undefined
+                  : formData.isMother.toString()
+              }
+              onValueChange={(v) =>
+                handleSelectChange("isMother", v === "true")
+              }
             >
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="Yes" id="mYes" />
+                  <RadioGroupItem value="true" id="mYes" />
                   <Label htmlFor="mYes">Yes</Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="No" id="mNo" />
+                  <RadioGroupItem value="false" id="mNo" />
                   <Label htmlFor="mNo">No</Label>
                 </div>
               </div>
@@ -409,16 +432,22 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
               Handle pets?
             </Label>
             <RadioGroup
-              value={formData.handlePets}
-              onValueChange={(v) => handleSelectChange("handlePets", v)}
+              value={
+                formData.handlePets === null
+                  ? undefined
+                  : formData.handlePets.toString()
+              }
+              onValueChange={(v) =>
+                handleSelectChange("handlePets", v === "true")
+              }
             >
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="Yes" id="pYes" />
+                  <RadioGroupItem value="true" id="pYes" />
                   <Label htmlFor="pYes">Yes</Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="No" id="pNo" />
+                  <RadioGroupItem value="false" id="pNo" />
                   <Label htmlFor="pNo">No</Label>
                 </div>
               </div>
