@@ -28,7 +28,7 @@ import { postApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
 
 const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
-  const router=useRouter()
+  const router = useRouter();
   const [ready, setReady] = useState(!isUpdate);
 
   const [formData, setFormData] = useState({
