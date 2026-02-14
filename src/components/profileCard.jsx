@@ -34,7 +34,10 @@ const ProfileCard = ({ profile }) => {
     const bookingUrl = `/bookingForm?category=${profile.subRole?.toLowerCase() ?? "unknown"}&id=${profile.id}`;
 
     if (!user) {
-      router.push(`/login?redirect=${encodeURIComponent(bookingUrl)}`);
+      router.push(
+        `/register?role=user&redirect=${encodeURIComponent(bookingUrl)}`,
+      );
+
       return;
     }
 
@@ -50,7 +53,6 @@ const ProfileCard = ({ profile }) => {
       className="w-full  flex flex-col overflow-hidden bg-white border border-gray-200 rounded-2xl  transition-all duration-300 ease-in-out hover:shadow-md"
     >
       <div className="w-full  flex items-center justify-center p-6 lg:rounded-l-2xl relative">
-    
         <div className="absolute inset-0">
           <div className="h-1/2 bg-[#bb92ad5b]"></div>
           <div className="h-1/2 bg-white"></div>

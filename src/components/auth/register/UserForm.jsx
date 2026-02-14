@@ -6,20 +6,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import OtpModal from "../OtpModal";
-import { generateToken } from "@/utilities/helperFunction";
 import { postApi } from "@/lib/apiHandler";
 
 const UserForm = () => {
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
+  const [redirectUrl, setRedirectUrl] = useState(null);
+
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [openOTP, setOpenOTP] = useState(false);
   const [temUser, setTemUser] = useState(null);
   const [phone, setPhone] = useState("");
+
+  useEffect(() => {
+    const r = searchParams.get("redirect");
+    if (r) setRedirectUrl(r);
+  }, [searchParams]);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -48,7 +56,6 @@ const UserForm = () => {
       toast.error("Please accept terms and condition!");
       return;
     }
-
 
     const userInfo = {
       name,
@@ -90,8 +97,12 @@ const UserForm = () => {
         JSON.stringify({ role, is_profile_completed }),
       );
       setOpenOTP(false);
-      router.push("/dashboard");
-      toast.success("Account verified successfully!");
+      if (redirectUrl && redirectUrl.startsWith("/")) {
+        router.replace(redirectUrl);
+      } else {
+        router.replace("/dashboard");
+        toast.success("Account verified successfully!");
+      }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Invalid OtP");
     }
@@ -175,7 +186,7 @@ const UserForm = () => {
         </form>
         <div className="flex gap-2 mt-6 items-center">
           <p className="text-sm">Already have an account?</p>
-          <Link href={"/login"}>
+          <Link href={`/login?redirect=${redirect || ""}`}>
             <Button variant={"link"}>LOGIN</Button>
           </Link>
         </div>

@@ -47,23 +47,20 @@ const LoginPageContent = () => {
   //   }
   // }, [user, loaded, redirectUrl, router]);
 
-
   useEffect(() => {
-  if (!loaded || !user) return;
+    if (!loaded || !user) return;
 
-  const redirect = searchParams.get("redirect");
+    const redirect = searchParams.get("redirect");
 
-  if (user?.role === "user") {
-    router.replace(redirect || "/dashboard");
-  } else {
-    if (redirect?.includes("bookingForm")) {
-      toast.error(`${user.role} can't make a booking`);
+    if (user?.role === "user") {
+      router.replace(redirect || "/dashboard");
+    } else {
+      if (redirect?.includes("bookingForm")) {
+        toast.error(`${user.role} can't make a booking`);
+      }
+      router.replace("/dashboard");
     }
-    router.replace("/dashboard");
-  }
-}, [user, loaded, searchParams, router]);
-
-
+  }, [user, loaded, searchParams, router]);
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -196,7 +193,8 @@ const LoginPageContent = () => {
                   <DialogClose asChild key={indx}>
                     <Link
                       className="h-full"
-                      href={`/register?role=${role.role}`}
+                      href={`/register?role=${role.role}&redirect=${searchParams.get("redirect") || ""}`}
+
                     >
                       <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
                         <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full bg-cyan-100 mb-2 sm:mb-4">
