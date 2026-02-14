@@ -43,6 +43,7 @@ const ProfileCard = ({ profile }) => {
 
     if (user?.role != "user") {
       toast.error(`${user?.subRole} can't make Booking`);
+      router.push(`/dashboard/${user?.role}-profile`);
       return;
     }
     router.push(bookingUrl);
