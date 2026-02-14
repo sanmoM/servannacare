@@ -33,7 +33,7 @@ const SearchContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("house-manager");
   const [selectedServices, setSelectedServices] = useState([]);
   const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);

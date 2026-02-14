@@ -29,24 +29,41 @@ const LoginPageContent = () => {
 
   const [redirectUrl, setRedirectUrl] = useState(null);
 
-  useEffect(() => {
-    const r = searchParams.get("redirect");
-    if (r) setRedirectUrl(r);
-  }, [searchParams]);
+  // useEffect(() => {
+  //   const r = searchParams.get("redirect");
+  //   if (r) setRedirectUrl(r);
+  // }, [searchParams]);
+
+  // useEffect(() => {
+  //   if (!loaded || !user) return;
+
+  //   if (user?.role === "user") {
+  //     router.replace(redirectUrl || "/dashboard");
+  //   } else {
+  //     if (redirectUrl?.includes("bookingForm")) {
+  //       toast.error(`${user.role} can't make a booking`);
+  //     }
+  //     router.replace("/dashboard");
+  //   }
+  // }, [user, loaded, redirectUrl, router]);
+
 
   useEffect(() => {
-    if (!loaded || !user) return;
+  if (!loaded || !user) return;
 
-    if (user.role === "user") {
-      router.replace(redirectUrl || "/dashboard");
-    } else {
- 
-      if (redirectUrl?.includes("bookingForm")) {
-        toast.error(`${user.role} can't make a booking`);
-      }
-      router.replace("/dashboard");
+  const redirect = searchParams.get("redirect");
+
+  if (user?.role === "user") {
+    router.replace(redirect || "/dashboard");
+  } else {
+    if (redirect?.includes("bookingForm")) {
+      toast.error(`${user.role} can't make a booking`);
     }
-  }, [user, loaded, redirectUrl, router]);
+    router.replace("/dashboard");
+  }
+}, [user, loaded, searchParams, router]);
+
+
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
@@ -90,12 +107,6 @@ const LoginPageContent = () => {
       );
 
       toast.success("Login successful!");
-      // router.push("/dashboard");
-      // router.push(`/dashboard/${role}-profile`);
-      // if (is_profile_completed) {
-      //   router.push("/dashboard");
-      //   return;
-      // }
       if (refreshUser) refreshUser();
     } catch (error) {
       toast.error(
@@ -204,7 +215,6 @@ const LoginPageContent = () => {
                   </DialogClose>
                 ))}
               </div>
-  
             </DialogContent>
           </Dialog>
         </div>

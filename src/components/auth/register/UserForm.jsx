@@ -89,9 +89,6 @@ const UserForm = () => {
         "user",
         JSON.stringify({ role, is_profile_completed }),
       );
-
-      
-
       setOpenOTP(false);
       router.push("/dashboard");
       toast.success("Account verified successfully!");
