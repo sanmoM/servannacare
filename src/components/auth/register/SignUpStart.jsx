@@ -12,6 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "next/navigation";
 import { postApi } from "@/lib/apiHandler";
+import PhoneInputWithCountrySelect, {
+  isValidPhoneNumber,
+} from "react-phone-number-input";
 
 const SignUpStart = ({ onSuccess }) => {
   const searchParams = useSearchParams();
@@ -38,9 +41,8 @@ const SignUpStart = ({ onSuccess }) => {
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-    const phone = form.phone.value;
 
-    if (phone.length !== 11) {
+    if (!phone || !isValidPhoneNumber(phone)) {
       toast.error("Invalid phone number!");
       return;
     }
@@ -113,7 +115,7 @@ const SignUpStart = ({ onSuccess }) => {
           Create an Account!
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
-          <Input
+          {/* <Input
             label="Phone Number"
             name="phone"
             type="tel"
@@ -132,6 +134,15 @@ const SignUpStart = ({ onSuccess }) => {
               }
               setPhone(val);
             }}
+          /> */}
+
+          <Label>Phone Number</Label>
+          <PhoneInputWithCountrySelect
+            international
+            defaultCountry="KE"
+            value={phone}
+            onChange={setPhone}
+            className="phone-input"
           />
 
           <Input

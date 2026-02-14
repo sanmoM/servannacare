@@ -26,7 +26,6 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Label } from "@/components/ui/label";
 import { Filter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
 
 const SearchContent = () => {
@@ -156,6 +155,8 @@ const SearchContent = () => {
     return sortedSpecialists.slice(start, end);
   }, [sortedSpecialists, currentPage]);
 
+  console.log(paginatedSpecialists)
+
   return (
     <>
       <PageBanner title="Our Specialist" />
@@ -197,7 +198,7 @@ const SearchContent = () => {
                 {/* Category Selector */}
                 <div>
                   <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
-                    Specialist
+                    Specialist 
                   </h2>
                   <select
                     className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"

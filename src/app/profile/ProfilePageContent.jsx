@@ -13,6 +13,7 @@ import { Building, Check, CheckCircle, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const ProfilePageContent = () => {
   const searchParams = useSearchParams();
@@ -21,51 +22,40 @@ const ProfilePageContent = () => {
 
   const router = useRouter();
   const { user, loaded } = useLocalUser();
-  const [userDatas, setUserDatas] = useState(null);
-  const [matchedData, setMatchedData] = useState(null);
-  console.log("datas",matchedData)
+
+  const { data, isLoading, error } = useFetch("/specialist");
+
+  const specialists = data?.data?.data ?? [];
+
+  const matchedData = specialists.find(
+    (item) =>
+      item.id === Number(id) &&
+      item.subRole?.toLowerCase() === category?.toLowerCase(),
+  );
 
   const handleBookNow = () => {
     if (!loaded) return;
 
-    const bookingUrl = `/bookingForm?category=${userDatas?.subRole?.toLowerCase() ?? "unknown"}&id=${userDatas.id}`;
+    const bookingUrl = `/bookingForm?category=${matchedData?.subRole?.toLowerCase() ?? "unknown"}&id=${matchedData.id}`;
 
     if (!user) {
-      router.push(`/login?redirect=${encodeURIComponent(bookingUrl)}`);
+      router.push(
+        `/register?role=user&redirect=${encodeURIComponent(bookingUrl)}`,
+      );
       return;
     }
 
     if (user.role != "user") {
       toast.error(`${user?.subRole} can't make Booking`);
+      router.push(`/dashboard/${user?.role}-profile`);
       return;
     }
     router.push(bookingUrl);
   };
 
-  const { data, isLoading, error } = useFetch("/specialist");
-
-  useEffect(() => {
-    if (data) {
-      setUserDatas(data?.data?.data ?? data?.data?.data);
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (userDatas && id && category) {
-      const matchedId = Number(id);
-      const matched = userDatas.find(
-        (item) => item.id === matchedId && item.subRole === category,
-      );
-
-      setMatchedData(matched);
-    }
-  }, [userDatas, id, category]);
-
   if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
   if (!matchedData) return <div>No matching data found</div>;
-
-  console.log(matchedData);
 
   return (
     <>
@@ -247,11 +237,6 @@ const ProfilePageContent = () => {
           </div>
         </div>
       </Container>
-
-      {/* Custom Modal */}
-      {/* <CustomModal isOpen={openModal} onClose={() => setOpenModal(false)}>
-        <SubscriptionPlans />
-      </CustomModal> */}
     </>
   );
 };

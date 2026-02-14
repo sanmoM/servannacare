@@ -9,31 +9,47 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
 import { postApi } from "@/lib/apiHandler";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
+import useLocalUser from "@/hooks/useLocalUser";
 
 export default function BookingFormClient() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const id = searchParams.get("id");
   const router = useRouter();
+  const [bookingAmount, setBookingAmount] = useState(0);
 
   const [price, setPrice] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
-  const [bookingAmount, setBookingAmount] = useState(0);
+  const { user, loaded } = useLocalUser();
 
-  const { data, isLoading, error } = useFetch("/price");
+  const {
+    data: specialistData,
+    isLoading: specialistLoading,
+    error: specialistError,
+  } = useFetch("/specialist");
+
+  const {
+    data: priceData,
+    isLoading: priceLoading,
+    error: priceError,
+  } = useFetch("/price");
+
+  const specialists = specialistData?.data?.data ?? [];
+  const prices = priceData?.data?.data ?? [];
+
+  const matchedData = specialists.find(
+    (item) =>
+      item.id === Number(id) &&
+      item.subRole?.toLowerCase() === category?.toLowerCase(),
+  );
+  console.log("price", prices);
+
   const {
     register,
     watch,
@@ -108,13 +124,11 @@ export default function BookingFormClient() {
   useEffect(() => {
     if (!selectedPrice) return;
 
-    // Daily
     if (isDaily && startDate && endDate) {
       const days = calculateDays(startDate, endDate);
       setBookingAmount(days * selectedPrice.price);
     }
 
-    // Monthly
     if (isMonthly && startMonth && endMonth) {
       const months = calculateMonths(startMonth, endMonth);
       setBookingAmount(months * selectedPrice.price);
@@ -125,14 +139,14 @@ export default function BookingFormClient() {
     }
   }, [startDate, endDate, startMonth, endMonth, selectedDays, selectedPrice]);
 
-  useEffect(() => {
-    if (data) {
-      setPrice(data?.data?.data ?? data?.data?.data);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data) {
+  //     setPrice(data?.data?.data ?? data?.data?.data);
+  //   }
+  // }, [data]);
 
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <div>Error loading data</div>;
+  if (specialistLoading || priceLoading) return <LoadingSpinner />;
+  if (specialistError || priceError) return <div>Error loading data</div>;
 
   const onSubmit = async (data) => {
     const payload = {
@@ -161,7 +175,6 @@ export default function BookingFormClient() {
       primary_doctor_number: data?.doctorContact,
       primary_hospital: data?.hospital,
     };
-    // console.log("payload", payload);
     try {
       const res = await postApi("/booking", payload);
 

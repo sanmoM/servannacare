@@ -24,7 +24,6 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
-  // console.log(profile);
   const router = useRouter();
   const { user, loaded } = useLocalUser();
 
@@ -78,7 +77,7 @@ const ProfileCard = ({ profile }) => {
           <div className="flex items-start justify-between mb-3">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-gray-900">
-                {profile.name}
+                {profile?.name || profile?.fullName}
               </h2>
               <p className="text-sm font-medium text-primary">
                 {profile.subRole}
@@ -112,6 +111,7 @@ const ProfileCard = ({ profile }) => {
 
         <div className="flex gap-4 mt-5 pt-5 border-t border-gray-100">
           <div className="flex-1">
+      
             <Link
               href={`/profile?category=${profile.subRole?.toLowerCase()}&id=${
                 profile.id

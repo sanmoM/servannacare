@@ -15,14 +15,22 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { format, eachDayOfInterval, isBefore, startOfToday } from "date-fns";
 import { postApi } from "@/lib/apiHandler";
+import { useFetch } from "@/hooks/useFetch";
 
 const ProfessionalSchedule = () => {
   const [mounted, setMounted] = useState(false);
   const [selectedDates, setSelectedDates] = useState(new Set());
   const [isPublishing, setIsPublishing] = useState(false);
   const today = startOfToday();
-
   const BRAND_COLOR = "#72275b";
+
+  const { data, error, loading } = useFetch("/profile");
+  useEffect(() => {
+    if (data?.data?.schedule?.length) {
+      const allDates = data.data.schedule.flatMap((s) => s.date);
+      setSelectedDates(new Set(allDates));
+    }
+  }, [data]);
 
   useEffect(() => {
     setMounted(true);
@@ -53,42 +61,41 @@ const ProfessionalSchedule = () => {
     [today],
   );
 
-const handlePublish = async () => {
-  if (selectedDates.size === 0)
-    return toast.error("Please select at least one day.");
+  const handlePublish = async () => {
+    if (selectedDates.size === 0)
+      return toast.error("Please select at least one day.");
 
-  setIsPublishing(true);
+    setIsPublishing(true);
 
- 
-  const payload = {
-    date: Array.from(selectedDates).sort(),
+    const payload = {
+      date: Array.from(selectedDates).sort(),
+    };
+
+    try {
+      const response = await postApi("/schedule", payload);
+      console.log("res", response?.data?.data?.date);
+
+      if (response.status === 200) {
+        toast.success(`Successfully published ${selectedDates.size} days!`, {
+          style: { background: BRAND_COLOR, color: "#fff" },
+        });
+
+        // Update selectedDates from server response
+        if (response.data?.data?.date) {
+          setSelectedDates(new Set(response.data.data.date));
+        }
+      } else {
+        throw new Error("Failed to publish schedule");
+      }
+    } catch (error) {
+      console.error("Payload Error:", error);
+      toast.error("API Error: Could not save schedule.");
+    } finally {
+      setIsPublishing(false);
+    }
   };
 
-  // console.log("payload", payload);
-
-  try {
-    const response = await postApi("/schedule", payload); 
-    console.log("res",response?.data?.data?.date)
-
-    if (response.status === 200) {
-      toast.success(`Successfully published ${selectedDates.size} days!`, {
-        style: { background: BRAND_COLOR, color: "#fff" },
-      });
-    } else {
-      throw new Error("Failed to publish schedule");
-    }
-  } catch (error) {
-    console.error("Payload Error:", error);
-    toast.error("API Error: Could not save schedule.");
-  } finally {
-    setIsPublishing(false);
-  }
-};
-
-
-
-
-  if (!mounted) return null;
+  if (!mounted || loading) return null;
 
   return (
     <div className="min-h-screen bg-[#FDFCFD] p-4 md:p-10 font-sans text-slate-900">
@@ -150,7 +157,15 @@ const handlePublish = async () => {
               </span>
             </div>
             <button
-              onClick={() => setSelectedDates(new Set())}
+              onClick={() => {
+                // Reset to server-saved dates
+                if (data?.schedule?.length) {
+                  const allDates = data.schedule.flatMap((s) => s.date);
+                  setSelectedDates(new Set(allDates));
+                } else {
+                  setSelectedDates(new Set());
+                }
+              }}
               className="text-xs font-bold text-slate-400 hover:text-red-500 flex items-center gap-2 transition-all"
             >
               <Trash2 size={16} /> Reset
@@ -278,18 +293,18 @@ const handlePublish = async () => {
         }
 
         .is-selected-day {
-  background-color: ${BRAND_COLOR} !important;
-  color: white !important;
-  border-radius: 1rem; /* optional: rounded corners for nicer look */
-  box-shadow: 0 4px 10px rgba(114, 39, 91, 0.3);
-}
+          background-color: ${BRAND_COLOR} !important;
+          color: white !important;
+          border-radius: 1rem; /* optional: rounded corners for nicer look */
+          box-shadow: 0 4px 10px rgba(114, 39, 91, 0.3);
+        }
 
-/* Make the day number itself visible on top */
-.is-selected-day .fc-daygrid-day-number {
-  color: white !important;
-  background: transparent !important; /* remove circle background */
-  box-shadow: none !important;
-}
+        /* Make the day number itself visible on top */
+        .is-selected-day .fc-daygrid-day-number {
+          color: white !important;
+          background: transparent !important; /* remove circle background */
+          box-shadow: none !important;
+        }
       `}</style>
     </div>
   );
