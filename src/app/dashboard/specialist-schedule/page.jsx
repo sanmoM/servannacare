@@ -61,13 +61,14 @@ const handlePublish = async () => {
 
  
   const payload = {
-    dates: Array.from(selectedDates).sort(),
+    date: Array.from(selectedDates).sort(),
   };
 
-  console.log("payload", payload);
+  // console.log("payload", payload);
 
   try {
     const response = await postApi("/schedule", payload); 
+    console.log("res",response?.data?.data?.date)
 
     if (response.status === 200) {
       toast.success(`Successfully published ${selectedDates.size} days!`, {
@@ -275,6 +276,20 @@ const handlePublish = async () => {
           background: #fdf4ff;
           border: 1px solid #fae8ff;
         }
+
+        .is-selected-day {
+  background-color: ${BRAND_COLOR} !important;
+  color: white !important;
+  border-radius: 1rem; /* optional: rounded corners for nicer look */
+  box-shadow: 0 4px 10px rgba(114, 39, 91, 0.3);
+}
+
+/* Make the day number itself visible on top */
+.is-selected-day .fc-daygrid-day-number {
+  color: white !important;
+  background: transparent !important; /* remove circle background */
+  box-shadow: none !important;
+}
       `}</style>
     </div>
   );

@@ -40,17 +40,18 @@ export default function AgencyProfile() {
 
   const [agencyData, setAgencyData] = useState(null);
 
+
+
   const { data, isLoading, error } = useFetch("/profile");
   useEffect(() => {
     if (data) {
-      setAgencyData(data?.data?.data ?? data);
+      setAgencyData(data?.data?.data ?? data?.data?.agency);
     }
   }, [data]);
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
 
-  
   return (
     <div>
       <div className="flex justify-between">
@@ -69,7 +70,7 @@ export default function AgencyProfile() {
         </p>
       )}
       {user?.is_profile_completed ? (
-        <UpdateBasicInfo agencyData={agencyData?.agency} />
+        <UpdateBasicInfo agencyData={agencyData} />
       ) : (
         <>
           <CreateBasicInfo />

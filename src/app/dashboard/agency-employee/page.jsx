@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { deleteApi } from "@/lib/apiHandler";
 
 const EmployeePage = () => {
   const [employees, setEmployees] = useState([]);
@@ -48,7 +49,7 @@ const EmployeePage = () => {
   const handleDelete = async (id) => {
     const loadingToast = toast.loading("Deleting employee...");
     try {
-      await axios.delete(`agency-employee/${id}`);
+      await deleteApi(`/agency-employee/${id}`);
       toast.success("Employee removed successfully", { id: loadingToast });
       refetch();
     } catch (err) {
