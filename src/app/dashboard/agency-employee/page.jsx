@@ -48,7 +48,7 @@ const EmployeePage = () => {
   const handleDelete = async (id) => {
     const loadingToast = toast.loading("Deleting employee...");
     try {
-      await axios.delete(`/api/agency/employee/${id}`);
+      await axios.delete(`agency-employee/${id}`);
       toast.success("Employee removed successfully", { id: loadingToast });
       refetch();
     } catch (err) {

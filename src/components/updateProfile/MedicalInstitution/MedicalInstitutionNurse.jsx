@@ -26,6 +26,11 @@ const MedicalInstitutionNurse = ({
   onSuccess,
 }) => {
   const router = useRouter();
+  const [existingFiles, setExistingFiles] = useState({
+    educationCertificate: null,
+    practiceLicense: null,
+  });
+
   const documents = [
     {
       id: "idCopy",
@@ -85,7 +90,7 @@ const MedicalInstitutionNurse = ({
   useEffect(() => {
     if (initialData && isUpdate) {
       setData({
-        name: initialData.fullName || "",
+        fullName: initialData.fullName || "",
         age: initialData.age || "",
         location: initialData.location || "",
         experience: initialData?.experience || "",
@@ -94,16 +99,11 @@ const MedicalInstitutionNurse = ({
         preferredRole: initialData.preferredRole || "",
         education: initialData.education || "",
         languages: initialData.languages || [],
-        educationCertificate:
-          initialData.educationCertificate !== "null"
-            ? initialData.educationCertificate
-            : null,
+        educationCertificate: null,
+        practiceLicense: null,
         isNursingInKenya: initialData.isNursingInKenya === 1,
         registrationNumber: initialData.registrationNumber,
-        practiceLicense:
-          initialData.practiceLicense !== "null"
-            ? initialData.practiceLicense
-            : null,
+
         hospitalBasedCare: initialData.hospitalBasedCare === 1,
         hospitalBasedYearsOfExperience:
           initialData.hospitalBasedYearsOfExperience || "",
@@ -121,13 +121,24 @@ const MedicalInstitutionNurse = ({
         serviceFeeMonth: initialData.serviceFeeMonth || "",
         documents: {
           idCopy: initialData.idCopy !== "null" ? initialData.idCopy : null,
-
           profilePhoto:
             initialData.profilePhoto !== "null"
               ? initialData.profilePhoto
               : null,
         },
       });
+
+      setExistingFiles({
+        educationCertificate:
+          initialData.educationCertificate !== "null"
+            ? initialData.educationCertificate
+            : null,
+        practiceLicense:
+          initialData.practiceLicense !== "null"
+            ? initialData.practiceLicense
+            : null,
+      });
+
       setReady(true);
     }
   }, [initialData, isUpdate]);
@@ -191,13 +202,20 @@ const MedicalInstitutionNurse = ({
         return;
       }
 
-      if (value !== null && value !== undefined) {
+      if (key === "practiceLicense" && value instanceof File) {
+        payload.append("practiceLicense", value);
+        return;
+      }
+
+      if (value !== null && value !== undefined && !(value instanceof File)) {
         payload.append(key, value);
       }
     });
 
     Object.entries(data.documents).forEach(([key, file]) => {
-      if (file instanceof File) payload.append(key, file);
+      if (file instanceof File) {
+        payload.append(key, file);
+      }
     });
 
     return payload;
@@ -219,8 +237,7 @@ const MedicalInstitutionNurse = ({
 
       const hasExistingLicense =
         isUpdate &&
-        initialData?.practiceLicense &&
-        initialData.practiceLicense !== "null";
+        (existingFiles.practiceLicense || initialData?.practiceLicense);
 
       if (!data.practiceLicense && !hasExistingLicense) {
         toast.error("Practising Licence is Required");
@@ -423,6 +440,7 @@ const MedicalInstitutionNurse = ({
           accept="application/pdf,image/*"
           icon={<FileText size={32} />}
           file={data.educationCertificate}
+          existingFile={existingFiles.educationCertificate}
           onFileSelect={(file) =>
             setData((p) => ({ ...p, educationCertificate: file }))
           }
@@ -481,6 +499,7 @@ const MedicalInstitutionNurse = ({
                   accept="application/pdf,image/*"
                   icon={<FileText size={32} />}
                   file={data?.practiceLicense}
+                  existingFile={existingFiles.practiceLicense}
                   onFileSelect={(file) =>
                     setData((p) => ({ ...p, practiceLicense: file }))
                   }
