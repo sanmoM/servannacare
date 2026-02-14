@@ -221,7 +221,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         toast.success("Employee updated!", { id: loadingToast });
       } else {
         await postApi("/agency-employee", payload);
-        router.push("/dashboard/agency-employee");
+   
         toast.success("Employee added!", { id: loadingToast });
       }
 

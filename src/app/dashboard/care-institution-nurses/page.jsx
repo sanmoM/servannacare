@@ -41,6 +41,9 @@ import toast from "react-hot-toast";
 
 const InstitutionNursePage = () => {
   const [nurses, setNurses] = useState([]);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(null);
+
   const { data, isLoading, refetch } = useFetch("/profile");
 
   useEffect(() => {
@@ -62,9 +65,7 @@ const InstitutionNursePage = () => {
 
   if (isLoading) return <LoadingSpinner />;
 
-
-
-    const buildFileUrl = (path) => {
+  const buildFileUrl = (path) => {
     if (!path) return null;
 
     if (path.startsWith("http")) return path;
@@ -92,7 +93,7 @@ const InstitutionNursePage = () => {
           </p>
         </div>
 
-        <Dialog>
+        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
             <Button className="bg-primary shadow-sm w-full sm:w-auto">
               <Plus className="mr-2" size={18} /> Add New Nurse
@@ -106,6 +107,7 @@ const InstitutionNursePage = () => {
             <MedicalInstitutionNurse
               onSuccess={() => {
                 refetch();
+                setIsAddOpen(false);
               }}
             />
           </DialogContent>
@@ -332,8 +334,12 @@ const InstitutionNursePage = () => {
                           </DialogContent>
                         </Dialog>
 
-                        {/* Edit */}
-                        <Dialog>
+                        <Dialog
+                          open={isEditOpen === nurse.id}
+                          onOpenChange={(open) =>
+                            setIsEditOpen(open ? nurse.id : null)
+                          }
+                        >
                           <DialogTrigger asChild>
                             <Button
                               variant="ghost"
@@ -351,7 +357,10 @@ const InstitutionNursePage = () => {
                             <MedicalInstitutionNurse
                               initialData={nurse}
                               isUpdate
-                              onSuccess={() => refetch()}
+                              onSuccess={() => {
+                                refetch();
+                                setIsEditOpen(null);
+                              }}
                             />
                           </DialogContent>
                         </Dialog>

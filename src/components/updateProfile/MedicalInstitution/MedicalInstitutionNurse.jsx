@@ -5,9 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import { Camera, FileText, IdCardLanyard } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 
@@ -16,7 +25,7 @@ const MedicalInstitutionNurse = ({
   isUpdate = false,
   onSuccess,
 }) => {
-  console.log("ionit", initialData);
+  const router = useRouter();
   const documents = [
     {
       id: "idCopy",
@@ -32,23 +41,24 @@ const MedicalInstitutionNurse = ({
     },
   ];
 
-  const skillsList = [
+  const servicesList = [
     "Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)",
     "Vital Signs Monitoring (checking blood pressure, blood sugar, pulse, temperature, etc.)",
     "Medical Assistance: Assisting nurses with wound care and administering medication (in some cases)",
-    "Compassion & Communication Skills",
+    "Compassion & Communication services",
     "Special needs children caregiving",
     "Elderly caregiving",
     "Handling Medical Equipment (e.g., feeding tubes, catheter, oxygen tanks)",
   ];
 
   const [data, setData] = useState({
-    name: "",
+    fullName: "",
     age: "",
     location: "",
+    experience: "",
     gender: "",
-    canDrive: "",
-    role: "",
+    canDrive: null,
+    preferredRole: "",
     education: "",
     languages: [],
     educationCertificate: null,
@@ -61,13 +71,13 @@ const MedicalInstitutionNurse = ({
     homeBasedCare: null,
     homeBasedYearsOfExperience: "",
     homeBasedReferenceContact: "",
-    skills: [],
+    services: [],
     mobilityYears: "",
     bathingYears: "",
     feedingYears: "",
     serviceFeeDay: "",
     serviceFeeMonth: "",
-    documents: { idCopy: null, profilePhoto: null, practiceLicense: null },
+    documents: { idCopy: null, profilePhoto: null },
   });
 
   const [ready, setReady] = useState(!isUpdate);
@@ -78,27 +88,32 @@ const MedicalInstitutionNurse = ({
         name: initialData.fullName || "",
         age: initialData.age || "",
         location: initialData.location || "",
+        experience: initialData?.experience || "",
         gender: initialData.gender || "",
-        canDrive: initialData.canDrive ? "Yes" : "No",
-        role: initialData.preferredRole || "",
+        canDrive: initialData.canDrive === 1,
+        preferredRole: initialData.preferredRole || "",
         education: initialData.education || "",
         languages: initialData.languages || [],
         educationCertificate:
           initialData.educationCertificate !== "null"
             ? initialData.educationCertificate
             : null,
-        isNursingInKenya: initialData.isNursingInKenya,
+        isNursingInKenya: initialData.isNursingInKenya === 1,
         registrationNumber: initialData.registrationNumber,
-        hospitalBasedCare: initialData.hospitalBasedCare,
+        practiceLicense:
+          initialData.practiceLicense !== "null"
+            ? initialData.practiceLicense
+            : null,
+        hospitalBasedCare: initialData.hospitalBasedCare === 1,
         hospitalBasedYearsOfExperience:
           initialData.hospitalBasedYearsOfExperience || "",
         hospitalBasedReferenceContact:
           initialData.hospitalBasedReferenceContact || "",
-        homeBasedCare: initialData.homeBasedCare,
+        homeBasedCare: initialData.homeBasedCare === 1,
         homeBasedYearsOfExperience:
           initialData.homeBasedYearsOfExperience || "",
         homeBasedReferenceContact: initialData.homeBasedReferenceContact || "",
-        skills: initialData.services || [],
+        services: initialData.services || [],
         mobilityYears: initialData.mobilityYears || "",
         bathingYears: initialData.bathingYears || "",
         feedingYears: initialData.feedingYears || "",
@@ -106,10 +121,7 @@ const MedicalInstitutionNurse = ({
         serviceFeeMonth: initialData.serviceFeeMonth || "",
         documents: {
           idCopy: initialData.idCopy !== "null" ? initialData.idCopy : null,
-          practiceLicense:
-            initialData.practiceLicense !== "null"
-              ? initialData.practiceLicense
-              : null,
+
           profilePhoto:
             initialData.profilePhoto !== "null"
               ? initialData.profilePhoto
@@ -149,10 +161,10 @@ const MedicalInstitutionNurse = ({
   const buildPayload = () => {
     const payload = new FormData();
 
-    payload.append(
-      "care_institution_id",
-      initialData?.care_institution_id || "",
-    );
+    const booleanToNumber = (value) => {
+      if (typeof value === "boolean") return value ? 1 : 0;
+      return value;
+    };
 
     Object.entries(data).forEach(([key, value]) => {
       if (key === "documents") return;
@@ -165,7 +177,7 @@ const MedicalInstitutionNurse = ({
           "homeBasedCare",
         ].includes(key)
       ) {
-        payload.append(key, value === "Yes");
+        payload.append(key, booleanToNumber(value));
         return;
       }
 
@@ -178,12 +190,10 @@ const MedicalInstitutionNurse = ({
         payload.append("educationCertificate", value);
         return;
       }
-      if (key === "serviceFeeDay" || key === "serviceFeeMonth") {
-        payload.append(key, value);
-        return;
-      }
 
-      payload.append(key, value);
+      if (value !== null && value !== undefined) {
+        payload.append(key, value);
+      }
     });
 
     Object.entries(data.documents).forEach(([key, file]) => {
@@ -228,8 +238,12 @@ const MedicalInstitutionNurse = ({
         toast.success("Nurse updated successfully!", { id: loadingToast });
       } else {
         await postApi("/institution-nurse", payload);
+
         toast.success("Nurse added successfully!", { id: loadingToast });
       }
+
+      router.push("/dashboard/care-institution-nurses");
+
       onSuccess?.();
     } catch (error) {
       console.error(error);
@@ -248,9 +262,9 @@ const MedicalInstitutionNurse = ({
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
             placeholder="Name"
-            name="name"
+            name="fullName"
             label="Full Name (as per ID)"
-            value={data.name}
+            value={data.fullName}
             onChange={handleChange}
           />
 
@@ -272,17 +286,48 @@ const MedicalInstitutionNurse = ({
           />
         </div>
 
-        {/* Location + Gender */}
-        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
-          <Input
-            label="Location"
-            placeholder="Location"
-            name="location"
-            value={data.location}
-            onChange={handleChange}
-          />
+        {/* Location + experience */}
 
-          <div className="flex-1 mt-3">
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
+          <div className="flex-1">
+            <Input
+              label="Location"
+              placeholder="Location"
+              name="location"
+              value={data.location}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Experience (Years)
+            </label>
+            <Select
+              value={data.experience}
+              onValueChange={(value) =>
+                setData((prev) => ({ ...prev, experience: value }))
+              }
+            >
+              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                <SelectValue placeholder="Select years of experience" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="1">1 year</SelectItem>
+                  <SelectItem value="2">2 years</SelectItem>
+                  <SelectItem value="3">3 years</SelectItem>
+                  <SelectItem value="4">4 years</SelectItem>
+                  <SelectItem value="5">5 years</SelectItem>
+                  <SelectItem value="5+">More than 5 years</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
+          <div className="flex-1 mt-4">
             <Label className={"mb-2"}>Gender?</Label>
             <RadioGroup
               value={data.gender}
@@ -307,14 +352,16 @@ const MedicalInstitutionNurse = ({
           <div className="flex-1">
             <Label className={"mb-2"}>Can you drive?</Label>
             <RadioGroup
-              value={data.canDrive}
-              onValueChange={(val) => setData((p) => ({ ...p, canDrive: val }))}
+              value={data.canDrive === null ? "" : String(data.canDrive)}
+              onValueChange={(val) =>
+                setData((p) => ({ ...p, canDrive: val === "true" }))
+              }
               className="flex gap-4"
             >
-              <RadioGroupItem value="Yes" id="d1" />
+              <RadioGroupItem value="true" id="d1" />
               <Label htmlFor="d1">Yes</Label>
 
-              <RadioGroupItem value="No" id="d2" />
+              <RadioGroupItem value="false" id="d2" />
               <Label htmlFor="d2">No</Label>
             </RadioGroup>
           </div>
@@ -323,8 +370,10 @@ const MedicalInstitutionNurse = ({
           <div className="flex-1">
             <Label className={"mb-2"}>Your Role?</Label>
             <RadioGroup
-              value={data.role}
-              onValueChange={(val) => setData((p) => ({ ...p, role: val }))}
+              value={data.preferredRole}
+              onValueChange={(val) =>
+                setData((p) => ({ ...p, preferredRole: val }))
+              }
               className="flex gap-4"
             >
               <RadioGroupItem value="Medical Nurse" id="r3" />
@@ -431,12 +480,9 @@ const MedicalInstitutionNurse = ({
                   title="Practising License"
                   accept="application/pdf,image/*"
                   icon={<FileText size={32} />}
-                  file={data?.documents?.practiceLicense}
+                  file={data?.practiceLicense}
                   onFileSelect={(file) =>
-                    setData((prev) => ({
-                      ...prev,
-                      practiceLicense: file,
-                    }))
+                    setData((p) => ({ ...p, practiceLicense: file }))
                   }
                 />
               </div>
@@ -539,15 +585,15 @@ const MedicalInstitutionNurse = ({
           )}
         </div>
 
-        {/* Skills */}
+        {/* services */}
         <div>
           <Label className="mb-2 mt-4 block">Do you have experience in:</Label>
           <div className="flex flex-col gap-3">
-            {skillsList.map((skill, idx) => (
+            {servicesList.map((skill, idx) => (
               <div key={idx} className="flex gap-2">
                 <Checkbox
-                  checked={data.skills.includes(skill)}
-                  onCheckedChange={() => toggleArray("skills", skill)}
+                  checked={data.services.includes(skill)}
+                  onCheckedChange={() => toggleArray("services", skill)}
                 />
                 <Label>{skill}</Label>
               </div>
