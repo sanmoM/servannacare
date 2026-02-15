@@ -17,6 +17,8 @@ import { useFetch } from "@/hooks/useFetch";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import useLocalUser from "@/hooks/useLocalUser";
 import { Calendar } from "@/components/ui/calendar";
+import FileUpload from "@/components/auth/register/FileUpload";
+import { FileText } from "lucide-react";
 
 export default function BookingFormClient() {
   const searchParams = useSearchParams();
@@ -52,8 +54,8 @@ export default function BookingFormClient() {
       item.id === Number(id) &&
       item.subRole?.toLowerCase() === category?.toLowerCase(),
   );
-  console.log("price", prices);
-  console.log("matchedData", matchedData?.schedule);
+  // console.log("price", prices);
+  // console.log("matchedData", matchedData?.schedule);
 
   const availableDates = matchedData?.schedule?.flatMap((s) => s.date) || [];
 
@@ -74,18 +76,29 @@ export default function BookingFormClient() {
     watch,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       conditions: [],
       allergies: [],
       selectedDays: [],
+      medications: "",
+      prescriptionFile: null,
     },
   });
 
   const conditions = watch("conditions") || [];
 
   const watchMedication = watch("onMedication");
+
+  useEffect(() => {
+    if (watchMedication === "no") {
+      setValue("medications", "");
+      setValue("prescriptionFile", null);
+    }
+  }, [watchMedication]);
+
   const allergies = watch("allergies") || [];
   const careType = watch("careFrequency");
   const selectedDays = watch("selectedDays") || [];
@@ -154,38 +167,86 @@ export default function BookingFormClient() {
   if (specialistError || priceError) return <div>Error loading data</div>;
 
   const onSubmit = async (data) => {
-    const payload = {
-      specialist_id: id,
-      patient_name: data?.patientName,
-      patient_age: data?.age,
-      patient_gender: data?.gender,
-      relationship_to_booking_person: data?.relationship,
-      price_id: selectedPrice?.id,
-      selected_days: isSelectedDays ? selectedDays : null,
-      booking_amount: bookingAmount,
-
-      patient_have_any_conditions: data?.conditions,
-      patient_currently_on_medication: data?.onMedication,
-      patient_currently_on_medication_data: data?.medications,
-      patient_have_any_known_allergies: data?.allergyType,
-      patient_have_any_known_allergies_details: data?.allergyDetails,
-      mobility_status_of_patient: data?.mobility,
-      care_start_date: isDaily ? startDate : startMonth,
-      care_end_date: isDaily ? endDate : endMonth,
-
-      location_of_care: data?.location,
-      emergency_contact_name: data?.emergencyName,
-      emergency_contact_number: data?.emergencyPhone,
-      primary_doctor_name: data?.doctorName,
-      primary_doctor_number: data?.doctorContact,
-      primary_hospital: data?.hospital,
+    const formatToLocalString = (date) => {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
     };
+
+    const selectedItems = isDaily
+      ? selectedDateList.map(formatToLocalString)
+      : selectedMonths;
+
+    const formData = new FormData();
+
+    // Basic Info
+    formData.append("specialist_id", id);
+    formData.append("patient_name", data.patientName);
+    formData.append("patient_age", data.age);
+    formData.append("patient_gender", data.gender);
+    formData.append("relationship_to_booking_person", data.relationship);
+
+    // Booking Info
+    formData.append("price_id", selectedPrice?.id);
+    formData.append("booking_amount", bookingAmount);
+    formData.append("booking_type", isDaily ? "daily" : "monthly");
+
+    formData.append("selected_dates_or_months", JSON.stringify(selectedItems));
+
+    formData.append("total_count", selectedItems.length);
+
+    // Health Info
+    formData.append(
+      "patient_have_any_conditions",
+      JSON.stringify(data?.conditions || []),
+    );
+
+    // Medication
+    formData.append(
+      "patient_currently_on_medication",
+      data?.onMedication === "yes" ? 1 : 0,
+    );
+
+    formData.append(
+      "patient_currently_on_medication_data",
+      data?.onMedication === "yes" ? data?.medications || "" : "",
+    );
+
+    if (data?.prescriptionFile) {
+      formData.append("prescription_file", data.prescriptionFile);
+    }
+
+    formData.append("patient_have_any_known_allergies", data?.allergyType);
+
+    formData.append(
+      "patient_have_any_known_allergies_details",
+      data?.allergyDetails || "",
+    );
+
+    formData.append("mobility_status_of_patient", data?.mobility);
+
+    // Location & Emergency
+    formData.append("location_of_care", data?.location);
+    formData.append("emergency_contact_name", data?.emergencyName);
+    formData.append("emergency_contact_number", data?.emergencyPhone);
+    formData.append("primary_doctor_name", data?.doctorName);
+    formData.append("primary_doctor_number", data?.doctorContact);
+    formData.append("primary_hospital", data?.hospital);
+
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
     try {
-      const res = await postApi("/booking", payload);
+      const res = await postApi("/booking", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (res?.status === 200) {
         toast.success("Booking Successfully!");
-        console.log("response", res);
         router.push("/dashboard/my-appointment");
       } else {
         toast.error(
@@ -193,16 +254,8 @@ export default function BookingFormClient() {
         );
       }
     } catch (error) {
-      console.error("Error creating profile:", error);
-      if (error.response) {
-        toast.error(
-          error.response.data?.message || `Error: ${error.response.status}`,
-        );
-      } else if (error.request) {
-        toast.error("No response from server. Please check your connection.");
-      } else {
-        toast.error("An unexpected error occurred.");
-      }
+      console.error("Error creating booking:", error);
+      toast.error("Something went wrong.");
     }
   };
 
@@ -414,14 +467,53 @@ export default function BookingFormClient() {
               )}
 
               {watch("onMedication") === "yes" && (
-                <Controller
-                  name="medications"
-                  control={control}
-                  rules={{ required: "Please list the medications" }}
-                  render={({ field }) => (
-                    <Textarea placeholder="List medications" {...field} />
+                <div className="space-y-4">
+                  {/* Medication Textarea */}
+                  <Controller
+                    name="medications"
+                    control={control}
+                    rules={{
+                      required:
+                        "Please list the medications or upload a prescription",
+                    }}
+                    render={({ field }) => (
+                      <Textarea placeholder="List medications" {...field} />
+                    )}
+                  />
+
+                  {/* OR Divider */}
+                  <div className="text-sm text-muted-foreground">OR</div>
+
+                  {/* File Upload */}
+                  <Controller
+                    name="prescriptionFile"
+                    control={control}
+                    rules={{
+                      validate: (value) => {
+                        const meds = watch("medications");
+                        if (!meds && !value) {
+                          return "Please list medications or upload a prescription";
+                        }
+                        return true;
+                      },
+                    }}
+                    render={({ field }) => (
+                      <FileUpload
+                        title="Prescription"
+                        accept="application/pdf,image/*"
+                        icon={<FileText size={32} />}
+                        file={field.value}
+                        onFileSelect={(file) => field.onChange(file)}
+                      />
+                    )}
+                  />
+
+                  {errors.prescriptionFile && (
+                    <p className="text-sm text-red-500">
+                      {errors.prescriptionFile.message}
+                    </p>
                   )}
-                />
+                </div>
               )}
             </section>
 
@@ -599,7 +691,11 @@ export default function BookingFormClient() {
                   disabled={(date) => isDateDisabled(date)}
                   modifiers={{ available: (date) => !isDateDisabled(date) }}
                   modifiersStyles={{
-                    available: { fontWeight: "bold", color: "#72275b" ,cursor:"pointer" },
+                    available: {
+                      fontWeight: "bold",
+                      color: "#72275b",
+                      cursor: "pointer",
+                    },
                   }}
                   className="rounded-md border cursor-pointer"
                 />
