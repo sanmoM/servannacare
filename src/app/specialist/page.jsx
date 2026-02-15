@@ -155,7 +155,7 @@ const SearchContent = () => {
     return sortedSpecialists.slice(start, end);
   }, [sortedSpecialists, currentPage]);
 
-  console.log(paginatedSpecialists)
+  console.log(paginatedSpecialists);
 
   return (
     <>
@@ -170,6 +170,67 @@ const SearchContent = () => {
           >
             <Filter className="text-primary" /> <span>Filter</span>
           </div>
+          {/* Mobile Sidebar */}
+          {mobileFilterSidebar && (
+            <div className="fixed inset-0 z-50 bg-black/50 flex">
+              <div className="w-64 bg-white h-full p-6 overflow-y-auto">
+                <button
+                  className="mb-4 font-semibold text-primary"
+                  onClick={() => setMobileFilterSidebarOpen(false)}
+                >
+                  Close
+                </button>
+
+                {/* Category Selector */}
+                <div>
+                  <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                    Specialist
+                  </h2>
+                  <select
+                    className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
+                    value={selectedCategory}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                  >
+                    <option value="" disabled hidden>
+                      Select Specialist
+                    </option>
+                    {serviceCategory.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.mainCategory}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Services Selector */}
+                {selectedCategoryObj && (
+                  <div className="mt-6">
+                    <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                      Services
+                    </h2>
+                    <div className="space-y-2">
+                      {selectedCategoryObj.subCategory.map((service, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <Checkbox
+                            id={service}
+                            checked={selectedServices.includes(service)}
+                            onCheckedChange={() => handleServiceToggle(service)}
+                          />
+                          <Label htmlFor={service}>{service}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Click outside to close */}
+              <div
+                className="flex-1"
+                onClick={() => setMobileFilterSidebarOpen(false)}
+              />
+            </div>
+          )}
 
           {/* Sort Dropdown */}
           <Select value={sortBy} onValueChange={setSortBy}>
@@ -198,7 +259,7 @@ const SearchContent = () => {
                 {/* Category Selector */}
                 <div>
                   <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
-                    Specialist 
+                    Specialist
                   </h2>
                   <select
                     className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
