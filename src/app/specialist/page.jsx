@@ -37,6 +37,8 @@ const SearchContent = () => {
   const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
+  const [applyFilter, setApplyFilter] = useState(false);
+
   const ITEMS_PER_PAGE = 6;
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,10 +54,9 @@ const SearchContent = () => {
     return query.toString();
   };
 
-  const fetchUrl =
-    selectedCategory || selectedServices.length > 0
-      ? `/specialist?${buildQuery()}`
-      : `/specialist?limit=25`;
+  const fetchUrl = applyFilter
+    ? `/specialist?${buildQuery()}`
+    : `/specialist?limit=25`;
 
   const { data, isLoading, error } = useFetch(fetchUrl);
 
@@ -155,7 +156,17 @@ const SearchContent = () => {
     return sortedSpecialists.slice(start, end);
   }, [sortedSpecialists, currentPage]);
 
-  console.log(paginatedSpecialists);
+  useEffect(() => {
+    if (mobileFilterSidebar) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [mobileFilterSidebar]);
 
   return (
     <>
@@ -222,6 +233,17 @@ const SearchContent = () => {
                     </div>
                   </div>
                 )}
+                <div className="mt-8">
+                  <button
+                    className="w-full bg-primary text-white py-2 rounded-md"
+                    onClick={() => {
+                      setApplyFilter(true);
+                      setMobileFilterSidebarOpen(false);
+                    }}
+                  >
+                    Search
+                  </button>
+                </div>
               </div>
 
               {/* Click outside to close */}
