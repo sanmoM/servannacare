@@ -188,7 +188,7 @@ export default function BookingFormClient() {
     formData.append("relationship_to_booking_person", data.relationship);
 
     // Booking Info
-    formData.append("price_id", selectedPrice?.id);
+    // formData.append("price_id", selectedPrice?.id);
     formData.append("booking_amount", bookingAmount);
     formData.append("booking_type", isDaily ? "daily" : "monthly");
 
@@ -774,7 +774,7 @@ export default function BookingFormClient() {
                 </div>
 
                 {previewMonth && (
-                  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
                     <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
                         <CardTitle className="text-lg font-bold">

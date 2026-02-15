@@ -14,7 +14,11 @@ import { useSearchParams } from "next/navigation";
 import { postApi } from "@/lib/apiHandler";
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
-import { parsePhoneNumberFromString } from "libphonenumber-js";
+import {
+  parsePhoneNumberFromString,
+  getExampleNumber,
+} from "libphonenumber-js";
+import "react-phone-number-input/style.css";
 
 const SignUpStart = ({ onSuccess }) => {
   const searchParams = useSearchParams();
@@ -151,24 +155,42 @@ const SignUpStart = ({ onSuccess }) => {
               const parsed = parsePhoneNumberFromString(value);
 
               if (!parsed) {
+                // allow typing partial number with country code
                 setPhone(value);
                 return;
               }
 
-              if (parsed.isPossible()) {
-                setPhone(value);
-                return;
-              }
+              // Get the max allowed digits for this country
+              const exampleNumber = getExampleNumber(parsed.country);
+              const maxLength = exampleNumber
+                ? exampleNumber.nationalNumber.length
+                : 15;
 
               const digits = parsed.nationalNumber;
 
-              if (digits.length <= 15) {
+              // Only update phone if within allowed digits
+              if (digits.length <= maxLength) {
                 setPhone(value);
               }
             }}
             onCountryChange={(countryCode) => {
               setCountry(countryCode);
+
+              // Reset phone to the country code when switching countries
+              const exampleNumber = countryCode
+                ? getExampleNumber(countryCode)
+                : null;
+              if (exampleNumber) {
+                setPhone(`+${exampleNumber.countryCallingCode}`);
+              } else {
+                setPhone("");
+              }
             }}
+            countrySelectProps={
+              {
+                // optional: style or limit country dropdown
+              }
+            }
           />
 
           <Input
