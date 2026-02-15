@@ -1,6 +1,25 @@
 "use client";
 
+import React, { useEffect, useState, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
+import toast from "react-hot-toast";
+import {
+  User,
+  Stethoscope,
+  Pill,
+  CalendarDays,
+  MapPin,
+  ShieldCheck,
+  Eye,
+  Activity,
+  HeartPulse,
+  Phone,
+  Hospital,
+  UserPlus,
+  Info,
+} from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,310 +28,226 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { postApi } from "@/lib/apiHandler";
-import { useRouter, useSearchParams } from "next/navigation";
-import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
-import { useFetch } from "@/hooks/useFetch";
-import LoadingSpinner from "@/components/shared/LoadingSpin";
-import useLocalUser from "@/hooks/useLocalUser";
 import { Calendar } from "@/components/ui/calendar";
 import FileUpload from "@/components/auth/register/FileUpload";
-import { FileText } from "lucide-react";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
+
+import { postApi } from "@/lib/apiHandler";
+import { useFetch } from "@/hooks/useFetch";
 
 export default function BookingFormClient() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const id = searchParams.get("id");
   const router = useRouter();
+
   const [bookingAmount, setBookingAmount] = useState(0);
-
-  const [price, setPrice] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
-
   const [selectedMonths, setSelectedMonths] = useState([]);
-  const [previewMonth, setPreviewMonth] = useState(null);
   const [selectedDateList, setSelectedDateList] = useState([]);
+  const [previewMonth, setPreviewMonth] = useState(null);
 
-  const {
-    data: specialistData,
-    isLoading: specialistLoading,
-    error: specialistError,
-  } = useFetch("/specialist");
+  const { data: specData, isLoading: specLoading } = useFetch("/specialist");
+  const { data: priceData, isLoading: priceLoading } = useFetch("/price");
 
-  const {
-    data: priceData,
-    isLoading: priceLoading,
-    error: priceError,
-  } = useFetch("/price");
-
-  const specialists = specialistData?.data?.data ?? [];
+  const specialists = specData?.data?.data ?? [];
   const prices = priceData?.data?.data ?? [];
 
-  const matchedData = specialists.find(
-    (item) =>
-      item.id === Number(id) &&
-      item.subRole?.toLowerCase() === category?.toLowerCase(),
+  const matchedSpecialist = useMemo(
+    () => specialists.find((s) => s.id === Number(id)),
+    [specialists, id],
   );
-  // console.log("price", prices);
-  // console.log("matchedData", matchedData?.schedule);
 
-  const availableDates = matchedData?.schedule?.flatMap((s) => s.date) || [];
+  const availableDates =
+    matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
 
-  const isDateDisabled = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-
-    const formattedLocalDate = `${year}-${month}-${day}`;
-
-    const isAvailable = availableDates.includes(formattedLocalDate);
-    const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
-
-    return !isAvailable || isPast;
-  };
   const {
     register,
-    watch,
     handleSubmit,
     control,
+    watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
+      patientName: "",
+      age: "",
+      gender: "",
+      relationship: "",
       conditions: [],
-      allergies: [],
-      selectedDays: [],
-      medications: "",
+      otherCondition: "",
+      onMedication: "", // Empty so nothing is selected by default
+      medicationDetails: "",
       prescriptionFile: null,
+      allergyType: "", // Empty so nothing is selected by default
+      allergyDetails: "",
+      mobility: "",
+      location: "",
+      careDuration: "", // Empty so nothing is selected by default
+      emergencyName: "",
+      emergencyPhone: "",
+      doctorName: "",
+      doctorPhone: "",
+      hospital: "",
+      consent: false,
     },
   });
 
-  const conditions = watch("conditions") || [];
-
+  const watchConditions = watch("conditions");
   const watchMedication = watch("onMedication");
-
-  useEffect(() => {
-    if (watchMedication === "no") {
-      setValue("medications", "");
-      setValue("prescriptionFile", null);
-    }
-  }, [watchMedication]);
-
-  const allergies = watch("allergies") || [];
-  const careType = watch("careFrequency");
-  const selectedDays = watch("selectedDays") || [];
+  const watchAllergy = watch("allergyType");
   const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
   const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
-  const isSelectedDays =
-    selectedPrice?.name?.toLowerCase().replace(/\s+/g, "") === "selecteddays";
 
-  const calculateDays = (start, end) => {
-    const diffTime = endDate - startDate;
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  useEffect(() => {
+    if (!watchConditions.includes("others")) {
+      setValue("otherCondition", "");
+    }
+  }, [watchConditions]);
+
+  useEffect(() => {
+  if (watchMedication !== "yes") {
+    setValue("medicationDetails", "");
+    setValue("prescriptionFile", null);
+  }
+}, [watchMedication, setValue]);
+
+useEffect(() => {
+  if (!watchAllergy || watchAllergy === "None") {
+    setValue("allergyDetails", "");
+  }
+}, [watchAllergy, setValue]);
+
+
+
+  const toggleCondition = (val, current, onChange) => {
+    if (val === "None") {
+      onChange(["None"]);
+    } else {
+      const next = current.includes(val)
+        ? current.filter((v) => v !== val)
+        : [...current.filter((v) => v !== "None"), val];
+      onChange(next);
+    }
   };
 
-  const calculateMonths = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    return (
-      (endDate.getFullYear() - startDate.getFullYear()) * 12 +
-      (endDate.getMonth() - startDate.getMonth()) +
-      1
+  const isDateDisabled = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    const dateStr = `${y}-${m}-${d}`;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return !availableDates.includes(dateStr) || date < today;
+  };
+
+  useEffect(() => {
+    const rate = selectedPrice?.price || 0;
+    setBookingAmount(
+      isDaily ? selectedDateList.length * rate : selectedMonths.length * rate,
     );
-  };
-
-  const weekDays = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-
-  const startDate = watch("startDate");
-  const endDate = watch("endDate");
-  const startMonth = watch("startMonth");
-  const endMonth = watch("endMonth");
-
-  useEffect(() => {
-    if (selectedPrice && selectedDateList.length > 0) {
-      setBookingAmount(selectedDateList.length * selectedPrice.price);
-    } else {
-      setBookingAmount(0);
-    }
-  }, [selectedDateList, selectedPrice]);
-
-  const getAvailabilityInMonth = (monthStr) => {
-    return availableDates.some((date) => date.startsWith(monthStr));
-  };
-
-  const toggleMonth = (monthStr) => {
-    if (selectedMonths.includes(monthStr)) {
-      setSelectedMonths((prev) => prev.filter((m) => m !== monthStr));
-    } else {
-      setSelectedMonths((prev) => [...prev, monthStr]);
-    }
-  };
-
-  useEffect(() => {
-    if (isMonthly && selectedPrice) {
-      setBookingAmount(selectedMonths.length * selectedPrice.price);
-    }
-  }, [selectedMonths, isMonthly, selectedPrice]);
-
-  if (specialistLoading || priceLoading) return <LoadingSpinner />;
-  if (specialistError || priceError) return <div>Error loading data</div>;
+  }, [selectedDateList, selectedMonths, selectedPrice, isDaily]);
 
   const onSubmit = async (data) => {
-    const formatToLocalString = (date) => {
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, "0");
-      const d = String(date.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d}`;
-    };
-
-    const selectedItems = isDaily
-      ? selectedDateList.map(formatToLocalString)
-      : selectedMonths;
+    if (
+      (isDaily && selectedDateList.length === 0) ||
+      (isMonthly && selectedMonths.length === 0)
+    ) {
+      return toast.error("Please select your schedule dates/months.");
+    }
 
     const formData = new FormData();
+    const scheduleItems = isDaily
+      ? selectedDateList.map(
+          (d) =>
+            `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+        )
+      : selectedMonths;
 
-    // Basic Info
     formData.append("specialist_id", id);
-    formData.append("patient_name", data.patientName);
-    formData.append("patient_age", data.age);
-    formData.append("patient_gender", data.gender);
-    formData.append("relationship_to_booking_person", data.relationship);
-
-    // Booking Info
-    // formData.append("price_id", selectedPrice?.id);
+    Object.keys(data).forEach((key) => {
+      if (key === "conditions" || key === "prescriptionFile") return;
+      formData.append(key, data[key]);
+    });
+    formData.append("conditions", JSON.stringify(data.conditions));
     formData.append("booking_amount", bookingAmount);
-    formData.append("booking_type", isDaily ? "daily" : "monthly");
-
-    formData.append("selected_dates_or_months", JSON.stringify(selectedItems));
-
-    formData.append("total_count", selectedItems.length);
-
-    // Health Info
-    formData.append(
-      "patient_have_any_conditions",
-      JSON.stringify(data?.conditions || []),
-    );
-
-    // Medication
-    formData.append(
-      "patient_currently_on_medication",
-      data?.onMedication === "yes" ? 1 : 0,
-    );
-
-    formData.append(
-      "patient_currently_on_medication_data",
-      data?.onMedication === "yes" ? data?.medications || "" : "",
-    );
-
-    if (data?.prescriptionFile) {
+    formData.append("selected_schedule", JSON.stringify(scheduleItems));
+    if (data.prescriptionFile)
       formData.append("prescription_file", data.prescriptionFile);
-    }
 
-    formData.append("patient_have_any_known_allergies", data?.allergyType);
-
-    formData.append(
-      "patient_have_any_known_allergies_details",
-      data?.allergyDetails || "",
-    );
-
-    formData.append("mobility_status_of_patient", data?.mobility);
-
-    // Location & Emergency
-    formData.append("location_of_care", data?.location);
-    formData.append("emergency_contact_name", data?.emergencyName);
-    formData.append("emergency_contact_number", data?.emergencyPhone);
-    formData.append("primary_doctor_name", data?.doctorName);
-    formData.append("primary_doctor_number", data?.doctorContact);
-    formData.append("primary_hospital", data?.hospital);
-
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
+    // console.log("------ FormData Start ------");
+    // formData.forEach((value, key) => {
+    //   console.log(`${key}:`, value);
+    // });
+    // console.log("------ FormData End ------");
 
     try {
-      const res = await postApi("/booking", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (res?.status === 200) {
-        toast.success("Booking Successfully!");
+      const res = await postApi("/booking", formData);
+      if (res?.status === 200 || res?.status === 201) {
+        toast.success("Booking Request Sent!");
         router.push("/dashboard/my-appointment");
-      } else {
-        toast.error(
-          res?.data?.message || "Something went wrong. Please try again.",
-        );
       }
-    } catch (error) {
-      console.error("Error creating booking:", error);
-      toast.error("Something went wrong.");
-    }
+    } catch (err) { toast.error("Submission failed."); }
   };
 
+  if (specLoading || priceLoading)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-4xl mx-auto space-y-8 my-12"
-    >
-      <Card className="shadow-xl border-muted">
-        <CardHeader>
-          <CardTitle className="text-2xl">Booking Questions</CardTitle>
-        </CardHeader>
+    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4">
+      <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
+        <form
+          onSubmit={handleSubmit(onSubmit, (errors) =>
+            console.log("Validation Errors:", errors),
+          )}
+          className="lg:col-span-2 space-y-6"
+        >
+          <div className="mb-6">
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">
+              BOOKING FORM
+            </h1>
+          </div>
 
-        <CardContent className="space-y-10">
           {/* 1. Patient Details */}
-          <section className="space-y-4">
-            <h3 className="text-lg font-semibold">
-              1. Patient / Care Recipient Details
-            </h3>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <Label>
-                  Full Name <span className="text-red-500">*</span>
-                </Label>
+          <Card className="border-none shadow-sm ring-1 ring-slate-200">
+            <CardHeader className="border-b bg-white p-6">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <User size={20} className="text-primary" /> Patient Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label>Full Name of Patient *</Label>
                 <Input
                   {...register("patientName", {
-                    required: "Full name is required",
+                    required: "Patient name is required",
                   })}
-                  placeholder="Enter patient's full name"
+                  placeholder="e. g. Full Name"
                 />
                 {errors.patientName && (
-                  <p className="text-sm text-red-500">
+                  <p className="text-xs text-red-500">
                     {errors.patientName.message}
                   </p>
                 )}
               </div>
-              <div className="space-y-3">
-                <Label>
-                  Age <span className="text-red-500">*</span>
-                </Label>
+              <div className="space-y-2">
+                <Label>Age *</Label>
                 <Input
                   type="number"
-                  {...register("age", {
-                    required: "age is required",
-                  })}
-                  placeholder="Enter patient's age"
+                  min="0"
+                  onKeyDown={(e) =>
+                    ["e", "E", "-", "+"].includes(e.key) && e.preventDefault()
+                  }
+                  {...register("age", { required: "Age is required", min: 0 })}
+                  placeholder="e. g. age"
                 />
-                {errors.age && (
-                  <p className="text-sm text-red-500">{errors.age.message}</p>
-                )}
               </div>
-              <div className="space-y-3">
-                <Label>
-                  Gender <span className="text-red-500">*</span>
-                </Label>
-
+              <div className="space-y-2">
+                <Label>Gender *</Label>
                 <Controller
                   name="gender"
                   control={control}
@@ -321,692 +256,620 @@ export default function BookingFormClient() {
                     <RadioGroup
                       onValueChange={field.onChange}
                       value={field.value}
-                      className="flex gap-6"
+                      className="flex gap-4 pt-2"
                     >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="male" id="male" />
-                        <Label htmlFor="male">Male</Label>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="female" id="female" />
-                        <Label htmlFor="female">Female</Label>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="others" id="others" />
-                        <Label htmlFor="others">Others</Label>
-                      </div>
+                      {["Male", "Female", "Other"].map((g) => (
+                        <div key={g} className="flex items-center gap-1.5">
+                          <RadioGroupItem value={g} id={`g-${g}`} />
+                          <Label htmlFor={`g-${g}`}>{g}</Label>
+                        </div>
+                      ))}
                     </RadioGroup>
                   )}
                 />
-
                 {errors.gender && (
-                  <p className="text-sm text-red-500">
+                  <p className="text-xs text-red-500">
                     {errors.gender.message}
                   </p>
                 )}
               </div>
-
-              <div className="space-y-3">
-                <Label>
-                  Relationship to Booker <span className="text-red-500">*</span>
-                </Label>
+              <div className="space-y-2">
+                <Label>Relationship *</Label>
                 <Input
-                  {...register("relationship", {
-                    required: "Relationship is required",
-                  })}
-                  placeholder="Enter Patient's Relation"
+                  {...register("relationship", { required: "Required" })}
+                  placeholder="e.g. Son, Daughter"
                 />
-                {errors.relationship && (
-                  <p className="text-sm text-red-500">
-                    {errors.relationship.message}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 2. Health Information */}
+          <Card className="border-none shadow-sm ring-1 ring-slate-200">
+            <CardHeader className="border-b bg-white p-6">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <HeartPulse size={20} className="text-primary" />
+                Health & Medical Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 space-y-8">
+              <div className="space-y-4">
+                <Label className="font-bold">
+                  Does the patient have any of the following conditions? *
+                </Label>
+                <Controller
+                  name="conditions"
+                  control={control}
+                  rules={{ required: "Select at least one" }}
+                  render={({ field }) => (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {[
+                        "None",
+                        "Diabetes",
+                        "Hypertension",
+                        "Asthma",
+                        "Heart disease",
+                        "Stroke history",
+                        "Cancer",
+                        "Epilepsy",
+                        "Mental health condition",
+                        "Mobility limitations",
+                        "others",
+                      ].map((c) => (
+                        <div
+                          key={c}
+                          className="flex items-center gap-2 p-3 border rounded-xl"
+                        >
+                          <Checkbox
+                            id={c}
+                            checked={field.value.includes(c)}
+                            onCheckedChange={() =>
+                              toggleCondition(c, field.value, field.onChange)
+                            }
+                          />
+                          <Label htmlFor={c} className="text-xs cursor-pointer">
+                            {c}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                />
+                {watchConditions.includes("others") && (
+                  <Input
+                    {...register("otherCondition", {
+                      required: "Please specify",
+                    })}
+                    placeholder="Specify other condition"
+                  />
+                )}
+              </div>
+
+              <Separator />
+
+              {/* Medication */}
+              <div className="space-y-4">
+                <Label className="font-bold">
+                  Is the patient currently on medication? *
+                </Label>
+                <Controller
+                  name="onMedication"
+                  control={control}
+                  rules={{ required: "Please select an option" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="flex gap-8"
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="yes" id="med-y" />
+                        <Label htmlFor="med-y">Yes</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="no" id="med-n" />
+                        <Label htmlFor="med-n">No</Label>
+                      </div>
+                    </RadioGroup>
+                  )}
+                />
+                {errors.onMedication && (
+                  <p className="text-xs text-red-500">
+                    {errors.onMedication.message}
+                  </p>
+                )}
+                {watchMedication === "yes" && (
+                  <div className="space-y-4 pt-2 animate-in fade-in">
+                    <Textarea
+                      {...register("medicationDetails", {
+                        required: "List medication or upload prescription",
+                      })}
+                      placeholder="List medications here..."
+                    />
+                    <Controller
+                      name="prescriptionFile"
+                      control={control}
+                      render={({ field }) => (
+                        <FileUpload
+                          title="Or upload prescription"
+                          file={field.value}
+                          onFileSelect={field.onChange}
+                        />
+                      )}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <Separator />
+
+              {/* Allergies */}
+              <div className="space-y-4">
+                <Label className="font-bold">
+                  Does the patient have any known allergies? *
+                </Label>
+                <Controller
+                  name="allergyType"
+                  control={control}
+                  rules={{ required: "Please select an option" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="space-y-3"
+                    >
+                      {[
+                        "None",
+                        "Medication allergies",
+                        "Food allergies",
+                        "Other allergies",
+                      ].map((a) => (
+                        <div key={a} className="flex items-center gap-2">
+                          <RadioGroupItem value={a} id={`all-${a}`} />
+                          <Label htmlFor={`all-${a}`}>{a}</Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  )}
+                />
+                {errors.allergyType && (
+                  <p className="text-xs text-red-500">
+                    {errors.allergyType.message}
+                  </p>
+                )}
+                {watchAllergy && watchAllergy !== "None" && (
+                  <Input
+                    {...register("allergyDetails", {
+                      required: "Please specify allergy details",
+                    })}
+                    placeholder="Please specify details"
+                  />
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 5 & 6. Mobility & Schedule */}
+          <Card className="border-none shadow-sm ring-1 ring-slate-200">
+            <CardHeader className="border-b bg-white p-6">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Activity size={20} className="text-primary" />
+                Mobility & Care Schedule
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 space-y-8">
+              <div className="space-y-4">
+                <Label className="font-bold">
+                  Mobility status of patient *
+                </Label>
+                <Controller
+                  name="mobility"
+                  control={control}
+                  rules={{ required: "Required" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="grid grid-cols-2 gap-3"
+                    >
+                      {[
+                        "Fully mobile",
+                        "Needs assistance",
+                        "Wheelchair-bound",
+                        "Bedridden",
+                      ].map((m) => (
+                        <div
+                          key={m}
+                          className="flex items-center gap-2 p-3 border rounded-lg"
+                        >
+                          <RadioGroupItem value={m} id={m} />
+                          <Label htmlFor={m}>{m}</Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  )}
+                />
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <Label className="font-bold flex items-center gap-2">
+                  Location of care *
+                </Label>
+                <Controller
+                  name="location"
+                  control={control}
+                  rules={{ required: "Required" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="flex gap-4"
+                    >
+                      {["Private home", "Hospital", "Hospice facility"].map(
+                        (l) => (
+                          <div key={l} className="flex items-center gap-2">
+                            <RadioGroupItem value={l} id={l} />
+                            <Label htmlFor={l}>{l}</Label>
+                          </div>
+                        ),
+                      )}
+                    </RadioGroup>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <Label className="font-bold">Care duration *</Label>
+                <Controller
+                  name="careDuration"
+                  control={control}
+                  rules={{ required: "Required" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="flex flex-wrap gap-4"
+                    >
+                      {["Daily", "Live-in"].map((d) => (
+                        <div key={d} className="flex items-center gap-2">
+                          <RadioGroupItem value={d} id={`dur-${d}`} />
+                          <Label htmlFor={`dur-${d}`}>{d}</Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  )}
+                />
+
+                {errors.careDuration && (
+                  <p className="text-xs text-red-500">
+                    {errors.careDuration.message}
                   </p>
                 )}
               </div>
-            </div>
-          </section>
 
-          <Separator />
-
-          {/* 2. Health Information */}
-          <section className="space-y-4">
-            <h3 className="text-lg font-semibold">
-              2. Health & Medical Information
-            </h3>
-
-            {[
-              "Diabetes",
-              "Hypertension",
-              "Asthma",
-              "Heart disease",
-              "Stroke history",
-              "Cancer",
-              "Epilepsy",
-              "Mental health condition",
-              "Mobility limitations",
-              "others",
-            ].map((condition) => (
-              <Controller
-                key={condition}
-                name="conditions"
-                control={control}
-                render={({ field }) => {
-                  const checked = field.value?.includes(condition);
-
-                  return (
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        checked={checked}
-                        onCheckedChange={(isChecked) => {
-                          if (isChecked) {
-                            field.onChange([...field.value, condition]);
-                          } else {
-                            field.onChange(
-                              field.value.filter((v) => v !== condition),
-                            );
-                          }
-                        }}
-                      />
-                      <Label className="capitalize">{condition}</Label>
-                    </div>
-                  );
-                }}
-              />
-            ))}
-
-            {conditions.includes("others") && (
-              <Input
-                placeholder="Other condition (specify)"
-                {...register("otherCondition", {
-                  required: "Please specify other condition",
-                })}
-              />
-            )}
-          </section>
-
-          <Separator />
-
-          {/* 3. Medication & Allergies */}
-          <section className="space-y-4">
-            <h3 className="text-lg font-semibold">3. Medication & Allergies</h3>
-
-            <section className="space-y-4">
-              <Label className="font-medium">
-                Is the patient currently on medication?
-                <span className="text-red-500"> *</span>
-              </Label>
-
-              <Controller
-                name="onMedication"
-                control={control}
-                rules={{ required: "Please select an option" }}
-                render={({ field }) => (
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    className="flex gap-6"
+              <div className="grid grid-cols-2 gap-4">
+                {prices.map((p) => (
+                  <div
+                    key={p.id}
+                    onClick={() => {
+                      setSelectedPrice(p);
+                      setSelectedMonths([]);
+                      setSelectedDateList([]);
+                    }}
+                    className={`cursor-pointer p-6 rounded-2xl border-2 transition-all ${selectedPrice?.id === p.id ? "border-primary bg-primary/5" : "border-slate-100"}`}
                   >
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="yes" id="med-yes" />
-                      <Label htmlFor="med-yes">Yes</Label>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      {p.name} Plan
+                    </p>
+                    <div className="text-xl font-bold">
+                      KES {p.price.toLocaleString()}
                     </div>
+                  </div>
+                ))}
+              </div>
 
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="no" id="med-no" />
-                      <Label htmlFor="med-no">No</Label>
-                    </div>
-                  </RadioGroup>
-                )}
-              />
-
-              {errors.onMedication && (
-                <p className="text-sm text-red-500">
-                  {errors.onMedication.message}
-                </p>
+              {isDaily && (
+                <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
+                  <Calendar
+                    mode="multiple"
+                    selected={selectedDateList}
+                    onSelect={setSelectedDateList}
+                    disabled={isDateDisabled}
+                    className="bg-white border rounded-xl"
+                  />
+                </div>
               )}
 
-              {watch("onMedication") === "yes" && (
+              {isMonthly && (
                 <div className="space-y-4">
-                  {/* Medication Textarea */}
-                  <Controller
-                    name="medications"
-                    control={control}
-                    rules={{
-                      required:
-                        "Please list the medications or upload a prescription",
-                    }}
-                    render={({ field }) => (
-                      <Textarea placeholder="List medications" {...field} />
-                    )}
-                  />
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                    {Array.from({ length: 12 }).map((_, i) => {
+                      const monthNumber = String(i + 1).padStart(2, "0");
+                      const monthKey = `2026-${monthNumber}`;
 
-                  {/* OR Divider */}
-                  <div className="text-sm text-muted-foreground">OR</div>
+                      const displayDate = new Date(2026, i, 1);
+                      const monthLabel = displayDate.toLocaleString("default", {
+                        month: "long",
+                      });
 
-                  {/* File Upload */}
-                  <Controller
-                    name="prescriptionFile"
-                    control={control}
-                    rules={{
-                      validate: (value) => {
-                        const meds = watch("medications");
-                        if (!meds && !value) {
-                          return "Please list medications or upload a prescription";
-                        }
-                        return true;
-                      },
-                    }}
-                    render={({ field }) => (
-                      <FileUpload
-                        title="Prescription"
-                        accept="application/pdf,image/*"
-                        icon={<FileText size={32} />}
-                        file={field.value}
-                        onFileSelect={(file) => field.onChange(file)}
-                      />
-                    )}
-                  />
+                      const hasAvailability = availableDates.some((d) =>
+                        d.startsWith(monthKey),
+                      );
+                      const isSelected = selectedMonths.includes(monthKey);
 
-                  {errors.prescriptionFile && (
-                    <p className="text-sm text-red-500">
-                      {errors.prescriptionFile.message}
-                    </p>
+                      return (
+                        <div key={monthKey} className="relative group">
+                          <button
+                            type="button"
+                            disabled={!hasAvailability}
+                            onClick={() => {
+                              const newMonths = isSelected
+                                ? selectedMonths.filter((m) => m !== monthKey)
+                                : [...selectedMonths, monthKey];
+                              setSelectedMonths(newMonths);
+                              setBookingAmount(
+                                newMonths.length * selectedPrice.price,
+                              );
+                            }}
+                            className={`w-full py-4 px-2 rounded-lg border flex flex-col items-center transition-all shadow-sm ${
+                              isSelected
+                                ? "bg-primary border-primary text-white ring-2 ring-primary ring-offset-1"
+                                : "bg-white border-slate-200 hover:border-primary text-slate-700"
+                            } ${!hasAvailability && "opacity-25 cursor-not-allowed bg-slate-50"}`}
+                          >
+                            <span className="text-sm font-bold">
+                              {monthLabel}
+                            </span>
+                            <span
+                              className={`text-[10px] mt-1 font-medium ${isSelected ? "text-white/80" : "text-slate-400"}`}
+                            >
+                              {hasAvailability ? "Available" : "Unavailable"}
+                            </span>
+                          </button>
+
+                          {hasAvailability && (
+                            <button
+                              type="button"
+                              title="Preview available days"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewMonth(monthKey);
+                              }}
+                              className="absolute -top-1 -right-1 bg-slate-900 text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
+                            >
+                              <span
+                                role="img"
+                                aria-label="view"
+                                className="text-[12px]"
+                              >
+                                👁️
+                              </span>
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {previewMonth && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
+                      <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+                          <CardTitle className="text-lg font-bold">
+                            {new Date(previewMonth + "-02").toLocaleString(
+                              "default",
+                              { month: "long", year: "numeric" },
+                            )}
+                          </CardTitle>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="rounded-full hover:bg-slate-100"
+                            onClick={() => setPreviewMonth(null)}
+                          >
+                            ✕
+                          </Button>
+                        </CardHeader>
+                        <CardContent className="pt-6">
+                          <div className="flex justify-center">
+                            <Calendar
+                              mode="multiple"
+                              month={new Date(previewMonth + "-02")}
+                              disableNavigation
+                              selected={availableDates
+                                .filter((d) => d.startsWith(previewMonth))
+                                .map((d) => new Date(d + "T00:00:00"))}
+                              disabled={(date) => isDateDisabled(date)}
+                              className="rounded-md border pointer-events-none"
+                            />
+                          </div>
+                          <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-md">
+                            <div className="w-3 h-3 bg-primary rounded-sm" />
+                            <span>
+                              Highlighted days are available for care.
+                            </span>
+                          </div>
+                          <Button
+                            className="w-full mt-6"
+                            onClick={() => setPreviewMonth(null)}
+                          >
+                            Got it
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </div>
                   )}
                 </div>
               )}
-            </section>
+            </CardContent>
+          </Card>
 
-            <section className="space-y-4">
-              <Label className="font-medium">
-                Does the patient have any known allergies?
-                <span className="text-red-500"> *</span>
-              </Label>
-
-              <Controller
-                name="allergyType"
-                control={control}
-                rules={{ required: "Please select an option" }}
-                render={({ field }) => (
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    className="space-y-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="none" id="allergy-none" />
-                      <Label htmlFor="allergy-none">None</Label>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        value="medication"
-                        id="allergy-medication"
-                      />
-                      <Label htmlFor="allergy-medication">
-                        Medication allergies (please specify)
-                      </Label>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="food" id="allergy-food" />
-                      <Label htmlFor="allergy-food">
-                        Food allergies (please specify)
-                      </Label>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="other" id="allergy-other" />
-                      <Label htmlFor="allergy-other">
-                        Other allergies (please specify)
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                )}
-              />
-
-              {errors.allergyType && (
-                <p className="text-sm text-red-500">
-                  {errors.allergyType.message}
-                </p>
-              )}
-
-              {watch("allergyType") && watch("allergyType") !== "none" && (
-                <Input
-                  placeholder={`Specify ${watch("allergyType")} allergies`}
-                  {...register("allergyDetails", {
-                    required: "Please specify the allergy details",
-                  })}
-                />
-              )}
-            </section>
-          </section>
-
-          <Separator />
-
-          {/* 5. Mobility */}
-          <section className="space-y-3">
-            <Label>
-              Mobility status of patient:{" "}
-              <span className="text-red-500">*</span>
-            </Label>
-
-            <Controller
-              name="mobility"
-              control={control}
-              rules={{ required: "mobility is required" }}
-              render={({ field }) => (
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  value={field.value}
-                  className="flex gap-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="fully-mobile" id="fully-mobile" />
-                    <Label htmlFor="fully-mobile">Fully mobile</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="needs-assistance"
-                      id="needs-assistance"
-                    />
-                    <Label htmlFor="needs-assistance">Needs assistance</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="wheelchair-bound"
-                      id="wheelchair-bound"
-                    />
-                    <Label htmlFor="wheelchair-bound">Wheelchair Bound</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="Bedridden" id="Bedridden" />
-                    <Label htmlFor="Bedridden">Bedridden</Label>
-                  </div>
-                </RadioGroup>
-              )}
-            />
-
-            {errors.mobility && (
-              <p className="text-sm text-red-500">{errors.mobility.message}</p>
-            )}
-          </section>
-
-          <Separator />
-
-          {/* 6. Care Schedule */}
-          <section className="space-y-4">
-            <h3 className="text-lg font-semibold">
-              6. Care Schedule & Environment
-            </h3>
-
-            <Controller
-              name="careFrequency"
-              control={control}
-              render={({ field }) => (
-                <RadioGroup
-                  value={field.value}
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    const priceObj = prices.find((p) => String(p.id) === value);
-                    setSelectedPrice(priceObj);
-                    // Reset selections when switching modes
-                    setSelectedMonths([]);
-                    setSelectedDateList([]);
-                    setBookingAmount(0);
-                  }}
-                  className="flex gap-6 mb-6"
-                >
-                  {prices.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2">
-                      <RadioGroupItem
-                        value={String(item.id)}
-                        id={`price-${item.id}`}
-                      />
-                      <Label
-                        htmlFor={`price-${item.id}`}
-                        className="cursor-pointer"
-                      >
-                        {item.name} (KES {item.price})
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              )}
-            />
-
-            {isDaily && (
-              <div className="p-4 border rounded-xl bg-white shadow-sm flex flex-col items-center">
-                <Label className="mb-4 font-medium text-slate-600">
-                  Select specific days for care
-                </Label>
-                <Calendar
-                  mode="multiple"
-                  selected={selectedDateList}
-                  onSelect={(dates) => {
-                    setSelectedDateList(dates || []);
-                    const count = dates ? dates.length : 0;
-                    setBookingAmount(count * (selectedPrice?.price || 0));
-                  }}
-                  disabled={(date) => isDateDisabled(date)}
-                  modifiers={{ available: (date) => !isDateDisabled(date) }}
-                  modifiersStyles={{
-                    available: {
-                      fontWeight: "bold",
-                      color: "#72275b",
-                      cursor: "pointer",
-                    },
-                  }}
-                  className="rounded-md border cursor-pointer"
-                />
-              </div>
-            )}
-
-            {isMonthly && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                  {Array.from({ length: 12 }).map((_, i) => {
-                    const monthNumber = String(i + 1).padStart(2, "0");
-                    const monthKey = `2026-${monthNumber}`;
-
-                    const displayDate = new Date(2026, i, 1);
-                    const monthLabel = displayDate.toLocaleString("default", {
-                      month: "long",
-                    });
-
-                    const hasAvailability = availableDates.some((d) =>
-                      d.startsWith(monthKey),
-                    );
-                    const isSelected = selectedMonths.includes(monthKey);
-
-                    return (
-                      <div key={monthKey} className="relative group">
-                        <button
-                          type="button"
-                          disabled={!hasAvailability}
-                          onClick={() => {
-                            const newMonths = isSelected
-                              ? selectedMonths.filter((m) => m !== monthKey)
-                              : [...selectedMonths, monthKey];
-                            setSelectedMonths(newMonths);
-                            setBookingAmount(
-                              newMonths.length * selectedPrice.price,
-                            );
-                          }}
-                          className={`w-full py-4 px-2 rounded-lg border flex flex-col items-center transition-all shadow-sm ${
-                            isSelected
-                              ? "bg-primary border-primary text-white ring-2 ring-primary ring-offset-1"
-                              : "bg-white border-slate-200 hover:border-primary text-slate-700"
-                          } ${!hasAvailability && "opacity-25 cursor-not-allowed bg-slate-50"}`}
-                        >
-                          <span className="text-sm font-bold">
-                            {monthLabel}
-                          </span>
-                          <span
-                            className={`text-[10px] mt-1 font-medium ${isSelected ? "text-white/80" : "text-slate-400"}`}
-                          >
-                            {hasAvailability ? "Available" : "Unavailable"}
-                          </span>
-                        </button>
-
-                        {hasAvailability && (
-                          <button
-                            type="button"
-                            title="Preview available days"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPreviewMonth(monthKey);
-                            }}
-                            className="absolute -top-1 -right-1 bg-slate-900 text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
-                          >
-                            <span
-                              role="img"
-                              aria-label="view"
-                              className="text-[12px]"
-                            >
-                              👁️
-                            </span>
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
+          {/* 7. Emergency & Consent */}
+          <Card className="border-none shadow-sm ring-1 ring-slate-200">
+            <CardHeader className="border-b bg-white p-6">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Phone size={20} className="text-primary" />
+                Emergency & Logistics
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 space-y-8">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>Emergency Contact Name *</Label>
+                  <Input
+                    {...register("emergencyName", { required: true })}
+                    placeholder="Full Name"
+                  />
                 </div>
-
-                {previewMonth && (
-                  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
-                    <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
-                        <CardTitle className="text-lg font-bold">
-                          {new Date(previewMonth + "-02").toLocaleString(
-                            "default",
-                            { month: "long", year: "numeric" },
-                          )}
-                        </CardTitle>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="rounded-full hover:bg-slate-100"
-                          onClick={() => setPreviewMonth(null)}
-                        >
-                          ✕
-                        </Button>
-                      </CardHeader>
-                      <CardContent className="pt-6">
-                        <div className="flex justify-center">
-                          <Calendar
-                            mode="multiple"
-                            month={new Date(previewMonth + "-02")}
-                            disableNavigation
-                            selected={availableDates
-                              .filter((d) => d.startsWith(previewMonth))
-                              .map((d) => new Date(d + "T00:00:00"))}
-                            disabled={(date) => isDateDisabled(date)}
-                            className="rounded-md border pointer-events-none"
-                          />
-                        </div>
-                        <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-md">
-                          <div className="w-3 h-3 bg-primary rounded-sm" />
-                          <span>Highlighted days are available for care.</span>
-                        </div>
-                        <Button
-                          className="w-full mt-6"
-                          onClick={() => setPreviewMonth(null)}
-                        >
-                          Got it
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {bookingAmount > 0 && (
-              <div className="p-4 bg-primary/10 border-2 border-primary rounded-xl flex justify-between items-center">
-                <div>
-                  <p className="text-sm font-semibold text-primary uppercase">
-                    Current Selection
-                  </p>
-                  <p className="text-slate-600 text-xs">
-                    {isDaily
-                      ? `${selectedDateList.length} days selected`
-                      : `${selectedMonths.length} months selected`}
-                  </p>
+                <div className="space-y-2">
+                  <Label>Emergency Contact Phone *</Label>
+                  <Input
+                    type="tel"
+                    {...register("emergencyPhone", { required: true })}
+                    placeholder="Phone Number"
+                  />
                 </div>
-                <div className="text-right">
-                  <p className="text-2xl font-black text-primary">
-                    KES {bookingAmount}
-                  </p>
+                <div className="space-y-2">
+                  <Label>Primary Doctor Name *</Label>
+                  <Input
+                    {...register("doctorName", { required: true })}
+                    placeholder="Doctor's Name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Primary Doctor Contact *</Label>
+                  <Input
+                    type="tel"
+                    {...register("doctorPhone", { required: true })}
+                    placeholder="Doctor's Phone"
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                  <Label>Primary Hospital *</Label>
+                  <Input
+                    {...register("hospital", { required: true })}
+                    placeholder="Hospital Name"
+                  />
                 </div>
               </div>
-            )}
 
-            <Label>Care duration::</Label>
-            <RadioGroup className="grid md:grid-cols-3 gap-2">
-              {/* {["Hourly", "Daily", "Overnight", "Live-in", "Long-term"].map( */}
-              {["Daily", "Live-in"].map((d) => (
-                <div key={d} className="flex items-center gap-2">
-                  <RadioGroupItem value={d} {...register("duration")} />
-                  <Label>{d}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-
-            <Label>Location of care:</Label>
-            <RadioGroup className="flex gap-6">
-              {["Private home", "Hospital", "Hospice facility"].map((loc) => (
-                <div key={loc} className="flex items-center gap-2">
-                  <RadioGroupItem value={loc} {...register("location")} />
-                  <Label>{loc}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </section>
-
-          <Separator />
-
-          {/* 7. Emergency */}
-          <section className="space-y-4">
-            <h3 className="text-lg font-semibold">7. Emergency & Consent</h3>
-
-            {/* Emergency Contact Name */}
-            <div className="space-y-1">
-              <Label>
-                Emergency Contact Name <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                placeholder="Enter emergency contact name"
-                {...register("emergencyName", {
-                  required: "Emergency contact name is required",
-                })}
-              />
-              {errors.emergencyName && (
-                <p className="text-sm text-red-500">
-                  {errors.emergencyName.message}
-                </p>
-              )}
-            </div>
-
-            {/* Emergency Contact Phone */}
-            <div className="space-y-1">
-              <Label>
-                Emergency Contact Phone <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                type="number"
-                placeholder="Enter emergency contact phone"
-                {...register("emergencyPhone", {
-                  required: "Emergency contact phone is required",
-                })}
-              />
-              {errors.emergencyPhone && (
-                <p className="text-sm text-red-500">
-                  {errors.emergencyPhone.message}
-                </p>
-              )}
-            </div>
-
-            {/* Primary Doctor Name & Contact */}
-            <div className="grid md:grid-cols-2 gap-4">
-              {/* Doctor Name */}
-              <div className="space-y-1">
-                <Label>
-                  Primary Doctor Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  placeholder="Enter primary doctor's name"
-                  {...register("doctorName", {
-                    required: "Doctor's name is required",
-                  })}
-                />
-                {errors.doctorName && (
-                  <p className="text-sm text-red-500">
-                    {errors.doctorName.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Doctor Contact */}
-              <div className="space-y-1">
-                <Label>
-                  Primary Doctor Contact <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  type="tel"
-                  placeholder="Enter doctor's contact"
-                  {...register("doctorContact", {
-                    required: "Doctor's contact is required",
-                    pattern: {
-                      value: /^[0-9]{7,15}$/,
-                      message: "Invalid phone number",
-                    },
-                  })}
-                />
-
-                {errors.doctorContact && (
-                  <p className="text-sm text-red-500">
-                    {errors.doctorContact.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Primary Hospital */}
-            <div className="space-y-1">
-              <Label>
-                Primary Hospital <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                placeholder="Enter primary hospital name"
-                {...register("hospital", {
-                  required: "Primary hospital is required",
-                })}
-              />
-              {errors.hospital && (
-                <p className="text-sm text-red-500">
-                  {errors.hospital.message}
-                </p>
-              )}
-            </div>
-          </section>
-
-          {/* 8. Consent */}
-          <section className="space-y-4">
-            <div className="flex items-start gap-3">
               <Controller
                 name="consent"
                 control={control}
-                rules={{ required: "You must agree to proceed" }}
+                rules={{ required: true }}
                 render={({ field }) => (
-                  <Label className="flex items-start gap-3 cursor-pointer">
+                  <div className="flex items-start gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                     <Checkbox
-                      checked={field.value || false}
+                      checked={field.value}
                       onCheckedChange={field.onChange}
+                      className="mt-1"
                     />
-                    <span className="text-sm text-muted-foreground">
+                    <Label className="text-xs text-emerald-800 font-medium leading-relaxed cursor-pointer">
                       I confirm that the information provided is accurate and
                       consent to Cervanna using this information solely for care
-                      matching and service delivery.
-                    </span>
-                  </Label>
+                      matching and service delivery. *
+                    </Label>
+                  </div>
                 )}
               />
+            </CardContent>
+          </Card>
 
-              {errors.consent && (
-                <p className="text-sm text-red-500">{errors.consent.message}</p>
-              )}
-            </div>
-            {errors.consent && (
-              <p className="text-sm text-red-500">{errors.consent.message}</p>
-            )}
-          </section>
-
-          <Button type="submit" className="w-full text-lg cursor-pointer">
-            Submit Booking
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl shadow-primary/20"
+          >
+            {isSubmitting ? <LoadingSpinner /> : "Confirm & Submit Booking"}
           </Button>
-        </CardContent>
-      </Card>
-    </form>
+        </form>
+
+        {/* SIDEBAR SUMMARY */}
+        <aside className="lg:col-span-1">
+          <div className="sticky top-8 space-y-4">
+            <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100">
+              <div className="bg-primary p-10 text-white">
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">
+                  Estimated Amount
+                </p>
+                <div className="text-5xl font-black">
+                  KES {bookingAmount.toLocaleString()}
+                </div>
+              </div>
+              <CardContent className="p-10 space-y-6">
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-bold uppercase">
+                    Service
+                  </span>
+                  <span className="font-black text-slate-900 capitalize">
+                    {category}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-bold uppercase">
+                    Plan
+                  </span>
+                  <span className="font-black text-slate-900">
+                    {selectedPrice?.name || "--"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-bold uppercase">
+                    Selection
+                  </span>
+                  <span className="font-black text-primary">
+                    {isDaily ? selectedDateList.length : selectedMonths.length}{" "}
+                    {isDaily ? "Days" : "Months"}
+                  </span>
+                </div>
+                <Separator />
+                <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border">
+                  <ShieldCheck size={20} className="text-primary mt-0.5" />
+                  <p className="text-[10px] text-slate-500 font-bold leading-tight">
+                    Secure Booking: Your medical data is strictly confidential
+                    and used only for matching.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </aside>
+      </div>
+
+      {/* MONTH PREVIEW MODAL */}
+      {/* {previewMonth && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+          <Card className="w-full max-w-sm rounded-[2rem] border-none shadow-2xl overflow-hidden bg-white">
+            <CardHeader className="border-b p-6 flex flex-row items-center justify-between">
+              <CardTitle className="text-lg font-bold capitalize">
+                {new Date(previewMonth + "-02").toLocaleString("default", {
+                  month: "long",
+                })}
+              </CardTitle>
+              <Button variant="ghost" onClick={() => setPreviewMonth(null)}>
+                ✕
+              </Button>
+            </CardHeader>
+            <CardContent className="p-8">
+              <Calendar
+                mode="multiple"
+                month={new Date(previewMonth + "-02")}
+                selected={availableDates
+                  .filter((d) => d.startsWith(previewMonth))
+                  .map((d) => new Date(d + "T00:00:00"))}
+                className="pointer-events-none bg-slate-50 rounded-2xl p-4"
+              />
+              <Button
+                className="w-full mt-6 rounded-xl"
+                onClick={() => setPreviewMonth(null)}
+              >
+                Close Preview
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )} */}
+    </div>
   );
 }
