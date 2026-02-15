@@ -12,9 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "next/navigation";
 import { postApi } from "@/lib/apiHandler";
-import PhoneInputWithCountrySelect, {
-  isValidPhoneNumber,
-} from "react-phone-number-input";
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 const SignUpStart = ({ onSuccess }) => {
   const searchParams = useSearchParams();
@@ -35,6 +35,7 @@ const SignUpStart = ({ onSuccess }) => {
   const [openOTP, setOpenOTP] = useState(false);
   const [temUser, setTemUser] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [country, setCountry] = useState("KE");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -141,8 +142,33 @@ const SignUpStart = ({ onSuccess }) => {
             international
             defaultCountry="KE"
             value={phone}
-            onChange={setPhone}
-            className="phone-input"
+            onChange={(value) => {
+              if (!value) {
+                setPhone("");
+                return;
+              }
+
+              const parsed = parsePhoneNumberFromString(value);
+
+              if (!parsed) {
+                setPhone(value);
+                return;
+              }
+
+              if (parsed.isPossible()) {
+                setPhone(value);
+                return;
+              }
+
+              const digits = parsed.nationalNumber;
+
+              if (digits.length <= 15) {
+                setPhone(value);
+              }
+            }}
+            onCountryChange={(countryCode) => {
+              setCountry(countryCode);
+            }}
           />
 
           <Input

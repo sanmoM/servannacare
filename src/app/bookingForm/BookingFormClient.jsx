@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import useLocalUser from "@/hooks/useLocalUser";
+import { Calendar } from "@/components/ui/calendar";
 
 export default function BookingFormClient() {
   const searchParams = useSearchParams();
@@ -26,7 +27,7 @@ export default function BookingFormClient() {
 
   const [price, setPrice] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
-  const { user, loaded } = useLocalUser();
+  const [selectedDateList, setSelectedDateList] = useState([]);
 
   const {
     data: specialistData,
@@ -48,7 +49,15 @@ export default function BookingFormClient() {
       item.id === Number(id) &&
       item.subRole?.toLowerCase() === category?.toLowerCase(),
   );
-  console.log("price", prices);
+  // console.log("price", prices);
+  // console.log("matchedData", matchedData?.schedule);
+
+  const availableDates = matchedData?.schedule?.flatMap((s) => s.date) || [];
+
+  const isDateDisabled = (date) => {
+    const dateString = date.toISOString().split("T")[0];
+    return !availableDates.includes(dateString);
+  };
 
   const {
     register,
@@ -76,8 +85,6 @@ export default function BookingFormClient() {
     selectedPrice?.name?.toLowerCase().replace(/\s+/g, "") === "selecteddays";
 
   const calculateDays = (start, end) => {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
     const diffTime = endDate - startDate;
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
@@ -122,22 +129,12 @@ export default function BookingFormClient() {
   // }, [startDate, endDate, startMonth, endMonth, selectedPrice]);
 
   useEffect(() => {
-    if (!selectedPrice) return;
-
-    if (isDaily && startDate && endDate) {
-      const days = calculateDays(startDate, endDate);
-      setBookingAmount(days * selectedPrice.price);
+    if (selectedPrice && selectedDateList.length > 0) {
+      setBookingAmount(selectedDateList.length * selectedPrice.price);
+    } else {
+      setBookingAmount(0);
     }
-
-    if (isMonthly && startMonth && endMonth) {
-      const months = calculateMonths(startMonth, endMonth);
-      setBookingAmount(months * selectedPrice.price);
-    }
-
-    if (isSelectedDays && selectedDays.length > 0) {
-      setBookingAmount(selectedDays.length * selectedPrice.price);
-    }
-  }, [startDate, endDate, startMonth, endMonth, selectedDays, selectedPrice]);
+  }, [selectedDateList, selectedPrice]);
 
   // useEffect(() => {
   //   if (data) {
@@ -546,26 +543,22 @@ export default function BookingFormClient() {
             <Controller
               name="careFrequency"
               control={control}
-              rules={{ required: "Please select care frequency" }}
               render={({ field }) => (
                 <RadioGroup
                   value={field.value}
-                  onValueChange={(value) => {
-                    field.onChange(value);
-                    const priceObj = price.find((p) => String(p.id) === value);
-                    setSelectedPrice(priceObj);
-                    setBookingAmount(0);
+                  onValueChange={(val) => {
+                    field.onChange(val);
+                    const p = prices.find((item) => String(item.id) === val);
+                    setSelectedPrice(p);
+                    setSelectedDateList([]);
                   }}
-                  className="flex gap-6"
+                  className="flex gap-4"
                 >
-                  {price?.map((item, indx) => (
-                    <div key={item.id} className="flex items-center gap-2">
-                      <RadioGroupItem
-                        value={String(item.id)}
-                        id={`price-${item.id}`}
-                      />
-                      <Label htmlFor={`price-${item.id}`}>
-                        {item.name} (KES {item.price})
+                  {prices.map((p) => (
+                    <div key={p.id} className="flex items-center space-x-2">
+                      <RadioGroupItem value={String(p.id)} id={`p-${p.id}`} />
+                      <Label htmlFor={`p-${p.id}`}>
+                        {p.name} (KES {p.price})
                       </Label>
                     </div>
                   ))}
@@ -574,84 +567,36 @@ export default function BookingFormClient() {
             />
 
             {selectedPrice && (
-              <>
-                {/* DAILY → DATE RANGE */}
-                {isDaily && (
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <Controller
-                      name="startDate"
-                      control={control}
-                      rules={{ required: "Start date required" }}
-                      render={({ field }) => <Input type="date" {...field} />}
-                    />
+              <div className="flex flex-col items-center p-4 border rounded-lg bg-slate-50">
+                <Label className="mb-4 text-center">
+                  {isDaily
+                    ? "Select specific days for care"
+                    : "Select all days for the month"}
+                </Label>
 
-                    <Controller
-                      name="endDate"
-                      control={control}
-                      rules={{ required: "End date required" }}
-                      render={({ field }) => <Input type="date" {...field} />}
-                    />
+                
+                <div className="bg-white p-2 rounded-md shadow-sm">
+                  <Calendar
+                    mode="multiple"
+                    selected={selectedDateList}
+                    onSelect={setSelectedDateList}
+                    disabled={(date) =>
+                      isDateDisabled(date) || date < new Date()
+                    }
+                    className="rounded-md border"
+                  />
+                </div>
+
+                {selectedDateList.length > 0 && (
+                  <div className="mt-4 p-3 bg-primary/10 rounded-lg w-full text-center">
+                    <p className="font-medium text-primary">
+                      {selectedDateList.length} Days Selected
+                    </p>
+                    <p className="text-2xl font-bold">
+                      Total: KES {bookingAmount}
+                    </p>
                   </div>
                 )}
-
-                {/* SELECTED DAYS → WEEKDAYS */}
-                {isSelectedDays && (
-                  <Controller
-                    name="selectedDays"
-                    control={control}
-                    rules={{
-                      validate: (value) =>
-                        value.length > 0 || "Please select at least one day",
-                    }}
-                    render={({ field }) => (
-                      <div className="space-y-3">
-                        <Label className="font-medium">
-                          Select Days of the Week{" "}
-                          <span className="text-red-500">*</span>
-                        </Label>
-
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                          {weekDays.map((day) => {
-                            const checked = field.value.includes(day);
-
-                            return (
-                              <div
-                                key={day}
-                                className="flex items-center gap-2"
-                              >
-                                <Checkbox
-                                  checked={checked}
-                                  onCheckedChange={(isChecked) => {
-                                    if (isChecked) {
-                                      field.onChange([...field.value, day]);
-                                    } else {
-                                      field.onChange(
-                                        field.value.filter((d) => d !== day),
-                                      );
-                                    }
-                                  }}
-                                />
-                                <Label>{day}</Label>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {errors.selectedDays && (
-                          <p className="text-sm text-red-500">
-                            {errors.selectedDays.message}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  />
-                )}
-              </>
-            )}
-
-            {bookingAmount > 0 && (
-              <div className="text-lg font-semibold text-primary">
-                Total Amount: KES {bookingAmount}
               </div>
             )}
 
