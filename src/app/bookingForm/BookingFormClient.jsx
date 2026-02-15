@@ -27,6 +27,9 @@ export default function BookingFormClient() {
 
   const [price, setPrice] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
+
+  const [selectedMonths, setSelectedMonths] = useState([]);
+  const [previewMonth, setPreviewMonth] = useState(null);
   const [selectedDateList, setSelectedDateList] = useState([]);
 
   const {
@@ -49,16 +52,23 @@ export default function BookingFormClient() {
       item.id === Number(id) &&
       item.subRole?.toLowerCase() === category?.toLowerCase(),
   );
-  // console.log("price", prices);
-  // console.log("matchedData", matchedData?.schedule);
+  console.log("price", prices);
+  console.log("matchedData", matchedData?.schedule);
 
   const availableDates = matchedData?.schedule?.flatMap((s) => s.date) || [];
 
   const isDateDisabled = (date) => {
-    const dateString = date.toISOString().split("T")[0];
-    return !availableDates.includes(dateString);
-  };
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
 
+    const formattedLocalDate = `${year}-${month}-${day}`;
+
+    const isAvailable = availableDates.includes(formattedLocalDate);
+    const isPast = date < new Date(new Date().setHours(0, 0, 0, 0));
+
+    return !isAvailable || isPast;
+  };
   const {
     register,
     watch,
@@ -114,20 +124,6 @@ export default function BookingFormClient() {
   const startMonth = watch("startMonth");
   const endMonth = watch("endMonth");
 
-  // useEffect(() => {
-  //   if (!selectedPrice) return;
-
-  //   if (isDaily && startDate && endDate) {
-  //     const days = calculateDays(startDate, endDate);
-  //     setBookingAmount(days * selectedPrice.price);
-  //   }
-
-  //   if (isMonthly && startMonth && endMonth) {
-  //     const months = calculateMonths(startMonth, endMonth);
-  //     setBookingAmount(months * selectedPrice.price);
-  //   }
-  // }, [startDate, endDate, startMonth, endMonth, selectedPrice]);
-
   useEffect(() => {
     if (selectedPrice && selectedDateList.length > 0) {
       setBookingAmount(selectedDateList.length * selectedPrice.price);
@@ -136,11 +132,23 @@ export default function BookingFormClient() {
     }
   }, [selectedDateList, selectedPrice]);
 
-  // useEffect(() => {
-  //   if (data) {
-  //     setPrice(data?.data?.data ?? data?.data?.data);
-  //   }
-  // }, [data]);
+  const getAvailabilityInMonth = (monthStr) => {
+    return availableDates.some((date) => date.startsWith(monthStr));
+  };
+
+  const toggleMonth = (monthStr) => {
+    if (selectedMonths.includes(monthStr)) {
+      setSelectedMonths((prev) => prev.filter((m) => m !== monthStr));
+    } else {
+      setSelectedMonths((prev) => [...prev, monthStr]);
+    }
+  };
+
+  useEffect(() => {
+    if (isMonthly && selectedPrice) {
+      setBookingAmount(selectedMonths.length * selectedPrice.price);
+    }
+  }, [selectedMonths, isMonthly, selectedPrice]);
 
   if (specialistLoading || priceLoading) return <LoadingSpinner />;
   if (specialistError || priceError) return <div>Error loading data</div>;
@@ -546,19 +554,28 @@ export default function BookingFormClient() {
               render={({ field }) => (
                 <RadioGroup
                   value={field.value}
-                  onValueChange={(val) => {
-                    field.onChange(val);
-                    const p = prices.find((item) => String(item.id) === val);
-                    setSelectedPrice(p);
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    const priceObj = prices.find((p) => String(p.id) === value);
+                    setSelectedPrice(priceObj);
+                    // Reset selections when switching modes
+                    setSelectedMonths([]);
                     setSelectedDateList([]);
+                    setBookingAmount(0);
                   }}
-                  className="flex gap-4"
+                  className="flex gap-6 mb-6"
                 >
-                  {prices.map((p) => (
-                    <div key={p.id} className="flex items-center space-x-2">
-                      <RadioGroupItem value={String(p.id)} id={`p-${p.id}`} />
-                      <Label htmlFor={`p-${p.id}`}>
-                        {p.name} (KES {p.price})
+                  {prices.map((item) => (
+                    <div key={item.id} className="flex items-center gap-2">
+                      <RadioGroupItem
+                        value={String(item.id)}
+                        id={`price-${item.id}`}
+                      />
+                      <Label
+                        htmlFor={`price-${item.id}`}
+                        className="cursor-pointer"
+                      >
+                        {item.name} (KES {item.price})
                       </Label>
                     </div>
                   ))}
@@ -566,37 +583,166 @@ export default function BookingFormClient() {
               )}
             />
 
-            {selectedPrice && (
-              <div className="flex flex-col items-center p-4 border rounded-lg bg-slate-50">
-                <Label className="mb-4 text-center">
-                  {isDaily
-                    ? "Select specific days for care"
-                    : "Select all days for the month"}
+            {isDaily && (
+              <div className="p-4 border rounded-xl bg-white shadow-sm flex flex-col items-center">
+                <Label className="mb-4 font-medium text-slate-600">
+                  Select specific days for care
                 </Label>
+                <Calendar
+                  mode="multiple"
+                  selected={selectedDateList}
+                  onSelect={(dates) => {
+                    setSelectedDateList(dates || []);
+                    const count = dates ? dates.length : 0;
+                    setBookingAmount(count * (selectedPrice?.price || 0));
+                  }}
+                  disabled={(date) => isDateDisabled(date)}
+                  modifiers={{ available: (date) => !isDateDisabled(date) }}
+                  modifiersStyles={{
+                    available: { fontWeight: "bold", color: "#72275b" ,cursor:"pointer" },
+                  }}
+                  className="rounded-md border cursor-pointer"
+                />
+              </div>
+            )}
 
-                
-                <div className="bg-white p-2 rounded-md shadow-sm">
-                  <Calendar
-                    mode="multiple"
-                    selected={selectedDateList}
-                    onSelect={setSelectedDateList}
-                    disabled={(date) =>
-                      isDateDisabled(date) || date < new Date()
-                    }
-                    className="rounded-md border"
-                  />
+            {isMonthly && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                  {Array.from({ length: 12 }).map((_, i) => {
+                    const monthNumber = String(i + 1).padStart(2, "0");
+                    const monthKey = `2026-${monthNumber}`;
+
+                    const displayDate = new Date(2026, i, 1);
+                    const monthLabel = displayDate.toLocaleString("default", {
+                      month: "long",
+                    });
+
+                    const hasAvailability = availableDates.some((d) =>
+                      d.startsWith(monthKey),
+                    );
+                    const isSelected = selectedMonths.includes(monthKey);
+
+                    return (
+                      <div key={monthKey} className="relative group">
+                        <button
+                          type="button"
+                          disabled={!hasAvailability}
+                          onClick={() => {
+                            const newMonths = isSelected
+                              ? selectedMonths.filter((m) => m !== monthKey)
+                              : [...selectedMonths, monthKey];
+                            setSelectedMonths(newMonths);
+                            setBookingAmount(
+                              newMonths.length * selectedPrice.price,
+                            );
+                          }}
+                          className={`w-full py-4 px-2 rounded-lg border flex flex-col items-center transition-all shadow-sm ${
+                            isSelected
+                              ? "bg-primary border-primary text-white ring-2 ring-primary ring-offset-1"
+                              : "bg-white border-slate-200 hover:border-primary text-slate-700"
+                          } ${!hasAvailability && "opacity-25 cursor-not-allowed bg-slate-50"}`}
+                        >
+                          <span className="text-sm font-bold">
+                            {monthLabel}
+                          </span>
+                          <span
+                            className={`text-[10px] mt-1 font-medium ${isSelected ? "text-white/80" : "text-slate-400"}`}
+                          >
+                            {hasAvailability ? "Available" : "Unavailable"}
+                          </span>
+                        </button>
+
+                        {hasAvailability && (
+                          <button
+                            type="button"
+                            title="Preview available days"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewMonth(monthKey);
+                            }}
+                            className="absolute -top-1 -right-1 bg-slate-900 text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
+                          >
+                            <span
+                              role="img"
+                              aria-label="view"
+                              className="text-[12px]"
+                            >
+                              👁️
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
-                {selectedDateList.length > 0 && (
-                  <div className="mt-4 p-3 bg-primary/10 rounded-lg w-full text-center">
-                    <p className="font-medium text-primary">
-                      {selectedDateList.length} Days Selected
-                    </p>
-                    <p className="text-2xl font-bold">
-                      Total: KES {bookingAmount}
-                    </p>
+                {previewMonth && (
+                  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+                        <CardTitle className="text-lg font-bold">
+                          {new Date(previewMonth + "-02").toLocaleString(
+                            "default",
+                            { month: "long", year: "numeric" },
+                          )}
+                        </CardTitle>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="rounded-full hover:bg-slate-100"
+                          onClick={() => setPreviewMonth(null)}
+                        >
+                          ✕
+                        </Button>
+                      </CardHeader>
+                      <CardContent className="pt-6">
+                        <div className="flex justify-center">
+                          <Calendar
+                            mode="multiple"
+                            month={new Date(previewMonth + "-02")}
+                            disableNavigation
+                            selected={availableDates
+                              .filter((d) => d.startsWith(previewMonth))
+                              .map((d) => new Date(d + "T00:00:00"))}
+                            disabled={(date) => isDateDisabled(date)}
+                            className="rounded-md border pointer-events-none"
+                          />
+                        </div>
+                        <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-md">
+                          <div className="w-3 h-3 bg-primary rounded-sm" />
+                          <span>Highlighted days are available for care.</span>
+                        </div>
+                        <Button
+                          className="w-full mt-6"
+                          onClick={() => setPreviewMonth(null)}
+                        >
+                          Got it
+                        </Button>
+                      </CardContent>
+                    </Card>
                   </div>
                 )}
+              </div>
+            )}
+
+            {bookingAmount > 0 && (
+              <div className="p-4 bg-primary/10 border-2 border-primary rounded-xl flex justify-between items-center">
+                <div>
+                  <p className="text-sm font-semibold text-primary uppercase">
+                    Current Selection
+                  </p>
+                  <p className="text-slate-600 text-xs">
+                    {isDaily
+                      ? `${selectedDateList.length} days selected`
+                      : `${selectedMonths.length} months selected`}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-black text-primary">
+                    KES {bookingAmount}
+                  </p>
+                </div>
               </div>
             )}
 
