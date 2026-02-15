@@ -38,6 +38,7 @@ const SearchContent = () => {
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
   const [applyFilter, setApplyFilter] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const ITEMS_PER_PAGE = 6;
 
@@ -54,9 +55,11 @@ const SearchContent = () => {
     return query.toString();
   };
 
-  const fetchUrl = applyFilter
-    ? `/specialist?${buildQuery()}`
-    : `/specialist?limit=25`;
+  const fetchUrl = isMobile
+    ? applyFilter
+      ? `/specialist?${buildQuery()}`
+      : `/specialist?limit=25`
+    : `/specialist?${buildQuery()}`;
 
   const { data, isLoading, error } = useFetch(fetchUrl);
 
@@ -76,11 +79,22 @@ const SearchContent = () => {
     return data?.data?.data;
   }, [data]);
 
-  // const { data, isLoading, error } = useFetch(
-  //   selectedCategory ? `/specialist?${buildQuery()}` : null,
-  // );
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
 
-  // const specialists = Array.isArray(data?.data) ? data.data : [];
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setApplyFilter(true);
+    }
+  }, [selectedCategory, selectedServices, sortBy, isMobile]);
 
   useEffect(() => {
     const category = searchParams.get("category");
@@ -233,17 +247,15 @@ const SearchContent = () => {
                     </div>
                   </div>
                 )}
-                <div className="mt-8">
-                  <button
-                    className="w-full bg-primary text-white py-2 rounded-md"
-                    onClick={() => {
-                      setApplyFilter(true);
-                      setMobileFilterSidebarOpen(false);
-                    }}
-                  >
-                    Search
-                  </button>
-                </div>
+                <button
+                  className="w-full bg-primary text-white py-3 rounded-md mt-6"
+                  onClick={() => {
+                    setApplyFilter(true);
+                    setMobileFilterSidebarOpen(false);
+                  }}
+                >
+                  Search
+                </button>
               </div>
 
               {/* Click outside to close */}
