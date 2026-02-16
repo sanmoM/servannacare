@@ -76,14 +76,14 @@ export default function BookingFormClient() {
       relationship: "",
       conditions: [],
       otherCondition: "",
-      onMedication: "", // Empty so nothing is selected by default
+      onMedication: "",
       medicationDetails: "",
       prescriptionFile: null,
-      allergyType: "", // Empty so nothing is selected by default
+      allergyType: "",
       allergyDetails: "",
       mobility: "",
       location: "",
-      careDuration: "", // Empty so nothing is selected by default
+      careDuration: "",
       emergencyName: "",
       emergencyPhone: "",
       doctorName: "",
@@ -96,8 +96,24 @@ export default function BookingFormClient() {
   const watchConditions = watch("conditions");
   const watchMedication = watch("onMedication");
   const watchAllergy = watch("allergyType");
+  const watchCareDuration = watch("careDuration");
   const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
   const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
+
+  useEffect(() => {
+    if (!watchCareDuration || prices.length === 0) return;
+
+    const matchedPlan = prices.find(
+      (p) => p.name?.toLowerCase() === watchCareDuration,
+    );
+
+    setSelectedPrice(matchedPlan || null);
+    setSelectedMonths([]);
+    setSelectedDateList([]);
+  }, [watchCareDuration, prices]);
+
+
+
 
   useEffect(() => {
     if (!watchConditions.includes("others")) {
@@ -106,19 +122,17 @@ export default function BookingFormClient() {
   }, [watchConditions]);
 
   useEffect(() => {
-  if (watchMedication !== "yes") {
-    setValue("medicationDetails", "");
-    setValue("prescriptionFile", null);
-  }
-}, [watchMedication, setValue]);
+    if (watchMedication !== "yes") {
+      setValue("medicationDetails", "");
+      setValue("prescriptionFile", null);
+    }
+  }, [watchMedication, setValue]);
 
-useEffect(() => {
-  if (!watchAllergy || watchAllergy === "None") {
-    setValue("allergyDetails", "");
-  }
-}, [watchAllergy, setValue]);
-
-
+  useEffect(() => {
+    if (!watchAllergy || watchAllergy === "None") {
+      setValue("allergyDetails", "");
+    }
+  }, [watchAllergy, setValue]);
 
   const toggleCondition = (val, current, onChange) => {
     if (val === "None") {
@@ -175,19 +189,19 @@ useEffect(() => {
     if (data.prescriptionFile)
       formData.append("prescription_file", data.prescriptionFile);
 
-    // console.log("------ FormData Start ------");
-    // formData.forEach((value, key) => {
-    //   console.log(`${key}:`, value);
-    // });
-    // console.log("------ FormData End ------");
+    console.log("------ FormData Start ------");
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+    console.log("------ FormData End ------");
 
-    try {
-      const res = await postApi("/booking", formData);
-      if (res?.status === 200 || res?.status === 201) {
-        toast.success("Booking Request Sent!");
-        router.push("/dashboard/my-appointment");
-      }
-    } catch (err) { toast.error("Submission failed."); }
+    // try {
+    //   const res = await postApi("/booking", formData);
+    //   if (res?.status === 200 || res?.status === 201) {
+    //     toast.success("Booking Request Sent!");
+    //     router.push("/dashboard/my-appointment");
+    //   }
+    // } catch (err) { toast.error("Submission failed."); }
   };
 
   if (specLoading || priceLoading)
@@ -527,14 +541,22 @@ useEffect(() => {
                   rules={{ required: "Required" }}
                   render={({ field }) => (
                     <RadioGroup
-                      onValueChange={field.onChange}
+                      onValueChange={(val) => {
+                        field.onChange(val);
+                      }}
                       value={field.value}
                       className="flex flex-wrap gap-4"
                     >
-                      {["Daily", "Live-in"].map((d) => (
-                        <div key={d} className="flex items-center gap-2">
-                          <RadioGroupItem value={d} id={`dur-${d}`} />
-                          <Label htmlFor={`dur-${d}`}>{d}</Label>
+                      {[
+                        { label: "Live-in", value: "monthly" },
+                        { label: "Daily", value: "daily" },
+                      ].map((d) => (
+                        <div key={d.value} className="flex items-center gap-2">
+                          <RadioGroupItem
+                            value={d.value}
+                            id={`dur-${d.value}`}
+                          />
+                          <Label htmlFor={`dur-${d.value}`}>{d.label}</Label>
                         </div>
                       ))}
                     </RadioGroup>
@@ -552,12 +574,19 @@ useEffect(() => {
                 {prices.map((p) => (
                   <div
                     key={p.id}
-                    onClick={() => {
-                      setSelectedPrice(p);
-                      setSelectedMonths([]);
-                      setSelectedDateList([]);
-                    }}
-                    className={`cursor-pointer p-6 rounded-2xl border-2 transition-all ${selectedPrice?.id === p.id ? "border-primary bg-primary/5" : "border-slate-100"}`}
+                    // onClick={() => {
+                    //   setSelectedPrice(p);
+                    //   setSelectedMonths([]);
+                    //   setSelectedDateList([]);
+                    // }}
+                    
+                    className={`p-6 rounded-2xl border-2 transition-all pointer-events-none
+  ${selectedPrice?.id === p.id
+    ? "border-primary bg-primary/5"
+    : "border-slate-100"
+  }
+`}
+
                   >
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       {p.name} Plan
