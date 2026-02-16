@@ -217,11 +217,6 @@ export default function BookingFormClient() {
       formData.append("prescription_file", data.prescriptionFile);
     }
 
-    console.log("------ FormData Start ------");
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
-    console.log("------ FormData End ------");
 
     try {
         const res = await postApi("/booking", formData, {
