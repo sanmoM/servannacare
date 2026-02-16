@@ -353,7 +353,7 @@ export const blogs = [
 export const userRole = [
   {
     id: 1,
-    text: "Patient",
+    text: "Client",
     icon: user,
     href: "/register",
     role: "user",

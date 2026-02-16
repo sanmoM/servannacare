@@ -40,6 +40,7 @@ const SignUpStart = ({ onSuccess }) => {
   const [temUser, setTemUser] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [country, setCountry] = useState("KE");
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,10 +48,20 @@ const SignUpStart = ({ onSuccess }) => {
     const email = form.email.value;
     const password = form.password.value;
 
-    if (!phone || !isValidPhoneNumber(phone)) {
-      toast.error("Invalid phone number!");
+    if (!phone) {
+      toast.error("Phone number is required!");
       return;
     }
+
+    if (!isValidPhoneNumber(phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
+    // if (!phone || !isValidPhoneNumber(phone)) {
+    //   toast.error("Invalid phone number!");
+    //   return;
+    // }
 
     if (!email || !password) {
       toast.error("All fields are required");
@@ -142,56 +153,39 @@ const SignUpStart = ({ onSuccess }) => {
           /> */}
 
           <Label>Phone Number</Label>
-          <PhoneInputWithCountrySelect
-            international
-            defaultCountry="KE"
-            value={phone}
-            onChange={(value) => {
-              if (!value) {
-                setPhone("");
-                return;
-              }
-
-              const parsed = parsePhoneNumberFromString(value);
-
-              if (!parsed) {
-                // allow typing partial number with country code
-                setPhone(value);
-                return;
-              }
-
-              // Get the max allowed digits for this country
-              const exampleNumber = getExampleNumber(parsed.country);
-              const maxLength = exampleNumber
-                ? exampleNumber.nationalNumber.length
-                : 15;
-
-              const digits = parsed.nationalNumber;
-
-              // Only update phone if within allowed digits
-              if (digits.length <= maxLength) {
-                setPhone(value);
-              }
-            }}
-            onCountryChange={(countryCode) => {
-              setCountry(countryCode);
-
-              // Reset phone to the country code when switching countries
-              const exampleNumber = countryCode
-                ? getExampleNumber(countryCode)
-                : null;
-              if (exampleNumber) {
-                setPhone(`+${exampleNumber.countryCallingCode}`);
-              } else {
-                setPhone("");
-              }
-            }}
-            countrySelectProps={
-              {
-                // optional: style or limit country dropdown
-              }
-            }
-          />
+          <div
+            className={`${
+              !phoneTouched ? "w-0 h-0 overflow-hidden" : "w-full block"
+            } transition-all duration-300`}
+          >
+            <PhoneInputWithCountrySelect
+              international
+              defaultCountry={country}
+              value={phone}
+              onChange={(value) => {
+                setPhoneTouched(true);
+                if (!value) return setPhone("");
+                const sanitized = value.replace(/[^+\d]/g, "");
+                setPhone(sanitized);
+              }}
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+                const exampleNumber = countryCode
+                  ? getExampleNumber(countryCode)
+                  : null;
+                if (exampleNumber) {
+                  setPhone(`+${exampleNumber.countryCallingCode}`);
+                } else {
+                  setPhone("");
+                }
+              }}
+            />
+          </div>
+          {phoneTouched && phone && !isValidPhoneNumber(phone) && (
+            <p className="text-red-500 text-sm mt-1">
+              Invalid phone number for selected country
+            </p>
+          )}
 
           <Input
             label="Email"

@@ -70,67 +70,64 @@ export default function BookingFormClient() {
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      patientName: "",
-      age: "",
-      gender: "",
-      relationship: "",
-      conditions: [],
-      otherCondition: "",
-      onMedication: "",
-      medicationDetails: "",
+      patient_name: "",
+      patient_age: "",
+      patient_gender: "",
+      relationship_to_booking_person: "",
+      patient_have_any_conditions: [],
+      patient_have_any_others_conditions: "",
+      patient_currently_on_medication: "",
+      patient_currently_on_medication_data: "",
       prescriptionFile: null,
-      allergyType: "",
-      allergyDetails: "",
-      mobility: "",
-      location: "",
-      careDuration: "",
-      emergencyName: "",
-      emergencyPhone: "",
-      doctorName: "",
-      doctorPhone: "",
-      hospital: "",
+      patient_have_any_known_allergies: "",
+      patient_have_any_known_allergies_details: "",
+      mobility_status_of_patient: "",
+      location_of_care: "",
+      booking_type: "",
+      emergency_contact_name: "",
+      emergency_contact_number: "",
+      primary_doctor_name: "",
+      primary_doctor_number: "",
+      primary_hospital: "",
       consent: false,
     },
   });
 
-  const watchConditions = watch("conditions");
-  const watchMedication = watch("onMedication");
-  const watchAllergy = watch("allergyType");
-  const watchCareDuration = watch("careDuration");
+  const watchConditions = watch("patient_have_any_conditions");
+  const watchMedication = watch("patient_currently_on_medication");
+  const watchAllergy = watch("patient_have_any_known_allergies");
+  const watchbooking_type = watch("booking_type");
   const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
   const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
 
   useEffect(() => {
-    if (!watchCareDuration || prices.length === 0) return;
+    if (!watchbooking_type || prices.length === 0) return;
 
     const matchedPlan = prices.find(
-      (p) => p.name?.toLowerCase() === watchCareDuration,
+      (p) => p.name?.toLowerCase() === watchbooking_type,
     );
 
     setSelectedPrice(matchedPlan || null);
     setSelectedMonths([]);
     setSelectedDateList([]);
-  }, [watchCareDuration, prices]);
-
-
-
+  }, [watchbooking_type, prices]);
 
   useEffect(() => {
     if (!watchConditions.includes("others")) {
-      setValue("otherCondition", "");
+      setValue("patient_have_any_others_conditions", "");
     }
   }, [watchConditions]);
 
   useEffect(() => {
     if (watchMedication !== "yes") {
-      setValue("medicationDetails", "");
+      setValue("patient_currently_on_medication_data", "");
       setValue("prescriptionFile", null);
     }
   }, [watchMedication, setValue]);
 
   useEffect(() => {
     if (!watchAllergy || watchAllergy === "None") {
-      setValue("allergyDetails", "");
+      setValue("patient_have_any_known_allergies_details", "");
     }
   }, [watchAllergy, setValue]);
 
@@ -163,45 +160,82 @@ export default function BookingFormClient() {
   }, [selectedDateList, selectedMonths, selectedPrice, isDaily]);
 
   const onSubmit = async (data) => {
+    if (isSubmitting) return;
+
+    if (!data.consent) {
+      toast.error("You must accept the condition before booking.");
+      return;
+    }
+    if (!data.booking_type) {
+      toast.error("You must select care duration before booking.");
+      return;
+    }
+
+    // Schedule validation
     if (
       (isDaily && selectedDateList.length === 0) ||
       (isMonthly && selectedMonths.length === 0)
     ) {
-      return toast.error("Please select your schedule dates/months.");
+      toast.error("Please select your schedule dates/months.");
+      return;
     }
 
-    const formData = new FormData();
-    const scheduleItems = isDaily
-      ? selectedDateList.map(
-          (d) =>
-            `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+    try {
+      const formData = new FormData();
+
+      const scheduleItems = isDaily
+        ? selectedDateList.map(
+            (d) =>
+              `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+          )
+        : selectedMonths;
+
+      formData.append("specialist_id", id);
+
+      Object.keys(data).forEach((key) => {
+        if (
+          key === "patient_have_any_conditions" ||
+          key === "prescriptionFile" ||
+          key === "consent"
         )
-      : selectedMonths;
+          return;
 
-    formData.append("specialist_id", id);
-    Object.keys(data).forEach((key) => {
-      if (key === "conditions" || key === "prescriptionFile") return;
-      formData.append(key, data[key]);
-    });
-    formData.append("conditions", JSON.stringify(data.conditions));
-    formData.append("booking_amount", bookingAmount);
-    formData.append("selected_schedule", JSON.stringify(scheduleItems));
-    if (data.prescriptionFile)
-      formData.append("prescription_file", data.prescriptionFile);
+        if (key === "patient_currently_on_medication") {
+          formData.append(key, data[key] === "yes" ? 1 : 0);
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
 
-    console.log("------ FormData Start ------");
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
-    console.log("------ FormData End ------");
+      formData.append(
+        "patient_have_any_conditions",
+        JSON.stringify(data.patient_have_any_conditions),
+      );
+      formData.append("booking_amount", bookingAmount);
+      formData.append(
+        "selected_dates_or_months",
+        JSON.stringify(scheduleItems),
+      );
 
-    // try {
-    //   const res = await postApi("/booking", formData);
-    //   if (res?.status === 200 || res?.status === 201) {
-    //     toast.success("Booking Request Sent!");
-    //     router.push("/dashboard/my-appointment");
-    //   }
-    // } catch (err) { toast.error("Submission failed."); }
+      if (data.prescriptionFile) {
+        formData.append("prescription_file", data.prescriptionFile);
+      }
+
+      console.log("------ FormData Start ------");
+      formData.forEach((value, key) => {
+        console.log(`${key}:`, value);
+      });
+      console.log("------ FormData End ------");
+
+      const res = await postApi("/booking", formData);
+
+      if (res?.status === 200 || res?.status === 201) {
+        toast.success("Booking Request Sent!");
+        router.push("/dashboard/my-appointment");
+      }
+    } catch (error) {
+      toast.error("Submission failed. Please try again.");
+    }
   };
 
   if (specLoading || priceLoading)
@@ -215,9 +249,17 @@ export default function BookingFormClient() {
     <div className="min-h-screen bg-[#F8FAFC] py-12 px-4">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
         <form
-          onSubmit={handleSubmit(onSubmit, (errors) =>
-            console.log("Validation Errors:", errors),
-          )}
+          onSubmit={handleSubmit(onSubmit, (errors) => {
+            const firstError = Object.values(errors)[0];
+
+            if (firstError?.message) {
+              toast.error(firstError.message);
+            } else {
+              toast.error(
+                "Please complete all required fields before submitting.",
+              );
+            }
+          })}
           className="lg:col-span-2 space-y-6"
         >
           <div className="mb-6">
@@ -237,14 +279,14 @@ export default function BookingFormClient() {
               <div className="space-y-2">
                 <Label>Full Name of Patient *</Label>
                 <Input
-                  {...register("patientName", {
+                  {...register("patient_name", {
                     required: "Patient name is required",
                   })}
                   placeholder="e. g. Full Name"
                 />
-                {errors.patientName && (
+                {errors.patient_name && (
                   <p className="text-xs text-red-500">
-                    {errors.patientName.message}
+                    {errors.patient_name.message}
                   </p>
                 )}
               </div>
@@ -256,14 +298,17 @@ export default function BookingFormClient() {
                   onKeyDown={(e) =>
                     ["e", "E", "-", "+"].includes(e.key) && e.preventDefault()
                   }
-                  {...register("age", { required: "Age is required", min: 0 })}
+                  {...register("patient_age", {
+                    required: "Age is required",
+                    min: 0,
+                  })}
                   placeholder="e. g. age"
                 />
               </div>
               <div className="space-y-2">
                 <Label>Gender *</Label>
                 <Controller
-                  name="gender"
+                  name="patient_gender"
                   control={control}
                   rules={{ required: "Gender is required" }}
                   render={({ field }) => (
@@ -281,16 +326,18 @@ export default function BookingFormClient() {
                     </RadioGroup>
                   )}
                 />
-                {errors.gender && (
+                {errors.patient_gender && (
                   <p className="text-xs text-red-500">
-                    {errors.gender.message}
+                    {errors.patient_gender.message}
                   </p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label>Relationship *</Label>
+                <Label>Relationship to person making booking *</Label>
                 <Input
-                  {...register("relationship", { required: "Required" })}
+                  {...register("relationship_to_booking_person", {
+                    required: "Relationship is required",
+                  })}
                   placeholder="e.g. Son, Daughter"
                 />
               </div>
@@ -311,7 +358,7 @@ export default function BookingFormClient() {
                   Does the patient have any of the following conditions? *
                 </Label>
                 <Controller
-                  name="conditions"
+                  name="patient_have_any_conditions"
                   control={control}
                   rules={{ required: "Select at least one" }}
                   render={({ field }) => (
@@ -350,7 +397,7 @@ export default function BookingFormClient() {
                 />
                 {watchConditions.includes("others") && (
                   <Input
-                    {...register("otherCondition", {
+                    {...register("patient_have_any_others_conditions", {
                       required: "Please specify",
                     })}
                     placeholder="Specify other condition"
@@ -366,7 +413,7 @@ export default function BookingFormClient() {
                   Is the patient currently on medication? *
                 </Label>
                 <Controller
-                  name="onMedication"
+                  name="patient_currently_on_medication"
                   control={control}
                   rules={{ required: "Please select an option" }}
                   render={({ field }) => (
@@ -386,15 +433,15 @@ export default function BookingFormClient() {
                     </RadioGroup>
                   )}
                 />
-                {errors.onMedication && (
+                {errors.patient_currently_on_medication && (
                   <p className="text-xs text-red-500">
-                    {errors.onMedication.message}
+                    {errors.patient_currently_on_medication.message}
                   </p>
                 )}
                 {watchMedication === "yes" && (
                   <div className="space-y-4 pt-2 animate-in fade-in">
                     <Textarea
-                      {...register("medicationDetails", {
+                      {...register("patient_currently_on_medication_data", {
                         required: "List medication or upload prescription",
                       })}
                       placeholder="List medications here..."
@@ -422,7 +469,7 @@ export default function BookingFormClient() {
                   Does the patient have any known allergies? *
                 </Label>
                 <Controller
-                  name="allergyType"
+                  name="patient_have_any_known_allergies"
                   control={control}
                   rules={{ required: "Please select an option" }}
                   render={({ field }) => (
@@ -445,14 +492,14 @@ export default function BookingFormClient() {
                     </RadioGroup>
                   )}
                 />
-                {errors.allergyType && (
+                {errors.patient_have_any_known_allergies && (
                   <p className="text-xs text-red-500">
-                    {errors.allergyType.message}
+                    {errors.patient_have_any_known_allergies.message}
                   </p>
                 )}
                 {watchAllergy && watchAllergy !== "None" && (
                   <Input
-                    {...register("allergyDetails", {
+                    {...register("patient_have_any_known_allergies_details", {
                       required: "Please specify allergy details",
                     })}
                     placeholder="Please specify details"
@@ -476,9 +523,9 @@ export default function BookingFormClient() {
                   Mobility status of patient *
                 </Label>
                 <Controller
-                  name="mobility"
+                  name="mobility_status_of_patient"
                   control={control}
-                  rules={{ required: "Required" }}
+                  rules={{ required: "mobility is required" }}
                   render={({ field }) => (
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -511,9 +558,9 @@ export default function BookingFormClient() {
                   Location of care *
                 </Label>
                 <Controller
-                  name="location"
+                  name="location_of_care"
                   control={control}
-                  rules={{ required: "Required" }}
+                  rules={{ required: "Location is required" }}
                   render={({ field }) => (
                     <RadioGroup
                       onValueChange={field.onChange}
@@ -536,9 +583,9 @@ export default function BookingFormClient() {
               <div className="space-y-4">
                 <Label className="font-bold">Care duration *</Label>
                 <Controller
-                  name="careDuration"
+                  name="booking_type"
                   control={control}
-                  rules={{ required: "Required" }}
+                  rules={{ required: "care duration Required" }}
                   render={({ field }) => (
                     <RadioGroup
                       onValueChange={(val) => {
@@ -563,9 +610,9 @@ export default function BookingFormClient() {
                   )}
                 />
 
-                {errors.careDuration && (
+                {errors.booking_type && (
                   <p className="text-xs text-red-500">
-                    {errors.careDuration.message}
+                    {errors.booking_type.message}
                   </p>
                 )}
               </div>
@@ -574,19 +621,22 @@ export default function BookingFormClient() {
                 {prices.map((p) => (
                   <div
                     key={p.id}
-                    // onClick={() => {
-                    //   setSelectedPrice(p);
-                    //   setSelectedMonths([]);
-                    //   setSelectedDateList([]);
-                    // }}
-                    
-                    className={`p-6 rounded-2xl border-2 transition-all pointer-events-none
-  ${selectedPrice?.id === p.id
-    ? "border-primary bg-primary/5"
-    : "border-slate-100"
+                    onClick={() => {
+                      const planType = p.name?.toLowerCase();
+
+                      setSelectedPrice(p);
+                      setValue("booking_type", planType);
+
+                      setSelectedMonths([]);
+                      setSelectedDateList([]);
+                    }}
+                    className={`p-6 rounded-2xl border-2 transition-all cursor-pointer
+  ${
+    selectedPrice?.id === p.id
+      ? "border-primary bg-primary/5"
+      : "border-slate-100"
   }
 `}
-
                   >
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       {p.name} Plan
@@ -747,7 +797,9 @@ export default function BookingFormClient() {
                 <div className="space-y-2">
                   <Label>Emergency Contact Name *</Label>
                   <Input
-                    {...register("emergencyName", { required: true })}
+                    {...register("emergency_contact_name", {
+                      required: "Emergency Contant name is required",
+                    })}
                     placeholder="Full Name"
                   />
                 </div>
@@ -755,14 +807,18 @@ export default function BookingFormClient() {
                   <Label>Emergency Contact Phone *</Label>
                   <Input
                     type="tel"
-                    {...register("emergencyPhone", { required: true })}
+                    {...register("emergency_contact_number", {
+                      required: "Emergency Contant phone is required",
+                    })}
                     placeholder="Phone Number"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Primary Doctor Name *</Label>
                   <Input
-                    {...register("doctorName", { required: true })}
+                    {...register("primary_doctor_name", {
+                      required: "Primary Doctor name is required",
+                    })}
                     placeholder="Doctor's Name"
                   />
                 </div>
@@ -770,14 +826,18 @@ export default function BookingFormClient() {
                   <Label>Primary Doctor Contact *</Label>
                   <Input
                     type="tel"
-                    {...register("doctorPhone", { required: true })}
+                    {...register("primary_doctor_number", {
+                      required: "Primary Doctor phone is required",
+                    })}
                     placeholder="Doctor's Phone"
                   />
                 </div>
                 <div className="md:col-span-2 space-y-2">
                   <Label>Primary Hospital *</Label>
                   <Input
-                    {...register("hospital", { required: true })}
+                    {...register("primary_hospital", {
+                      required: "Primary hospital name is required",
+                    })}
                     placeholder="Hospital Name"
                   />
                 </div>
@@ -786,7 +846,7 @@ export default function BookingFormClient() {
               <Controller
                 name="consent"
                 control={control}
-                rules={{ required: true }}
+                rules={{}}
                 render={({ field }) => (
                   <div className="flex items-start gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                     <Checkbox
@@ -797,7 +857,7 @@ export default function BookingFormClient() {
                     <Label className="text-xs text-emerald-800 font-medium leading-relaxed cursor-pointer">
                       I confirm that the information provided is accurate and
                       consent to Cervanna using this information solely for care
-                      matching and service delivery. *
+                      matching and service delivery.
                     </Label>
                   </div>
                 )}
@@ -805,12 +865,20 @@ export default function BookingFormClient() {
             </CardContent>
           </Card>
 
-          <Button
+          {/* <Button
             type="submit"
             disabled={isSubmitting}
             className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl shadow-primary/20"
           >
             {isSubmitting ? <LoadingSpinner /> : "Confirm & Submit Booking"}
+          </Button> */}
+
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl shadow-primary/20"
+          >
+            {isSubmitting ? "Processing..." : "Confirm & Submit Booking"}
           </Button>
         </form>
 

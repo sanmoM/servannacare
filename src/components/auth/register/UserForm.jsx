@@ -112,7 +112,7 @@ const UserForm = () => {
     <div className="w-full flex justify-center items-center min-h-screen px-2">
       <div className="w-full  max-w-[400px] bg-white">
         <h2 className="text-xl font-semibold mb-6 text-center text-gray-900">
-          Continue as Patient
+          Continue as Client
         </h2>
         <form onSubmit={handleCreateUser} className="space-y-5 " action="">
           <Input
