@@ -180,58 +180,59 @@ export default function BookingFormClient() {
       return;
     }
 
-    try {
-      const formData = new FormData();
+    const formData = new FormData();
 
-      const scheduleItems = isDaily
-        ? selectedDateList.map(
-            (d) =>
-              `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
-          )
-        : selectedMonths;
-
-      formData.append("specialist_id", id);
-
-      Object.keys(data).forEach((key) => {
-        if (
-          key === "patient_have_any_conditions" ||
-          key === "prescriptionFile" ||
-          key === "consent"
+    const scheduleItems = isDaily
+      ? selectedDateList.map(
+          (d) =>
+            `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
         )
-          return;
+      : selectedMonths;
 
-        if (key === "patient_currently_on_medication") {
-          formData.append(key, data[key] === "yes" ? 1 : 0);
-        } else {
-          formData.append(key, data[key]);
-        }
-      });
+    formData.append("specialist_id", id);
 
-      formData.append(
-        "patient_have_any_conditions",
-        JSON.stringify(data.patient_have_any_conditions),
-      );
-      formData.append("booking_amount", bookingAmount);
-      formData.append(
-        "selected_dates_or_months",
-        JSON.stringify(scheduleItems),
-      );
+    Object.keys(data).forEach((key) => {
+      if (
+        key === "patient_have_any_conditions" ||
+        key === "prescriptionFile" ||
+        key === "consent"
+      )
+        return;
 
-      if (data.prescriptionFile) {
-        formData.append("prescription_file", data.prescriptionFile);
+      if (key === "patient_currently_on_medication") {
+        formData.append(key, data[key] === "yes" ? 1 : 0);
+      } else {
+        formData.append(key, data[key]);
       }
+    });
 
-      console.log("------ FormData Start ------");
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
+    formData.append(
+      "patient_have_any_conditions",
+      JSON.stringify(data.patient_have_any_conditions),
+    );
+    formData.append("booking_amount", bookingAmount);
+    formData.append("selected_dates_or_months", JSON.stringify(scheduleItems));
+
+    if (data.prescriptionFile) {
+      formData.append("prescription_file", data.prescriptionFile);
+    }
+
+    console.log("------ FormData Start ------");
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
+    console.log("------ FormData End ------");
+
+    try {
+        const res = await postApi("/booking", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      console.log("------ FormData End ------");
-
-      const res = await postApi("/booking", formData);
 
       if (res?.status === 200 || res?.status === 201) {
         toast.success("Booking Request Sent!");
-        router.push("/dashboard/my-appointment");
+        router.push("/dashboard/book-history");
       }
     } catch (error) {
       toast.error("Submission failed. Please try again.");
