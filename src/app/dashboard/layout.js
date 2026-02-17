@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { notFound, usePathname, useRouter } from "next/navigation";
 import {
+  Bell,
   BriefcaseBusiness,
   Calendar,
   ClipboardClock,
@@ -23,6 +24,17 @@ import useLocalUser from "@/hooks/useLocalUser";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import Link from "next/link";
+import { useFetch } from "@/hooks/useFetch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
@@ -36,13 +48,18 @@ export default function DashboardLayout({ children }) {
   const isProfileCompleted = Boolean(user?.is_profile_completed);
   const isProfileVerified = Boolean(user?.is_profile_verified);
 
+  // const [notifications, setNotifications] = useState(null);
+
+  const { data, isLoading, error } = useFetch("/notifications");
+  const notifications = data?.data?.data ?? [];
+
+  const unreadCount = notifications.filter((n) => !n.read_at).length;
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       setToken(localStorage.getItem("token"));
     }
   }, []);
-
-
 
   const restrictedRoutes = {
     specialist: {
@@ -63,8 +80,6 @@ export default function DashboardLayout({ children }) {
     },
   };
 
-
-
   useEffect(() => {
     if (!loaded || token === null) return;
 
@@ -81,7 +96,6 @@ export default function DashboardLayout({ children }) {
 
     const allowedPaths = [config.profile, config.extra].filter(Boolean);
 
-
     if (!isProfileCompleted || (role !== "user" && !isProfileVerified)) {
       if (!allowedPaths.includes(pathname)) {
         router.replace(config.profile);
@@ -89,16 +103,11 @@ export default function DashboardLayout({ children }) {
       return;
     }
 
-
-
     if (
       role !== "user" &&
-      (
-  
-        pathname === "/dashboard/book-history" ||
+      (pathname === "/dashboard/book-history" ||
         pathname === "/dashboard/payment-history" ||
-        pathname.startsWith("/dashboard/user")
-      )
+        pathname.startsWith("/dashboard/user"))
     ) {
       notFound();
     }
@@ -119,8 +128,6 @@ export default function DashboardLayout({ children }) {
     }
   }, [loaded, token, user, pathname]);
 
-
-
   if (!loaded) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -129,21 +136,31 @@ export default function DashboardLayout({ children }) {
     );
   }
 
-
-
   const userLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/user-profile", icon: User },
     { name: "Find Services", href: "/specialist?", icon: Search },
 
-    { name: "Book History", href: "/dashboard/book-history", icon: ClipboardClock },
-    { name: "Payment History", href: "/dashboard/payment-history", icon: History },
+    {
+      name: "Book History",
+      href: "/dashboard/book-history",
+      icon: ClipboardClock,
+    },
+    {
+      name: "Payment History",
+      href: "/dashboard/payment-history",
+      icon: History,
+    },
   ];
 
   const specialistLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/specialist-profile", icon: User },
-    { name: "Schedule", href: "/dashboard/specialist-schedule", icon: Calendar },
+    {
+      name: "Schedule",
+      href: "/dashboard/specialist-schedule",
+      icon: Calendar,
+    },
     { name: "Clients", href: "/dashboard/specialist-clients", icon: Users },
     { name: "Notes", href: "/dashboard/note", icon: NotepadText },
     { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
@@ -152,7 +169,11 @@ export default function DashboardLayout({ children }) {
   const agencyLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/agency-profile", icon: User },
-    { name: "Employee", href: "/dashboard/agency-employee", icon: BriefcaseBusiness },
+    {
+      name: "Employee",
+      href: "/dashboard/agency-employee",
+      icon: BriefcaseBusiness,
+    },
     { name: "Schedule", href: "/dashboard/agency-schedule", icon: Calendar },
     { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
     { name: "Notes", href: "/dashboard/note", icon: NotepadText },
@@ -161,10 +182,22 @@ export default function DashboardLayout({ children }) {
 
   const careInstitutionLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-    { name: "Profile", href: "/dashboard/care_institutions-profile", icon: User },
+    {
+      name: "Profile",
+      href: "/dashboard/care_institutions-profile",
+      icon: User,
+    },
     { name: "Nurses", href: "/dashboard/care-institution-nurses", icon: Cross },
-    { name: "Schedule", href: "/dashboard/care-institution-schedule", icon: Calendar },
-    { name: "Clients", href: "/dashboard/care-institution-clients", icon: Users2 },
+    {
+      name: "Schedule",
+      href: "/dashboard/care-institution-schedule",
+      icon: Calendar,
+    },
+    {
+      name: "Clients",
+      href: "/dashboard/care-institution-clients",
+      icon: Users2,
+    },
     { name: "Notes", href: "/dashboard/note", icon: NotepadText },
     { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
@@ -176,8 +209,6 @@ export default function DashboardLayout({ children }) {
   if (role === "specialist") links = specialistLinks;
   if (role === "agency") links = agencyLinks;
   if (role === "care_institutions") links = careInstitutionLinks;
-
-
 
   const handleLogout = () => {
     localStorage.clear();
@@ -202,10 +233,14 @@ export default function DashboardLayout({ children }) {
     );
   };
 
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      <aside className={`bg-primary text-white fixed lg:static h-full z-50 transition-all ${isSidebarOpen ? "w-72" : "w-0"}`}>
+      <aside
+        className={`bg-primary text-white fixed lg:static h-full z-50 transition-all ${isSidebarOpen ? "w-72" : "w-0"}`}
+      >
         <div className="flex flex-col h-full">
           <div className="p-4 border-b border-white/20">
             <Link href="/">
@@ -231,9 +266,56 @@ export default function DashboardLayout({ children }) {
             <PanelLeft />
           </button>
 
-          <Link href={`/dashboard/${role}-profile`}>
-            <img src="/user.png" className="h-9 w-9 rounded-full bg-white" />
-          </Link>
+          <div className="flex gap-6 items-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="relative focus:outline-none">
+                  <Bell size={28} className="cursor-pointer" />
+
+                  {notifications.length > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 
+                 h-5 min-w-5 flex items-center justify-center px-1 text-xs"
+                    >
+                      {notifications.length}
+                    </Badge>
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuSeparator />
+
+                <ScrollArea className="h-80">
+                  {notifications?.length > 0 ? (
+                    notifications.map((item, index) => (
+                      <DropdownMenuItem
+                        key={index}
+                        className="flex flex-col items-start gap-1 cursor-pointer"
+                      >
+                        <p className="text-sm font-medium">
+                          {item?.data?.title || "New Notification"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.message || item.description}
+                        </p>
+                        <p>{item.length}</p>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <div className="p-4 text-sm text-muted-foreground text-center">
+                      No notifications
+                    </div>
+                  )}
+                </ScrollArea>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Link href={`/dashboard/${role}-profile`}>
+              <img src="/user.png" className="h-9 w-9 rounded-full bg-white" />
+            </Link>
+          </div>
         </div>
 
         <div className="p-4 lg:p-8">{children}</div>
