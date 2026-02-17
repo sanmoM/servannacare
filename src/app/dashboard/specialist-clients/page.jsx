@@ -19,13 +19,14 @@ const Page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // --- URL State Management ---
   const activeFilter = searchParams.get("status") || "all";
-  // Get page from URL, default to 1
+
   const currentPage = Number(searchParams.get("page")) || 1;
   const itemsPerPage = 5;
 
   const [clients, setClients] = useState([]);
+
+  console.log("clients", clients);
   const { data, isLoading, error, mutate } = useFetch("/specialist-booking");
 
   useEffect(() => {
@@ -93,17 +94,51 @@ const Page = () => {
     return [];
   };
 
+  // const handleStatusChange = async (id, newStatus) => {
+  //   const previousClients = [...clients];
+
+  //   setClients((prev) =>
+  //     prev.map((c) => (c.id === id ? { ...c, booking_status: newStatus } : c)),
+  //   );
+
+  //   try {
+  //     const response = await postApi(`/update-booking-status/${id}`, {
+  //       booking_status: newStatus,
+  //     });
+
+  //     if (response.status === 200) {
+  //       toast.success(`Status updated to ${newStatus}`);
+  //     } else {
+  //       throw new Error("Failed");
+  //     }
+  //   } catch (err) {
+  //     toast.error("Failed to update status");
+
+  //     setClients(previousClients);
+  //   }
+  // };
+
   const handleStatusChange = async (id, newStatus) => {
+    const previousClients = [...clients];
+
+    setClients((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, booking_status: newStatus } : c)),
+    );
+
+    toast.success(`Status updated to ${newStatus}`);
+
     try {
       const response = await postApi(`/update-booking-status/${id}`, {
         booking_status: newStatus,
       });
-      if (response.status === 200) {
-        toast.success(`Status updated to ${newStatus}`);
-        mutate();
+
+      if (response.status !== 200) {
+        throw new Error("Failed");
       }
     } catch (err) {
       toast.error("Failed to update status");
+
+      setClients(previousClients);
     }
   };
 
@@ -112,7 +147,6 @@ const Page = () => {
       ? clients
       : clients.filter((c) => c.booking_status === activeFilter);
 
-  // --- Pagination Logic ---
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredClients.slice(indexOfFirstItem, indexOfLastItem);

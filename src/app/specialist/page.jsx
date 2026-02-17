@@ -101,10 +101,6 @@ const SearchContent = () => {
     if (category) {
       setSelectedCategory(category);
     }
-    // const filterCategory = serviceCategory.find(
-    //   (cat) => cat.value === category,
-    // );
-    // if (filterCategory) setSelectedCategory(filterCategory.mainCategory);
   }, [searchParams]);
 
   const handleCategoryChange = (value) => {

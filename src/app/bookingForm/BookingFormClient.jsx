@@ -48,6 +48,7 @@ export default function BookingFormClient() {
   const [previewMonth, setPreviewMonth] = useState(null);
 
   const { data: specData, isLoading: specLoading } = useFetch("/specialist");
+
   const { data: priceData, isLoading: priceLoading } = useFetch("/price");
 
   const specialists = specData?.data?.data ?? [];
@@ -57,6 +58,8 @@ export default function BookingFormClient() {
     () => specialists.find((s) => s.id === Number(id)),
     [specialists, id],
   );
+
+  // console.log("mathdfd", matchedSpecialist?.type);
 
   const availableDates =
     matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
@@ -195,8 +198,10 @@ export default function BookingFormClient() {
           month,
           dates: getDatesForMonth(month),
         }));
-
-    formData.append("specialist_id", id);
+    if (matchedSpecialist) {
+      formData.append("specialist_id", id);
+      formData.append("specialist_type", matchedSpecialist?.type);
+    }
 
     Object.keys(data).forEach((key) => {
       if (

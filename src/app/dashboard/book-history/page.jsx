@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import {
   Eye,
-  Calendar as CalendarIcon, // Renamed to avoid conflict with Calendar component
+  Calendar as CalendarIcon,
   User,
   Stethoscope,
   FileText,
@@ -36,7 +36,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Calendar } from "@/components/ui/calendar"; // Import your Calendar component
+import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { postApi } from "@/lib/apiHandler";
 import toast from "react-hot-toast";
@@ -55,9 +55,12 @@ const BookingHistoryPage = () => {
   const [rating, setRating] = useState(5);
   const [reviewMessage, setReviewMessage] = useState("");
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
-  const [reviewedBookings, setReviewedBookings] = useState([]);
 
-  const { data, isLoading, error } = useFetch("/user-booking");
+  // Local state to instantly disable button before re-fetch completes
+  const [justReviewed, setJustReviewed] = useState([]);
+
+  // Destructure mutate to refresh data after posting a review
+  const { data, isLoading, error, mutate } = useFetch("/user-booking");
 
   useEffect(() => {
     if (data) {
@@ -65,7 +68,6 @@ const BookingHistoryPage = () => {
     }
   }, [data]);
 
-  // --- Date Parsing Helper for Calendar ---
   const getSelectedDates = (dateData, bookingType) => {
     if (!dateData) return [];
     let parsed;
@@ -124,7 +126,6 @@ const BookingHistoryPage = () => {
 
   return (
     <div className="p-6 mx-auto space-y-6">
-      {/* Header & Filter */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Booking History</h1>
@@ -152,7 +153,6 @@ const BookingHistoryPage = () => {
         </div>
       </div>
 
-      {/* Table */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -192,6 +192,11 @@ const BookingHistoryPage = () => {
                     row.selected_dates_or_months,
                     row.booking_type,
                   );
+
+                  // Logic to check if review is already done
+                  const isAlreadyReviewed =
+                    row.review_count > 0 || justReviewed.includes(row.id);
+
                   return (
                     <tr
                       key={row.id}
@@ -238,11 +243,9 @@ const BookingHistoryPage = () => {
                               {row.booking_type}
                             </span>
                           </div>
-
-                          {/* --- CALENDAR VIEW DIALOG --- */}
                           <Dialog>
                             <DialogTrigger asChild>
-                              <button className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-primary hover:border-blue-200 rounded-lg shadow-sm transition-all opacity-0 group-hover:opacity-100">
+                              <button className="p-2 bg-white border border-gray-200 text-gray-400 hover:text-primary hover:border-blue-200 rounded-lg shadow-sm transition-all cursor-pointer">
                                 <Eye size={16} />
                               </button>
                             </DialogTrigger>
@@ -259,15 +262,7 @@ const BookingHistoryPage = () => {
                                   selected={selectedDates}
                                   defaultMonth={selectedDates[0] || new Date()}
                                   className="rounded-md border shadow"
-                                  // Disable clicking on the calendar to keep it read-only
                                   onSelect={() => {}}
-                                       disabled={(date) =>
-                                    !selectedDates.some(
-                                      (d) =>
-                                        d.toDateString() ===
-                                        date.toDateString(),
-                                    )
-                                  }
                                 />
                               </div>
                             </DialogContent>
@@ -284,11 +279,23 @@ const BookingHistoryPage = () => {
                           >
                             {row.booking_status}
                           </span>
+
                           {row.booking_status.toLowerCase() === "completed" &&
-                            !reviewedBookings.includes(row.id) && (
+                            (isAlreadyReviewed ? (
+                              // Button shown AFTER review is done (No handler, purely visual)
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                // disabled
+                                className="h-8 px-3 text-xs cursor-pointer"
+                              >
+                                Reviewed
+                              </Button>
+                            ) : (
+                              // Button shown BEFORE review
                               <Button
                                 size="sm"
-                                className="h-8 px-3 text-xs"
+                                className="h-8 px-3 text-xs cursor-pointer"
                                 onClick={() => {
                                   setSelectedBooking(row);
                                   setIsReviewOpen(true);
@@ -296,7 +303,7 @@ const BookingHistoryPage = () => {
                               >
                                 Leave Review
                               </Button>
-                            )}
+                            ))}
                         </div>
                       </td>
                     </tr>
@@ -307,7 +314,6 @@ const BookingHistoryPage = () => {
           </table>
         </div>
 
-        {/* Pagination Footer */}
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
             <p className="text-sm text-gray-500">
@@ -344,7 +350,6 @@ const BookingHistoryPage = () => {
         )}
       </div>
 
-      {/* Review Dialog Logic Remains Same as your original code */}
       <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -357,7 +362,6 @@ const BookingHistoryPage = () => {
             </DialogDescription>
           </DialogHeader>
 
-          {/* Rating */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Rating (1 – 5)</label>
             <input
@@ -370,7 +374,6 @@ const BookingHistoryPage = () => {
             />
           </div>
 
-          {/* Review Message */}
           <div className="space-y-2 mt-4">
             <label className="text-sm font-medium">Message</label>
             <Textarea
@@ -402,7 +405,6 @@ const BookingHistoryPage = () => {
 
                 try {
                   setIsSubmittingReview(true);
-
                   const payload = {
                     booking_id: selectedBooking?.id,
                     specialist_id: selectedBooking?.specialist_id,
@@ -412,16 +414,18 @@ const BookingHistoryPage = () => {
 
                   await postApi("/review", payload);
 
-                  setReviewedBookings((prev) => [...prev, selectedBooking.id]);
+                  // Update local state to disable button immediately
+                  setJustReviewed((prev) => [...prev, selectedBooking.id]);
+
+                  // Refresh server data to sync 'review_count'
+                  mutate();
 
                   toast.success("Review submitted successfully!");
-
                   setIsReviewOpen(false);
                   setRating(5);
                   setReviewMessage("");
                   setSelectedBooking(null);
                 } catch (err) {
-                  console.error("Review error:", err);
                   toast.error("Failed to submit review.");
                 } finally {
                   setIsSubmittingReview(false);
