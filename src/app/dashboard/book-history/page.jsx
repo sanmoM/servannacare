@@ -97,7 +97,7 @@ const BookingHistoryPage = () => {
 
   const statusStyles = {
     pending: "bg-amber-50 text-amber-700 border-amber-100",
-    approved: "bg-emerald-50 text-green-00 border-emerald-100",
+    accepted: "bg-emerald-50 text-green-00 border-emerald-100",
     rejected: "bg-rose-50 text-red-700 border-rose-100",
     completed: "bg-rose-50 text-green-700 border-rose-100",
   };
@@ -133,16 +133,16 @@ const BookingHistoryPage = () => {
             value={filterStatus}
             onValueChange={(v) => router.push(`?page=1&status=${v}`)}
           >
-            <SelectTrigger className="w-[160px] bg-white border-gray-200 shadow-sm focus:ring-primary">
+            <SelectTrigger className="w-40 bg-white border-gray-200 shadow-sm focus:ring-primary">
               <SelectValue placeholder="All Bookings" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="All">All</SelectItem>
                 <SelectItem value="pending">pending</SelectItem>
-                <SelectItem value="approved">approved</SelectItem>
-                <SelectItem value="rejected">rejected</SelectItem>
                 <SelectItem value="accepted">accepted</SelectItem>
+                <SelectItem value="rejected">rejected</SelectItem>
+                <SelectItem value="approved">completed</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
