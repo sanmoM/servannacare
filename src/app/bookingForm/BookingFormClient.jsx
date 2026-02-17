@@ -142,6 +142,10 @@ export default function BookingFormClient() {
     }
   };
 
+  const getDatesForMonth = (monthKey) => {
+    return availableDates.filter((date) => date.startsWith(monthKey));
+  };
+
   const isDateDisabled = (date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -187,7 +191,10 @@ export default function BookingFormClient() {
           (d) =>
             `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
         )
-      : selectedMonths;
+      : selectedMonths.map((month) => ({
+          month,
+          dates: getDatesForMonth(month),
+        }));
 
     formData.append("specialist_id", id);
 
@@ -217,9 +224,8 @@ export default function BookingFormClient() {
       formData.append("prescription_file", data.prescriptionFile);
     }
 
-
     try {
-        const res = await postApi("/booking", formData, {
+      const res = await postApi("/booking", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
