@@ -52,6 +52,7 @@ const BookingHistoryPage = () => {
   const [bookings, setBookings] = useState([]);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+
   const [rating, setRating] = useState(5);
   const [reviewMessage, setReviewMessage] = useState("");
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
@@ -410,6 +411,7 @@ const BookingHistoryPage = () => {
                     specialist_id: selectedBooking?.specialist_id,
                     rating: Number(rating),
                     review: reviewMessage.trim(),
+                    specialist_type: selectedBooking?.specialist_type,
                   };
 
                   await postApi("/review", payload);

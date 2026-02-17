@@ -4,7 +4,7 @@ import Container from "@/components/shared/Container";
 import ProfileCard from "@/components/profileCard";
 import { serviceCategory } from "@/utilities/data";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -32,242 +32,136 @@ const SearchContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // State
   const [selectedCategory, setSelectedCategory] = useState("house-manager");
   const [selectedServices, setSelectedServices] = useState([]);
   const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
-  const [hasFetched, setHasFetched] = useState(false);
-  const [applyFilter, setApplyFilter] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
+  const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 6;
 
-  const [currentPage, setCurrentPage] = useState(1);
+  // API Call
+  const { data, isLoading } = useFetch("/specialist");
 
-  const buildQuery = () => {
-    const query = new URLSearchParams();
-    if (selectedCategory) query.set("subRole", selectedCategory);
-
-    selectedServices.forEach((service) => query.append("preferred[]", service));
-
-    query.set("limit", "25");
-
-    return query.toString();
-  };
-
-  const fetchUrl = isMobile
-    ? applyFilter
-      ? `/specialist?${buildQuery()}`
-      : `/specialist?limit=25`
-    : `/specialist?${buildQuery()}`;
-
-  const { data, isLoading, error } = useFetch(fetchUrl);
-
-  useEffect(() => {
-    if (!isLoading && data) {
-      setHasFetched(true);
-    }
-  }, [isLoading, data]);
-
-  useEffect(() => {
-    setHasFetched(false);
-    setCurrentPage(1);
-  }, [selectedCategory, selectedServices, sortBy]);
-
-  const specialists = React.useMemo(() => {
-    if (!data || !Array.isArray(data?.data?.data)) return [];
-    return data?.data?.data;
-  }, [data]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!isMobile) {
-      setApplyFilter(true);
-    }
-  }, [selectedCategory, selectedServices, sortBy, isMobile]);
-
+  // --- URL Sync Logic ---
   useEffect(() => {
     const category = searchParams.get("category");
-    if (category) {
-      setSelectedCategory(category);
+    const services = searchParams.get("services");
+
+    if (category) setSelectedCategory(category);
+    if (services) {
+      setSelectedServices(services.split(","));
+    } else {
+      setSelectedServices([]);
     }
   }, [searchParams]);
 
-  const handleCategoryChange = (value) => {
-    const selected = serviceCategory.find((cat) => cat.value === value);
-    if (!selected) return;
-
+  // Helper to update URL params
+  const updateQueryParams = (category, services) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("category", value);
+
+    if (category) params.set("category", category);
+
+    if (services && services.length > 0) {
+      params.set("services", services.join(","));
+    } else {
+      params.delete("services");
+    }
 
     router.push(`?${params.toString()}`, { scroll: false });
-
-    setSelectedCategory(value);
-    setSelectedServices([]);
   };
 
+  // Handle Category Change
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+    setSelectedServices([]); // Reset services when category changes
+    setCurrentPage(1);
+    updateQueryParams(value, []);
+  };
+
+  // Handle Service Toggle
   const handleServiceToggle = (service) => {
-    setSelectedServices((prev) =>
-      prev.includes(service)
-        ? prev.filter((s) => s !== service)
-        : [...prev, service],
-    );
+    const updatedServices = selectedServices.includes(service)
+      ? selectedServices.filter((s) => s !== service)
+      : [...selectedServices, service];
+
+    setSelectedServices(updatedServices);
+    setCurrentPage(1);
+    updateQueryParams(selectedCategory, updatedServices);
   };
 
   const selectedCategoryObj = serviceCategory.find(
-    (cate) => cate.value === selectedCategory,
+    (cat) => cat.value === selectedCategory,
   );
 
-  const sortedSpecialists = React.useMemo(() => {
-    let sorted = [...specialists];
+  // --- Filtering Logic ---
+  const filteredSpecialists = useMemo(() => {
+    const rawData = data?.data?.data || [];
+    if (!rawData.length) return [];
 
+    return rawData.filter((item) => {
+      const matchesCategory =
+        !selectedCategory ||
+        item.subRole?.toLowerCase() === selectedCategory.toLowerCase();
+
+      const matchesServices =
+        selectedServices.length === 0 ||
+        selectedServices.every((s) => item.preferred?.includes(s));
+
+      return matchesCategory && matchesServices;
+    });
+  }, [data, selectedCategory, selectedServices]);
+
+  // --- Sorting Logic ---
+  const sortedSpecialists = useMemo(() => {
+    let result = [...filteredSpecialists];
     switch (sortBy) {
       case "rating":
-        return sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-
+        return result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
       case "experience":
-        return sorted.sort((a, b) => (b.experience ?? 0) - (a.experience ?? 0));
-
+        return result.sort(
+          (a, b) =>
+            (parseInt(b.experience) || 0) - (parseInt(a.experience) || 0),
+        );
       case "newest":
-        return sorted.sort(
+        return result.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at),
         );
-
       case "name-asc":
-        return sorted.sort((a, b) =>
-          (a.name ?? "").localeCompare(b.name ?? ""),
+        return result.sort((a, b) =>
+          (a.name || "").localeCompare(b.name || ""),
         );
       case "name-desc":
-        return sorted.sort((a, b) =>
-          (b.name ?? "").localeCompare(a.name ?? ""),
+        return result.sort((a, b) =>
+          (b.name || "").localeCompare(a.name || ""),
         );
-
-      case "relevance":
       default:
-        return specialists;
+        return result;
     }
-  }, [specialists, sortBy]);
+  }, [filteredSpecialists, sortBy]);
 
   const totalPages = Math.ceil(sortedSpecialists.length / ITEMS_PER_PAGE);
-
-  const paginatedSpecialists = React.useMemo(() => {
+  const paginatedSpecialists = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    return sortedSpecialists.slice(start, end);
+    return sortedSpecialists.slice(start, start + ITEMS_PER_PAGE);
   }, [sortedSpecialists, currentPage]);
-
-  useEffect(() => {
-    if (mobileFilterSidebar) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [mobileFilterSidebar]);
 
   return (
     <>
       <PageBanner title="Our Specialist" />
       <Container className="lg:py-16 py-12">
-        {/* Filter & Sort Header */}
         <div className="pb-8 flex border-b items-center gap-4 justify-end">
-          {/* Mobile Filter Toggle */}
           <div
             onClick={() => setMobileFilterSidebarOpen(true)}
-            className="lg:hidden cursor-pointer flex gap-1"
+            className="lg:hidden cursor-pointer flex gap-1 items-center"
           >
-            <Filter className="text-primary" /> <span>Filter</span>
+            <Filter className="text-primary" size={20} /> <span>Filter</span>
           </div>
-          {/* Mobile Sidebar */}
-          {mobileFilterSidebar && (
-            <div className="fixed inset-0 z-50 bg-black/50 flex">
-              <div className="w-64 bg-white h-full p-6 overflow-y-auto">
-                <button
-                  className="mb-4 font-semibold text-primary"
-                  onClick={() => setMobileFilterSidebarOpen(false)}
-                >
-                  Close
-                </button>
 
-                {/* Category Selector */}
-                <div>
-                  <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
-                    Specialist
-                  </h2>
-                  <select
-                    className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
-                    value={selectedCategory}
-                    onChange={(e) => handleCategoryChange(e.target.value)}
-                  >
-                    <option value="" disabled hidden>
-                      Select Specialist
-                    </option>
-                    {serviceCategory.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.mainCategory}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Services Selector */}
-                {selectedCategoryObj && (
-                  <div className="mt-6">
-                    <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
-                      Services
-                    </h2>
-                    <div className="space-y-2">
-                      {selectedCategoryObj.subCategory.map((service, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <Checkbox
-                            id={service}
-                            checked={selectedServices.includes(service)}
-                            onCheckedChange={() => handleServiceToggle(service)}
-                          />
-                          <Label htmlFor={service}>{service}</Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <button
-                  className="w-full bg-primary text-white py-3 rounded-md mt-6"
-                  onClick={() => {
-                    setApplyFilter(true);
-                    setMobileFilterSidebarOpen(false);
-                  }}
-                >
-                  Search
-                </button>
-              </div>
-
-              {/* Click outside to close */}
-              <div
-                className="flex-1"
-                onClick={() => setMobileFilterSidebarOpen(false)}
-              />
-            </div>
-          )}
-
-          {/* Sort Dropdown */}
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-[200px] border-primary">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
-
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="relevance">Relevance</SelectItem>
@@ -282,11 +176,119 @@ const SearchContent = () => {
         </div>
 
         <div className="grid lg:grid-cols-7 gap-6 items-start mt-6">
-          {/* Desktop Sidebar */}
-          <div className="col-span-2 hidden w-full lg:flex sticky top-5 h-[95vh] rounded-md border">
-            <div className="flex flex-col w-full justify-between">
-              <div className="p-6 space-y-6">
-                {/* Category Selector */}
+          <aside className="col-span-2 hidden lg:flex sticky top-5 h-fit max-h-[90vh] rounded-md border p-6 flex-col space-y-6 overflow-y-auto">
+            <div>
+              <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                Specialist
+              </h2>
+              <select
+                className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
+                value={selectedCategory}
+                onChange={(e) => handleCategoryChange(e.target.value)}
+              >
+                <option value="">All Specialists</option>
+                {serviceCategory.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.mainCategory}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {selectedCategoryObj && (
+              <div>
+                <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                  Services
+                </h2>
+                <div className="space-y-2">
+                  {selectedCategoryObj.subCategory.map((service, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <Checkbox
+                        id={`desktop-${service}`}
+                        checked={selectedServices.includes(service)}
+                        onCheckedChange={() => handleServiceToggle(service)}
+                      />
+                      <Label htmlFor={`desktop-${service}`}>{service}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </aside>
+
+          <main className="col-span-5">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {isLoading ? (
+                <div className="col-span-full text-center py-20">
+                  <LoadingSpinner />
+                </div>
+              ) : paginatedSpecialists.length > 0 ? (
+                paginatedSpecialists.map((profile) => (
+                  <ProfileCard key={profile.id} profile={profile} />
+                ))
+              ) : (
+                <p className="col-span-full text-gray-500 text-center py-20">
+                  No specialists found.
+                </p>
+              )}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="mt-10 flex justify-end">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() =>
+                          setCurrentPage((p) => Math.max(1, p - 1))
+                        }
+                        className={
+                          currentPage === 1
+                            ? "pointer-events-none opacity-50"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+                    {[...Array(totalPages)].map((_, i) => (
+                      <PaginationItem key={i}>
+                        <PaginationLink
+                          isActive={i + 1 === currentPage}
+                          onClick={() => setCurrentPage(i + 1)}
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() =>
+                          setCurrentPage((p) => Math.min(totalPages, p + 1))
+                        }
+                        className={
+                          currentPage === totalPages
+                            ? "pointer-events-none opacity-50"
+                            : "cursor-pointer"
+                        }
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </main>
+        </div>
+
+        {/* Mobile Filter */}
+        {mobileFilterSidebar && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex">
+            <div className="w-72 bg-white h-full p-6 overflow-y-auto">
+              <button
+                className="mb-6 font-bold text-primary"
+                onClick={() => setMobileFilterSidebarOpen(false)}
+              >
+                ✕ Close
+              </button>
+              <div className="space-y-8">
                 <div>
                   <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
                     Specialist
@@ -296,119 +298,38 @@ const SearchContent = () => {
                     value={selectedCategory}
                     onChange={(e) => handleCategoryChange(e.target.value)}
                   >
-                    <option value="" disabled hidden>
-                      Select Specialist
-                    </option>
-                    {serviceCategory.map((cat, indx) => (
+                    {serviceCategory.map((cat) => (
                       <option key={cat.value} value={cat.value}>
                         {cat.mainCategory}
                       </option>
                     ))}
                   </select>
                 </div>
-
-                {/* Services Selector */}
                 {selectedCategoryObj && (
                   <div>
                     <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
                       Services
                     </h2>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {selectedCategoryObj.subCategory.map((service, i) => (
                         <div key={i} className="flex items-center gap-2">
                           <Checkbox
-                            id={service}
+                            id={`mobile-${service}`}
                             checked={selectedServices.includes(service)}
                             onCheckedChange={() => handleServiceToggle(service)}
                           />
-                          <Label htmlFor={service}>{service}</Label>
+                          <Label htmlFor={`mobile-${service}`}>{service}</Label>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-                {!selectedCategoryObj && (
-                  <p className="text-sm text-gray-500">
-                    Please select a specialist to see services
-                  </p>
-                )}
               </div>
-
-              {/* <div className="mx-6 mb-6">
-                <Button
-                  className="w-full"
-                  size="lg"
-                  onClick={() => {
-                    // Trigger refetch by updating state (selectedCategory/selectedServices)
-                  }}
-                >
-                  Search
-                </Button>
-              </div> */}
             </div>
-          </div>
-
-          {/* Specialist Cards */}
-          <div className="grid col-span-5 grid-cols-1 gap-4 sm:grid-cols-2 self-start">
-            {isLoading && !hasFetched ? (
-              <div className="col-span-2 text-center py-20">
-                <LoadingSpinner />
-              </div>
-            ) : paginatedSpecialists.length > 0 ? (
-              paginatedSpecialists.map((profile, i) => (
-                <ProfileCard key={profile.id} profile={profile} />
-              ))
-            ) : hasFetched ? (
-              <p className="col-span-2 text-gray-500 text-center md:mt-16 mt-8">
-                No specialists found.
-              </p>
-            ) : null}
-          </div>
-        </div>
-        {totalPages > 1 && (
-          <div className="col-span-5 mt-6 flex justify-end">
-            <Pagination>
-              <PaginationContent>
-                {/* Previous button */}
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    className={
-                      currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                    }
-                  />
-                </PaginationItem>
-
-                {/* Page numbers */}
-                {[...Array(totalPages)].map((_, i) => {
-                  const page = i + 1;
-                  return (
-                    <PaginationItem key={page}>
-                      <PaginationLink
-                        isActive={page === currentPage}
-                        onClick={() => setCurrentPage(page)}
-                      >
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                })}
-
-                {/* Next button */}
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                    className={
-                      currentPage === totalPages
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+            <div
+              className="flex-1"
+              onClick={() => setMobileFilterSidebarOpen(false)}
+            />
           </div>
         )}
       </Container>
@@ -416,18 +337,16 @@ const SearchContent = () => {
   );
 };
 
-const Search = () => {
-  return (
-    <Suspense
-      fallback={
-        <div className="w-full py-20 text-center text-primary font-semibold">
-          <LoadingSpinner />
-        </div>
-      }
-    >
-      <SearchContent />
-    </Suspense>
-  );
-};
+const Search = () => (
+  <Suspense
+    fallback={
+      <div className="w-full py-20 text-center text-primary font-semibold">
+        <LoadingSpinner />
+      </div>
+    }
+  >
+    <SearchContent />
+  </Suspense>
+);
 
 export default Search;
