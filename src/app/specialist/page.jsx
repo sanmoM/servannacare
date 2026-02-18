@@ -39,10 +39,16 @@ const SearchContent = () => {
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedLocation, setSelectedLocation] = useState("");
+  const [selectedKidAge, setSelectedKidAge] = useState("");
+  const [salaryRange, setSalaryRange] = useState({ min: "", max: "" });
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedRating, setSelectedRating] = useState("");
+
   const ITEMS_PER_PAGE = 6;
 
   // API Call
   const { data, isLoading } = useFetch("/specialist");
+  console.log("data", data?.data?.data);
 
   // --- URL Sync Logic ---
   useEffect(() => {
@@ -66,12 +72,20 @@ const SearchContent = () => {
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  // Handle Category Change
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
     setSelectedServices([]);
+    setSelectedLocation("");
+    setSelectedKidAge("");
+    setSalaryRange({ min: "", max: "" });
+    setSelectedLanguages([]);
+    setSelectedRating("");
     setCurrentPage(1);
-    updateQueryParams(value, []);
+
+    const params = new URLSearchParams();
+    if (value) params.set("category", value);
+
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   // Handle Service Toggle
@@ -89,6 +103,28 @@ const SearchContent = () => {
     (cat) => cat.value === selectedCategory,
   );
 
+  const parseSalaryRange = (salaryString) => {
+    if (!salaryString) return { min: 0, max: Infinity };
+
+    salaryString = salaryString.replace(/\s/g, "");
+
+    // Case 1: "1000+"
+    if (salaryString.includes("+")) {
+      const min = parseInt(salaryString.replace("+", ""));
+      return { min, max: Infinity };
+    }
+
+    // Case 2: "800-1000"
+    if (salaryString.includes("-")) {
+      const [min, max] = salaryString.split("-").map(Number);
+      return { min, max };
+    }
+
+    // Case 3: Single number "900"
+    const value = parseInt(salaryString);
+    return { min: value, max: value };
+  };
+
   const filteredSpecialists = useMemo(() => {
     const rawData = data?.data?.data || [];
     if (!rawData.length) return [];
@@ -96,17 +132,71 @@ const SearchContent = () => {
     return rawData.filter((item) => {
       const matchesCategory =
         !selectedCategory ||
-        item.subRole?.toLowerCase() === selectedCategory.toLowerCase();
-      const matchesServices =
-        selectedServices.length === 0 ||
-        selectedServices.every((s) => item.preferred?.includes(s));
+        [item.subRole, item.type]
+          .filter(Boolean)
+          .some(
+            (role) => role.toLowerCase() === selectedCategory.toLowerCase(),
+          );
+
       const matchesLocation =
         !selectedLocation ||
         item.location?.toLowerCase().includes(selectedLocation.toLowerCase());
 
-      return matchesCategory && matchesServices && matchesLocation;
+      const matchesServices =
+        selectedServices.length === 0 ||
+        (Array.isArray(item.preferred) &&
+          selectedServices.every((s) => item.preferred.includes(s)));
+
+      let matchesKidAge = true;
+      let matchesSalary = true;
+      let matchesLanguages = true;
+      let matchesRating = true;
+
+      if (selectedCategory === "house-manager") {
+        const kidAges = item.house_manager?.ageOfKids || item.kidAges || [];
+
+        matchesKidAge = !selectedKidAge || kidAges.includes(selectedKidAge);
+
+        const salaryString =
+          item.house_manager?.salaryRange || item.salaryRange;
+
+        const { min, max } = parseSalaryRange(salaryString);
+
+        matchesSalary =
+          (!salaryRange.min || max >= Number(salaryRange.min)) &&
+          (!salaryRange.max || min <= Number(salaryRange.max));
+
+        matchesLanguages =
+          selectedLanguages.length === 0 ||
+          selectedLanguages.every((lang) =>
+            item.languages?.some((l) => l.toLowerCase() === lang.toLowerCase()),
+          );
+
+        matchesRating =
+          !selectedRating ||
+          (item.rating && item.rating >= Number(selectedRating));
+      }
+
+      return (
+        matchesCategory &&
+        matchesLocation &&
+        matchesServices &&
+        matchesKidAge &&
+        matchesSalary &&
+        matchesLanguages &&
+        matchesRating
+      );
     });
-  }, [data, selectedCategory, selectedServices, selectedLocation]);
+  }, [
+    data,
+    selectedCategory,
+    selectedLocation,
+    selectedServices,
+    selectedKidAge,
+    salaryRange,
+    selectedLanguages,
+    selectedRating,
+  ]);
 
   // --- Sorting Logic ---
   const sortedSpecialists = useMemo(() => {
@@ -191,23 +281,112 @@ const SearchContent = () => {
               </select>
             </div>
 
-            {selectedCategoryObj?.location?.length > 0 && (
-              <div>
-                <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
-                  Location
-                </h2>
+            {selectedCategory === "house-manager" && (
+              <>
+                <div>
+                  <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                    Location
+                  </h2>
 
-                <input
-                  type="text"
-                  placeholder="Type location..."
-                  className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
-                  value={selectedLocation}
-                  onChange={(e) => {
-                    setSelectedLocation(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                />
-              </div>
+                  <input
+                    type="text"
+                    placeholder="Type location..."
+                    className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
+                    value={selectedLocation}
+                    onChange={(e) => {
+                      setSelectedLocation(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                </div>
+                <div>
+                  <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                    Kid Age Range
+                  </h2>
+
+                  <select
+                    className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
+                    value={selectedKidAge}
+                    onChange={(e) => setSelectedKidAge(e.target.value)}
+                  >
+                    <option value="">All</option>
+                    <option value="0-3">0 – 3</option>
+                    <option value="4-10">4 – 10</option>
+                    <option value="11+">11 and above</option>
+                  </select>
+                </div>
+                <div>
+                  <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                    Salary Range
+                  </h2>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      className="w-full border px-3 py-2 rounded-md"
+                      value={salaryRange.min}
+                      onChange={(e) =>
+                        setSalaryRange({ ...salaryRange, min: e.target.value })
+                      }
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      className="w-full border px-3 py-2 rounded-md"
+                      value={salaryRange.max}
+                      onChange={(e) =>
+                        setSalaryRange({ ...salaryRange, max: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                    Languages
+                  </h2>
+
+                  {[
+                    "English",
+                    "Swahili",
+                    "French",
+                    "German",
+                    "Arabic",
+                    "Chinese",
+                    "Other",
+                  ].map((lang, i) => (
+                    <div key={i} className="flex items-center gap-2 mb-4">
+                      <Checkbox
+                        checked={selectedLanguages.includes(lang)}
+                        onCheckedChange={() => {
+                          const updated = selectedLanguages.includes(lang)
+                            ? selectedLanguages.filter((l) => l !== lang)
+                            : [...selectedLanguages, lang];
+
+                          setSelectedLanguages(updated);
+                        }}
+                      />
+                      <Label>{lang}</Label>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                    Minimum Rating
+                  </h2>
+
+                  <select
+                    className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
+                    value={selectedRating}
+                    onChange={(e) => setSelectedRating(e.target.value)}
+                  >
+                    <option value="">All</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4+ Stars</option>
+                    <option value="3">3+ Stars</option>
+                  </select>
+                </div>
+              </>
             )}
 
             {selectedCategoryObj && (

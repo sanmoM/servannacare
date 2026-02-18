@@ -24,6 +24,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
 
   const [data, setData] = useState({
     name: defaultValues.name || "",
+    age: defaultValues.name || "",
     education: defaultValues.education || "",
     experience: defaultValues.experience || "",
     salaryRange: defaultValues.salaryRange || "",
@@ -83,6 +84,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
 
     const requiredFields = [
       "name",
+      "age",
       "education",
       "experience",
       "salaryRange",
@@ -113,6 +115,11 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       return;
     }
 
+    if (Number(data.age) < 25) {
+      toast.error("Age must be 25 or above");
+      return;
+    }
+
     if (data?.preferred?.length === 0) {
       toast.error("Please select at least one service preference!");
       return;
@@ -132,6 +139,17 @@ const BasicInfo = ({ defaultValues, onNext }) => {
           placeholder="Enter your name"
           value={data.name}
           onChange={handleChange}
+        />
+        <Input
+          type="number"
+          placeholder="Your age"
+          name="age"
+          label="Age"
+          value={data.age}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+            setData((prev) => ({ ...prev, age: val }));
+          }}
         />
 
         <div>
