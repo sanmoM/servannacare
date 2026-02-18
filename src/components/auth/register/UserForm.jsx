@@ -11,6 +11,10 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import OtpModal from "../OtpModal";
 import { postApi } from "@/lib/apiHandler";
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
 
 const UserForm = () => {
   const searchParams = useSearchParams();
@@ -23,6 +27,7 @@ const UserForm = () => {
   const [openOTP, setOpenOTP] = useState(false);
   const [temUser, setTemUser] = useState(null);
   const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("KE");
 
   useEffect(() => {
     const r = searchParams.get("redirect");
@@ -35,15 +40,19 @@ const UserForm = () => {
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
-    const phone = form.phone.value;
 
     if (!name || !email || !password) {
       toast.error("All fields are required!");
       return;
     }
 
-    if (phone.length !== 11) {
-      toast.error("Invalied phone number!");
+    if (!phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(phone)) {
+      toast.error("Phone number is invalid or incomplete!");
       return;
     }
 
@@ -64,6 +73,7 @@ const UserForm = () => {
       email,
       password,
     };
+
 
     try {
       const res = await postApi("/register", userInfo);
@@ -121,26 +131,38 @@ const UserForm = () => {
             type="text"
             placeholder="Enter Your Name"
           />
-          <Input
-            label="Phone Number"
-            name="phone"
-            type="tel"
-            placeholder="+254xxxxxxx"
-            value={phone}
-            maxLength={11}
-            onFocus={() => {
-              if (!phone) setPhone("+254");
-            }}
-            onChange={(e) => {
-              let val = e.target.value;
-              if (!val.startsWith("+254")) {
-                val = "+254" + val.replace(/\D/g, "").slice(0, 7);
-              } else {
-                val = "+254" + val.slice(4).replace(/\D/g, "").slice(0, 7);
-              }
-              setPhone(val);
-            }}
-          />
+          <Label>Phone Number</Label>
+
+          <div className="w-full">
+            <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
+              international
+              defaultCountry={country}
+              value={phone}
+              onChange={(value) => {
+                if (!value) return setPhone("");
+                const sanitized = value.replace(/[^+\d]/g, "");
+                setPhone(sanitized);
+              }}
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+                const exampleNumber = countryCode
+                  ? getExampleNumber(countryCode)
+                  : null;
+                if (exampleNumber) {
+                  setPhone(`+${exampleNumber.countryCallingCode}`);
+                } else {
+                  setPhone("");
+                }
+              }}
+            />
+          </div>
+
+          {phone && !isValidPhoneNumber(phone) && (
+            <p className="text-red-500 text-sm mt-1">
+              Invalid phone number for selected country
+            </p>
+          )}
 
           <Input
             label="Email"

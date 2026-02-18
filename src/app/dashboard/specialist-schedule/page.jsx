@@ -20,6 +20,7 @@ import { useFetch } from "@/hooks/useFetch";
 const ProfessionalSchedule = () => {
   const [mounted, setMounted] = useState(false);
   const [selectedDates, setSelectedDates] = useState(new Set());
+ 
   const [isPublishing, setIsPublishing] = useState(false);
   const today = startOfToday();
   const BRAND_COLOR = "#72275b";

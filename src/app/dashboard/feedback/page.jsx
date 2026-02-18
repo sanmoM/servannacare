@@ -1,7 +1,23 @@
+"use client";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
+import { useFetch } from "@/hooks/useFetch";
 import { Star } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const page = () => {
+  const [reviews, setReviews] = useState(null);
+  console.log("reviews", reviews);
+  const { data, isLoading, error } = useFetch("/specialist-review");
+
+  useEffect(() => {
+    if (data) {
+      setReviews(data?.data?.data ?? data);
+    }
+  }, [data]);
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
+
   const ratings = {
     average: 4.2,
     totalReviews: 18,
@@ -113,41 +129,51 @@ const page = () => {
         </div>
       </div>
       <div className="overflow-x-auto mt-10">
-    <table className="w-full min-w-[600px] text-sm text-left border rounded-xl shadow">
-      <thead className="bg-gray-100 border-b">
-        <tr>
-          <th className="px-6 py-3 font-semibold">Name</th>
-          <th className="px-6 py-3 font-semibold">Rating</th>
-          <th className="px-6 py-3 font-semibold">Message</th>
-          <th className="px-6 py-3 font-semibold">Date</th>
-        </tr>
-      </thead>
+        <table className="w-full min-w-[600px] text-sm text-left border rounded-xl shadow">
+          <thead className="bg-gray-100 border-b">
+            <tr>
+              <th className="px-6 py-3 font-semibold">Name</th>
+              <th className="px-6 py-3 font-semibold">Rating</th>
+              <th className="px-6 py-3 font-semibold">Message</th>
+              <th className="px-6 py-3 font-semibold">Date</th>
+            </tr>
+          </thead>
 
-      <tbody>
-        {feedbackMessages.map((fb) => (
-          <tr key={fb.id} className="border-b hover:bg-gray-50">
-            <td className="px-6 py-4 whitespace-nowrap">{fb.name}</td>
+          <tbody>
+            {reviews?.map((fb) => (
+              <tr key={fb.id} className="border-b hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {fb?.user?.name}
+                </td>
 
-            <td className="px-6 py-4 whitespace-nowrap flex">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-4 h-4 ${
-                    i < fb.rating
-                      ? "text-yellow-500 fill-yellow-500"
-                      : "text-gray-300"
-                  }`}
-                />
-              ))}
-            </td>
+                <td className="px-6 py-4 whitespace-nowrap flex">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < fb.rating
+                          ? "text-yellow-500 fill-yellow-500"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </td>
 
-            <td className="px-6 py-4">{fb.message}</td>
-            <td className="px-6 py-4 whitespace-nowrap">{fb.date}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+                <td className="px-6 py-4">{fb?.review}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {(() => {
+                    const date = new Date(fb?.created_at);
+                    const day = String(date.getDate()).padStart(2, "0");
+                    const month = String(date.getMonth() + 1).padStart(2, "0");
+                    const year = date.getFullYear();
+                    return `${day}-${month}-${year}`;
+                  })()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

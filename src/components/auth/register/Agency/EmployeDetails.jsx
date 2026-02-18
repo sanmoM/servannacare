@@ -79,7 +79,7 @@ const EmployeDetails = ({
     cooking:"",
     housekeeping:"",
     childcare:"",
-    serviceOffered: "",
+    preferred: "",
     bio:"",
     aidCertificate:null,
     goodConductCertificate:null,
@@ -391,8 +391,8 @@ const EmployeDetails = ({
         <Label className="mb-3">Service Offered</Label>
 
         <RadioGroup
-          value={data.serviceOffered || ""}
-          onValueChange={(v) => handleRadio("serviceOffered", v)}
+          value={data.preferred || ""}
+          onValueChange={(v) => handleRadio("preferred", v)}
         >
           <div className="flex gap-4">
             <div className="flex items-center gap-2">

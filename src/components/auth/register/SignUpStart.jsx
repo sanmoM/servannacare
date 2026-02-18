@@ -15,7 +15,6 @@ import { postApi } from "@/lib/apiHandler";
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import {
-  parsePhoneNumberFromString,
   getExampleNumber,
 } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
@@ -40,7 +39,7 @@ const SignUpStart = ({ onSuccess }) => {
   const [temUser, setTemUser] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [country, setCountry] = useState("KE");
-  const [phoneTouched, setPhoneTouched] = useState(false);
+  // const [phoneTouched, setPhoneTouched] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -57,11 +56,6 @@ const SignUpStart = ({ onSuccess }) => {
       toast.error("Phone number is invalid or incomplete!");
       return;
     }
-
-    // if (!phone || !isValidPhoneNumber(phone)) {
-    //   toast.error("Invalid phone number!");
-    //   return;
-    // }
 
     if (!email || !password) {
       toast.error("All fields are required");
@@ -153,17 +147,14 @@ const SignUpStart = ({ onSuccess }) => {
           /> */}
 
           <Label>Phone Number</Label>
-          <div
-            className={`${
-              !phoneTouched ? "w-0 h-0 overflow-hidden" : "w-full block"
-            } transition-all duration-300`}
-          >
+
+          <div className="w-full">
             <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
               international
               defaultCountry={country}
               value={phone}
               onChange={(value) => {
-                setPhoneTouched(true);
                 if (!value) return setPhone("");
                 const sanitized = value.replace(/[^+\d]/g, "");
                 setPhone(sanitized);
@@ -181,7 +172,8 @@ const SignUpStart = ({ onSuccess }) => {
               }}
             />
           </div>
-          {phoneTouched && phone && !isValidPhoneNumber(phone) && (
+
+          {phone && !isValidPhoneNumber(phone) && (
             <p className="text-red-500 text-sm mt-1">
               Invalid phone number for selected country
             </p>

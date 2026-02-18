@@ -5,6 +5,7 @@ import AOSInit from "@/animation/AOSInit";
 import QueryProvider from "@/providers/queryProvider";
 
 
+
 const ibmPlexSerif = IBM_Plex_Serif({
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700"],

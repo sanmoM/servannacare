@@ -45,7 +45,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     cooking: "",
     housekeeping: "",
     childcare: "",
-    liveType: "",
+    preferred: [],
     documents: {
       aidCertificate: null,
       goodConductCertificate: null,
@@ -66,7 +66,9 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         experience: initialData.experience || "",
         salaryRange: initialData.salaryRange || "",
         preferredRole: initialData.preferredRole || "",
-        liveType: initialData.liveType || "",
+        preferred: Array.isArray(initialData?.preferred)
+          ? initialData?.preferred
+          : [],
         cooking: initialData.cooking || "",
         housekeeping: initialData.housekeeping || "",
         childcare: initialData.childcare || "",
@@ -221,7 +223,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         toast.success("Employee updated!", { id: loadingToast });
       } else {
         await postApi("/agency-employee", payload);
-   
+
         toast.success("Employee added!", { id: loadingToast });
       }
 
@@ -272,6 +274,25 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
       optional: true,
     },
   ];
+
+  const preferred = [
+    {
+      title: "Live In",
+    },
+    {
+      title: "DayBurg",
+    },
+  ];
+
+  const togglepreferred = (pref) => {
+    setFormData((prev) => {
+      const exists = prev.preferred.includes(pref);
+      return {
+        ...prev,
+        preferred: exists ? [] : [pref],
+      };
+    });
+  };
 
   return (
     <div>
@@ -528,21 +549,24 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
           <Label className="mb-3 block text-sm font-medium">
             Live Preference
           </Label>
-          <RadioGroup
-            value={formData.liveType}
-            onValueChange={(v) => handleSelectChange("liveType", v)}
-          >
-            <div className="flex gap-4">
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="Live-In" id="lIn" />
-                <Label htmlFor="lIn">Live In</Label>
+          <div className="flex flex-wrap flex-col gap-2 ">
+            {preferred.map((lan, indx) => (
+              <div key={indx} className="flex items-center gap-2">
+                <Checkbox
+                  id={lan.title}
+                  checked={formData?.preferred.includes(lan.title)}
+                  onCheckedChange={() => togglepreferred(lan.title)}
+                />
+
+                <Label
+                  htmlFor={lan.title}
+                  className="text-gray-700 font-normal cursor-pointer"
+                >
+                  {lan.title}
+                </Label>
               </div>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="Dayburg" id="lDay" />
-                <Label htmlFor="lDay">Dayburg</Label>
-              </div>
-            </div>
-          </RadioGroup>
+            ))}
+          </div>
         </div>
 
         {/* Documents Section */}

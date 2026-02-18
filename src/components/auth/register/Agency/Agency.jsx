@@ -33,7 +33,7 @@ const validateEmployee = (data) => {
   if (!data.housekeeping) errors.push("Select housekeeping skill");
   if (!data.childcare) errors.push("Select childcare skill");
 
-  if (!data.serviceOffered) errors.push("service offered is required");
+  if (!data.preferred) errors.push("service offered is required");
   if (!data.aidCertificate) errors.push("First aid certificate require");
   if (!data.goodConductCertificate)
     errors.push("Good conduct certificate require");
@@ -128,7 +128,7 @@ const Agency = () => {
         fd.append(`employees[${i}][cooking]`, employee.cooking);
         fd.append(`employees[${i}][housekeeping]`, employee.housekeeping);
         fd.append(`employees[${i}][childcare]`, employee.childcare);
-        fd.append(`employees[${i}][liveType]`, employee.serviceOffered);
+        fd.append(`employees[${i}][preferred]`, employee.preferred);
         fd.append(`employees[${i}][bio]`, employee.bio);
 
         fd.append(`employees[${i}][idCopy]`, employee.idCopy);
@@ -168,7 +168,6 @@ const Agency = () => {
           );
           router.push(`/dashboard/${user?.role}-profile`);
           //todo this localStorage
- 
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

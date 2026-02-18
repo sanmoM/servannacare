@@ -173,7 +173,7 @@ const EmployeePage = () => {
                           <Banknote size={14} /> ${emp.salaryRange}
                         </span>
                         <span className="text-[10px] text-gray-400 font-bold uppercase">
-                          {emp.liveType}
+                          {emp.preferred}
                         </span>
                       </div>
                     </td>

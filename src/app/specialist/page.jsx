@@ -74,7 +74,7 @@ const SearchContent = () => {
   // Handle Category Change
   const handleCategoryChange = (value) => {
     setSelectedCategory(value);
-    setSelectedServices([]); // Reset services when category changes
+    setSelectedServices([]);
     setCurrentPage(1);
     updateQueryParams(value, []);
   };
