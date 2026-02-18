@@ -164,7 +164,7 @@ export default function DashboardLayout({ children }) {
     },
     { name: "Clients", href: "/dashboard/specialist-clients", icon: Users },
     { name: "Subscriptions", href: "/dashboard/subscriptions", icon: Gem },
-    { name: "Notes", href: "/dashboard/note", icon: NotepadText },
+    { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
     { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
 
@@ -178,8 +178,8 @@ export default function DashboardLayout({ children }) {
     },
     // { name: "Schedule", href: "/dashboard/agency-schedule", icon: Calendar },
     { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
-    { name: "Notes", href: "/dashboard/note", icon: NotepadText },
-    { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
+    { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
+    // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
 
   const careInstitutionLinks = [
@@ -200,8 +200,8 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/care-institution-clients",
       icon: Users2,
     },
-    { name: "Notes", href: "/dashboard/note", icon: NotepadText },
-    { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
+    { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
+    // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
 
   let links = [];

@@ -38,6 +38,7 @@ const SearchContent = () => {
   const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedLocation, setSelectedLocation] = useState("");
   const ITEMS_PER_PAGE = 6;
 
   // API Call
@@ -56,18 +57,12 @@ const SearchContent = () => {
     }
   }, [searchParams]);
 
-  // Helper to update URL params
-  const updateQueryParams = (category, services) => {
+  const updateQueryParams = (category, services, location) => {
     const params = new URLSearchParams(searchParams.toString());
-
     if (category) params.set("category", category);
-
-    if (services && services.length > 0) {
+    if (services && services.length > 0)
       params.set("services", services.join(","));
-    } else {
-      params.delete("services");
-    }
-
+    if (location) params.set("location", location);
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
@@ -94,7 +89,6 @@ const SearchContent = () => {
     (cat) => cat.value === selectedCategory,
   );
 
-  // --- Filtering Logic ---
   const filteredSpecialists = useMemo(() => {
     const rawData = data?.data?.data || [];
     if (!rawData.length) return [];
@@ -103,14 +97,16 @@ const SearchContent = () => {
       const matchesCategory =
         !selectedCategory ||
         item.subRole?.toLowerCase() === selectedCategory.toLowerCase();
-
       const matchesServices =
         selectedServices.length === 0 ||
         selectedServices.every((s) => item.preferred?.includes(s));
+      const matchesLocation =
+        !selectedLocation ||
+        item.location?.toLowerCase().includes(selectedLocation.toLowerCase());
 
-      return matchesCategory && matchesServices;
+      return matchesCategory && matchesServices && matchesLocation;
     });
-  }, [data, selectedCategory, selectedServices]);
+  }, [data, selectedCategory, selectedServices, selectedLocation]);
 
   // --- Sorting Logic ---
   const sortedSpecialists = useMemo(() => {
@@ -194,6 +190,25 @@ const SearchContent = () => {
                 ))}
               </select>
             </div>
+
+            {selectedCategoryObj?.location?.length > 0 && (
+              <div>
+                <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                  Location
+                </h2>
+
+                <input
+                  type="text"
+                  placeholder="Type location..."
+                  className="w-full rounded-md border border-primary bg-white px-3 py-2 text-sm"
+                  value={selectedLocation}
+                  onChange={(e) => {
+                    setSelectedLocation(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+            )}
 
             {selectedCategoryObj && (
               <div>
@@ -298,13 +313,14 @@ const SearchContent = () => {
                     value={selectedCategory}
                     onChange={(e) => handleCategoryChange(e.target.value)}
                   >
-                    {serviceCategory.map((cat) => (
+                    {serviceCategory?.map((cat) => (
                       <option key={cat.value} value={cat.value}>
                         {cat.mainCategory}
                       </option>
                     ))}
                   </select>
                 </div>
+
                 {selectedCategoryObj && (
                   <div>
                     <h2 className="text-lg border-b mb-4 pb-1 font-semibold">

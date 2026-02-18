@@ -772,6 +772,7 @@ export const serviceCategory = [
     mainCategory: "House Manager / Nanny",
     value: "house-manager",
     subCategory: ["Live In", "Dayburg"],
+    location: ["mirpur", "badda",],
   },
   {
     mainCategory: "Nurse",
