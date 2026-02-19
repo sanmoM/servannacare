@@ -73,6 +73,7 @@ const HouseManager = () => {
       const DOCUMENTSUPLOADS = formData.documents;
 
       fd.append("name", BASICINFO.name);
+      fd.append("age", BASICINFO.age);
       fd.append("education", BASICINFO.education);
       fd.append("experience", BASICINFO.experience);
       fd.append("location", BASICINFO.location);

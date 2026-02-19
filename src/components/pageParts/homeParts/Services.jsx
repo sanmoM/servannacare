@@ -5,6 +5,7 @@ import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import EmployerBookingFormClient from "@/components/EmployerBookingFormClient";
 
 const Services = ({ homeData }) => {
 
@@ -26,6 +27,9 @@ const Services = ({ homeData }) => {
           <ServicesCard key={ser.id} services={ser} />
         ))}
       </div>
+
+<EmployerBookingFormClient />
+
     </Container>
   );
 };

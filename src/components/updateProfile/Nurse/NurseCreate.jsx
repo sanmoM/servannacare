@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+
 const NurseCreate = ({ data = {} }) => {
   const router = useRouter();
   const { user, loaded } = useLocalUser();

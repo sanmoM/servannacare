@@ -62,10 +62,15 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
       "experience",
       "location",
       "gender",
-      "canDrive",
       "bio",
     ];
 
+    if (data.canDrive === null) {
+      toast.error("Can Drive field is required!");
+      return;
+    }
+
+    // Then validate the other required fields
     for (let field of requiredFields) {
       if (!data[field]) {
         const formattedField = field

@@ -34,6 +34,7 @@ const HouseManagerCreate = ({ data = {} }) => {
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
+      age: data?.age || "",
       education: data.basicInfo?.education || "",
       experience: data.basicInfo?.experience || "",
       salaryRange: data.basicInfo?.salaryRange || "",
@@ -208,6 +209,7 @@ const HouseManagerCreate = ({ data = {} }) => {
     const fd = new FormData();
 
     fd.append("name", formData.basicInfo.name);
+    fd.append("age", formData.basicInfo.age);
     fd.append("education", formData.basicInfo.education);
     fd.append("experience", formData.basicInfo.experience);
     fd.append("salaryRange", formData.basicInfo.salaryRange);
@@ -312,6 +314,21 @@ const HouseManagerCreate = ({ data = {} }) => {
               placeholder="Enter your name"
               defaultValue={formData?.basicInfo?.name}
               onChange={handleChange}
+            />
+          </div>
+
+          <div className="flex-1">
+            <Input
+              type="number"
+              placeholder="Your age"
+              name="age"
+              label="Age"
+              maxLength={2}
+              value={formData.basicInfo?.age}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+                handleChange("basicInfo", "age", val);
+              }}
             />
           </div>
 

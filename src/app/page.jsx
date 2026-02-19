@@ -55,6 +55,7 @@ export default function Home() {
       <Services homeData={homeData} />
       <HowItWorks homeData={homeData} />
       <OurSpecialist />
+    
 
       {/* from our blog section  */}
       <div className="py-10  bg-[#ccb7c65b] md:py-16">
