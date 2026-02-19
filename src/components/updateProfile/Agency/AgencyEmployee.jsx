@@ -32,8 +32,6 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
   const router = useRouter();
   const [ready, setReady] = useState(!isUpdate);
 
-  console.log(initialData, "ajsdguvdf");
-
   const [formData, setFormData] = useState({
     name: "",
     educationLevel: "",
@@ -551,36 +549,40 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
           </RadioGroup>
         </div>
 
-        {/* Clander */}
-        <div>
-          <div className=" gap-2">
-            <Label
-              htmlFor="Schedule"
-              className="block mb-2 text-sm font-medium text-gray-700"
-            >
-              Schedule
-            </Label>
+        {/* Schedule - Only show in Update mode */}
+        {isUpdate && (
+          <div>
+            <div className="gap-2">
+              <Label
+                htmlFor="Schedule"
+                className="block mb-2 text-sm font-medium text-gray-700"
+              >
+                Schedule
+              </Label>
 
-            <SelectableCalendar
-              mode="multiple"
-              selectedDates={formData.date || []}
-              onChange={(dates) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  date: dates,
-                }))
-              }
-              disabled={(date) => {
-                if (!formData.date?.length) return false;
+              <SelectableCalendar
+                mode="multiple"
+                selectedDates={formData.date || []}
+                onChange={(dates) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    date: dates,
+                  }))
+                }
+                disabled={(date) => {
+                  if (!formData.date?.length) return false;
 
-                const firstSelected = new Date(formData.date[0]);
-                firstSelected.setHours(0, 0, 0, 0);
+                  const firstSelected = new Date(formData.date[0]);
+                  firstSelected.setHours(0, 0, 0, 0);
 
-                return date < firstSelected;
-              }}
-            />
+                  date.setHours(0, 0, 0, 0);
+
+                  return date < firstSelected;
+                }}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Documents Section */}
         <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl flex gap-2 items-center mb-4">
