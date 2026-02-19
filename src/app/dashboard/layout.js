@@ -30,7 +30,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -46,13 +45,23 @@ export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const isProfileCompleted = Boolean(user?.is_profile_completed);
-  const isProfileVerified = Boolean(user?.is_profile_verified);
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    error: profileError,
+  } = useFetch("/profile");
 
-  // const [notifications, setNotifications] = useState(null);
+  const {
+    data: notificationData,
+    isLoading: notificationLoading,
+    error: notificationError,
+  } = useFetch("/notifications");
 
-  const { data, isLoading, error } = useFetch("/notifications");
-  const notifications = data?.data?.data ?? [];
+  const notifications = notificationData?.data?.data ?? [];
+  const specialistDatas = profileData?.data?.houseManager ?? [];
+
+  const isProfileCompleted = Boolean(specialistDatas?.is_profile_completed);
+  const isProfileVerified = Boolean(specialistDatas?.is_profile_verified);
 
   const unreadCount = notifications.filter((n) => !n.read_at).length;
 
@@ -89,7 +98,7 @@ export default function DashboardLayout({ children }) {
       return;
     }
 
-    const role = user?.role;
+    const role = specialistDatas?.role;
     if (!role) return;
 
     const config = restrictedRoutes[role];
@@ -163,7 +172,17 @@ export default function DashboardLayout({ children }) {
       icon: Calendar,
     },
     { name: "Clients", href: "/dashboard/specialist-clients", icon: Users },
-    { name: "Subscriptions", href: "/dashboard/subscriptions", icon: Gem },
+
+    ...(specialistDatas?.type === "house-manager"
+      ? [
+          {
+            name: "Subscriptions",
+            href: "/dashboard/subscriptions",
+            icon: Gem,
+          },
+        ]
+      : []),
+
     { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
     { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
@@ -235,8 +254,9 @@ export default function DashboardLayout({ children }) {
     );
   };
 
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <div>Error loading data</div>;
+  if (profileLoading || notificationLoading) return <LoadingSpinner />;
+
+  if (profileError || notificationError) return <div>Error loading data</div>;
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
