@@ -6,7 +6,8 @@ const SelectableCalendar = ({
   mode = "multiple",
   selectedDates: externalSelectedDates,
   onChange,
-  disabled, // ✅ add this
+  disabled,
+  readOnly = false,
 }) => {
   const today = new Date();
   const [currentDate, setCurrentDate] = useState(today);
@@ -18,6 +19,10 @@ const SelectableCalendar = ({
     ? externalSelectedDates
     : internalSelectedDates;
 
+  // ✅ earliest selected date বের করবো
+  const earliestSelectedDate =
+    selectedDates.length > 0 ? new Date([...selectedDates].sort()[0]) : null;
+
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const year = currentDate.getFullYear();
@@ -26,8 +31,7 @@ const SelectableCalendar = ({
   const getDaysInMonth = (year, month) =>
     new Date(year, month + 1, 0).getDate();
 
-  const getFirstDayOfMonth = (year, month) =>
-    new Date(year, month, 1).getDay();
+  const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
@@ -37,10 +41,10 @@ const SelectableCalendar = ({
 
   const handleSelect = (day) => {
     if (!day) return;
+    if (readOnly) return;
 
     const dateObj = new Date(year, month, day);
 
-    // ✅ disable check
     if (disabled && disabled(dateObj)) return;
 
     const dateStr = formatDate(day);
@@ -64,11 +68,13 @@ const SelectableCalendar = ({
     onChange && onChange(updatedDates);
   };
 
-  const prevMonth = () =>
+  const prevMonth = () => {
     setCurrentDate(new Date(year, month - 1, 1));
+  };
 
-  const nextMonth = () =>
+  const nextMonth = () => {
     setCurrentDate(new Date(year, month + 1, 1));
+  };
 
   const monthName = currentDate.toLocaleString("default", {
     month: "long",
@@ -117,25 +123,45 @@ const SelectableCalendar = ({
           const isSelected = selectedDates.includes(dateStr);
 
           const dateObj = day ? new Date(year, month, day) : null;
-          const isDisabled =
-            day && disabled ? disabled(dateObj) : false;
+
+          let isDisabled = false;
+          let isBeforeSelected = false;
+
+          if (day) {
+            if (disabled && disabled(dateObj)) {
+              isDisabled = true;
+            }
+
+            // ✅ selected এর আগের সব date detect
+            if (earliestSelectedDate && dateObj < earliestSelectedDate) {
+              isBeforeSelected = true;
+            }
+          }
 
           return (
             <div
               key={i}
-              onClick={() => day && !isDisabled && handleSelect(day)}
+              onClick={() =>
+                day &&
+                !isDisabled &&
+                !isBeforeSelected &&
+                !readOnly &&
+                handleSelect(day)
+              }
               className={`
                 h-10 flex items-center justify-center rounded-xl
                 transition-all duration-200
                 ${!day && "cursor-default"}
                 ${
-                  isDisabled
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : isSelected
-                    ? "bg-primary text-white shadow-md scale-105 cursor-pointer"
-                    : day
-                    ? "hover:bg-primary/10 text-gray-700 cursor-pointer"
-                    : ""
+                  isBeforeSelected
+                    ? "bg-gray-300 text-gray-800 cursor-not-allowed opacity-60"
+                    : isDisabled
+                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      : isSelected
+                        ? "bg-primary text-white shadow-md scale-105"
+                        : day
+                          ? "hover:bg-primary/10 text-gray-700 cursor-pointer"
+                          : ""
                 }
               `}
             >
