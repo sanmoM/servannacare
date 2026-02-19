@@ -32,6 +32,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
   const router = useRouter();
   const [ready, setReady] = useState(!isUpdate);
 
+  console.log(initialData, "ajsdguvdf");
+
   const [formData, setFormData] = useState({
     name: "",
     educationLevel: "",
@@ -46,7 +48,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     cooking: "",
     housekeeping: "",
     childcare: "",
-    availability: [],
+    date: [],
     liveType: "",
     documents: {
       aidCertificate: null,
@@ -71,9 +73,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         housekeeping: initialData.housekeeping || "",
         childcare: initialData.childcare || "",
 
-        availability: (initialData.availability || []).map(
-          (d) => d.split("T")[0],
-        ),
+        date: initialData.schedule?.length ? initialData.schedule[0].date : [],
 
         isMother: initialData.isMother === 1,
         handlePets: initialData.handlePets === 1,
@@ -563,12 +563,21 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
 
             <SelectableCalendar
               mode="multiple"
+              selectedDates={formData.date || []}
               onChange={(dates) =>
                 setFormData((prev) => ({
                   ...prev,
-                  availability: dates,
+                  date: dates,
                 }))
               }
+              disabled={(date) => {
+                if (!formData.date?.length) return false;
+
+                const firstSelected = new Date(formData.date[0]);
+                firstSelected.setHours(0, 0, 0, 0);
+
+                return date < firstSelected;
+              }}
             />
           </div>
         </div>

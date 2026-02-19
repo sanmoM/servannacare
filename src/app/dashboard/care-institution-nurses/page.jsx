@@ -64,6 +64,8 @@ const InstitutionNursePage = () => {
     }
   };
 
+
+
   if (isLoading) return <LoadingSpinner />;
 
   const buildFileUrl = (path) => {

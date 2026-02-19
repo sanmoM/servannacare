@@ -46,6 +46,8 @@ const EmployeePage = () => {
     }
   }, [data]);
 
+  console.log(employees);
+
   const handleDelete = async (id) => {
     const loadingToast = toast.loading("Deleting employee...");
     try {
