@@ -34,7 +34,7 @@ const HouseManagerCreate = ({ data = {} }) => {
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
-      age: data.age || "",
+      age: data?.age || "",
       education: data.basicInfo?.education || "",
       experience: data.basicInfo?.experience || "",
       salaryRange: data.basicInfo?.salaryRange || "",
@@ -209,6 +209,7 @@ const HouseManagerCreate = ({ data = {} }) => {
     const fd = new FormData();
 
     fd.append("name", formData.basicInfo.name);
+    fd.append("age", formData.basicInfo.age);
     fd.append("education", formData.basicInfo.education);
     fd.append("experience", formData.basicInfo.experience);
     fd.append("salaryRange", formData.basicInfo.salaryRange);

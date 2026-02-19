@@ -188,7 +188,7 @@ export default function ProfilePage() {
             (specialistDatas?.data?.houseManager?.is_profile_completed ? (
               <HouseManager data={specialistDatas?.data?.houseManager} />
             ) : (
-              // todo
+        
               <HouseManagerCreate />
             ))}
 
@@ -196,7 +196,7 @@ export default function ProfilePage() {
             (specialistDatas?.data?.nurse?.is_profile_completed ? (
               <NurseUpdate data={specialistDatas?.data?.nurse} />
             ) : (
-              // todo
+           
               <NurseCreate />
             ))}
 
