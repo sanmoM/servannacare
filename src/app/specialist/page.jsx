@@ -45,6 +45,7 @@ const SearchContent = () => {
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedRating, setSelectedRating] = useState("");
   const [experienceRange, setExperienceRange] = useState({ min: "", max: "" });
+  const [ageRange, setAgeRange] = useState({ min: "", max: "" });
 
   const ITEMS_PER_PAGE = 6;
 
@@ -177,6 +178,7 @@ const SearchContent = () => {
     if (!rawData.length) return [];
 
     return rawData.filter((item) => {
+      // --- Category Filter ---
       const matchesCategory =
         !selectedCategory ||
         [item.subRole]
@@ -185,42 +187,45 @@ const SearchContent = () => {
             (role) => role.toLowerCase() === selectedCategory.toLowerCase(),
           );
 
+      // --- Location Filter ---
       const matchesLocation =
         !selectedLocation ||
         item.location?.toLowerCase().includes(selectedLocation.toLowerCase());
 
+      // --- Services Filter ---
       const matchesServices =
         selectedServices.length === 0 ||
         (Array.isArray(item.preferred) &&
           selectedServices.every((s) => item.preferred.includes(s)));
 
-      let matchesKidAge = true;
+      // --- Languages Filter ---
+      const matchesLanguages =
+        selectedLanguages.length === 0 ||
+        selectedLanguages.every((lang) =>
+          item.languages?.some((l) => l.toLowerCase() === lang.toLowerCase()),
+        );
+
+      // --- Rating Filter ---
+      const matchesRating =
+        !selectedRating ||
+        (item.rating && item.rating >= Number(selectedRating));
+
+      // --- Salary Filter (house-manager & others) ---
       let matchesSalary = true;
-      let matchesLanguages = true;
-      let matchesRating = true;
-      let matchesExperience = true;
-
       if (selectedCategory === "house-manager") {
-        const kidAges = item.house_manager?.ageOfKids || [];
-        matchesKidAge = !selectedKidAge || kidAges.includes(selectedKidAge);
-
         const salaryString = item.house_manager?.salaryRange || "";
         const { min, max } = parseSalaryRange(salaryString);
 
         matchesSalary =
           (!salaryRange.min || max >= Number(salaryRange.min)) &&
           (!salaryRange.max || min <= Number(salaryRange.max));
-
-        matchesLanguages =
-          selectedLanguages.length === 0 ||
-          selectedLanguages.every((lang) =>
-            item.languages?.some((l) => l.toLowerCase() === lang.toLowerCase()),
-          );
-
-        matchesRating =
-          !selectedRating ||
-          (item.rating && item.rating >= Number(selectedRating));
       } else {
+        matchesSalary = true; // Non-house-manager salary filter handled separately if needed
+      }
+
+      // --- Experience Filter (non-house-manager only) ---
+      let matchesExperience = true;
+      if (selectedCategory !== "house-manager") {
         const roleData = item[selectedCategory];
         const experience = roleData?.experience
           ? parseInt(roleData.experience)
@@ -229,23 +234,40 @@ const SearchContent = () => {
         matchesExperience =
           (!experienceRange.min || experience >= Number(experienceRange.min)) &&
           (!experienceRange.max || experience <= Number(experienceRange.max));
+      }
 
-        matchesLanguages =
-          selectedLanguages.length === 0 ||
-          selectedLanguages.every((lang) =>
-            item.languages?.some((l) => l.toLowerCase() === lang.toLowerCase()),
-          );
+      // --- Kid Age Filter (house-manager only) ---
+      let matchesKidAge = true;
+      if (selectedCategory === "house-manager") {
+        const kidAges = item.house_manager?.ageOfKids || [];
+        matchesKidAge = !selectedKidAge || kidAges.includes(selectedKidAge);
+      }
+
+      // --- Age Filter (both categories) ---
+      let matchesAge = true;
+      let specialistAge;
+      if (selectedCategory === "house-manager") {
+        specialistAge = item.age ?? 0; // house-manager age at root
+      } else {
+        specialistAge = item[selectedCategory]?.age ?? item.age ?? 0; // non-house-manager
+      }
+
+      if (specialistAge !== undefined && specialistAge !== null) {
+        matchesAge =
+          (!ageRange.min || specialistAge >= Number(ageRange.min)) &&
+          (!ageRange.max || specialistAge <= Number(ageRange.max));
       }
 
       return (
         matchesCategory &&
         matchesLocation &&
         matchesServices &&
-        matchesKidAge &&
-        matchesSalary &&
         matchesLanguages &&
         matchesRating &&
-        matchesExperience
+        matchesSalary &&
+        matchesExperience &&
+        matchesKidAge &&
+        matchesAge
       );
     });
   }, [
@@ -257,6 +279,8 @@ const SearchContent = () => {
     salaryRange,
     selectedLanguages,
     selectedRating,
+    experienceRange,
+    ageRange,
   ]);
 
   // --- Sorting Logic ---
@@ -367,6 +391,57 @@ const SearchContent = () => {
 
             {selectedCategory === "house-manager" && (
               <div className="space-y-8 animate-in fade-in duration-500">
+                {/* Age Range Slider */}
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-semibold text-slate-700 ml-1">
+                      Age Range
+                    </label>
+                  </div>
+
+                  <div className="px-2">
+                    <Slider.Root
+                      className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
+                      value={[ageRange.min || 18, ageRange.max || 60]}
+                      max={100} // max age
+                      step={1}
+                      onValueChange={([min, max]) => {
+                        setAgeRange({ min, max });
+                        updateQueryParams({
+                          minAge: min,
+                          maxAge: max,
+                          page: 1,
+                        });
+                      }}
+                    >
+                      <Slider.Track className="bg-slate-100 relative grow rounded-full h-[5px]">
+                        <Slider.Range className="absolute bg-primary rounded-full h-full" />
+                      </Slider.Track>
+                      <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                      <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                    </Slider.Root>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                        Min
+                      </p>
+                      <p className="text-sm font-semibold text-slate-700 ml-1">
+                        {ageRange.min || 18} yrs
+                      </p>
+                    </div>
+                    <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                      <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                        Max
+                      </p>
+                      <p className="text-sm font-semibold text-slate-700 ml-1">
+                        {ageRange.max || 60}+ yrs
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Location with Icon */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-slate-700 ml-1">
@@ -535,6 +610,56 @@ const SearchContent = () => {
             {selectedCategory !== "house-manager" &&
               showNonHouseManagerFilters.includes(selectedCategory) && (
                 <div className="space-y-8 animate-in fade-in duration-500">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-slate-700 ml-1">
+                        Age Range
+                      </label>
+                    </div>
+
+                    <div className="px-2">
+                      <Slider.Root
+                        className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
+                        value={[ageRange.min || 18, ageRange.max || 60]}
+                        max={100} // max age
+                        step={1}
+                        onValueChange={([min, max]) => {
+                          setAgeRange({ min, max });
+                          updateQueryParams({
+                            minAge: min,
+                            maxAge: max,
+                            page: 1,
+                          });
+                        }}
+                      >
+                        <Slider.Track className="bg-slate-100 relative grow rounded-full h-[5px]">
+                          <Slider.Range className="absolute bg-primary rounded-full h-full" />
+                        </Slider.Track>
+                        <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                        <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                      </Slider.Root>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                        <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                          Min
+                        </p>
+                        <p className="text-sm font-semibold text-slate-700 ml-1">
+                          {ageRange.min || 18} yrs
+                        </p>
+                      </div>
+                      <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                        <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                          Max
+                        </p>
+                        <p className="text-sm font-semibold text-slate-700 ml-1">
+                          {ageRange.max || 60}+ yrs
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Location with Icon */}
                   <div className="space-y-3">
                     <label className="text-sm font-semibold text-slate-700 ml-1">
@@ -592,12 +717,12 @@ const SearchContent = () => {
                           experienceRange.min || 0,
                           experienceRange.max || 10,
                         ]}
-                        max={20} // max experience 20 years
+                        max={20}
                         step={1}
                         onValueChange={([min, max]) => {
                           setExperienceRange({ min, max });
                           updateQueryParams({
-                            minSalary: min, // or rename to minExperience in query
+                            minSalary: min,
                             maxSalary: max,
                             page: 1,
                           });
