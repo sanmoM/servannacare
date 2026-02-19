@@ -22,6 +22,8 @@ import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
 import NurseAideUpdate from "@/components/updateProfile/NurseAide/NurseAide";
 import NurseAideCreate from "@/components/updateProfile/NurseAide/NurseAideCreate";
 import Physiotherapist from "@/components/updateProfile/Physiotherapist/Physiotherapist";
+import PhysiotherapistCreate from "@/components/updateProfile/Physiotherapist/PhysiotherapistCreate";
+import SpecialNeedCaregiversCreate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversCreate";
 import SpecialNeedCaregiversUpdate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversUpdate";
 import { useFetch } from "@/hooks/useFetch";
 import useLocalUser from "@/hooks/useLocalUser";
@@ -204,7 +206,7 @@ export default function ProfilePage() {
               <Physiotherapist data={specialistDatas?.data?.physiotherapist} />
             ) : (
               // todo
-              <Physiotherapist />
+              <PhysiotherapistCreate />
             ))}
 
           {specialistDatas?.data?.nurseAssistant?.subRole ===
@@ -224,7 +226,7 @@ export default function ProfilePage() {
               />
             ) : (
               // todo
-              <SpecialNeedCaregiversUpdate />
+              <SpecialNeedCaregiversCreate />
             ))}
         </div>
       </div>

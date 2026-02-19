@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-const Physiotherapist = ({ data = {} }) => {
+const PhysiotherapistCreate = ({ data = {} }) => {
   console.log("datas", data);
   const { user } = useLocalUser();
   const router = useRouter();
@@ -634,4 +634,4 @@ const Physiotherapist = ({ data = {} }) => {
   );
 };
 
-export default Physiotherapist;
+export default PhysiotherapistCreate;

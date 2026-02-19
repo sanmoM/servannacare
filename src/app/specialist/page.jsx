@@ -404,53 +404,11 @@ const SearchContent = () => {
                   </select>
                 </div>
 
-                {/* Salary Range - Modern Inputs */}
-                {/* <div className="space-y-3">
-                  <label className="text-sm font-semibold text-slate-700 ml-1">
-                    Salary Budget
-                  </label>
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="relative flex-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
-                        MIN
-                      </span>
-                      <input
-                        type="number"
-                        className="w-full border border-slate-200 pl-11 pr-3 py-2.5 text-sm rounded-xl focus:border-primary outline-none transition-all"
-                        value={salaryRange.min}
-                        onChange={(e) =>
-                          updateQueryParams({
-                            minSalary: e.target.value,
-                            page: 1,
-                          })
-                        }
-                      />
-                    </div>
-                    <div className="relative flex-1">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
-                        MAX
-                      </span>
-                      <input
-                        type="number"
-                        className="w-full border border-slate-200 pl-11 pr-3 py-2.5 text-sm rounded-xl focus:border-primary outline-none transition-all"
-                        value={salaryRange.max}
-                        onChange={(e) =>
-                          updateQueryParams({
-                            maxSalary: e.target.value,
-                            page: 1,
-                          })
-                        }
-                      />
-                    </div>
-                  </div>
-                </div> */}
-
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-semibold text-slate-700 ml-1">
                       Salary Range
                     </label>
-                 
                   </div>
 
                   <div className="px-2">
