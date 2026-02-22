@@ -352,7 +352,7 @@ const NurseAideUpdate = ({ data = {} }) => {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:gap-6 sm:gap-4">
+        <div className="flex flex-col sm:flex-row sm:gap-4">
           <div className="flex-1">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Primary Number: (You can't change it.)

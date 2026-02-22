@@ -19,8 +19,19 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
+
+
 const NurseUpdate = ({ data = {} }) => {
-  console.log("datas", data);
+
+  console.log("data", data.number);
+
+   const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -29,6 +40,7 @@ const NurseUpdate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      phone: data?.number || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
     },
@@ -75,6 +87,8 @@ const NurseUpdate = ({ data = {} }) => {
       referenceLetter: data.referenceLetter || null,
     },
   });
+
+  console.log(formData.basicInfo?.phone)
 
   const preferred = [
     {
@@ -199,9 +213,21 @@ const NurseUpdate = ({ data = {} }) => {
     const SKILLSERVICES = formData.skillsServices;
     const DOCUMENTS = formData.documents;
 
+        if (!BASICINFO?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(BASICINFO?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
+
     fd.append("name", BASICINFO.name);
     fd.append("location", BASICINFO.location);
     fd.append("age", BASICINFO.age);
+    fd.append("phone", BASICINFO.phone);
     fd.append("experience", BASICINFO.experience);
     fd.append("gender", BASICINFO.gender);
     fd.append("preferredRole", BASICINFO.preferredRole);
@@ -399,6 +425,67 @@ const NurseUpdate = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:gap-6 sm:gap-4">
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Primary Number: (You can't change it.)
+            </label>
+            <Input
+              name="phone"
+              type="tel"
+              placeholder="+254xxxxxxx"
+              value={formData?.basicInfo?.phone || "+254"}
+              maxLength={11}
+              // onFocus={() => {
+              //   if (!formData.basicInfo.phone) {
+              //     setFormData((prev) => ({
+              //       ...prev,
+              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
+              //     }));
+              //   }
+              // }}
+              // onChange={handlePhoneChange}
+            />
+          </div>
+          <div className="flex-1">
+            <div>
+              <Label>Phone Number</Label>
+
+              <div className="w-full mt-2">
+                <PhoneInputWithCountrySelect
+                  className="w-full border rounded-md px-3 py-2"
+                  international
+                  defaultCountry={country}
+                  value={data?.phone}
+                  onChange={(value) => {
+                    setData((prev) => ({ ...prev, phone: value || "" }));
+                  }}
+                  onCountryChange={(countryCode) => {
+                    setCountry(countryCode);
+                    const exampleNumber = countryCode
+                      ? getExampleNumber(countryCode)
+                      : null;
+                    if (exampleNumber) {
+                      setData((prev) => ({
+                        ...prev,
+                        phone: `+${exampleNumber.countryCallingCode}`,
+                      }));
+                    } else {
+                      setData((prev) => ({ ...prev, phone: "" }));
+                    }
+                  }}
+                />
+              </div>
+
+              {data?.phone && !isValidPhoneNumber(data?.phone) && (
+                <p className="text-red-500 text-sm mt-1">
+                  Invalid phone number for selected country
+                </p>
+              )}
+            </div>
           </div>
         </div>
 

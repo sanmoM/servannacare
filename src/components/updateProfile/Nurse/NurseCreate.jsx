@@ -19,7 +19,13 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const NurseCreate = ({ data = {} }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user, loaded } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -28,6 +34,7 @@ const NurseCreate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      phone: data?.phone || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
     },
@@ -187,18 +194,6 @@ const NurseCreate = ({ data = {} }) => {
     }));
   };
 
-  const togglepreferred = (pref) => {
-    setFormData((prev) => {
-      const alreadySelected = prev.preferred.includes(pref);
-      return {
-        ...prev,
-        preferred: alreadySelected
-          ? prev.preferred.filter((l) => l !== pref)
-          : [...prev.preferred, pref],
-      };
-    });
-  };
-
   const toggleArrayItem = (section, field, value) => {
     setFormData((prev) => {
       const arr = prev[section][field] || [];
@@ -219,6 +214,16 @@ const NurseCreate = ({ data = {} }) => {
 
     const { basicInfo, education, experience, skillsServices, documents } =
       formData;
+
+    if (!basicInfo?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(basicInfo?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
 
     // ================= BASIC INFO =================
     if (!basicInfo.name?.trim()) return toast.error("Full name is required");
@@ -344,12 +349,13 @@ const NurseCreate = ({ data = {} }) => {
     fd.append("age", BASICINFO.age);
     fd.append("experience", BASICINFO.experience);
     fd.append("gender", BASICINFO.gender);
+    fd.append("phone", BASICINFO.phone);
     BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
     fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
 
     fd.append("education", EDUCATION.education);
     fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
-    fd.append("registrationNumber", EDUCATION.registrationNumber);
+    fd.append("registrationNumber", EXPERIENCE.registrationNumber);
 
     fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
     fd.append(
@@ -396,8 +402,8 @@ const NurseCreate = ({ data = {} }) => {
     if (EDUCATION?.educationCertificate) {
       fd.append("educationCertificate", EDUCATION.educationCertificate);
     }
-    if (EDUCATION?.practiceLicense) {
-      fd.append("practiceLicense", EDUCATION.practiceLicense);
+    if (EXPERIENCE?.practiceLicense) {
+      fd.append("practiceLicense", EXPERIENCE.practiceLicense);
     }
     console.log("form data", formData);
     try {
@@ -470,8 +476,8 @@ const NurseCreate = ({ data = {} }) => {
         </div>
 
         {/* Age */}
-        <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
-          <div className="flex-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-4 gap-6 ">
+          <div className="flex">
             <Input
               type="number"
               label="Age"
@@ -485,37 +491,62 @@ const NurseCreate = ({ data = {} }) => {
             />
           </div>
 
-          <div className="flex-1 mt-2">
-            <Label className="mb-3 block">Gender</Label>
-            <RadioGroup
-              className="flex gap-4 mt-2"
-              value={formData.basicInfo?.gender}
-              onValueChange={(value) =>
-                handleChange("basicInfo", "gender", value)
-              }
-            >
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="Male" id="r1" />
-                <Label
-                  htmlFor="r1"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  Male
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="Female" id="r2" />
-                <Label
-                  htmlFor="r2"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  Female
-                </Label>
-              </div>
-            </RadioGroup>
+          <div>
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData.basicInfo.phone}
+                onChange={(value) =>
+                  handleChange("basicInfo", "phone", value || "")
+                }
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                }}
+              />
+            </div>
+
+            {formData.basicInfo.phone &&
+              !isValidPhoneNumber(formData.basicInfo.phone) && (
+                <p className="text-red-500 text-sm mt-1">
+                  Invalid phone number for selected country
+                </p>
+              )}
           </div>
         </div>
 
+        <div className="flex-1 mt-2">
+          <Label className="mb-3 block">Gender</Label>
+          <RadioGroup
+            className="flex gap-4 mt-2"
+            value={formData.basicInfo?.gender}
+            onValueChange={(value) =>
+              handleChange("basicInfo", "gender", value)
+            }
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="Male" id="r1" />
+              <Label
+                htmlFor="r1"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                Male
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="Female" id="r2" />
+              <Label
+                htmlFor="r2"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                Female
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
         {/* Languages */}
         <div>
           <Label className="font-medium mb-3 text-gray-700">Languages</Label>
@@ -752,11 +783,11 @@ const NurseCreate = ({ data = {} }) => {
               formData.experience?.homeBasedCare == null
                 ? ""
                 : formData.experience.homeBasedCare
-                  ? "Yes"
-                  : "No"
+                  ? "true"
+                  : "false"
             }
             onValueChange={(value) =>
-              handleChange("experience", "homeBasedCare", value === "Yes")
+              handleChange("experience", "homeBasedCare", value === "true")
             }
           >
             <div className="flex items-center gap-2">
