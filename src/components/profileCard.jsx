@@ -24,27 +24,37 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
+  console.log("profile", profile.type);
   const router = useRouter();
   const { user, loaded } = useLocalUser();
 
   const handleBookNow = () => {
     if (!loaded) return;
 
-    const bookingUrl = `/bookingForm?category=${profile.subRole?.toLowerCase() ?? "unknown"}&id=${profile.id}`;
+    const category = profile.subRole
+      ? profile.subRole.toLowerCase().replace(/\s+/g, "-")
+      : "unknown";
+
+    const isHouseFlow =
+      profile.type === "house-manager" || profile.type === "agency-employee";
+
+    const basePath = isHouseFlow ? "/houseManagerBookingForm" : "/bookingForm";
+
+    const bookingUrl = `${basePath}?category=${category}&id=${profile.id}`;
 
     if (!user) {
       router.push(
         `/register?role=user&redirect=${encodeURIComponent(bookingUrl)}`,
       );
-
       return;
     }
 
-    if (user?.role != "user") {
-      toast.error(`${user?.subRole} can't make Booking`);
-      router.push(`/dashboard/${user?.role}-profile`);
+    if (user.role !== "user") {
+      toast.error(`${user.subRole} can't make booking`);
+      router.push(`/dashboard/${user.role}-profile`);
       return;
     }
+
     router.push(bookingUrl);
   };
   return (
@@ -111,7 +121,6 @@ const ProfileCard = ({ profile }) => {
 
         <div className="flex gap-4 mt-5 pt-5 border-t border-gray-100">
           <div className="flex-1">
-      
             <Link
               href={`/profile?category=${profile.subRole?.toLowerCase()}&id=${
                 profile.id

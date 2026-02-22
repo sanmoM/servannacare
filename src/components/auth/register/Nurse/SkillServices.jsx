@@ -158,7 +158,6 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
             handleChange({ target: { name: "serviceFeeDay", value: val } });
           }}
         />
-
         <Input
           label="Service Fee (Per Month - KSh)"
           type="number"

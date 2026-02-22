@@ -6,7 +6,20 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { BookAlert, BookImage, CircleQuestionMark, HandHeart, Headset, HeartPulse, Home, Info, LayoutList, Menu, Users, X } from "lucide-react";
+import {
+  BookAlert,
+  BookImage,
+  CircleQuestionMark,
+  HandHeart,
+  Headset,
+  HeartPulse,
+  Home,
+  Info,
+  LayoutList,
+  Menu,
+  Users,
+  X,
+} from "lucide-react";
 import TopBar from "./TopBar";
 import {
   Dialog,
@@ -29,17 +42,15 @@ const Navbar = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { user, loaded } = useLocalUser();
 
-
-
   const navlinks = [
-    { text: "Home", link: "/", icon:Home },
-    { text: "Our Services", link: "/services",icon:HandHeart  },
-    { text: "Specialist", link: "/specialist",icon:Users  },
+    { text: "Home", link: "/", icon: Home },
+    { text: "Our Services", link: "/services", icon: HandHeart },
+    { text: "Specialist", link: "/specialist", icon: Users },
     // { text: "Blog", link: "/blog",icon:LayoutList  },
-    { text: "About Us", link: "/about-us",icon:BookAlert  },
+    { text: "About Us", link: "/about-us", icon: BookAlert },
     // { text: "FAQ", link: "/faq",icon:CircleQuestionMark  },
-    { text: "Event", link: "/event",icon:BookImage  },
-    { text: "Contact Us", link: "/contact-us",icon:Headset  },
+    { text: "Event", link: "/event", icon: BookImage },
+    { text: "Contact Us", link: "/contact-us", icon: Headset },
   ];
 
   const handleCloseSidebar = () => setSidebarOpen(false);
@@ -61,28 +72,27 @@ const Navbar = () => {
               />
             </Link>
           </div>
-
-          <div className="flex gap-3">
-            {/* Mobile Menu Icon */}
-          <div className="md:hidden flex items-center">
-            <Menu
-              className="cursor-pointer w-7 h-7 text-gray-800"
-              onClick={() => setSidebarOpen(true)}
-            />
-          </div>
-
-          {/* Mobile Logo */}
-          <div className="inline-block md:hidden">
-            <Link href="/">
-              <Image
-                src="/logo1.png"
-                alt="logo"
-                quality={100}
-                width={60}
-                height={60}
+          <div className="md:hidden grid grid-cols-3 items-center w-full">
+            <div className="flex justify-start">
+              <Menu
+                className="cursor-pointer w-7 h-7 text-gray-800"
+                onClick={() => setSidebarOpen(true)}
               />
-            </Link>
-          </div>
+            </div>
+
+            <div className="flex justify-center">
+              <Link href="/">
+                <Image
+                  src="/logo1.png"
+                  alt="logo"
+                  quality={100}
+                  width={60}
+                  height={60}
+                />
+              </Link>
+            </div>
+
+            <div></div>
           </div>
 
           {/* Desktop Nav Links */}
@@ -109,8 +119,6 @@ const Navbar = () => {
               })}
             </ul>
           </div>
-
-          
 
           {/* CTA Button */}
           <div className="flex gap-2">
@@ -221,7 +229,7 @@ const Navbar = () => {
                 const isActive =
                   pathname === link.link ||
                   (link.link !== "/" && pathname.startsWith(link.link));
-                  const Icon = link.icon
+                const Icon = link.icon;
 
                 return (
                   <li className="" key={indx}>

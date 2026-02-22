@@ -403,7 +403,6 @@ const BookingHistoryPage = () => {
                   toast.error("Please write a review message.");
                   return;
                 }
-
                 try {
                   setIsSubmittingReview(true);
                   const payload = {
@@ -416,11 +415,7 @@ const BookingHistoryPage = () => {
 
                   await postApi("/review", payload);
 
-                  // Update local state to disable button immediately
                   setJustReviewed((prev) => [...prev, selectedBooking.id]);
-
-                  // Refresh server data to sync 'review_count'
-                  mutate();
 
                   toast.success("Review submitted successfully!");
                   setIsReviewOpen(false);
@@ -428,6 +423,7 @@ const BookingHistoryPage = () => {
                   setReviewMessage("");
                   setSelectedBooking(null);
                 } catch (err) {
+                  console.error(err);
                   toast.error("Failed to submit review.");
                 } finally {
                   setIsSubmittingReview(false);

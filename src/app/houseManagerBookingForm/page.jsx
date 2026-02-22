@@ -277,7 +277,7 @@ export default function EmployerBookingFormClient() {
                           <button
                             type="button"
                             onClick={(e) => {
-                              e.stopPropagation(); // 🔥 না দিলে month select হয়ে যাবে
+                              e.stopPropagation();
                               setPreviewMonth(monthKey);
                             }}
                             className="absolute -top-2 -right-2 bg-black text-white rounded-full p-2 text-xs shadow-md"

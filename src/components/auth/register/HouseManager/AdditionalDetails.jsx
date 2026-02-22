@@ -1,3 +1,4 @@
+import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -11,6 +12,8 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
     ageOfKids: defaultValues.ageOfKids || [],
     isHandelingPet: defaultValues.isHandelingPet || null,
     preferredRole: defaultValues.preferredRole || "",
+    serviceFeeMonth: defaultValues.serviceFeeMonth || "",
+    serviceFeeDay: defaultValues.serviceFeeDay || "",
   });
 
   const toggleageOfKids = (kid) => {
@@ -23,6 +26,11 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
           : [...prev.ageOfKids, kid],
       };
     });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
@@ -164,6 +172,39 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
               </Label>
             </div>
           </RadioGroup>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        {/* Section Label */}
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">
+          Service Fee (KSh)
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Per Day"
+            type="number"
+            name="serviceFeeDay"
+            placeholder="e.g., 1500"
+            value={data.serviceFeeDay}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+              handleChange({ target: { name: "serviceFeeDay", value: val } });
+            }}
+          />
+
+          <Input
+            label="Per Month"
+            type="number"
+            name="serviceFeeMonth"
+            placeholder="e.g., 35000"
+            value={data.serviceFeeMonth}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+              handleChange({ target: { name: "serviceFeeMonth", value: val } });
+            }}
+          />
         </div>
       </div>
 

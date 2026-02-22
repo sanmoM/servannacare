@@ -87,6 +87,9 @@ const HouseManager = () => {
       );
       fd.append("isHandelingPet", ADDITIONALDETAILS.isHandelingPet ? 1 : 0);
       fd.append("preferredRole", ADDITIONALDETAILS.preferredRole);
+      fd.append("serviceFeeMonth", ADDITIONALDETAILS.serviceFeeMonth);
+      fd.append("serviceFeeDay", ADDITIONALDETAILS.serviceFeeDay);
+      
       if (DOCUMENTSUPLOADS?.iDCopy) {
         fd.append("idCopy", DOCUMENTSUPLOADS.iDCopy);
       }
@@ -116,7 +119,7 @@ const HouseManager = () => {
         if (res?.status === 200) {
           // console.log("res", res);
           toast.success("Registered Successfully!");
-          router.push(`/dashboard/${user?.role}-profile`);
+          // router.push(`/dashboard/${user?.role}-profile`);
           //todo
           // localStorage.setItem("token", user?.token);
           //todo this localStorage

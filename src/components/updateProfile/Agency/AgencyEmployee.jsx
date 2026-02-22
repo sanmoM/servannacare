@@ -29,7 +29,6 @@ import { useRouter } from "next/navigation";
 import SelectableCalendar from "@/components/SelectableCalendar";
 
 const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
-  const router = useRouter();
   const [ready, setReady] = useState(!isUpdate);
 
   const [formData, setFormData] = useState({
@@ -48,6 +47,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     childcare: "",
     date: [],
     liveType: "",
+    serviceFeeDay: "",
+    serviceFeeMonth: "",
     documents: {
       aidCertificate: null,
       goodConductCertificate: null,
@@ -78,6 +79,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
 
         kidAges: initialData.kidAges || [],
         languages: initialData.languages || [],
+        serviceFeeDay: initialData.serviceFeeDay || "",
+        serviceFeeMonth: initialData.serviceFeeMonth || "",
 
         documents: {
           aidCertificate:
@@ -123,13 +126,6 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         : [...prev[key], value],
     }));
   };
-
-  // const normalizeValue = (key, value) => {
-  //   if (key === "isMother" || key === "handlePets") {
-  //     return value === "Yes";
-  //   }
-  //   return value;
-  // };
 
   const handleFileSelect = (section, field, file) => {
     setFormData((prev) => ({
@@ -549,7 +545,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
           </RadioGroup>
         </div>
 
-        {/* Schedule - Only show in Update mode */}
+        
+
         {isUpdate && (
           <div>
             <div className="gap-2">

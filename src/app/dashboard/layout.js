@@ -45,11 +45,11 @@ export default function DashboardLayout({ children }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
-  const {
-    data: profileData,
-    isLoading: profileLoading,
-    error: profileError,
-  } = useFetch("/profile");
+  // const {
+  //   data: profileData,
+  //   isLoading: profileLoading,
+  //   error: profileError,
+  // } = useFetch("/profile");
 
   const {
     data: notificationData,
@@ -58,10 +58,10 @@ export default function DashboardLayout({ children }) {
   } = useFetch("/notifications");
 
   const notifications = notificationData?.data?.data ?? [];
-  const specialistDatas = profileData?.data?.houseManager ?? [];
+  // const specialistDatas = profileData?.data?.houseManager ?? [];
 
-  const isProfileCompleted = Boolean(specialistDatas?.is_profile_completed);
-  const isProfileVerified = Boolean(specialistDatas?.is_profile_verified);
+  const isProfileCompleted = Boolean(user?.is_profile_completed);
+  const isProfileVerified = Boolean(user?.is_profile_verified);
 
   const unreadCount = notifications.filter((n) => !n.read_at).length;
 
@@ -98,7 +98,7 @@ export default function DashboardLayout({ children }) {
       return;
     }
 
-    const role = specialistDatas?.role;
+    const role = user?.role;
     if (!role) return;
 
     const config = restrictedRoutes[role];
@@ -173,7 +173,7 @@ export default function DashboardLayout({ children }) {
     },
     { name: "Clients", href: "/dashboard/specialist-clients", icon: Users },
 
-    ...(specialistDatas?.type === "house-manager"
+    ...(user?.subRole === "house-manager"
       ? [
           {
             name: "Subscriptions",
@@ -195,8 +195,12 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/agency-employee",
       icon: BriefcaseBusiness,
     },
-    // { name: "Schedule", href: "/dashboard/agency-schedule", icon: Calendar },
-    { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
+           {
+            name: "Subscriptions",
+            href: "/dashboard/agency-subscriptions",
+            icon: Gem,
+          },
+    // { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
     { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
     // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
@@ -209,16 +213,16 @@ export default function DashboardLayout({ children }) {
       icon: User,
     },
     { name: "Nurses", href: "/dashboard/care-institution-nurses", icon: Cross },
-    {
-      name: "Schedule",
-      href: "/dashboard/care-institution-schedule",
-      icon: Calendar,
-    },
-    {
-      name: "Clients",
-      href: "/dashboard/care-institution-clients",
-      icon: Users2,
-    },
+    // {
+    //   name: "Schedule",
+    //   href: "/dashboard/care-institution-schedule",
+    //   icon: Calendar,
+    // },
+    // {
+    //   name: "Clients",
+    //   href: "/dashboard/care-institution-clients",
+    //   icon: Users2,
+    // },
     { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
     // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
@@ -254,9 +258,12 @@ export default function DashboardLayout({ children }) {
     );
   };
 
-  if (profileLoading || notificationLoading) return <LoadingSpinner />;
+  if (notificationLoading) return <LoadingSpinner />;
 
-  if (profileError || notificationError) return <div>Error loading data</div>;
+  if (notificationError) return <div>Error loading data</div>;
+  // if (profileLoading || notificationLoading) return <LoadingSpinner />;
+
+  // if (profileError || notificationError) return <div>Error loading data</div>;
 
   return (
     <div className="flex h-screen w-full overflow-hidden">

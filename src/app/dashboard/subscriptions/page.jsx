@@ -1,4 +1,5 @@
 "use client";
+import { useFetch } from "@/hooks/useFetch";
 import React, { useState, useEffect } from "react";
 
 const page = () => {
@@ -6,9 +7,23 @@ const page = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [expiryDate, setExpiryDate] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [pricePerMonth, setPricePerMonth] = useState(0);
 
-  const PRICE_PER_MONTH = 500;
-  const TOTAL_PRICE = months * PRICE_PER_MONTH;
+  const { data, isLoading } = useFetch("/subscription-plan");
+
+  useEffect(() => {
+    if (data?.status === 200 && data?.data?.data.length > 0) {
+      const individualPlan = data?.data?.data?.find(
+        (item) => item.name === "Individual Listing",
+      );
+
+      if (individualPlan) {
+        setPricePerMonth(parseFloat(individualPlan.price));
+      }
+    }
+  }, [data]);
+
+  const TOTAL_PRICE = months * pricePerMonth;
 
   useEffect(() => {
     const savedExpiry = localStorage.getItem("specialist_expiry");
@@ -96,18 +111,17 @@ const page = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between text-slate-600 font-medium">
                     <span>Base Subscription</span>
-                    <span>{PRICE_PER_MONTH}.00</span>
+                    <span>{pricePerMonth.toFixed(2)}</span>
                   </div>
-               
+
                   <div className="pt-6 border-t border-slate-200 flex justify-between items-center">
                     <span className="text-xl font-bold text-slate-900">
                       Total Amount
                     </span>
                     <div className="text-right">
                       <p className="text-3xl font-black text-primary leading-none tracking-tighter">
-                        {TOTAL_PRICE}.00
+                        {TOTAL_PRICE.toFixed(2)}
                       </p>
-                   
                     </div>
                   </div>
                 </div>

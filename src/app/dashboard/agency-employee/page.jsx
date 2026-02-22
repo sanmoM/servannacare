@@ -43,14 +43,11 @@ const EmployeePage = () => {
 
   const [scheduleViewId, setScheduleViewId] = useState(null);
 
-
   useEffect(() => {
     if (data) {
       setEmployees(data?.data?.agencyEmployees || data?.agencyEmployees || []);
     }
   }, [data]);
-
-  console.log(employees);
 
   const handleDelete = async (id) => {
     const loadingToast = toast.loading("Deleting employee...");
@@ -188,148 +185,191 @@ const EmployeePage = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-1">
                         {/* VIEW DIALOG */}
-<Dialog>
-  <DialogTrigger asChild>
-    <Button
-      variant="ghost"
-      size="icon"
-      className="text-blue-600 hover:bg-blue-50"
-    >
-      <Eye size={18} />
-    </Button>
-  </DialogTrigger>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-blue-600 hover:bg-blue-50"
+                            >
+                              <Eye size={18} />
+                            </Button>
+                          </DialogTrigger>
 
-  <DialogContent className="sm:max-w-3xl">
-    <DialogHeader>
-      <DialogTitle className="flex items-center gap-2">
-        <span className="text-primary">Full Profile:</span> {emp.name}
-      </DialogTitle>
-    </DialogHeader>
+                          <DialogContent className="sm:max-w-3xl">
+                            <DialogHeader>
+                              <DialogTitle className="flex items-center gap-2">
+                                <span className="text-primary">
+                                  Full Profile:
+                                </span>{" "}
+                                {emp.name}
+                              </DialogTitle>
+                            </DialogHeader>
 
-    {/* PROFILE GRID */}
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-      <InfoTile
-        label="Education"
-        value={emp.educationLevel}
-        icon={<GraduationCap className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Languages"
-        value={emp.languages?.join(", ")}
-        icon={<Languages className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Cooking Skill"
-        value={emp.cooking}
-        icon={<Heart className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Housekeeping"
-        value={emp.housekeeping}
-        icon={<ShieldCheck className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Motherhood"
-        value={emp.isMother ? "Yes" : "No"}
-        icon={<Baby className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Childcare"
-        value={emp.childcare}
-        icon={<Heart className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Kids Ages Handled"
-        value={emp.kidAges?.join(", ")}
-        icon={<Baby className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Pets"
-        value={emp.handlePets ? "Comfortable" : "No"}
-        icon={<ShieldCheck className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Created At"
-        value={new Date(emp.created_at).toLocaleDateString()}
-        icon={<Calendar className="text-primary" size={16} />}
-      />
-    </div>
+                            {/* PROFILE GRID */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                              <InfoTile
+                                label="Education"
+                                value={emp.educationLevel}
+                                icon={
+                                  <GraduationCap
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                              <InfoTile
+                                label="Languages"
+                                value={emp.languages?.join(", ")}
+                                icon={
+                                  <Languages
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                              <InfoTile
+                                label="Cooking Skill"
+                                value={emp.cooking}
+                                icon={
+                                  <Heart className="text-primary" size={16} />
+                                }
+                              />
+                              <InfoTile
+                                label="Housekeeping"
+                                value={emp.housekeeping}
+                                icon={
+                                  <ShieldCheck
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                              <InfoTile
+                                label="Motherhood"
+                                value={emp.isMother ? "Yes" : "No"}
+                                icon={
+                                  <Baby className="text-primary" size={16} />
+                                }
+                              />
+                              <InfoTile
+                                label="Childcare"
+                                value={emp.childcare}
+                                icon={
+                                  <Heart className="text-primary" size={16} />
+                                }
+                              />
+                              <InfoTile
+                                label="Kids Ages Handled"
+                                value={emp.kidAges?.join(", ")}
+                                icon={
+                                  <Baby className="text-primary" size={16} />
+                                }
+                              />
+                              <InfoTile
+                                label="Pets"
+                                value={emp.handlePets ? "Comfortable" : "No"}
+                                icon={
+                                  <ShieldCheck
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                              <InfoTile
+                                label="Created At"
+                                value={new Date(
+                                  emp.created_at,
+                                ).toLocaleDateString()}
+                                icon={
+                                  <Calendar
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                            </div>
 
-{/* SCHEDULE SECTION */}
-{emp.schedule?.length > 0 && emp.schedule[0]?.date?.length > 0 && (
-  <div className="mt-6">
-    <div className="flex items-center justify-between">
-      <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-        <Calendar className="text-primary" size={16} />
-        Schedule
-      </h4>
+                            {/* SCHEDULE SECTION */}
+                            {emp.schedule?.length > 0 &&
+                              emp.schedule[0]?.date?.length > 0 && (
+                                <div className="mt-6">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                      <Calendar
+                                        className="text-primary"
+                                        size={16}
+                                      />
+                                      Schedule
+                                    </h4>
 
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => setScheduleViewId(emp.id)}
-      >
-        View
-      </Button>
-    </div>
-  </div>
-)}
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setScheduleViewId(emp.id)}
+                                    >
+                                      View
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
 
+                            {/* DOCUMENT SECTION */}
+                            <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
+                              {emp.idCopy && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() => openFile(emp.idCopy)}
+                                >
+                                  View ID Copy
+                                </Button>
+                              )}
 
-    {/* DOCUMENT SECTION */}
-    <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
-      {emp.idCopy && (
-        <Button
-          variant="outline"
-          className="text-xs h-8"
-          onClick={() => openFile(emp.idCopy)}
-        >
-          View ID Copy
-        </Button>
-      )}
+                              {emp.aidCertificate && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() => openFile(emp.aidCertificate)}
+                                >
+                                  Aid Certificate
+                                </Button>
+                              )}
 
-      {emp.aidCertificate && (
-        <Button
-          variant="outline"
-          className="text-xs h-8"
-          onClick={() => openFile(emp.aidCertificate)}
-        >
-          Aid Certificate
-        </Button>
-      )}
+                              {emp.goodConductCertificate && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() =>
+                                    openFile(emp.goodConductCertificate)
+                                  }
+                                >
+                                  Good Conduct Certificate
+                                </Button>
+                              )}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
 
-      {emp.goodConductCertificate && (
-        <Button
-          variant="outline"
-          className="text-xs h-8"
-          onClick={() => openFile(emp.goodConductCertificate)}
-        >
-          Good Conduct Certificate
-        </Button>
-      )}
-    </div>
-  </DialogContent>
-</Dialog>
+                        {/* SCHEDULE CALENDAR MODAL */}
+                        <Dialog
+                          open={scheduleViewId === emp.id}
+                          onOpenChange={(open) =>
+                            !open && setScheduleViewId(null)
+                          }
+                        >
+                          <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>Selected Schedule</DialogTitle>
+                            </DialogHeader>
 
-{/* SCHEDULE CALENDAR MODAL */}
-<Dialog
-  open={scheduleViewId === emp.id}
-  onOpenChange={(open) => !open && setScheduleViewId(null)}
->
-  <DialogContent className="sm:max-w-md">
-    <DialogHeader>
-      <DialogTitle>Selected Schedule</DialogTitle>
-    </DialogHeader>
-
-    <SelectableCalendar
-      mode="multiple"
-      selectedDates={emp.schedule?.[0]?.date || []}
-      onChange={() => {}}   // disable change
-    />
-  </DialogContent>
-</Dialog>
-
-
+                            <SelectableCalendar
+                              mode="multiple"
+                              selectedDates={emp.schedule?.[0]?.date || []}
+                              onChange={() => {}} // disable change
+                            />
+                          </DialogContent>
+                        </Dialog>
 
                         {/* UPDATE DIALOG */}
                         <Dialog

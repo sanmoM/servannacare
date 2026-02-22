@@ -41,7 +41,6 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  console.log(specialistDatas);
 
   const { user, loaded } = useLocalUser();
 

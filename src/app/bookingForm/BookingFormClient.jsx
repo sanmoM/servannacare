@@ -59,7 +59,7 @@ export default function BookingFormClient() {
     [specialists, id],
   );
 
-  // console.log("mathdfd", matchedSpecialist?.type);
+  console.log("mathdfd", matchedSpecialist);
 
   const availableDates =
     matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];

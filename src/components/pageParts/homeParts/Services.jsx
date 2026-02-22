@@ -5,10 +5,8 @@ import Container from "@/components/shared/Container";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import EmployerBookingFormClient from "@/components/EmployerBookingFormClient";
 
 const Services = ({ homeData }) => {
-
   return (
     <Container className={" py-10 md:py-16"}>
       <div className="mb-8 flex justify-between items-center md:mb-12">
@@ -27,9 +25,6 @@ const Services = ({ homeData }) => {
           <ServicesCard key={ser.id} services={ser} />
         ))}
       </div>
-
-<EmployerBookingFormClient />
-
     </Container>
   );
 };

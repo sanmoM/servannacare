@@ -98,8 +98,6 @@ const UserForm = () => {
         otp,
       });
       const { token, role, is_profile_completed } = res?.data?.data;
-      // document.cookie = `token=${token}; path=/`;
-      // document.cookie = `role=${role}; path=/`;
 
       localStorage.setItem("token", token);
       localStorage.setItem(
