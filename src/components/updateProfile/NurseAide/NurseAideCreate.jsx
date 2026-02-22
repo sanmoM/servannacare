@@ -180,7 +180,6 @@ const NurseAideCreate = ({ data = {} }) => {
 
       fd.append("canDrive", BASIC.canDrive ? 1 : 0);
 
-      // ================= EDUCATION =================
       fd.append("education", EDU.education || "");
 
       if (EDU.educationCertificate) {
