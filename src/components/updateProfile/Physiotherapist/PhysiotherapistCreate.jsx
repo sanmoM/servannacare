@@ -19,8 +19,10 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+import { postApi } from "@/lib/apiHandler";
+
 const PhysiotherapistCreate = ({ data = {} }) => {
-  console.log("datas", data);
+  // console.log("datas", data);
   const { user } = useLocalUser();
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -147,20 +149,129 @@ const PhysiotherapistCreate = ({ data = {} }) => {
     }));
   };
 
-  const handleUpdate = (e) => {
-    e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
+  
+
+
+const handleUpdate = async (e) => {
+  e.preventDefault();
+
+  try {
+    const fd = new FormData();
+
+    const BASIC = formData.basicInfo;
+    const EDU = formData.education;
+    const EXP = formData.experience;
+    const DOC = formData.documents;
+
+    // ================= BASIC INFO =================
+    fd.append("name", BASIC.name || "");
+    fd.append("location", BASIC.location || "");
+    fd.append("age", BASIC.age || "");
+    fd.append("gender", BASIC.gender || "");
+
+    if (Array.isArray(BASIC.languages)) {
+      BASIC.languages.forEach((lang) =>
+        fd.append("languages[]", lang)
+      );
+    }
+
+    fd.append("canDrive", BASIC.canDrive ? 1 : 0);
+
+    // ================= EDUCATION =================
+    fd.append("education", EDU.education || "");
+    fd.append("isRegisterPCK", EDU.isRegisterPCK ? 1 : 0);
+    fd.append("registrationNumber", EDU.registrationNumber || "");
+
+    if (EDU.eduCertificate)
+      fd.append("eduCertificate", EDU.eduCertificate);
+
+    if (EDU.practiceLicense)
+      fd.append("practiceLicense", EDU.practiceLicense);
+
+    // ================= EXPERIENCE =================
+    fd.append("hospitalBasedCare", EXP.hospitalBasedCare ? 1 : 0);
+    fd.append(
+      "hospitalBasedYearsOfExperience",
+      EXP.hospitalBasedYearsOfExperience || ""
     );
-    toast.success("Profile Updated!");
-    router.push("/dashboard");
-  };
+    fd.append(
+      "hospitalBasedReferenceContact",
+      EXP.hospitalBasedReferenceContact || ""
+    );
+
+    fd.append("homeBasedCare", EXP.homeBasedCare ? 1 : 0);
+    fd.append(
+      "homeBasedYearsOfExperience",
+      EXP.homeBasedYearsOfExperience || ""
+    );
+    fd.append(
+      "homeBasedReferenceContact",
+      EXP.homeBasedReferenceContact || ""
+    );
+
+    if (Array.isArray(EXP.preferred)) {
+      EXP.preferred.forEach((pref) =>
+        fd.append("preferred[]", pref)
+      );
+    }
+
+    fd.append("serviceFeeDay", EXP.serviceFeeDay || "");
+    fd.append("serviceFeeMonth", EXP.serviceFeeMonth || "");
+
+    // ================= DOCUMENTS =================
+    if (DOC.idCopy) fd.append("idCopy", DOC.idCopy);
+    if (DOC.profilePhoto) fd.append("profilePhoto", DOC.profilePhoto);
+    if (DOC.goodConductCertificate)
+      fd.append("goodConductCertificate", DOC.goodConductCertificate);
+    if (DOC.drivingLicense)
+      fd.append("drivingLicense", DOC.drivingLicense);
+    if (DOC.referenceLetter)
+      fd.append("referenceLetter", DOC.referenceLetter);
+
+    // ================= API CALL =================
+    const res = await postApi("/create-profile", fd, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    
+
+    if (res?.status === 200) {
+      toast.success("Profile create Successfully!");
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          name: BASIC.name,
+          location: BASIC.location,
+          is_profile_completed: Boolean(res?.data?.is_profile_completed),
+          is_profile_verified: Boolean(res?.data?.is_profile_verified),
+        })
+      );
+
+      router.push("/dashboard");
+    } else {
+      toast.error(
+        res?.data?.message || "Something went wrong. Please try again."
+      );
+    }
+  } catch (error) {
+    console.error("Profile Update Error:", error);
+
+    if (error.response) {
+      toast.error(
+        error.response.data?.message ||
+          `Error: ${error.response.status}`
+      );
+    } else if (error.request) {
+      toast.error("No response from server. Check your connection.");
+    } else {
+      toast.error("Unexpected error occurred.");
+    }
+  }
+};
 
   return (
     <div>

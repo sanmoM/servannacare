@@ -100,6 +100,8 @@ export default function BookingFormClient() {
   const watchMedication = watch("patient_currently_on_medication");
   const watchAllergy = watch("patient_have_any_known_allergies");
   const watchbooking_type = watch("booking_type");
+
+  
   const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
   const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
 

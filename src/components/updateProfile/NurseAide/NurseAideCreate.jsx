@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { postApi } from "@/lib/apiHandler";
 
 const NurseAideCreate = ({ data = {} }) => {
   console.log("datas", data);
@@ -29,7 +30,10 @@ const NurseAideCreate = ({ data = {} }) => {
       age: data?.age || "",
       gender: data?.gender || "",
       languages: data?.languages || [],
-      canDrive: data?.canDrive || "",
+      canDrive:
+        data?.canDrive === undefined || data?.canDrive === null
+          ? null
+          : Boolean(data?.canDrive),
     },
     education: {
       education: data.education || "",
@@ -48,11 +52,11 @@ const NurseAideCreate = ({ data = {} }) => {
     skillsServices: {
       skills: data?.nurse_assistant?.skills || [],
       // interested: data.skillsServices.interested || [],
-      mobilityYears: data.nurse_assistant.mobilityYears || "",
-      bathingYears: data.nurse_assistant.bathingYears || "",
-      feedingYears: data.nurse_assistant.feedingYears || "",
-      serviceFeeDay: data.nurse_assistant.serviceFeeDay || "",
-      serviceFeeMonth: data.nurse_assistant.serviceFeeMonth || "",
+      mobilityYears: data.nurse_assistant?.mobilityYears || "",
+      bathingYears: data.nurse_assistant?.bathingYears || "",
+      feedingYears: data.nurse_assistant?.feedingYears || "",
+      serviceFeeDay: data.nurse_assistant?.serviceFeeDay || "",
+      serviceFeeMonth: data.nurse_assistant?.serviceFeeMonth || "",
     },
     documents: {
       idCopy: data.idCopy || null,
@@ -152,19 +156,119 @@ const NurseAideCreate = ({ data = {} }) => {
     }));
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
-    );
-    toast.success("Profile Updated!");
-    router.push("/dashboard");
+
+    try {
+      const fd = new FormData();
+
+      const BASIC = formData.basicInfo;
+      const EDU = formData.education;
+      const EXP = formData.experience;
+      const SKILL = formData.skillsServices;
+      const DOC = formData.documents;
+
+      // ================= BASIC INFO =================
+      fd.append("name", BASIC.name || "");
+      fd.append("location", BASIC.location || "");
+      fd.append("age", BASIC.age || "");
+      fd.append("gender", BASIC.gender || "");
+
+      if (Array.isArray(BASIC.languages)) {
+        BASIC.languages.forEach((lang) => fd.append("languages[]", lang));
+      }
+
+      fd.append("canDrive", BASIC.canDrive ? 1 : 0);
+
+      fd.append("education", EDU.education || "");
+
+      if (EDU.educationCertificate) {
+        fd.append("educationCertificate", EDU.educationCertificate);
+      }
+
+      // ================= EXPERIENCE =================
+      fd.append("hospitalBasedCare", EXP.hospitalBasedCare ? 1 : 0);
+      fd.append(
+        "hospitalBasedYearsOfExperience",
+        EXP.hospitalBasedYearsOfExperience || "",
+      );
+      fd.append(
+        "hospitalBasedReferenceContact",
+        EXP.hospitalBasedReferenceContact || "",
+      );
+
+      fd.append("homeBasedCare", EXP.homeBasedCare ? 1 : 0);
+      fd.append(
+        "homeBasedYearsOfExperience",
+        EXP.homeBasedYearsOfExperience || "",
+      );
+      fd.append(
+        "homeBasedReferenceContact",
+        EXP.homeBasedReferenceContact || "",
+      );
+
+      if (Array.isArray(EXP.preferred)) {
+        EXP.preferred.forEach((pref) => fd.append("preferred[]", pref));
+      }
+
+      // ================= SKILLS & SERVICES =================
+      if (Array.isArray(SKILL.skills)) {
+        SKILL.skills.forEach((skill) => fd.append("skills[]", skill));
+      }
+
+      fd.append("mobilityYears", SKILL.mobilityYears || "");
+      fd.append("bathingYears", SKILL.bathingYears || "");
+      fd.append("feedingYears", SKILL.feedingYears || "");
+      fd.append("serviceFeeDay", SKILL.serviceFeeDay || "");
+      fd.append("serviceFeeMonth", SKILL.serviceFeeMonth || "");
+
+      // ================= DOCUMENTS =================
+      if (DOC.idCopy) fd.append("idCopy", DOC.idCopy);
+      if (DOC.profilePhoto) fd.append("profilePhoto", DOC.profilePhoto);
+      if (DOC.goodConductCertificate)
+        fd.append("goodConductCertificate", DOC.goodConductCertificate);
+      if (DOC.drivingLicense) fd.append("drivingLicense", DOC.drivingLicense);
+      if (DOC.referenceLetter)
+        fd.append("referenceLetter", DOC.referenceLetter);
+
+      // ================= API CALL =================
+      const res = await postApi("/create-profile", fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res?.status === 200) {
+        toast.success("Profile Created Successfully!");
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            name: BASIC.name,
+            location: BASIC.location,
+            is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          }),
+        );
+
+        router.push("/dashboard");
+      } else {
+        toast.error(res?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+
+      if (error.response) {
+        toast.error(
+          error.response.data?.message || `Error: ${error.response.status}`,
+        );
+      } else if (error.request) {
+        toast.error("No response from server.");
+      } else {
+        toast.error("Unexpected error occurred.");
+      }
+    }
   };
 
   return (
@@ -277,10 +381,11 @@ const NurseAideCreate = ({ data = {} }) => {
           <RadioGroup
             className="flex gap-4"
             value={
-              formData.basicInfo?.canDrive === null ||
-              formData.basicInfo?.canDrive === undefined
+              formData.basicInfo.canDrive === null
                 ? ""
-                : String(formData.basicInfo.canDrive)
+                : formData.basicInfo.canDrive
+                  ? "true"
+                  : "false"
             }
             onValueChange={(value) =>
               handleChange("basicInfo", "canDrive", value === "true")
@@ -675,7 +780,7 @@ const NurseAideCreate = ({ data = {} }) => {
         </div>
 
         {/* submit button  */}
-   
+
         <div className="flex justify-end mt-4 b-0">
           {!user?.is_profile_completed && (
             <Button size={"lg"} type="submit">

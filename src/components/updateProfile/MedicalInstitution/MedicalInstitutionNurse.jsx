@@ -1,5 +1,6 @@
 "use client";
 import FileUpload from "@/components/auth/register/FileUpload";
+import SelectableCalendar from "@/components/SelectableCalendar";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -71,6 +72,7 @@ const MedicalInstitutionNurse = ({
     registrationNumber: "",
     practiceLicense: null,
     hospitalBasedCare: null,
+    date: [],
     hospitalBasedYearsOfExperience: "",
     hospitalBasedReferenceContact: "",
     homeBasedCare: null,
@@ -105,6 +107,9 @@ const MedicalInstitutionNurse = ({
         registrationNumber: initialData.registrationNumber,
 
         hospitalBasedCare: initialData.hospitalBasedCare === 1,
+
+        date: initialData.schedule?.length ? initialData.schedule[0].date : [],
+
         hospitalBasedYearsOfExperience:
           initialData.hospitalBasedYearsOfExperience || "",
         hospitalBasedReferenceContact:
@@ -142,6 +147,8 @@ const MedicalInstitutionNurse = ({
       setReady(true);
     }
   }, [initialData, isUpdate]);
+
+  console.log(data);
 
   // Handlers
   const handleChange = (e) => {
@@ -704,6 +711,34 @@ const MedicalInstitutionNurse = ({
             }}
           />
         </div>
+
+        {/* Schedule - Only show if initialData exists */}
+        {initialData && (
+          <>
+            <Label className="mb-2">Schedule</Label>
+            <div className="flex flex-col sm:flex-row gap-4 mt-4">
+              <SelectableCalendar
+                selectedDates={data.date || []}
+                onChange={(dates) =>
+                  setData((prev) => ({
+                    ...prev,
+                    date: dates,
+                  }))
+                }
+                disabled={(date) => {
+                  if (!data.date?.length) return false;
+
+                  const firstSelected = new Date(data.date[0]);
+                  firstSelected.setHours(0, 0, 0, 0);
+
+                  date.setHours(0, 0, 0, 0);
+
+                  return date < firstSelected;
+                }}
+              />
+            </div>
+          </>
+        )}
 
         {/* Document Uploads */}
         <div>

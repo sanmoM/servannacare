@@ -87,6 +87,16 @@ const SearchContent = () => {
       max: searchParams.get("maxSalary") || "",
     });
 
+    setExperienceRange({
+      min: searchParams.get("minExperience") || "",
+      max: searchParams.get("maxExperience") || "",
+    });
+
+    setAgeRange({
+      min: searchParams.get("minAge") || "",
+      max: searchParams.get("maxAge") || "",
+    });
+
     setCurrentPage(Number(searchParams.get("page")) || 1);
   }, [searchParams]);
 
@@ -316,6 +326,10 @@ const SearchContent = () => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     return sortedSpecialists.slice(start, start + ITEMS_PER_PAGE);
   }, [sortedSpecialists, currentPage]);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileFilterSidebar ? "hidden" : "auto";
+  }, [mobileFilterSidebar]);
 
   return (
     <>
@@ -722,8 +736,8 @@ const SearchContent = () => {
                         onValueChange={([min, max]) => {
                           setExperienceRange({ min, max });
                           updateQueryParams({
-                            minSalary: min,
-                            maxSalary: max,
+                            minExperience: min,
+                            maxExperience: max,
                             page: 1,
                           });
                         }}
@@ -998,6 +1012,498 @@ const SearchContent = () => {
                     ))}
                   </select>
                 </div>
+
+                {selectedCategory === "house-manager" && (
+                  <div className="space-y-8 animate-in fade-in duration-500">
+                    {/* Age Range Slider */}
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-semibold text-slate-700 ml-1">
+                          Age Range
+                        </label>
+                      </div>
+
+                      <div className="px-2">
+                        <Slider.Root
+                          className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
+                          value={[ageRange.min || 18, ageRange.max || 60]}
+                          max={100} // max age
+                          step={1}
+                          onValueChange={([min, max]) => {
+                            setAgeRange({ min, max });
+                            updateQueryParams({
+                              minAge: min,
+                              maxAge: max,
+                              page: 1,
+                            });
+                          }}
+                        >
+                          <Slider.Track className="bg-slate-100 relative grow rounded-full h-[5px]">
+                            <Slider.Range className="absolute bg-primary rounded-full h-full" />
+                          </Slider.Track>
+                          <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                          <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                        </Slider.Root>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                            Min
+                          </p>
+                          <p className="text-sm font-semibold text-slate-700 ml-1">
+                            {ageRange.min || 18} yrs
+                          </p>
+                        </div>
+                        <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                            Max
+                          </p>
+                          <p className="text-sm font-semibold text-slate-700 ml-1">
+                            {ageRange.max || 60}+ yrs
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Location with Icon */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-slate-700 ml-1">
+                        Preferred Location
+                      </label>
+                      <div className="relative mt-2">
+                        <input
+                          type="text"
+                          placeholder="e.g. Nairobi"
+                          className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-3 text-sm placeholder:text-slate-400 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none transition-all"
+                          value={selectedLocation}
+                          onChange={(e) =>
+                            updateQueryParams({
+                              location: e.target.value,
+                              page: 1,
+                            })
+                          }
+                        />
+                        <svg
+                          className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18"
+                          height="18"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Age Range - Pill Style Select */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-slate-700 ml-1">
+                        Kid Age Range
+                      </label>
+                      <select
+                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:border-primary focus:ring-4 focus:ring-primary/5 outline-none transition-all cursor-pointer mt-2"
+                        value={selectedKidAge}
+                        onChange={(e) =>
+                          updateQueryParams({ kidAge: e.target.value, page: 1 })
+                        }
+                      >
+                        <option value="">All Ages</option>
+                        <option value="0-3">0 – 3 Years</option>
+                        <option value="4-10">4 – 10 Years</option>
+                        <option value="11+">11+ Years</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <label className="text-sm font-semibold text-slate-700 ml-1">
+                          Salary Range
+                        </label>
+                      </div>
+
+                      <div className="px-2">
+                        <Slider.Root
+                          className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
+                          defaultValue={[0, 500]}
+                          value={[salaryRange.min || 0, salaryRange.max || 500]}
+                          max={1000}
+                          step={100}
+                          onValueChange={([min, max]) => {
+                            updateQueryParams({
+                              minSalary: min,
+                              maxSalary: max,
+                              page: 1,
+                            });
+                          }}
+                        >
+                          <Slider.Track className="bg-slate-100 relative grow rounded-full h-[5px]">
+                            <Slider.Range className="absolute bg-primary rounded-full h-full" />
+                          </Slider.Track>
+                          <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                          <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                        </Slider.Root>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                            Min
+                          </p>
+                          <p className="text-sm font-semibold text-slate-700 ml-1">
+                            KSH {salaryRange.min || 0}
+                          </p>
+                        </div>
+                        <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                            Max
+                          </p>
+                          <p className="text-sm font-semibold text-slate-700 ml-1">
+                            KSH {salaryRange.max || 500}+
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Languages - Checkbox Grid */}
+                    <div className="space-y-4">
+                      <label className="text-sm font-semibold text-slate-700 ml-1">
+                        Language Fluency
+                      </label>
+                      <div className="grid grid-cols-1 gap-y-2  mt-2 ml-1">
+                        {[
+                          "English",
+                          "Swahili",
+                          "French",
+                          "German",
+                          "Arabic",
+                          "Chinese",
+                          "Other",
+                        ].map((lang, i) => (
+                          <label
+                            key={i}
+                            className="flex items-center group cursor-pointer"
+                          >
+                            <Checkbox
+                              className="h-5 w-5 rounded-md border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
+                              checked={selectedLanguages.includes(lang)}
+                              onCheckedChange={(checked) => {
+                                const updated = checked
+                                  ? [...selectedLanguages, lang]
+                                  : selectedLanguages.filter((l) => l !== lang);
+                                updateQueryParams({
+                                  languages: updated,
+                                  page: 1,
+                                });
+                              }}
+                            />
+                            <span className="ml-3 text-sm text-slate-600 group-hover:text-slate-900 transition-colors font-medium">
+                              {lang}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Rating - Stars Representation */}
+                    <div className="space-y-3">
+                      <label className="text-sm font-semibold text-slate-700 ml-1">
+                        Minimum Rating
+                      </label>
+                      <select
+                        className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:border-primary outline-none transition-all mt-2"
+                        value={selectedRating}
+                        onChange={(e) =>
+                          updateQueryParams({ rating: e.target.value, page: 1 })
+                        }
+                      >
+                        <option value="">Any Rating</option>
+                        <option value="5">Excellent (5 Stars)</option>
+                        <option value="4">Great (4+ Stars)</option>
+                        <option value="3">Good (3+ Stars)</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+                {selectedCategory !== "house-manager" &&
+                  showNonHouseManagerFilters.includes(selectedCategory) && (
+                    <div className="space-y-8 animate-in fade-in duration-500">
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-semibold text-slate-700 ml-1">
+                            Age Range
+                          </label>
+                        </div>
+
+                        <div className="px-2">
+                          <Slider.Root
+                            className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
+                            value={[ageRange.min || 18, ageRange.max || 60]}
+                            max={100} // max age
+                            step={1}
+                            onValueChange={([min, max]) => {
+                              setAgeRange({ min, max });
+                              updateQueryParams({
+                                minAge: min,
+                                maxAge: max,
+                                page: 1,
+                              });
+                            }}
+                          >
+                            <Slider.Track className="bg-slate-100 relative grow rounded-full h-[5px]">
+                              <Slider.Range className="absolute bg-primary rounded-full h-full" />
+                            </Slider.Track>
+                            <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                            <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                          </Slider.Root>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                              Min
+                            </p>
+                            <p className="text-sm font-semibold text-slate-700 ml-1">
+                              {ageRange.min || 18} yrs
+                            </p>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                              Max
+                            </p>
+                            <p className="text-sm font-semibold text-slate-700 ml-1">
+                              {ageRange.max || 60}+ yrs
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Location with Icon */}
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold text-slate-700 ml-1">
+                          Preferred Location
+                        </label>
+                        <div className="relative mt-2">
+                          <input
+                            type="text"
+                            placeholder="e.g. Nairobi"
+                            className="w-full rounded-xl border border-slate-200 bg-white pl-10 pr-4 py-3 text-sm placeholder:text-slate-400 focus:ring-4 focus:ring-primary/5 focus:border-primary outline-none transition-all"
+                            value={selectedLocation}
+                            onChange={(e) =>
+                              updateQueryParams({
+                                location: e.target.value,
+                                page: 1,
+                              })
+                            }
+                          />
+                          <svg
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+
+                      {/* experience year */}
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-semibold text-slate-700 ml-1">
+                            Years of Experience
+                          </label>
+                        </div>
+
+                        <div className="px-2">
+                          <Slider.Root
+                            className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
+                            value={[
+                              experienceRange.min || 0,
+                              experienceRange.max || 10,
+                            ]}
+                            max={20}
+                            step={1}
+                            onValueChange={([min, max]) => {
+                              setExperienceRange({ min, max });
+                              updateQueryParams({
+                                minExperience: min,
+                                maxExperience: max,
+                                page: 1,
+                              });
+                            }}
+                          >
+                            <Slider.Track className="bg-slate-100 relative grow rounded-full h-[5px]">
+                              <Slider.Range className="absolute bg-primary rounded-full h-full" />
+                            </Slider.Track>
+                            <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                            <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                          </Slider.Root>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                              Min
+                            </p>
+                            <p className="text-sm font-semibold text-slate-700 ml-1">
+                              {experienceRange.min || 0} yrs
+                            </p>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                              Max
+                            </p>
+                            <p className="text-sm font-semibold text-slate-700 ml-1">
+                              {experienceRange.max || 10}+ yrs
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-semibold text-slate-700 ml-1">
+                            Salary Range
+                          </label>
+                        </div>
+
+                        <div className="px-2">
+                          <Slider.Root
+                            className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
+                            defaultValue={[0, 500]}
+                            value={[
+                              salaryRange.min || 0,
+                              salaryRange.max || 500,
+                            ]}
+                            max={1000}
+                            step={100}
+                            onValueChange={([min, max]) => {
+                              updateQueryParams({
+                                minSalary: min,
+                                maxSalary: max,
+                                page: 1,
+                              });
+                            }}
+                          >
+                            <Slider.Track className="bg-slate-100 relative grow rounded-full h-[5px]">
+                              <Slider.Range className="absolute bg-primary rounded-full h-full" />
+                            </Slider.Track>
+                            <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                            <Slider.Thumb className="block w-5 h-5 bg-white border-2 border-primary shadow-md rounded-full hover:scale-110 transition-transform focus:outline-none" />
+                          </Slider.Root>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                              Min
+                            </p>
+                            <p className="text-sm font-semibold text-slate-700 ml-1">
+                              KSH {salaryRange.min || 0}
+                            </p>
+                          </div>
+                          <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
+                              Max
+                            </p>
+                            <p className="text-sm font-semibold text-slate-700 ml-1">
+                              KSH {salaryRange.max || 500}+
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Languages - Checkbox Grid */}
+                      <div className="space-y-4">
+                        <label className="text-sm font-semibold text-slate-700 ml-1">
+                          Language Fluency
+                        </label>
+                        <div className="grid grid-cols-1 gap-y-2  mt-2 ml-1">
+                          {[
+                            "English",
+                            "Swahili",
+                            "French",
+                            "German",
+                            "Arabic",
+                            "Chinese",
+                            "Other",
+                          ].map((lang, i) => (
+                            <label
+                              key={i}
+                              className="flex items-center group cursor-pointer"
+                            >
+                              <Checkbox
+                                className="h-5 w-5 rounded-md border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
+                                checked={selectedLanguages.includes(lang)}
+                                onCheckedChange={(checked) => {
+                                  const updated = checked
+                                    ? [...selectedLanguages, lang]
+                                    : selectedLanguages.filter(
+                                        (l) => l !== lang,
+                                      );
+                                  updateQueryParams({
+                                    languages: updated,
+                                    page: 1,
+                                  });
+                                }}
+                              />
+                              <span className="ml-3 text-sm text-slate-600 group-hover:text-slate-900 transition-colors font-medium">
+                                {lang}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Rating - Stars Representation */}
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold text-slate-700 ml-1">
+                          Minimum Rating
+                        </label>
+                        <select
+                          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm focus:border-primary outline-none transition-all mt-2"
+                          value={selectedRating}
+                          onChange={(e) =>
+                            updateQueryParams({
+                              rating: e.target.value,
+                              page: 1,
+                            })
+                          }
+                        >
+                          <option value="">Any Rating</option>
+                          <option value="5">Excellent (5 Stars)</option>
+                          <option value="4">Great (4+ Stars)</option>
+                          <option value="3">Good (3+ Stars)</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
 
                 {selectedCategoryObj && (
                   <div>

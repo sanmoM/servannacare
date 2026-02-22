@@ -26,6 +26,7 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { postApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
+import SelectableCalendar from "@/components/SelectableCalendar";
 
 const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
   const router = useRouter();
@@ -45,7 +46,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     cooking: "",
     housekeeping: "",
     childcare: "",
-    preferred: [],
+    date: [],
+    liveType: "",
     documents: {
       aidCertificate: null,
       goodConductCertificate: null,
@@ -54,8 +56,6 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
       drivingLicense: null,
     },
   });
-
-  // console.log("dfdfdfdf",typeof(formData.isMother))
 
   useEffect(() => {
     if (initialData && isUpdate) {
@@ -66,12 +66,12 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         experience: initialData.experience || "",
         salaryRange: initialData.salaryRange || "",
         preferredRole: initialData.preferredRole || "",
-        preferred: Array.isArray(initialData?.preferred)
-          ? initialData?.preferred
-          : [],
+        liveType: initialData.liveType || "",
         cooking: initialData.cooking || "",
         housekeeping: initialData.housekeeping || "",
         childcare: initialData.childcare || "",
+
+        date: initialData.schedule?.length ? initialData.schedule[0].date : [],
 
         isMother: initialData.isMother === 1,
         handlePets: initialData.handlePets === 1,
@@ -103,6 +103,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
       setReady(true);
     }
   }, [initialData, isUpdate]);
+
+  console.log(formData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -274,25 +276,6 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
       optional: true,
     },
   ];
-
-  const preferred = [
-    {
-      title: "Live In",
-    },
-    {
-      title: "DayBurg",
-    },
-  ];
-
-  const togglepreferred = (pref) => {
-    setFormData((prev) => {
-      const exists = prev.preferred.includes(pref);
-      return {
-        ...prev,
-        preferred: exists ? [] : [pref],
-      };
-    });
-  };
 
   return (
     <div>
@@ -549,25 +532,57 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
           <Label className="mb-3 block text-sm font-medium">
             Live Preference
           </Label>
-          <div className="flex flex-wrap flex-col gap-2 ">
-            {preferred.map((lan, indx) => (
-              <div key={indx} className="flex items-center gap-2">
-                <Checkbox
-                  id={lan.title}
-                  checked={formData?.preferred.includes(lan.title)}
-                  onCheckedChange={() => togglepreferred(lan.title)}
-                />
-
-                <Label
-                  htmlFor={lan.title}
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  {lan.title}
-                </Label>
+          <RadioGroup
+            value={formData.liveType}
+            onValueChange={(v) => handleSelectChange("liveType", v)}
+          >
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="Live-In" id="lIn" />
+                <Label htmlFor="lIn">Live In</Label>
               </div>
-            ))}
-          </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="Dayburg" id="lDay" />
+                <Label htmlFor="lDay">Dayburg</Label>
+              </div>
+            </div>
+          </RadioGroup>
         </div>
+
+        {/* Schedule - Only show in Update mode */}
+        {isUpdate && (
+          <div>
+            <div className="gap-2">
+              <Label
+                htmlFor="Schedule"
+                className="block mb-2 text-sm font-medium text-gray-700"
+              >
+                Schedule
+              </Label>
+
+              <SelectableCalendar
+                mode="multiple"
+                selectedDates={formData.date || []}
+                onChange={(dates) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    date: dates,
+                  }))
+                }
+                disabled={(date) => {
+                  if (!formData.date?.length) return false;
+
+                  const firstSelected = new Date(formData.date[0]);
+                  firstSelected.setHours(0, 0, 0, 0);
+
+                  date.setHours(0, 0, 0, 0);
+
+                  return date < firstSelected;
+                }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Documents Section */}
         <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl flex gap-2 items-center mb-4">

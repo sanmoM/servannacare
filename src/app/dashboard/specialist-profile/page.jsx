@@ -205,7 +205,7 @@ export default function ProfilePage() {
             (specialistDatas?.data?.physiotherapist?.is_profile_completed ? (
               <Physiotherapist data={specialistDatas?.data?.physiotherapist} />
             ) : (
-              // todo
+              
               <PhysiotherapistCreate />
             ))}
 
