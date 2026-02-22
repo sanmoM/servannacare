@@ -27,8 +27,14 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
-  console.log("datas", data);
+  
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -70,6 +76,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
       educationCertificate: data?.special_need?.educationCertificate || null,
     },
   });
+
 
   const documents = [
     {
@@ -127,11 +134,9 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
     {
       title: "Down syndrome",
     },
-    ,
     {
       title: "Blindness",
     },
-    ,
     {
       title: "Dementia & Alzheimer",
     },
@@ -192,6 +197,16 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
     const EXPERIENCE = formData.experience;
     const DOCUMENTS = formData.documents;
 
+    if (!BASICINFO.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(BASICINFO.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
     fd.append("name", BASICINFO.name);
     fd.append("location", BASICINFO.location);
     fd.append("age", BASICINFO.age);
@@ -202,7 +217,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
     fd.append("bio", BASICINFO.bio);
     fd.append("number_two", BASICINFO.phone);
 
-    fd.append("education", EDUCATION.educationLevel);
+    fd.append("education", EDUCATION.education);
 
     fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
     fd.append(
@@ -291,7 +306,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
             />
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
+        <div className="flex flex-col sm:flex-row gap-6  ">
           <div className="flex-1">
             <Input
               label="Location"
@@ -339,41 +354,50 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Primary Number: (You can't change it.)
             </label>
-            <Input
-              name="phone"
-              type="tel"
-              placeholder="+254xxxxxxx"
-              value={formData?.basicInfo?.number || "+254"}
-              maxLength={11}
-              // onFocus={() => {
-              //   if (!formData.basicInfo.phone) {
-              //     setFormData((prev) => ({
-              //       ...prev,
-              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
-              //     }));
-              //   }
-              // }}
-              // onChange={handlePhoneChange}
-            />
+            <div className="space-y-2">
+
+              <PhoneInputWithCountrySelect
+                international
+                defaultCountry={country}
+                value={formData?.basicInfo?.number}
+                onChange={(value) =>
+                  handleChange("basicInfo", "phone", value || "")
+                }
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                }}
+                className="phone-input-custom"
+                disabled
+              />
+
+              {formData.basicInfo.phone &&
+                !isValidPhoneNumber(formData.basicInfo.phone) && (
+                  <p className="text-red-500 text-sm">Invalid phone number</p>
+                )}
+            </div>
           </div>
           <div className="flex-1">
-            <Input
-              label="Alternative Number:"
-              name="phone"
-              type="tel"
-              placeholder="+254xxxxxxx"
-              value={formData.basicInfo.phone || "+254"}
-              maxLength={11}
-              onFocus={() => {
-                if (!formData.basicInfo.phone) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    basicInfo: { ...prev.basicInfo, phone: "+254" },
-                  }));
+            <div className="space-y-2">
+              <Label>Phone Number</Label>
+
+              <PhoneInputWithCountrySelect
+                international
+                defaultCountry={country}
+                value={formData?.basicInfo?.phone}
+                onChange={(value) =>
+                  handleChange("basicInfo", "phone", value || "")
                 }
-              }}
-              onChange={handlePhoneChange}
-            />
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                }}
+                className="phone-input-custom"
+              />
+
+              {formData.basicInfo.phone &&
+                !isValidPhoneNumber(formData.basicInfo.phone) && (
+                  <p className="text-red-500 text-sm">Invalid phone number</p>
+                )}
+            </div>
           </div>
         </div>
 
@@ -772,7 +796,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
               placeholder="Write a brief bio about yourself and the services you offer.."
               className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
               rows={6}
-              onChange={handleChange}
+              onChange={(e) => handleChange("basicInfo", "bio", e.target.value)}
             />
           </div>
         </div>

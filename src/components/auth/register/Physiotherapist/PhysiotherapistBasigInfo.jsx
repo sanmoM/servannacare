@@ -15,7 +15,16 @@ import { languages } from "@/utilities/data";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
+
 const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
+
+    const [country, setCountry] = useState("KE");
+
   const [data, setData] = useState({
     name: defaultValues.name || "",
     phone: defaultValues.phone || "",
@@ -83,8 +92,13 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
     }
 
     //  validate phone length (10 digits only)
-    if (data.phone.length !== 10) {
-      toast.error("Mobile number must be exactly 10 digits.");
+    if (!data?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(data?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
       return;
     }
 
@@ -130,15 +144,42 @@ const PhysiotherapistBasigInfo = ({ defaultValues, onNext }) => {
 
       {/*  GRID: Phone + Experience */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <Input
-          label="Mobile Number"
-          name="phone"
-          type="tel"
-          placeholder="07xxxxxxxx"
-          value={data.phone}
-          maxLength={10}
-          onChange={handlePhoneChange}
-        />
+        <div>
+          <Label>Phone Number</Label>
+
+          <div className="w-full mt-2">
+            <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
+              international
+              defaultCountry={country}
+              value={data?.phone}
+              onChange={(value) => {
+                setData((prev) => ({ ...prev, phone: value || "" }));
+              }}
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+                const exampleNumber = countryCode
+                  ? getExampleNumber(countryCode)
+                  : null;
+                if (exampleNumber) {
+                  setData((prev) => ({
+                    ...prev,
+                    phone: `+${exampleNumber.countryCallingCode}`,
+                  }));
+                } else {
+                  setData((prev) => ({ ...prev, phone: "" }));
+                }
+              }}
+            />
+          </div>
+
+          {data?.phone && !isValidPhoneNumber(data?.phone) && (
+            <p className="text-red-500 text-sm mt-1">
+              Invalid phone number for selected country
+            </p>
+          )}
+        </div>
+
 
         <div>
           <label className="block mb-2 text-sm font-medium text-gray-700">

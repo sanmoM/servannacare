@@ -19,8 +19,13 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { postApi } from "@/lib/apiHandler";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const SpecialNeedCaregiversCreate = ({ data = {} }) => {
-  console.log("datas", data);
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -29,6 +34,7 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      phone: data?.phone || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive || "",
     },
@@ -116,7 +122,6 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     {
       title: "Down syndrome",
     },
-    ,
     {
       title: "Blindness",
     },
@@ -164,6 +169,15 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
 
     if (!basicInfo.location.trim()) return toast.error("Location is required");
 
+    if (!basicInfo.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+    if (!isValidPhoneNumber(basicInfo.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
     if (!basicInfo.age) return toast.error("Age is required");
 
     const ageNumber = Number(basicInfo.age);
@@ -183,8 +197,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     if (!education.educationCertificate)
       return toast.error("Education certificate is required");
 
-    if (experience.hospitalBasedCare === "")
-      return toast.error("Please select hospital based care option");
+    // if (experience?.hospitalBasedCare === "")
+    //   return toast.error("Please select hospital based care option");
 
     if (experience.hospitalBasedCare) {
       if (!experience.hospitalBasedYearsOfExperience)
@@ -194,8 +208,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
         return toast.error("Hospital reference contact required");
     }
 
-    if (experience.homeBasedCare === "")
-      return toast.error("Please select home based care option");
+    // if (experience.homeBasedCare === "")
+    //   return toast.error("Please select home based care option");
 
     if (experience.homeBasedCare) {
       if (!experience.homeBasedYearsOfExperience)
@@ -239,6 +253,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       if (Array.isArray(BASIC.languages)) {
         BASIC.languages.forEach((lang) => fd.append("languages[]", lang));
       }
+
+      fd.append("phone", BASIC.phone || "");
 
       fd.append("canDrive", BASIC.canDrive ? 1 : 0);
 
@@ -354,8 +370,9 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
             />
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
-          <div className="flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* LOCATION */}
+          <div>
             <Input
               label="Location"
               placeholder="Location"
@@ -366,35 +383,63 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
               }
             />
           </div>
-          <div className="flex-1">
-            <Label className={"mb-2"}>Gender?</Label>
-            <RadioGroup
-              className={"flex gap-4"}
-              value={formData.basicInfo.gender}
-              onValueChange={(value) =>
-                handleChange("basicInfo", "gender", value)
-              }
-            >
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="Male" id="r1" />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor="r1"
-                >
-                  Male
-                </Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="Female" id="r2" />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor="r2"
-                >
-                  Female
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
+
+          {/* PHONE */}
+
+
+            <div className="space-y-2">
+              <Label>Phone Number</Label>
+
+              <PhoneInputWithCountrySelect
+                international
+                defaultCountry={country}
+                value={formData.basicInfo.number}
+                onChange={(value) =>
+                  handleChange("basicInfo", "phone", value || "")
+                }
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                }}
+                className="phone-input-custom"
+              />
+
+              {formData.basicInfo.phone &&
+                !isValidPhoneNumber(formData.basicInfo.phone) && (
+                  <p className="text-red-500 text-sm">Invalid phone number</p>
+                )}
+            </div>
+
+
+        </div>
+
+        <div className="flex-1">
+          <Label className={"mb-2"}>Gender?</Label>
+          <RadioGroup
+            className={"flex gap-4"}
+            value={formData.basicInfo.gender}
+            onValueChange={(value) =>
+              handleChange("basicInfo", "gender", value)
+            }
+          >
+            <div className="flex items-center gap-3">
+              <RadioGroupItem value="Male" id="r1" />
+              <Label
+                className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="r1"
+              >
+                Male
+              </Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <RadioGroupItem value="Female" id="r2" />
+              <Label
+                className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="r2"
+              >
+                Female
+              </Label>
+            </div>
+          </RadioGroup>
         </div>
 
         <div className="">
