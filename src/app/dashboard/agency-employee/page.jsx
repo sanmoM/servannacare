@@ -27,6 +27,7 @@ import {
   ShieldCheck,
   Banknote,
   Calendar,
+  Star,
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -43,6 +44,7 @@ const EmployeePage = () => {
 
   const [scheduleViewId, setScheduleViewId] = useState(null);
 
+  const [reviewModalId, setReviewModalId] = useState(null);
 
   useEffect(() => {
     if (data) {
@@ -188,148 +190,346 @@ const EmployeePage = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-1">
                         {/* VIEW DIALOG */}
-<Dialog>
-  <DialogTrigger asChild>
-    <Button
-      variant="ghost"
-      size="icon"
-      className="text-blue-600 hover:bg-blue-50"
-    >
-      <Eye size={18} />
-    </Button>
-  </DialogTrigger>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-blue-600 hover:bg-blue-50"
+                            >
+                              <Eye size={18} />
+                            </Button>
+                          </DialogTrigger>
 
-  <DialogContent className="sm:max-w-3xl">
-    <DialogHeader>
-      <DialogTitle className="flex items-center gap-2">
-        <span className="text-primary">Full Profile:</span> {emp.name}
-      </DialogTitle>
-    </DialogHeader>
+                          {/* REVIEW BUTTON */}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-yellow-500 hover:bg-yellow-50 mb-3"
+                            onClick={() => setReviewModalId(emp.id)}
+                          >
+                            <Star size={18} />
+                          </Button>
 
-    {/* PROFILE GRID */}
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-      <InfoTile
-        label="Education"
-        value={emp.educationLevel}
-        icon={<GraduationCap className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Languages"
-        value={emp.languages?.join(", ")}
-        icon={<Languages className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Cooking Skill"
-        value={emp.cooking}
-        icon={<Heart className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Housekeeping"
-        value={emp.housekeeping}
-        icon={<ShieldCheck className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Motherhood"
-        value={emp.isMother ? "Yes" : "No"}
-        icon={<Baby className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Childcare"
-        value={emp.childcare}
-        icon={<Heart className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Kids Ages Handled"
-        value={emp.kidAges?.join(", ")}
-        icon={<Baby className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Pets"
-        value={emp.handlePets ? "Comfortable" : "No"}
-        icon={<ShieldCheck className="text-primary" size={16} />}
-      />
-      <InfoTile
-        label="Created At"
-        value={new Date(emp.created_at).toLocaleDateString()}
-        icon={<Calendar className="text-primary" size={16} />}
-      />
-    </div>
+                          <DialogContent className="sm:max-w-3xl">
+                            <DialogHeader>
+                              <DialogTitle className="flex items-center gap-2">
+                                <span className="text-primary">
+                                  Full Profile:
+                                </span>{" "}
+                                {emp.name}
+                              </DialogTitle>
+                            </DialogHeader>
 
-{/* SCHEDULE SECTION */}
-{emp.schedule?.length > 0 && emp.schedule[0]?.date?.length > 0 && (
-  <div className="mt-6">
-    <div className="flex items-center justify-between">
-      <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-        <Calendar className="text-primary" size={16} />
-        Schedule
-      </h4>
+                            {/* PROFILE GRID */}
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                              <InfoTile
+                                label="Education"
+                                value={emp.educationLevel}
+                                icon={
+                                  <GraduationCap
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                              <InfoTile
+                                label="Languages"
+                                value={emp.languages?.join(", ")}
+                                icon={
+                                  <Languages
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                              <InfoTile
+                                label="Cooking Skill"
+                                value={emp.cooking}
+                                icon={
+                                  <Heart className="text-primary" size={16} />
+                                }
+                              />
+                              <InfoTile
+                                label="Housekeeping"
+                                value={emp.housekeeping}
+                                icon={
+                                  <ShieldCheck
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                              <InfoTile
+                                label="Motherhood"
+                                value={emp.isMother ? "Yes" : "No"}
+                                icon={
+                                  <Baby className="text-primary" size={16} />
+                                }
+                              />
+                              <InfoTile
+                                label="Childcare"
+                                value={emp.childcare}
+                                icon={
+                                  <Heart className="text-primary" size={16} />
+                                }
+                              />
+                              <InfoTile
+                                label="Kids Ages Handled"
+                                value={emp.kidAges?.join(", ")}
+                                icon={
+                                  <Baby className="text-primary" size={16} />
+                                }
+                              />
+                              <InfoTile
+                                label="Pets"
+                                value={emp.handlePets ? "Comfortable" : "No"}
+                                icon={
+                                  <ShieldCheck
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                              <InfoTile
+                                label="Created At"
+                                value={new Date(
+                                  emp.created_at,
+                                ).toLocaleDateString()}
+                                icon={
+                                  <Calendar
+                                    className="text-primary"
+                                    size={16}
+                                  />
+                                }
+                              />
+                            </div>
 
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => setScheduleViewId(emp.id)}
-      >
-        View
-      </Button>
-    </div>
-  </div>
-)}
+                            {/* SCHEDULE SECTION */}
+                            {emp.schedule?.length > 0 &&
+                              emp.schedule[0]?.date?.length > 0 && (
+                                <div className="mt-6">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                      <Calendar
+                                        className="text-primary"
+                                        size={16}
+                                      />
+                                      Schedule
+                                    </h4>
 
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setScheduleViewId(emp.id)}
+                                    >
+                                      View
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
 
-    {/* DOCUMENT SECTION */}
-    <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
-      {emp.idCopy && (
-        <Button
-          variant="outline"
-          className="text-xs h-8"
-          onClick={() => openFile(emp.idCopy)}
-        >
-          View ID Copy
-        </Button>
-      )}
+                            {/* DOCUMENT SECTION */}
+                            <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
+                              {emp.idCopy && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() => openFile(emp.idCopy)}
+                                >
+                                  View ID Copy
+                                </Button>
+                              )}
 
-      {emp.aidCertificate && (
-        <Button
-          variant="outline"
-          className="text-xs h-8"
-          onClick={() => openFile(emp.aidCertificate)}
-        >
-          Aid Certificate
-        </Button>
-      )}
+                              {emp.aidCertificate && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() => openFile(emp.aidCertificate)}
+                                >
+                                  Aid Certificate
+                                </Button>
+                              )}
 
-      {emp.goodConductCertificate && (
-        <Button
-          variant="outline"
-          className="text-xs h-8"
-          onClick={() => openFile(emp.goodConductCertificate)}
-        >
-          Good Conduct Certificate
-        </Button>
-      )}
-    </div>
-  </DialogContent>
-</Dialog>
+                              {emp.goodConductCertificate && (
+                                <Button
+                                  variant="outline"
+                                  className="text-xs h-8"
+                                  onClick={() =>
+                                    openFile(emp.goodConductCertificate)
+                                  }
+                                >
+                                  Good Conduct Certificate
+                                </Button>
+                              )}
+                            </div>
+                          </DialogContent>
+                        </Dialog>
 
-{/* SCHEDULE CALENDAR MODAL */}
-<Dialog
-  open={scheduleViewId === emp.id}
-  onOpenChange={(open) => !open && setScheduleViewId(null)}
->
-  <DialogContent className="sm:max-w-md">
-    <DialogHeader>
-      <DialogTitle>Selected Schedule</DialogTitle>
-    </DialogHeader>
+                        {/* REVIEW MODAL */}
+                        {/* REVIEW MODAL */}
+                        <Dialog
+                          open={reviewModalId === emp.id}
+                          onOpenChange={(open) =>
+                            !open && setReviewModalId(null)
+                          }
+                        >
+                          <DialogContent className="sm:max-w-6xl bg-[#f3f4f6] p-8">
+                            <DialogHeader>
+                              <DialogTitle className="text-2xl font-semibold">
+                                Ratings & Feedback
+                              </DialogTitle>
+                            </DialogHeader>
 
-    <SelectableCalendar
-      mode="multiple"
-      selectedDates={emp.schedule?.[0]?.date || []}
-      onChange={() => {}}   // disable change
-    />
-  </DialogContent>
-</Dialog>
+                            {/* TOP SECTION */}
+                            <div className="grid md:grid-cols-2 gap-8 mt-6">
+                              {/* LEFT CARD */}
+                              <div className="bg-white rounded-2xl shadow-sm p-10 flex flex-col items-center justify-center">
+                                <div className="text-6xl font-bold text-yellow-500">
+                                  {emp.averageRating?.toFixed(1) || "0.0"}
+                                </div>
 
+                                <div className="flex mt-4 text-yellow-400">
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      size={26}
+                                      fill={
+                                        i < Math.round(emp.averageRating || 0)
+                                          ? "currentColor"
+                                          : "none"
+                                      }
+                                      strokeWidth={1.5}
+                                    />
+                                  ))}
+                                </div>
 
+                                <p className="text-gray-500 mt-4 text-sm">
+                                  Based on {emp.reviews?.length || 0} reviews
+                                </p>
+                              </div>
+
+                              {/* RIGHT CARD */}
+                              <div className="bg-white rounded-2xl shadow-sm p-10">
+                                {[5, 4, 3, 2, 1].map((star) => {
+                                  const count =
+                                    emp.reviews?.filter(
+                                      (r) => r.rating === star,
+                                    ).length || 0;
+
+                                  const percent =
+                                    emp.reviews?.length > 0
+                                      ? (count / emp.reviews.length) * 100
+                                      : 0;
+
+                                  return (
+                                    <div
+                                      key={star}
+                                      className="flex items-center gap-4 mb-6"
+                                    >
+                                      <span className="text-sm font-medium w-8">
+                                        {star}{" "}
+                                        <span className="text-yellow-500">
+                                          ★
+                                        </span>
+                                      </span>
+
+                                      <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+                                        <div
+                                          className="h-3 bg-yellow-500 rounded-full transition-all"
+                                          style={{ width: `${percent}%` }}
+                                        />
+                                      </div>
+
+                                      <span className="text-sm text-gray-600 w-6 text-right">
+                                        {count}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+
+                            {/* REVIEW TABLE */}
+                            <div className="mt-10 bg-white rounded-2xl shadow-sm overflow-hidden">
+                              <table className="w-full">
+                                <thead className="bg-gray-50 border-b">
+                                  <tr className="text-left text-sm text-gray-600 uppercase">
+                                    <th className="px-8 py-5">Name</th>
+                                    <th className="px-8 py-5">Rating</th>
+                                    <th className="px-8 py-5">Message</th>
+                                    <th className="px-8 py-5">Date</th>
+                                  </tr>
+                                </thead>
+
+                                <tbody className="divide-y">
+                                  {emp.reviews?.length > 0 ? (
+                                    emp.reviews.map((review, index) => (
+                                      <tr key={index}>
+                                        <td className="px-8 py-5 text-sm">
+                                          {review.name}
+                                        </td>
+
+                                        <td className="px-8 py-5">
+                                          <div className="flex text-yellow-500">
+                                            {Array.from({
+                                              length: review.rating,
+                                            }).map((_, i) => (
+                                              <Star
+                                                key={i}
+                                                size={16}
+                                                fill="currentColor"
+                                                strokeWidth={1.5}
+                                              />
+                                            ))}
+                                          </div>
+                                        </td>
+
+                                        <td className="px-8 py-5 text-sm text-gray-600">
+                                          {review.comment}
+                                        </td>
+
+                                        <td className="px-8 py-5 text-sm text-gray-500">
+                                          {new Date(
+                                            review.date,
+                                          ).toLocaleDateString()}
+                                        </td>
+                                      </tr>
+                                    ))
+                                  ) : (
+                                    <tr>
+                                      <td
+                                        colSpan="4"
+                                        className="text-center py-12 text-gray-400"
+                                      >
+                                        No reviews available
+                                      </td>
+                                    </tr>
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                        {/* SCHEDULE CALENDAR MODAL */}
+                        <Dialog
+                          open={scheduleViewId === emp.id}
+                          onOpenChange={(open) =>
+                            !open && setScheduleViewId(null)
+                          }
+                        >
+                          <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                              <DialogTitle>Selected Schedule</DialogTitle>
+                            </DialogHeader>
+
+                            <SelectableCalendar
+                              mode="multiple"
+                              selectedDates={emp.schedule?.[0]?.date || []}
+                              onChange={() => {}} // disable change
+                            />
+                          </DialogContent>
+                        </Dialog>
 
                         {/* UPDATE DIALOG */}
                         <Dialog

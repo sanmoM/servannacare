@@ -19,7 +19,6 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
-
 const NurseCreate = ({ data = {} }) => {
   const router = useRouter();
   const { user, loaded } = useLocalUser();
@@ -217,6 +216,100 @@ const NurseCreate = ({ data = {} }) => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+
+    const { basicInfo, education, experience, skillsServices, documents } =
+      formData;
+
+    // ================= BASIC INFO =================
+    if (!basicInfo.name?.trim()) return toast.error("Full name is required");
+
+    if (!basicInfo.location?.trim()) return toast.error("Location is required");
+
+    if (!basicInfo.age) return toast.error("Age is required");
+
+    const ageNumber = Number(basicInfo.age);
+
+    if (ageNumber < 25) return toast.error("You must be at least 25 years old");
+
+    if (!basicInfo.gender) return toast.error("Gender is required");
+
+    if (!basicInfo.languages?.length)
+      return toast.error("Please select at least one language");
+
+    if (basicInfo.canDrive === null)
+      return toast.error("Please select driving option");
+
+    // ================= EDUCATION =================
+    if (!education.education) return toast.error("Education level is required");
+
+    if (!education.educationCertificate)
+      return toast.error("Education certificate is required");
+
+    if (education.isNursingInKenya === null)
+      return toast.error("Please select NCK registration option");
+
+    // If NCK = YES
+    if (education.isNursingInKenya) {
+      if (!experience.registrationNumber?.trim())
+        return toast.error("Registration number is required");
+
+      if (!experience.practiceLicense)
+        return toast.error("Practising license is required");
+    }
+
+    // ================= EXPERIENCE =================
+    if (experience.hospitalBasedCare === null)
+      return toast.error("Please select hospital based care option");
+
+    if (experience.hospitalBasedCare) {
+      if (!experience.hospitalBasedYearsOfExperience)
+        return toast.error("Hospital experience years required");
+
+      if (!experience.hospitalBasedReferenceContact?.trim())
+        return toast.error("Hospital reference contact required");
+    }
+
+    if (experience.homeBasedCare === null)
+      return toast.error("Please select home based care option");
+
+    if (experience.homeBasedCare) {
+      if (!experience.homeBasedYearsOfExperience)
+        return toast.error("Home experience years required");
+
+      if (!experience.homeBasedReferenceContact?.trim())
+        return toast.error("Home reference contact required");
+    }
+
+    if (!experience.preferred?.length)
+      return toast.error("Please select at least one preferred area");
+
+    // ================= SKILLS =================
+    if (!skillsServices.skills?.length)
+      return toast.error("Please select at least one skill");
+
+    if (!skillsServices.mobilityYears)
+      return toast.error("Mobility assistance experience required");
+
+    if (!skillsServices.bathingYears)
+      return toast.error("Bathing assistance experience required");
+
+    if (!skillsServices.feedingYears)
+      return toast.error("Feeding assistance experience required");
+
+    if (!skillsServices.serviceFeeDay)
+      return toast.error("Service fee per day is required");
+
+    if (!skillsServices.serviceFeeMonth)
+      return toast.error("Service fee per month is required");
+
+    // ================= DOCUMENTS =================
+    if (!documents.idCopy) return toast.error("ID copy is required");
+
+    if (!documents.profilePhoto)
+      return toast.error("Profile photo is required");
+
+    if (!documents.goodConductCertificate)
+      return toast.error("Good conduct certificate is required");
 
     if (formData.experience.preferred.length === 0) {
       toast.error("Please select at least one preferred area");

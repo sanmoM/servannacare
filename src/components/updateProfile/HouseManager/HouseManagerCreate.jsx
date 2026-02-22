@@ -204,7 +204,58 @@ const HouseManagerCreate = ({ data = {} }) => {
   const handleCreate = async (e) => {
     e.preventDefault();
 
-    console.log("form data", formData);
+    const { basicInfo, additionalDetails, documents } = formData;
+
+    // ================= BASIC INFO =================
+    if (!basicInfo.name?.trim()) return toast.error("Full name is required");
+
+    if (!basicInfo.age) return toast.error("Age is required");
+
+    const ageNumber = Number(basicInfo.age);
+
+    if (ageNumber < 25) return toast.error("You must be at least 25 years old");
+
+    if (!basicInfo.education) return toast.error("Education level is required");
+
+    if (!basicInfo.experience) return toast.error("Experience is required");
+
+    if (!basicInfo.salaryRange) return toast.error("Salary range is required");
+
+    if (!basicInfo.location?.trim()) return toast.error("Location is required");
+
+    if (!basicInfo.phone || basicInfo.phone.length !== 13)
+      return toast.error("Valid phone number is required (+254XXXXXXXXX)");
+
+    if (!basicInfo.languages?.length)
+      return toast.error("Please select at least one language");
+
+    if (!basicInfo.preferred?.length)
+      return toast.error("Please select service type (Live In / DayBurg)");
+
+    // ================= ADDITIONAL DETAILS =================
+    if (additionalDetails.isMother === null)
+      return toast.error("Please select mother status");
+
+    if (!additionalDetails.ageOfKids?.length)
+      return toast.error("Please select preferred kids age group");
+
+    if (additionalDetails.isHandelingPet === null)
+      return toast.error("Please select pet handling option");
+
+    if (!additionalDetails.preferredRole)
+      return toast.error("Preferred role is required");
+
+    // ================= DOCUMENTS =================
+    if (!documents.firstAidCertificate)
+      return toast.error("First Aid Certificate is required");
+
+    if (!documents.goodConductCertificate)
+      return toast.error("Good Conduct Certificate is required");
+
+    if (!documents.iDCopy) return toast.error("ID Copy is required");
+
+    if (!documents.profilePhoto)
+      return toast.error("Profile Photo is required");
 
     const fd = new FormData();
 

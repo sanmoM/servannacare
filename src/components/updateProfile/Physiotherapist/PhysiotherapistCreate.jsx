@@ -149,129 +149,197 @@ const PhysiotherapistCreate = ({ data = {} }) => {
     }));
   };
 
-  
+  const handleUpdate = async (e) => {
+    e.preventDefault();
 
-
-const handleUpdate = async (e) => {
-  e.preventDefault();
-
-  try {
-    const fd = new FormData();
-
-    const BASIC = formData.basicInfo;
-    const EDU = formData.education;
-    const EXP = formData.experience;
-    const DOC = formData.documents;
+    const { basicInfo, education, experience, documents } = formData;
 
     // ================= BASIC INFO =================
-    fd.append("name", BASIC.name || "");
-    fd.append("location", BASIC.location || "");
-    fd.append("age", BASIC.age || "");
-    fd.append("gender", BASIC.gender || "");
+    if (!basicInfo.name.trim()) return toast.error("Full name is required");
 
-    if (Array.isArray(BASIC.languages)) {
-      BASIC.languages.forEach((lang) =>
-        fd.append("languages[]", lang)
-      );
-    }
+    if (!basicInfo.location.trim()) return toast.error("Location is required");
 
-    fd.append("canDrive", BASIC.canDrive ? 1 : 0);
+    if (!basicInfo.age) return toast.error("Age is required");
+
+    const ageNumber = Number(basicInfo.age);
+
+    if (ageNumber < 25) return toast.error("You must be at least 25 years old");
+
+    if (!basicInfo.gender) return toast.error("Gender is required");
+
+    if (!basicInfo.languages.length)
+      return toast.error("Please select at least one language");
+
+    if (basicInfo.canDrive === "" || basicInfo.canDrive === null)
+      return toast.error("Please select driving option");
 
     // ================= EDUCATION =================
-    fd.append("education", EDU.education || "");
-    fd.append("isRegisterPCK", EDU.isRegisterPCK ? 1 : 0);
-    fd.append("registrationNumber", EDU.registrationNumber || "");
+    if (!education.education) return toast.error("Education level is required");
 
-    if (EDU.eduCertificate)
-      fd.append("eduCertificate", EDU.eduCertificate);
+    if (!education.eduCertificate)
+      return toast.error("Education certificate is required");
 
-    if (EDU.practiceLicense)
-      fd.append("practiceLicense", EDU.practiceLicense);
+    if (education.isRegisterPCK === "" || education.isRegisterPCK === null)
+      return toast.error("Please select PCK registration option");
+
+    // If PCK = YES
+    if (education.isRegisterPCK) {
+      if (!education.registrationNumber.trim())
+        return toast.error("Registration number is required");
+
+      if (!education.practiceLicense)
+        return toast.error("Practising license is required");
+    }
 
     // ================= EXPERIENCE =================
-    fd.append("hospitalBasedCare", EXP.hospitalBasedCare ? 1 : 0);
-    fd.append(
-      "hospitalBasedYearsOfExperience",
-      EXP.hospitalBasedYearsOfExperience || ""
-    );
-    fd.append(
-      "hospitalBasedReferenceContact",
-      EXP.hospitalBasedReferenceContact || ""
-    );
+    if (experience.hospitalBasedCare === "")
+      return toast.error("Please select hospital based care option");
 
-    fd.append("homeBasedCare", EXP.homeBasedCare ? 1 : 0);
-    fd.append(
-      "homeBasedYearsOfExperience",
-      EXP.homeBasedYearsOfExperience || ""
-    );
-    fd.append(
-      "homeBasedReferenceContact",
-      EXP.homeBasedReferenceContact || ""
-    );
+    if (experience.hospitalBasedCare) {
+      if (!experience.hospitalBasedYearsOfExperience)
+        return toast.error("Hospital experience years required");
 
-    if (Array.isArray(EXP.preferred)) {
-      EXP.preferred.forEach((pref) =>
-        fd.append("preferred[]", pref)
-      );
+      if (!experience.hospitalBasedReferenceContact.trim())
+        return toast.error("Hospital reference contact required");
     }
 
-    fd.append("serviceFeeDay", EXP.serviceFeeDay || "");
-    fd.append("serviceFeeMonth", EXP.serviceFeeMonth || "");
+    if (experience.homeBasedCare === "")
+      return toast.error("Please select home based care option");
+
+    if (experience.homeBasedCare) {
+      if (!experience.homeBasedYearsOfExperience)
+        return toast.error("Home experience years required");
+
+      if (!experience.homeBasedReferenceContact.trim())
+        return toast.error("Home reference contact required");
+    }
+
+    if (!experience.preferred.length)
+      return toast.error("Please select preferred intervention area");
+
+    if (!experience.serviceFeeDay)
+      return toast.error("Service fee per day is required");
+
+    if (!experience.serviceFeeMonth)
+      return toast.error("Service fee per month is required");
 
     // ================= DOCUMENTS =================
-    if (DOC.idCopy) fd.append("idCopy", DOC.idCopy);
-    if (DOC.profilePhoto) fd.append("profilePhoto", DOC.profilePhoto);
-    if (DOC.goodConductCertificate)
-      fd.append("goodConductCertificate", DOC.goodConductCertificate);
-    if (DOC.drivingLicense)
-      fd.append("drivingLicense", DOC.drivingLicense);
-    if (DOC.referenceLetter)
-      fd.append("referenceLetter", DOC.referenceLetter);
+    if (!documents.idCopy) return toast.error("ID copy is required");
 
-    // ================= API CALL =================
-    const res = await postApi("/create-profile", fd, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    if (!documents.profilePhoto)
+      return toast.error("Profile photo is required");
 
-    
+    if (!documents.goodConductCertificate)
+      return toast.error("Good conduct certificate is required");
 
-    if (res?.status === 200) {
-      toast.success("Profile create Successfully!");
+    try {
+      const fd = new FormData();
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          ...user,
-          name: BASIC.name,
-          location: BASIC.location,
-          is_profile_completed: Boolean(res?.data?.is_profile_completed),
-          is_profile_verified: Boolean(res?.data?.is_profile_verified),
-        })
+      const BASIC = formData.basicInfo;
+      const EDU = formData.education;
+      const EXP = formData.experience;
+      const DOC = formData.documents;
+
+      // ================= BASIC INFO =================
+      fd.append("name", BASIC.name || "");
+      fd.append("location", BASIC.location || "");
+      fd.append("age", BASIC.age || "");
+      fd.append("gender", BASIC.gender || "");
+
+      if (Array.isArray(BASIC.languages)) {
+        BASIC.languages.forEach((lang) => fd.append("languages[]", lang));
+      }
+
+      fd.append("canDrive", BASIC.canDrive ? 1 : 0);
+
+      // ================= EDUCATION =================
+      fd.append("education", EDU.education || "");
+      fd.append("isRegisterPCK", EDU.isRegisterPCK ? 1 : 0);
+      fd.append("registrationNumber", EDU.registrationNumber || "");
+
+      if (EDU.eduCertificate) fd.append("eduCertificate", EDU.eduCertificate);
+
+      if (EDU.practiceLicense)
+        fd.append("practiceLicense", EDU.practiceLicense);
+
+      // ================= EXPERIENCE =================
+      fd.append("hospitalBasedCare", EXP.hospitalBasedCare ? 1 : 0);
+      fd.append(
+        "hospitalBasedYearsOfExperience",
+        EXP.hospitalBasedYearsOfExperience || "",
+      );
+      fd.append(
+        "hospitalBasedReferenceContact",
+        EXP.hospitalBasedReferenceContact || "",
       );
 
-      router.push("/dashboard");
-    } else {
-      toast.error(
-        res?.data?.message || "Something went wrong. Please try again."
+      fd.append("homeBasedCare", EXP.homeBasedCare ? 1 : 0);
+      fd.append(
+        "homeBasedYearsOfExperience",
+        EXP.homeBasedYearsOfExperience || "",
       );
+      fd.append(
+        "homeBasedReferenceContact",
+        EXP.homeBasedReferenceContact || "",
+      );
+
+      if (Array.isArray(EXP.preferred)) {
+        EXP.preferred.forEach((pref) => fd.append("preferred[]", pref));
+      }
+
+      fd.append("serviceFeeDay", EXP.serviceFeeDay || "");
+      fd.append("serviceFeeMonth", EXP.serviceFeeMonth || "");
+
+      // ================= DOCUMENTS =================
+      if (DOC.idCopy) fd.append("idCopy", DOC.idCopy);
+      if (DOC.profilePhoto) fd.append("profilePhoto", DOC.profilePhoto);
+      if (DOC.goodConductCertificate)
+        fd.append("goodConductCertificate", DOC.goodConductCertificate);
+      if (DOC.drivingLicense) fd.append("drivingLicense", DOC.drivingLicense);
+      if (DOC.referenceLetter)
+        fd.append("referenceLetter", DOC.referenceLetter);
+
+      // ================= API CALL =================
+      const res = await postApi("/create-profile", fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res?.status === 200) {
+        toast.success("Profile create Successfully!");
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            name: BASIC.name,
+            location: BASIC.location,
+            is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          }),
+        );
+
+        router.push("/dashboard");
+      } else {
+        toast.error(
+          res?.data?.message || "Something went wrong. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.error("Profile Update Error:", error);
+
+      if (error.response) {
+        toast.error(
+          error.response.data?.message || `Error: ${error.response.status}`,
+        );
+      } else if (error.request) {
+        toast.error("No response from server. Check your connection.");
+      } else {
+        toast.error("Unexpected error occurred.");
+      }
     }
-  } catch (error) {
-    console.error("Profile Update Error:", error);
-
-    if (error.response) {
-      toast.error(
-        error.response.data?.message ||
-          `Error: ${error.response.status}`
-      );
-    } else if (error.request) {
-      toast.error("No response from server. Check your connection.");
-    } else {
-      toast.error("Unexpected error occurred.");
-    }
-  }
-};
+  };
 
   return (
     <div>

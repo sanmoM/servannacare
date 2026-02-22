@@ -158,6 +158,70 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
   const handleUpdate = async (e) => {
     e.preventDefault();
 
+    const { basicInfo, education, experience, documents } = formData;
+
+    if (!basicInfo.name.trim()) return toast.error("Name is required");
+
+    if (!basicInfo.location.trim()) return toast.error("Location is required");
+
+    if (!basicInfo.age) return toast.error("Age is required");
+
+    const ageNumber = Number(basicInfo.age);
+
+    if (ageNumber < 25) return toast.error("You must be at least 25 years old");
+
+    if (!basicInfo.gender) return toast.error("Gender is required");
+
+    if (!basicInfo.languages.length)
+      return toast.error("Please select at least one language");
+
+    if (basicInfo.canDrive === "" || basicInfo.canDrive === null)
+      return toast.error("Please select driving option");
+
+    if (!education.education) return toast.error("Education level is required");
+
+    if (!education.educationCertificate)
+      return toast.error("Education certificate is required");
+
+    if (experience.hospitalBasedCare === "")
+      return toast.error("Please select hospital based care option");
+
+    if (experience.hospitalBasedCare) {
+      if (!experience.hospitalBasedYearsOfExperience)
+        return toast.error("Hospital experience years required");
+
+      if (!experience.hospitalBasedReferenceContact.trim())
+        return toast.error("Hospital reference contact required");
+    }
+
+    if (experience.homeBasedCare === "")
+      return toast.error("Please select home based care option");
+
+    if (experience.homeBasedCare) {
+      if (!experience.homeBasedYearsOfExperience)
+        return toast.error("Home experience years required");
+
+      if (!experience.homeBasedReferenceContact.trim())
+        return toast.error("Home reference contact required");
+    }
+
+    if (!experience.preferred.length)
+      return toast.error("Please select preferred intervention area");
+
+    if (!experience.serviceFeeDay)
+      return toast.error("Service fee per day is required");
+
+    if (!experience.serviceFeeMonth)
+      return toast.error("Service fee per month is required");
+
+    if (!documents.idCopy) return toast.error("ID Copy is required");
+
+    if (!documents.profilePhoto)
+      return toast.error("Profile photo is required");
+
+    if (!documents.goodConductCertificate)
+      return toast.error("Good conduct certificate is required");
+
     try {
       const fd = new FormData();
 
@@ -258,7 +322,6 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     }
   };
 
-  
   return (
     <div>
       <form onSubmit={handleUpdate} className="space-y-6 relative">
