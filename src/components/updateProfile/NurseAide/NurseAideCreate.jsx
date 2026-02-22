@@ -20,7 +20,7 @@ import toast from "react-hot-toast";
 import { postApi } from "@/lib/apiHandler";
 
 const NurseAideCreate = ({ data = {} }) => {
-  console.log("datas", data);
+
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -31,9 +31,7 @@ const NurseAideCreate = ({ data = {} }) => {
       gender: data?.gender || "",
       languages: data?.languages || [],
       canDrive:
-        data?.canDrive === undefined || data?.canDrive === null
-          ? null
-          : Boolean(data?.canDrive),
+        String(data?.canDrive) === "1" || String(data?.canDrive) === "true",
     },
     education: {
       education: data.education || "",
@@ -66,7 +64,7 @@ const NurseAideCreate = ({ data = {} }) => {
       referenceLetter: data.referenceLetter || null,
     },
   });
-  console.log(formData?.basicInfo?.languages);
+
 
   const preferred = [
     {
@@ -731,7 +729,7 @@ const NurseAideCreate = ({ data = {} }) => {
             value={formData?.skillsServices?.serviceFeeDay}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFeeDay", val);
+              handleChange("skillsServices", "serviceFeeDay", val);
             }}
           />
           <Input
@@ -743,7 +741,7 @@ const NurseAideCreate = ({ data = {} }) => {
             value={formData?.skillsServices?.serviceFeeMonth}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFeeMonth", val);
+              handleChange("skillsServices", "serviceFeeMonth", val);
             }}
           />
         </div>

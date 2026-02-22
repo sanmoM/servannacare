@@ -41,7 +41,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  console.log(specialistDatas);
+
 
   const { user, loaded } = useLocalUser();
 
@@ -214,7 +214,7 @@ export default function ProfilePage() {
             (specialistDatas?.data?.nurseAssistant?.is_profile_completed ? (
               <NurseAideUpdate data={specialistDatas?.data?.nurseAssistant} />
             ) : (
-              // todo
+             
               <NurseAideCreate />
             ))}
 
@@ -225,7 +225,7 @@ export default function ProfilePage() {
                 data={specialistDatas?.data?.specialNeed}
               />
             ) : (
-              // todo
+              
               <SpecialNeedCaregiversCreate />
             ))}
         </div>

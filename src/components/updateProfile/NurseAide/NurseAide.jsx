@@ -28,7 +28,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const NurseAideUpdate = ({ data = {} }) => {
-  console.log("datas", data);
+
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -39,7 +39,8 @@ const NurseAideUpdate = ({ data = {} }) => {
       gender: data?.gender || "",
       experience: data?.nurse_assistant?.experience || "",
       languages: data?.languages || [],
-      canDrive: data?.canDrive || "",
+      canDrive:
+        String(data?.canDrive) === "1" || String(data?.canDrive) === "true",
       number: data?.number || "",
       phone: data?.number_two || "",
       email: data?.email || "",
@@ -76,6 +77,7 @@ const NurseAideUpdate = ({ data = {} }) => {
       educationCertificate: data?.nurse_assistant?.educationCertificate || null,
     },
   });
+
 
   const preferred = [
     {
@@ -846,7 +848,7 @@ const NurseAideUpdate = ({ data = {} }) => {
               placeholder="Write a brief bio about yourself and the services you offer.."
               className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
               rows={6}
-              onChange={handleChange}
+              onChange={(e) => handleChange("basicInfo", "bio", e.target.value)}
             />
           </div>
         </div>

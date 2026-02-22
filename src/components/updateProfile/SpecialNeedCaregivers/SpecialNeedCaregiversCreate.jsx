@@ -17,6 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { postApi } from "@/lib/apiHandler";
 
 const SpecialNeedCaregiversCreate = ({ data = {} }) => {
   console.log("datas", data);
@@ -56,6 +57,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       referenceLetter: data?.referenceLetter || null,
     },
   });
+
+  console.log("formData", formData);
 
   const documents = [
     {
@@ -152,20 +155,110 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     }));
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
-    );
-    toast.success("Profile Updated!");
-    router.push("/dashboard");
+
+    try {
+      const fd = new FormData();
+
+      const BASIC = formData.basicInfo;
+      const EDU = formData.education;
+      const EXP = formData.experience;
+      const DOC = formData.documents;
+
+      // ================= BASIC INFO =================
+      fd.append("name", BASIC.name || "");
+      fd.append("location", BASIC.location || "");
+      fd.append("age", BASIC.age || "");
+      fd.append("gender", BASIC.gender || "");
+
+      if (Array.isArray(BASIC.languages)) {
+        BASIC.languages.forEach((lang) => fd.append("languages[]", lang));
+      }
+
+      fd.append("canDrive", BASIC.canDrive ? 1 : 0);
+
+      // ================= EDUCATION =================
+      fd.append("education", EDU.education || "");
+
+      if (EDU.educationCertificate) {
+        fd.append("educationCertificate", EDU.educationCertificate);
+      }
+
+      // ================= EXPERIENCE =================
+      fd.append("hospitalBasedCare", EXP.hospitalBasedCare ? 1 : 0);
+      fd.append(
+        "hospitalBasedYearsOfExperience",
+        EXP.hospitalBasedYearsOfExperience || "",
+      );
+      fd.append(
+        "hospitalBasedReferenceContact",
+        EXP.hospitalBasedReferenceContact || "",
+      );
+
+      fd.append("homeBasedCare", EXP.homeBasedCare ? 1 : 0);
+      fd.append(
+        "homeBasedYearsOfExperience",
+        EXP.homeBasedYearsOfExperience || "",
+      );
+      fd.append(
+        "homeBasedReferenceContact",
+        EXP.homeBasedReferenceContact || "",
+      );
+
+      if (Array.isArray(EXP.preferred)) {
+        EXP.preferred.forEach((pref) => fd.append("preferred[]", pref));
+      }
+
+      fd.append("serviceFeeDay", EXP.serviceFeeDay || "");
+      fd.append("serviceFeeMonth", EXP.serviceFeeMonth || "");
+
+      // ================= DOCUMENTS =================
+      if (DOC.idCopy) fd.append("idCopy", DOC.idCopy);
+      if (DOC.profilePhoto) fd.append("profilePhoto", DOC.profilePhoto);
+      if (DOC.goodConductCertificate)
+        fd.append("goodConductCertificate", DOC.goodConductCertificate);
+      if (DOC.drivingLicense) fd.append("drivingLicense", DOC.drivingLicense);
+      if (DOC.referenceLetter)
+        fd.append("referenceLetter", DOC.referenceLetter);
+
+      // ================= API CALL =================
+      const res = await postApi("/create-profile", fd);
+
+      if (res?.status === 200) {
+        toast.success("Profile Created Successfully!");
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            name: BASIC.name,
+            location: BASIC.location,
+            is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          }),
+        );
+
+        router.push("/dashboard");
+      } else {
+        toast.error(res?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+
+      if (error.response) {
+        toast.error(
+          error.response.data?.message || `Error: ${error.response.status}`,
+        );
+      } else if (error.request) {
+        toast.error("No response from server.");
+      } else {
+        toast.error("Unexpected error occurred.");
+      }
+    }
   };
+
+  
   return (
     <div>
       <form onSubmit={handleUpdate} className="space-y-6 relative">
