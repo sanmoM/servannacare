@@ -46,7 +46,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     housekeeping: "",
     childcare: "",
     date: [],
-    liveType: "",
+    preferred: "",
     serviceFeeDay: "",
     serviceFeeMonth: "",
     documents: {
@@ -67,7 +67,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         experience: initialData.experience || "",
         salaryRange: initialData.salaryRange || "",
         preferredRole: initialData.preferredRole || "",
-        liveType: initialData.liveType || "",
+        preferred: initialData.preferred || "",
         cooking: initialData.cooking || "",
         housekeeping: initialData.housekeeping || "",
         childcare: initialData.childcare || "",
@@ -529,8 +529,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
             Live Preference
           </Label>
           <RadioGroup
-            value={formData.liveType}
-            onValueChange={(v) => handleSelectChange("liveType", v)}
+            value={formData.preferred}
+            onValueChange={(v) => handleSelectChange("preferred", v)}
           >
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
@@ -545,7 +545,40 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
           </RadioGroup>
         </div>
 
-        
+        <div className="mt-6">
+          {/* Section Label */}
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            Service Fee (KSh)
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Per Day"
+                type="number"
+                name="serviceFeeDay"
+                placeholder="e.g., 1500"
+                value={formData.serviceFeeDay}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+                  handleSelectChange("serviceFeeDay", val);
+                }}
+              />
+
+              <Input
+                label="Per Month"
+                type="number"
+                name="serviceFeeMonth"
+                placeholder="e.g., 35000"
+                value={formData.serviceFeeMonth}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  handleSelectChange("serviceFeeMonth", val);
+                }}
+              />
+            </div>
+          </div>
+        </div>
 
         {isUpdate && (
           <div>

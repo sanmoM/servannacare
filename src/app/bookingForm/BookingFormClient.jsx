@@ -4,21 +4,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import {
-  User,
-  Stethoscope,
-  Pill,
-  CalendarDays,
-  MapPin,
-  ShieldCheck,
-  Eye,
-  Activity,
-  HeartPulse,
-  Phone,
-  Hospital,
-  UserPlus,
-  Info,
-} from "lucide-react";
+import { User, ShieldCheck, Activity, HeartPulse, Phone } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -101,7 +87,6 @@ export default function BookingFormClient() {
   const watchAllergy = watch("patient_have_any_known_allergies");
   const watchbooking_type = watch("booking_type");
 
-  
   const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
   const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
 
@@ -942,40 +927,6 @@ export default function BookingFormClient() {
           </div>
         </aside>
       </div>
-
-      {/* MONTH PREVIEW MODAL */}
-      {/* {previewMonth && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <Card className="w-full max-w-sm rounded-[2rem] border-none shadow-2xl overflow-hidden bg-white">
-            <CardHeader className="border-b p-6 flex flex-row items-center justify-between">
-              <CardTitle className="text-lg font-bold capitalize">
-                {new Date(previewMonth + "-02").toLocaleString("default", {
-                  month: "long",
-                })}
-              </CardTitle>
-              <Button variant="ghost" onClick={() => setPreviewMonth(null)}>
-                ✕
-              </Button>
-            </CardHeader>
-            <CardContent className="p-8">
-              <Calendar
-                mode="multiple"
-                month={new Date(previewMonth + "-02")}
-                selected={availableDates
-                  .filter((d) => d.startsWith(previewMonth))
-                  .map((d) => new Date(d + "T00:00:00"))}
-                className="pointer-events-none bg-slate-50 rounded-2xl p-4"
-              />
-              <Button
-                className="w-full mt-6 rounded-xl"
-                onClick={() => setPreviewMonth(null)}
-              >
-                Close Preview
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )} */}
     </div>
   );
 }

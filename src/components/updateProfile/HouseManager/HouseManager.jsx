@@ -65,7 +65,7 @@ const HouseManager = ({ data = {} }) => {
     },
   });
 
-  console.log("dfdf",formData?.additionalDetails?.serviceFeeDay)
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,43 +1,107 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
+import { useForm } from "react-hook-form";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useFetch } from "@/hooks/useFetch";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 export default function EmployerBookingFormClient() {
-  // Employer Section State
-  const [lookingFor, setLookingFor] = useState("monthly");
-  const [kids, setKids] = useState("");
-  const [ageBracket, setAgeBracket] = useState("");
-  const [homeType, setHomeType] = useState("");
-  const [homeSize, setHomeSize] = useState("");
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+  const id = searchParams.get("id");
+  const router = useRouter();
 
-  // Care Duration State
-  const [selectedMonths, setSelectedMonths] = useState([]);
-  const [selectedDates, setSelectedDates] = useState([]);
+  //   const [bookingAmount, setBookingAmount] = useState(0);
+  const [selectedPrice, setSelectedPrice] = useState(null);
+  //   const [selectedMonths, setSelectedMonths] = useState([]);
+  const [selectedDateList, setSelectedDateList] = useState([]);
+  //   const [previewMonth, setPreviewMonth] = useState(null);
+
+  const { data: specData, isLoading: specLoading } = useFetch("/specialist");
+
+  const specialists = specData?.data?.data ?? [];
+
+  const matchedSpecialist = useMemo(
+    () => specialists.find((s) => s.id === Number(id)),
+    [specialists, id],
+  );
+
+  console.log("mathdfd", matchedSpecialist);
+
+  const availableDates =
+    matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
+
   const [previewMonth, setPreviewMonth] = useState(null);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      lookingFor: "",
+      kids: "",
+      ageBracket: "",
+      homeType: "",
+      homeSize: "",
+      selectedMonths: [],
+      selectedDates: [],
+    },
+  });
+
+  const lookingFor = watch("lookingFor");
+  const selectedDates = watch("selectedDates");
+  const selectedMonths = watch("selectedMonths");
+
+  const ageBracket = watch("ageBracket");
+  const homeType = watch("homeType");
+  const homeSize = watch("homeSize");
+  const kids = watch("kids");
+
+  React.useEffect(() => {
+    if (kids !== "yes") {
+      setValue("ageBracket", "");
+    }
+  }, [kids, setValue]);
+
+  const handleDateSelect = (date) => {
+    const currentDates = getValues("selectedDates");
+    if (!currentDates.includes(date)) {
+      setValue("selectedDates", [...currentDates, date]);
+    }
+  };
+  const monthlyPrice = 100;
+  const dailyPrice = 4;
+
+  const handleMonthSelect = (month) => {
+    const currentMonths = getValues("selectedMonths");
+    if (!currentMonths.includes(month)) {
+      setValue("selectedMonths", [...currentMonths, month]);
+    }
+  };
+
+  const bookingAmount =
+    lookingFor === "monthly"
+      ? selectedMonths.length * monthlyPrice
+      : selectedDates.length * dailyPrice;
 
   const isMonthly = lookingFor === "monthly";
   const isDaily = lookingFor === "daily";
 
-  const monthlyPrice = 100;
-  const dailyPrice = 4;
-
-  const bookingAmount = isMonthly
-    ? selectedMonths.length * monthlyPrice
-    : selectedDates.length * dailyPrice;
-
-  // Demo available dates
-  const availableDates = [
-    "2026-02-20",
-    "2026-02-21",
-    "2026-02-26",
-    "2026-03-17",
-  ];
+  const onSubmit = async (data) => {
+    console.log("after select", data);
+  };
 
   const getDatesForMonth = (monthKey) =>
     availableDates.filter((d) => d.startsWith(monthKey));
@@ -49,215 +113,238 @@ export default function EmployerBookingFormClient() {
     return !availableDates.includes(`${y}-${m}-${d}`);
   };
 
+  if (specLoading)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-12 px-4">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 space-y-6">
-          {/* EMPLOYER FORM */}
-          <Card className="border-none shadow-sm ring-1 ring-slate-200">
-            <CardHeader className="border-b bg-white p-6">
-              <CardTitle>WHAT THE EMPLOYER FILLS</CardTitle>
-            </CardHeader>
+          <form
+            onSubmit={handleSubmit(onSubmit, (errors) => {
+              const firstError = Object.values(errors)[0];
 
-            <CardContent className="p-8 space-y-8">
-              {/* 1. Looking For */}
-              <div>
-                <Label className="font-bold block mb-4">1. Looking for:</Label>
+              if (firstError?.message) {
+                toast.error(firstError.message);
+              } else {
+                toast.error(
+                  "Please complete all required fields before submitting.",
+                );
+              }
+            })}
+            className="lg:col-span-2 space-y-6"
+          >
+            {/* EMPLOYER FORM */}
+            <Card className="border-none shadow-sm ring-1 ring-slate-200">
+              <CardHeader className="border-b bg-white p-6">
+                <CardTitle>Booking Form</CardTitle>
+              </CardHeader>
 
-                <RadioGroup
-                  value={lookingFor}
-                  onValueChange={(val) => {
-                    setLookingFor(val);
-                    setSelectedMonths([]);
-                    setSelectedDates([]);
-                  }}
-                  className="space-y-3"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="monthly" id="livein" />
-                    <Label htmlFor="livein">Live In</Label>
-                  </div>
+              <CardContent className="p-8 space-y-8">
+                {/* 1. Looking For */}
+                <div>
+                  <Label className="font-bold block mb-4">
+                    1. Looking for:
+                  </Label>
 
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="daily" id="dayburg" />
-                    <Label htmlFor="dayburg">Dayburg</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <Separator />
-
-              {/* 2. Kids */}
-              <div>
-                <Label className="font-bold block mb-4">
-                  2. Do you have kids?
-                </Label>
-
-                <RadioGroup
-                  value={kids}
-                  onValueChange={setKids}
-                  className="space-y-3"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="yes" id="kids-yes" />
-                    <Label htmlFor="kids-yes">Yes</Label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="no" id="kids-no" />
-                    <Label htmlFor="kids-no">No</Label>
-                  </div>
-                </RadioGroup>
-
-                {kids === "yes" && (
-                  <div className="mt-6 space-y-3">
-                    <Label className="font-medium">
-                      IF YES (choose age bracket)
-                    </Label>
-
-                    <RadioGroup
-                      value={ageBracket}
-                      onValueChange={setAgeBracket}
-                      className="space-y-2"
-                    >
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="0-3" id="age1" />
-                        <Label htmlFor="age1">0 – 3 yrs</Label>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="4-10" id="age2" />
-                        <Label htmlFor="age2">4 – 10 yrs</Label>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <RadioGroupItem value="11+" id="age3" />
-                        <Label htmlFor="age3">11 yrs and Above</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                )}
-              </div>
-
-              <Separator />
-
-              {/* 3. Type of Home */}
-              <div>
-                <Label className="font-bold block mb-4">3. Type of home:</Label>
-
-                <RadioGroup
-                  value={homeType}
-                  onValueChange={setHomeType}
-                  className="space-y-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="compound" id="compound" />
-                    <Label htmlFor="compound">Own compound</Label>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <RadioGroupItem value="apartment" id="apartment" />
-                    <Label htmlFor="apartment">Apartment</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <Separator />
-
-              {/* 4. Home Size */}
-              <div>
-                <Label className="font-bold block mb-4">
-                  4. How Big is your home:
-                </Label>
-
-                <RadioGroup
-                  value={homeSize}
-                  onValueChange={setHomeSize}
-                  className="grid grid-cols-2 md:grid-cols-3 gap-4"
-                >
-                  {["1Br", "2Br", "3Br", "4Br", "5Br and above"].map((size) => (
-                    <div key={size} className="flex items-center gap-2">
-                      <RadioGroupItem value={size} id={size} />
-                      <Label htmlFor={size}>{size}</Label>
+                  <RadioGroup
+                    value={lookingFor}
+                    onValueChange={(val) => {
+                      setValue("lookingFor", val);
+                      setValue("selectedMonths", []);
+                      setValue("selectedDates", []);
+                    }}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="monthly" id="livein" />
+                      <Label htmlFor="livein">Live In</Label>
                     </div>
-                  ))}
-                </RadioGroup>
-              </div>
-            </CardContent>
-          </Card>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="daily" id="dayburg" />
+                      <Label htmlFor="dayburg">Dayburg</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
 
-          {/* CARE DURATION SECTION */}
-          <Card className="border-none shadow-sm ring-1 ring-slate-200">
-            <CardHeader className="border-b bg-white p-6">
-              <CardTitle>Care Schedule</CardTitle>
-            </CardHeader>
+                <Separator />
 
-            <CardContent className="p-8 space-y-8">
-              {/* PLAN CARDS */}
-              <div className="grid grid-cols-2 gap-6">
-                {/* Monthly Plan */}
-                <div
-                  onClick={() => {
-                    setLookingFor("monthly");
-                    setSelectedMonths([]);
-                    setSelectedDates([]);
-                  }}
-                  className={`p-6 rounded-2xl border-2 cursor-pointer transition-all
+                {/* 2. Kids */}
+                <div>
+                  <Label className="font-bold block mb-4">
+                    2. Do you have kids?
+                  </Label>
+
+                  <RadioGroup
+                    value={kids}
+                    onValueChange={(val) => setValue("kids", val)}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="yes" id="kids-yes" />
+                      <Label htmlFor="kids-yes">Yes</Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="no" id="kids-no" />
+                      <Label htmlFor="kids-no">No</Label>
+                    </div>
+                  </RadioGroup>
+
+                  {kids === "yes" && (
+                    <div className="mt-6 space-y-3">
+                      <Label className="font-medium">choose age bracket</Label>
+                      <RadioGroup
+                        value={watch("ageBracket")}
+                        onValueChange={(val) => setValue("ageBracket", val)}
+                        className="space-y-2"
+                      >
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="0-3" id="age1" />
+                          <Label htmlFor="age1">0 – 3 yrs</Label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="4-10" id="age2" />
+                          <Label htmlFor="age2">4 – 10 yrs</Label>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <RadioGroupItem value="11+" id="age3" />
+                          <Label htmlFor="age3">11 yrs and Above</Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* 3. Type of Home */}
+                <div>
+                  <Label className="font-bold block mb-4">
+                    3. Type of home:
+                  </Label>
+
+                  <RadioGroup
+                    value={homeType}
+                    // onValueChange={setHomeType}
+                    onValueChange={(val) => setValue("homeType", val)}
+                    className="space-y-2"
+                  >
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="compound" id="compound" />
+                      <Label htmlFor="compound">Own compound</Label>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="apartment" id="apartment" />
+                      <Label htmlFor="apartment">Apartment</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <Separator />
+
+                {/* 4. Home Size */}
+                <div>
+                  <Label className="font-bold block mb-4">
+                    4. How Big is your home:
+                  </Label>
+
+                  <RadioGroup
+                    value={homeSize}
+                    onValueChange={(val) => setValue("homeSize", val)}
+                    className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                  >
+                    {["1Br", "2Br", "3Br", "4Br", "5Br and above"].map(
+                      (size) => (
+                        <div key={size} className="flex items-center gap-2">
+                          <RadioGroupItem value={size} id={size} />
+                          <Label htmlFor={size}>{size}</Label>
+                        </div>
+                      ),
+                    )}
+                  </RadioGroup>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* CARE DURATION SECTION */}
+            <Card className="border-none shadow-sm ring-1 ring-slate-200">
+              <CardHeader className="border-b bg-white p-6">
+                <CardTitle>Care Schedule</CardTitle>
+              </CardHeader>
+
+              <CardContent className="p-8 space-y-8">
+                {/* PLAN CARDS */}
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Monthly Plan */}
+                  <div
+                    onClick={() => {
+                      setLookingFor("monthly");
+                      setSelectedMonths([]);
+                      setSelectedDates([]);
+                    }}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all
       ${isMonthly ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-200"}
     `}
-                >
-                  <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
-                    Monthly Plan
-                  </p>
-                  <p className="text-2xl font-bold mt-2">KES 100</p>
-                </div>
+                  >
+                    <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
+                      Monthly Plan
+                    </p>
+                    <p className="text-2xl font-bold mt-2">KES 100</p>
+                  </div>
 
-                {/* Daily Plan */}
-                <div
-                  onClick={() => {
-                    setLookingFor("daily");
-                    setSelectedMonths([]);
-                    setSelectedDates([]);
-                  }}
-                  className={`p-6 rounded-2xl border-2 cursor-pointer transition-all
+                  {/* Daily Plan */}
+                  <div
+                    onClick={() => {
+                      setLookingFor("daily");
+                      setSelectedMonths([]);
+                      setSelectedDates([]);
+                    }}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all
       ${isDaily ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-200"}
     `}
-                >
-                  <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
-                    Daily Plan
-                  </p>
-                  <p className="text-2xl font-bold mt-2">KES 4</p>
+                  >
+                    <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
+                      Daily Plan
+                    </p>
+                    <p className="text-2xl font-bold mt-2">KES 4</p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Monthly */}
-              {isMonthly && (
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-                  {Array.from({ length: 12 }).map((_, i) => {
-                    const monthKey = `2026-${String(i + 1).padStart(2, "0")}`;
-                    const monthLabel = new Date(2026, i).toLocaleString(
-                      "default",
-                      { month: "long" },
-                    );
+                {/* Monthly */}
+                {isMonthly && (
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+                    {Array.from({ length: 12 }).map((_, i) => {
+                      const monthKey = `2026-${String(i + 1).padStart(2, "0")}`;
+                      const monthLabel = new Date(2026, i).toLocaleString(
+                        "default",
+                        { month: "long" },
+                      );
 
-                    const hasAvailability =
-                      getDatesForMonth(monthKey).length > 0;
+                      const hasAvailability =
+                        getDatesForMonth(monthKey).length > 0;
 
-                    const selected = selectedMonths.includes(monthKey);
-                    return (
-                      <div key={monthKey} className="relative">
-                        {/* MONTH BUTTON */}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setSelectedMonths((prev) =>
-                              prev.includes(monthKey)
-                                ? prev.filter((m) => m !== monthKey)
-                                : [...prev, monthKey],
-                            )
-                          }
-                          className={`
+                      const selected = selectedMonths.includes(monthKey);
+                      return (
+                        <div key={monthKey} className="relative">
+                          {/* MONTH BUTTON */}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSelectedMonths((prev) =>
+                                prev.includes(monthKey)
+                                  ? prev.filter((m) => m !== monthKey)
+                                  : [...prev, monthKey],
+                              )
+                            }
+                            className={`
                             w-full p-5 rounded-2xl border transition-all duration-200 relative
                             ${
                               selected
@@ -265,49 +352,50 @@ export default function EmployerBookingFormClient() {
                                 : "bg-white border-slate-200 hover:border-[#7A295A]"
                             }
   `}
-                        >
-                          <p className="font-semibold">{monthLabel}</p>
-                          <p className="text-xs text-slate-500">
-                            {hasAvailability ? "Available" : "Unavailable"}
-                          </p>
-                        </button>
-
-                        {/* 👁 EYE BUTTON */}
-                        {hasAvailability && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPreviewMonth(monthKey);
-                            }}
-                            className="absolute -top-2 -right-2 bg-black text-white rounded-full p-2 text-xs shadow-md"
                           >
-                            👁
+                            <p className="font-semibold">{monthLabel}</p>
+                            <p className="text-xs text-slate-500">
+                              {hasAvailability ? "Available" : "Unavailable"}
+                            </p>
                           </button>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
 
-              {/* Daily */}
-              {isDaily && (
-                <div className="flex justify-center">
-                  <Calendar
-                    mode="multiple"
-                    selected={selectedDates}
-                    onSelect={setSelectedDates}
-                    disabled={isDateDisabled}
-                  />
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                          {/* 👁 EYE BUTTON */}
+                          {hasAvailability && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewMonth(monthKey);
+                              }}
+                              className="absolute -top-2 -right-2 bg-black text-white rounded-full p-2 text-xs shadow-md"
+                            >
+                              👁
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
-          <Button className="w-full h-16 text-xl font-bold rounded-2xl bg-[#7A295A] hover:bg-[#65224a]">
-            Confirm & Submit
-          </Button>
+                {/* Daily */}
+                {isDaily && (
+                  <div className="flex justify-center">
+                    <Calendar
+                      mode="multiple"
+                      selected={selectedDates}
+                      onSelect={setSelectedDates}
+                      disabled={isDateDisabled}
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Button className="w-full h-16 text-xl font-bold rounded-2xl bg-[#7A295A] hover:bg-[#65224a]">
+              Confirm & Submit
+            </Button>
+          </form>
         </div>
 
         {/* RIGHT SUMMARY */}
