@@ -27,6 +27,7 @@ import {
   ShieldCheck,
   Banknote,
   Calendar,
+  Star,
 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -42,6 +43,7 @@ const EmployeePage = () => {
   const { data, isLoading, refetch } = useFetch("/profile");
 
   const [scheduleViewId, setScheduleViewId] = useState(null);
+
 
   useEffect(() => {
     if (data) {
@@ -185,16 +187,16 @@ const EmployeePage = () => {
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-1">
                         {/* VIEW DIALOG */}
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-blue-600 hover:bg-blue-50"
-                            >
-                              <Eye size={18} />
-                            </Button>
-                          </DialogTrigger>
+<Dialog>
+  <DialogTrigger asChild>
+    <Button
+      variant="ghost"
+      size="icon"
+      className="text-blue-600 hover:bg-blue-50"
+    >
+      <Eye size={18} />
+    </Button>
+  </DialogTrigger>
 
                           <DialogContent className="sm:max-w-3xl">
                             <DialogHeader>
@@ -351,17 +353,15 @@ const EmployeePage = () => {
                           </DialogContent>
                         </Dialog>
 
-                        {/* SCHEDULE CALENDAR MODAL */}
-                        <Dialog
-                          open={scheduleViewId === emp.id}
-                          onOpenChange={(open) =>
-                            !open && setScheduleViewId(null)
-                          }
-                        >
-                          <DialogContent className="sm:max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>Selected Schedule</DialogTitle>
-                            </DialogHeader>
+{/* SCHEDULE CALENDAR MODAL */}
+<Dialog
+  open={scheduleViewId === emp.id}
+  onOpenChange={(open) => !open && setScheduleViewId(null)}
+>
+  <DialogContent className="sm:max-w-md">
+    <DialogHeader>
+      <DialogTitle>Selected Schedule</DialogTitle>
+    </DialogHeader>
 
                             <SelectableCalendar
                               mode="multiple"

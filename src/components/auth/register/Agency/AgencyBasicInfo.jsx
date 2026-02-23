@@ -9,7 +9,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
+  const [country, setCountry] = useState("KE");
+
   const [data, setData] = useState({
     companyName: defaultValues.companyName || "",
     kraPin: defaultValues.kraPin || "",
@@ -110,12 +117,16 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
       }
     }
 
-    if (data.phone.length !== 11) {
-      toast.error("Mobile number must be exactly 11 digits.");
+    if (!data?.phone) {
+      toast.error("Phone number is required!");
       return;
     }
 
-    console.log("Agency Data:", data);
+    if (!isValidPhoneNumber(data?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
     onNext(data);
   };
 
@@ -152,23 +163,41 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
             onChange={handleChange}
           />
 
-          <Input
-            label="Mobile Number"
-            name="phone"
-            type="tel"
-            placeholder="+254xxxxxxx"
-            value={data.phone || "+254"}
-            maxLength={11}
-            onFocus={() => {
-              if (!data.phone) {
-                setData((prev) => ({
-                  ...prev,
-                  phone: "+254",
-                }));
-              }
-            }}
-            onChange={handlePhoneChange}
-          />
+          <div>
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={data?.phone}
+                onChange={(value) => {
+                  setData((prev) => ({ ...prev, phone: value || "" }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setData((prev) => ({
+                      ...prev,
+                      phone: `+${exampleNumber.countryCallingCode}`,
+                    }));
+                  } else {
+                    setData((prev) => ({ ...prev, phone: "" }));
+                  }
+                }}
+              />
+            </div>
+
+            {data?.phone && !isValidPhoneNumber(data?.phone) && (
+              <p className="text-red-500 text-sm mt-1">
+                Invalid phone number for selected country
+              </p>
+            )}
+          </div>
         </div>
 
         <Input

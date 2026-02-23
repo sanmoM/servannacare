@@ -19,8 +19,13 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
 
 const NurseCreate = ({ data = {} }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user, loaded } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -29,6 +34,7 @@ const NurseCreate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      phone: data?.phone || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
     },
@@ -188,18 +194,6 @@ const NurseCreate = ({ data = {} }) => {
     }));
   };
 
-  const togglepreferred = (pref) => {
-    setFormData((prev) => {
-      const alreadySelected = prev.preferred.includes(pref);
-      return {
-        ...prev,
-        preferred: alreadySelected
-          ? prev.preferred.filter((l) => l !== pref)
-          : [...prev.preferred, pref],
-      };
-    });
-  };
-
   const toggleArrayItem = (section, field, value) => {
     setFormData((prev) => {
       const arr = prev[section][field] || [];
@@ -217,6 +211,110 @@ const NurseCreate = ({ data = {} }) => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+
+    const { basicInfo, education, experience, skillsServices, documents } =
+      formData;
+
+    if (!basicInfo?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(basicInfo?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
+    // ================= BASIC INFO =================
+    if (!basicInfo.name?.trim()) return toast.error("Full name is required");
+
+    if (!basicInfo.location?.trim()) return toast.error("Location is required");
+
+    if (!basicInfo.age) return toast.error("Age is required");
+
+    const ageNumber = Number(basicInfo.age);
+
+    if (ageNumber < 25) return toast.error("You must be at least 25 years old");
+
+    if (!basicInfo.gender) return toast.error("Gender is required");
+
+    if (!basicInfo.languages?.length)
+      return toast.error("Please select at least one language");
+
+    if (basicInfo.canDrive === null)
+      return toast.error("Please select driving option");
+
+    // ================= EDUCATION =================
+    if (!education.education) return toast.error("Education level is required");
+
+    if (!education.educationCertificate)
+      return toast.error("Education certificate is required");
+
+    if (education.isNursingInKenya === null)
+      return toast.error("Please select NCK registration option");
+
+    // If NCK = YES
+    if (education.isNursingInKenya) {
+      if (!experience.registrationNumber?.trim())
+        return toast.error("Registration number is required");
+
+      if (!experience.practiceLicense)
+        return toast.error("Practising license is required");
+    }
+
+    // ================= EXPERIENCE =================
+    if (experience.hospitalBasedCare === null)
+      return toast.error("Please select hospital based care option");
+
+    if (experience.hospitalBasedCare) {
+      if (!experience.hospitalBasedYearsOfExperience)
+        return toast.error("Hospital experience years required");
+
+      if (!experience.hospitalBasedReferenceContact?.trim())
+        return toast.error("Hospital reference contact required");
+    }
+
+    if (experience.homeBasedCare === null)
+      return toast.error("Please select home based care option");
+
+    if (experience.homeBasedCare) {
+      if (!experience.homeBasedYearsOfExperience)
+        return toast.error("Home experience years required");
+
+      if (!experience.homeBasedReferenceContact?.trim())
+        return toast.error("Home reference contact required");
+    }
+
+    if (!experience.preferred?.length)
+      return toast.error("Please select at least one preferred area");
+
+    // ================= SKILLS =================
+    if (!skillsServices.skills?.length)
+      return toast.error("Please select at least one skill");
+
+    if (!skillsServices.mobilityYears)
+      return toast.error("Mobility assistance experience required");
+
+    if (!skillsServices.bathingYears)
+      return toast.error("Bathing assistance experience required");
+
+    if (!skillsServices.feedingYears)
+      return toast.error("Feeding assistance experience required");
+
+    if (!skillsServices.serviceFeeDay)
+      return toast.error("Service fee per day is required");
+
+    if (!skillsServices.serviceFeeMonth)
+      return toast.error("Service fee per month is required");
+
+    // ================= DOCUMENTS =================
+    if (!documents.idCopy) return toast.error("ID copy is required");
+
+    if (!documents.profilePhoto)
+      return toast.error("Profile photo is required");
+
+    if (!documents.goodConductCertificate)
+      return toast.error("Good conduct certificate is required");
 
     if (formData.experience.preferred.length === 0) {
       toast.error("Please select at least one preferred area");
@@ -251,12 +349,13 @@ const NurseCreate = ({ data = {} }) => {
     fd.append("age", BASICINFO.age);
     fd.append("experience", BASICINFO.experience);
     fd.append("gender", BASICINFO.gender);
+    fd.append("phone", BASICINFO.phone);
     BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
     fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
 
     fd.append("education", EDUCATION.education);
     fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
-    fd.append("registrationNumber", EDUCATION.registrationNumber);
+    fd.append("registrationNumber", EXPERIENCE.registrationNumber);
 
     fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
     fd.append(
@@ -303,8 +402,8 @@ const NurseCreate = ({ data = {} }) => {
     if (EDUCATION?.educationCertificate) {
       fd.append("educationCertificate", EDUCATION.educationCertificate);
     }
-    if (EDUCATION?.practiceLicense) {
-      fd.append("practiceLicense", EDUCATION.practiceLicense);
+    if (EXPERIENCE?.practiceLicense) {
+      fd.append("practiceLicense", EXPERIENCE.practiceLicense);
     }
     console.log("form data", formData);
     try {
@@ -377,8 +476,8 @@ const NurseCreate = ({ data = {} }) => {
         </div>
 
         {/* Age */}
-        <div className="flex flex-col sm:flex-row sm:gap-4 gap-6 ">
-          <div className="flex-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-4 gap-6 ">
+          <div className="flex">
             <Input
               type="number"
               label="Age"
@@ -392,37 +491,62 @@ const NurseCreate = ({ data = {} }) => {
             />
           </div>
 
-          <div className="flex-1 mt-2">
-            <Label className="mb-3 block">Gender</Label>
-            <RadioGroup
-              className="flex gap-4 mt-2"
-              value={formData.basicInfo?.gender}
-              onValueChange={(value) =>
-                handleChange("basicInfo", "gender", value)
-              }
-            >
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="Male" id="r1" />
-                <Label
-                  htmlFor="r1"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  Male
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem value="Female" id="r2" />
-                <Label
-                  htmlFor="r2"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  Female
-                </Label>
-              </div>
-            </RadioGroup>
+          <div>
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData.basicInfo.phone}
+                onChange={(value) =>
+                  handleChange("basicInfo", "phone", value || "")
+                }
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                }}
+              />
+            </div>
+
+            {formData.basicInfo.phone &&
+              !isValidPhoneNumber(formData.basicInfo.phone) && (
+                <p className="text-red-500 text-sm mt-1">
+                  Invalid phone number for selected country
+                </p>
+              )}
           </div>
         </div>
 
+        <div className="flex-1 mt-2">
+          <Label className="mb-3 block">Gender</Label>
+          <RadioGroup
+            className="flex gap-4 mt-2"
+            value={formData.basicInfo?.gender}
+            onValueChange={(value) =>
+              handleChange("basicInfo", "gender", value)
+            }
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="Male" id="r1" />
+              <Label
+                htmlFor="r1"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                Male
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="Female" id="r2" />
+              <Label
+                htmlFor="r2"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                Female
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
         {/* Languages */}
         <div>
           <Label className="font-medium mb-3 text-gray-700">Languages</Label>
@@ -659,11 +783,11 @@ const NurseCreate = ({ data = {} }) => {
               formData.experience?.homeBasedCare == null
                 ? ""
                 : formData.experience.homeBasedCare
-                  ? "Yes"
-                  : "No"
+                  ? "true"
+                  : "false"
             }
             onValueChange={(value) =>
-              handleChange("experience", "homeBasedCare", value === "Yes")
+              handleChange("experience", "homeBasedCare", value === "true")
             }
           >
             <div className="flex items-center gap-2">

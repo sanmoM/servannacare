@@ -28,6 +28,11 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect, {
+  isValidPhoneNumber,
+} from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+
 const Physiotherapist = ({ data = {} }) => {
   console.log("datas", data);
   const { user } = useLocalUser();
@@ -183,6 +188,18 @@ const Physiotherapist = ({ data = {} }) => {
   const handleUpdate = async (e) => {
     e.preventDefault();
 
+    if (!formData.basicInfo.number) {
+      toast.error("Primary number missing!");
+      return;
+    }
+
+    if (
+      formData.basicInfo.phone &&
+      !isValidPhoneNumber(formData.basicInfo.phone)
+    ) {
+      toast.error("Alternative number is invalid!");
+      return;
+    }
     const fd = new FormData();
 
     const BASICINFO = formData.basicInfo;
@@ -198,6 +215,7 @@ const Physiotherapist = ({ data = {} }) => {
     BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
     fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
     fd.append("bio", BASICINFO.bio);
+    fd.append("number", BASICINFO.number);
     fd.append("number_two", BASICINFO.phone);
 
     fd.append("education", EDUCATION.education);
@@ -349,44 +367,35 @@ const Physiotherapist = ({ data = {} }) => {
         </div>
 
         <div className="flex flex-col sm:flex-row sm:gap-6 sm:gap-4">
+          {/* PRIMARY NUMBER */}
           <div className="flex-1">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Primary Number: (You can't change it.)
             </label>
-            <Input
-              name="phone"
-              type="tel"
-              placeholder="+254xxxxxxx"
-              value={formData.basicInfo.number || "+254"}
-              maxLength={11}
-              // onFocus={() => {
-              //   if (!formData.basicInfo.phone) {
-              //     setFormData((prev) => ({
-              //       ...prev,
-              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
-              //     }));
-              //   }
-              // }}
-              // onChange={handlePhoneChange}
+
+            <PhoneInputWithCountrySelect
+              international
+              disabled
+              defaultCountry="KE"
+              value={formData.basicInfo.number}
+              className="w-full border rounded-md px-3 py-2 bg-gray-100"
             />
           </div>
+
+          {/* ALTERNATIVE NUMBER */}
           <div className="flex-1">
-            <Input
-              label="Alternative Number:"
-              name="phone"
-              type="tel"
-              placeholder="+254xxxxxxx"
-              value={formData.basicInfo.phone || "+254"}
-              maxLength={11}
-              onFocus={() => {
-                if (!formData.basicInfo.phone) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    basicInfo: { ...prev.basicInfo, phone: "+254" },
-                  }));
-                }
-              }}
-              onChange={handlePhoneChange}
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Alternative Number
+            </label>
+
+            <PhoneInputWithCountrySelect
+              international
+              defaultCountry="KE"
+              value={formData.basicInfo.phone}
+              onChange={(value) =>
+                handleChange("basicInfo", "phone", value || "")
+              }
+              className="w-full border rounded-md px-3 py-2"
             />
           </div>
         </div>

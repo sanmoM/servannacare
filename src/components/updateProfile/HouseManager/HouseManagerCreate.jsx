@@ -226,6 +226,8 @@ const HouseManagerCreate = ({ data = {} }) => {
   const handleCreate = async (e) => {
     e.preventDefault();
 
+    console.log("form data", formData);
+
     const fd = new FormData();
 
     fd.append("name", formData.basicInfo.name);

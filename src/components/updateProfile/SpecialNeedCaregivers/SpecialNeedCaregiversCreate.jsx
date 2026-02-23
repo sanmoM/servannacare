@@ -17,9 +17,15 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { postApi } from "@/lib/apiHandler";
+
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
 
 const SpecialNeedCaregiversCreate = ({ data = {} }) => {
-  console.log("datas", data);
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -28,6 +34,7 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      phone: data?.phone || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive || "",
     },
@@ -56,6 +63,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       referenceLetter: data?.referenceLetter || null,
     },
   });
+
+  console.log("formData", formData);
 
   const documents = [
     {
@@ -113,7 +122,6 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     {
       title: "Down syndrome",
     },
-    ,
     {
       title: "Blindness",
     },
@@ -152,20 +160,184 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     }));
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    localStorage.setItem("specialist", JSON.stringify(formData));
-    localStorage.setItem(
-      "user",
-      JSON.stringify({
-        ...user,
-        name: formData.basicInfo.name,
-        location: formData.basicInfo.location,
-      }),
-    );
-    toast.success("Profile Updated!");
-    router.push("/dashboard");
+
+    const { basicInfo, education, experience, documents } = formData;
+
+    if (!basicInfo.name.trim()) return toast.error("Name is required");
+
+    if (!basicInfo.location.trim()) return toast.error("Location is required");
+
+    if (!basicInfo.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+    if (!isValidPhoneNumber(basicInfo.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
+    if (!basicInfo.age) return toast.error("Age is required");
+
+    const ageNumber = Number(basicInfo.age);
+
+    if (ageNumber < 25) return toast.error("You must be at least 25 years old");
+
+    if (!basicInfo.gender) return toast.error("Gender is required");
+
+    if (!basicInfo.languages.length)
+      return toast.error("Please select at least one language");
+
+    if (basicInfo.canDrive === "" || basicInfo.canDrive === null)
+      return toast.error("Please select driving option");
+
+    if (!education.education) return toast.error("Education level is required");
+
+    if (!education.educationCertificate)
+      return toast.error("Education certificate is required");
+
+    // if (experience?.hospitalBasedCare === "")
+    //   return toast.error("Please select hospital based care option");
+
+    if (experience.hospitalBasedCare) {
+      if (!experience.hospitalBasedYearsOfExperience)
+        return toast.error("Hospital experience years required");
+
+      if (!experience.hospitalBasedReferenceContact.trim())
+        return toast.error("Hospital reference contact required");
+    }
+
+    // if (experience.homeBasedCare === "")
+    //   return toast.error("Please select home based care option");
+
+    if (experience.homeBasedCare) {
+      if (!experience.homeBasedYearsOfExperience)
+        return toast.error("Home experience years required");
+
+      if (!experience.homeBasedReferenceContact.trim())
+        return toast.error("Home reference contact required");
+    }
+
+    if (!experience.preferred.length)
+      return toast.error("Please select preferred intervention area");
+
+    if (!experience.serviceFeeDay)
+      return toast.error("Service fee per day is required");
+
+    if (!experience.serviceFeeMonth)
+      return toast.error("Service fee per month is required");
+
+    if (!documents.idCopy) return toast.error("ID Copy is required");
+
+    if (!documents.profilePhoto)
+      return toast.error("Profile photo is required");
+
+    if (!documents.goodConductCertificate)
+      return toast.error("Good conduct certificate is required");
+
+    try {
+      const fd = new FormData();
+
+      const BASIC = formData.basicInfo;
+      const EDU = formData.education;
+      const EXP = formData.experience;
+      const DOC = formData.documents;
+
+      // ================= BASIC INFO =================
+      fd.append("name", BASIC.name || "");
+      fd.append("location", BASIC.location || "");
+      fd.append("age", BASIC.age || "");
+      fd.append("gender", BASIC.gender || "");
+
+      if (Array.isArray(BASIC.languages)) {
+        BASIC.languages.forEach((lang) => fd.append("languages[]", lang));
+      }
+
+      fd.append("phone", BASIC.phone || "");
+
+      fd.append("canDrive", BASIC.canDrive ? 1 : 0);
+
+      // ================= EDUCATION =================
+      fd.append("education", EDU.education || "");
+
+      if (EDU.educationCertificate) {
+        fd.append("educationCertificate", EDU.educationCertificate);
+      }
+
+      // ================= EXPERIENCE =================
+      fd.append("hospitalBasedCare", EXP.hospitalBasedCare ? 1 : 0);
+      fd.append(
+        "hospitalBasedYearsOfExperience",
+        EXP.hospitalBasedYearsOfExperience || "",
+      );
+      fd.append(
+        "hospitalBasedReferenceContact",
+        EXP.hospitalBasedReferenceContact || "",
+      );
+
+      fd.append("homeBasedCare", EXP.homeBasedCare ? 1 : 0);
+      fd.append(
+        "homeBasedYearsOfExperience",
+        EXP.homeBasedYearsOfExperience || "",
+      );
+      fd.append(
+        "homeBasedReferenceContact",
+        EXP.homeBasedReferenceContact || "",
+      );
+
+      if (Array.isArray(EXP.preferred)) {
+        EXP.preferred.forEach((pref) => fd.append("preferred[]", pref));
+      }
+
+      fd.append("serviceFeeDay", EXP.serviceFeeDay || "");
+      fd.append("serviceFeeMonth", EXP.serviceFeeMonth || "");
+
+      // ================= DOCUMENTS =================
+      if (DOC.idCopy) fd.append("idCopy", DOC.idCopy);
+      if (DOC.profilePhoto) fd.append("profilePhoto", DOC.profilePhoto);
+      if (DOC.goodConductCertificate)
+        fd.append("goodConductCertificate", DOC.goodConductCertificate);
+      if (DOC.drivingLicense) fd.append("drivingLicense", DOC.drivingLicense);
+      if (DOC.referenceLetter)
+        fd.append("referenceLetter", DOC.referenceLetter);
+
+      // ================= API CALL =================
+      const res = await postApi("/create-profile", fd);
+
+      if (res?.status === 200) {
+        toast.success("Profile Created Successfully!");
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            name: BASIC.name,
+            location: BASIC.location,
+            is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          }),
+        );
+
+        router.push("/dashboard");
+      } else {
+        toast.error(res?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+
+      if (error.response) {
+        toast.error(
+          error.response.data?.message || `Error: ${error.response.status}`,
+        );
+      } else if (error.request) {
+        toast.error("No response from server.");
+      } else {
+        toast.error("Unexpected error occurred.");
+      }
+    }
   };
+
   return (
     <div>
       <form onSubmit={handleUpdate} className="space-y-6 relative">
@@ -198,8 +370,9 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
             />
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 ">
-          <div className="flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* LOCATION */}
+          <div>
             <Input
               label="Location"
               placeholder="Location"
@@ -210,35 +383,63 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
               }
             />
           </div>
-          <div className="flex-1">
-            <Label className={"mb-2"}>Gender?</Label>
-            <RadioGroup
-              className={"flex gap-4"}
-              value={formData.basicInfo.gender}
-              onValueChange={(value) =>
-                handleChange("basicInfo", "gender", value)
-              }
-            >
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="Male" id="r1" />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor="r1"
-                >
-                  Male
-                </Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="Female" id="r2" />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor="r2"
-                >
-                  Female
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
+
+          {/* PHONE */}
+
+
+            <div className="space-y-2">
+              <Label>Phone Number</Label>
+
+              <PhoneInputWithCountrySelect
+                international
+                defaultCountry={country}
+                value={formData.basicInfo.number}
+                onChange={(value) =>
+                  handleChange("basicInfo", "phone", value || "")
+                }
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                }}
+                className="phone-input-custom"
+              />
+
+              {formData.basicInfo.phone &&
+                !isValidPhoneNumber(formData.basicInfo.phone) && (
+                  <p className="text-red-500 text-sm">Invalid phone number</p>
+                )}
+            </div>
+
+
+        </div>
+
+        <div className="flex-1">
+          <Label className={"mb-2"}>Gender?</Label>
+          <RadioGroup
+            className={"flex gap-4"}
+            value={formData.basicInfo.gender}
+            onValueChange={(value) =>
+              handleChange("basicInfo", "gender", value)
+            }
+          >
+            <div className="flex items-center gap-3">
+              <RadioGroupItem value="Male" id="r1" />
+              <Label
+                className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="r1"
+              >
+                Male
+              </Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <RadioGroupItem value="Female" id="r2" />
+              <Label
+                className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="r2"
+              >
+                Female
+              </Label>
+            </div>
+          </RadioGroup>
         </div>
 
         <div className="">

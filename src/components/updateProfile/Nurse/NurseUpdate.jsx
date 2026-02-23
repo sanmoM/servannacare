@@ -19,8 +19,13 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const NurseUpdate = ({ data = {} }) => {
-  console.log("datas", data);
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -29,6 +34,8 @@ const NurseUpdate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      phone: data?.number || "",
+      number_two: data?.number_two || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
     },
@@ -75,6 +82,7 @@ const NurseUpdate = ({ data = {} }) => {
       referenceLetter: data.referenceLetter || null,
     },
   });
+
 
   const preferred = [
     {
@@ -185,10 +193,10 @@ const NurseUpdate = ({ data = {} }) => {
     }));
   };
 
-  if (data.preferred.length === 0) {
-    toast.error("Please select what you preferred");
-    return;
-  }
+  // if (data.preferred.length === 0) {
+  //   toast.error("Please select what you preferred");
+  //   return;
+  // }
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -199,9 +207,25 @@ const NurseUpdate = ({ data = {} }) => {
     const SKILLSERVICES = formData.skillsServices;
     const DOCUMENTS = formData.documents;
 
+    if (!BASICINFO?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(BASICINFO?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
+    if (EXPERIENCE.preferred.length === 0) {
+      toast.error("Please select at least one preferred area");
+      return;
+    }
+
     fd.append("name", BASICINFO.name);
     fd.append("location", BASICINFO.location);
     fd.append("age", BASICINFO.age);
+    fd.append("phone", BASICINFO.phone);
     fd.append("experience", BASICINFO.experience);
     fd.append("gender", BASICINFO.gender);
     fd.append("preferredRole", BASICINFO.preferredRole);
@@ -270,14 +294,10 @@ const NurseUpdate = ({ data = {} }) => {
       fd.append("practiceLicense", EDUCATION.practiceLicense);
     }
 
-    fd.append(
-      "educationCertificate",
-      DOCUMENTS.educationCertificate instanceof File
-        ? DOCUMENTS.educationCertificate
-        : "",
-    );
-
-    if (EDUCATION?.practiceLicense) {
+    if (EDUCATION?.educationCertificate instanceof File) {
+      fd.append("educationCertificate", EDUCATION.educationCertificate);
+    }
+    if (EDUCATION?.practiceLicense instanceof File) {
       fd.append("practiceLicense", EDUCATION.practiceLicense);
     }
     console.log("form data", formData);
@@ -399,6 +419,55 @@ const NurseUpdate = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:gap-6 sm:gap-4">
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Primary Number: (You can't change it.)
+            </label>
+            {/* <Input
+              name="phone"
+              disabled
+              type="tel"
+              placeholder="+254xxxxxxx"
+              value={formData?.basicInfo?.number_two || "+254"}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 11);
+                handleChange("basicInfo", "number_two", val);
+              }}
+            /> */}
+             <PhoneInputWithCountrySelect
+                  className="w-full border rounded-md px-3 py-2"
+                  disabled
+                  international
+                  defaultCountry={country}
+                  value={formData.basicInfo.phone}
+                  onChange={(value) =>
+                    handleChange("basicInfo", "phone", value || "")
+                  }
+                />
+          </div>
+          <div className="flex-1">
+            <div>
+              <Label>Phone Number</Label>
+
+              <div className="w-full mt-2">
+                <PhoneInputWithCountrySelect
+                  className="w-full border rounded-md px-3 py-2"
+                  international
+                  defaultCountry={country}
+                  value={formData.basicInfo.number_two}
+                  onChange={(value) =>
+                    handleChange("basicInfo", "number_two", value || "")
+                  }
+                />
+              </div>
+
+              {formData.basicInfo.number_two &&
+                !isValidPhoneNumber(formData.basicInfo.number_two)}
+            </div>
           </div>
         </div>
 
@@ -809,7 +878,7 @@ const NurseUpdate = ({ data = {} }) => {
             value={formData?.skillsServices.serviceFeeDay}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFeeDay", val);
+              handleChange("skillsServices", "serviceFeeDay", val);
             }}
           />
           <Input
@@ -821,7 +890,7 @@ const NurseUpdate = ({ data = {} }) => {
             value={formData?.skillsServices?.serviceFeeMonth}
             onChange={(e) => {
               const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFeeMonth", val);
+              handleChange("skillsServices", "serviceFeeMonth", val);
             }}
           />
         </div>
