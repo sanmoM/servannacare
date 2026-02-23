@@ -1,22 +1,29 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFetch } from "@/hooks/useFetch";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
+import toast from "react-hot-toast";
+import { Eye } from "lucide-react";
 
 export default function EmployerBookingFormClient() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const { data: specData, isLoading: specLoading } = useFetch("/specialist");
+  const router = useRouter();
+  const category = searchParams.get("category");
 
+  const [previewMonth, setPreviewMonth] = useState(null);
+  const [bookingAmount, setBookingAmount] = useState(0);
+
+  const { data: specData, isLoading: specLoading } = useFetch("/specialist");
   const specialists = specData?.data?.data ?? [];
 
   const matchedSpecialist = useMemo(
@@ -24,20 +31,20 @@ export default function EmployerBookingFormClient() {
     [specialists, id],
   );
 
-  // Extract Fees from Specialist Data
-  const monthlyPrice = Number(
+  // Specialist Fees
+  const monthlyRate = Number(
     matchedSpecialist?.house_manager?.serviceFeeMonth || 0,
   );
-  const dailyPrice = Number(
+  const dailyRate = Number(
     matchedSpecialist?.house_manager?.serviceFeeDay || 0,
   );
 
-  // Extract available dates from schedule
-  const availableDates = useMemo(() => {
-    return matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
-  }, [matchedSpecialist]);
+  console.log("rate", matchedSpecialist);
 
-  const [previewMonth, setPreviewMonth] = useState(null);
+  const availableDates = useMemo(
+    () => matchedSpecialist?.schedule?.flatMap((s) => s.date) || [],
+    [matchedSpecialist],
+  );
 
   const {
     register,
@@ -45,27 +52,29 @@ export default function EmployerBookingFormClient() {
     control,
     watch,
     setValue,
-    getValues,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       lookingFor: "",
+      selectedMonths: [],
+      selectedDates: [],
       kids: "",
       ageBracket: "",
       homeType: "",
       homeSize: "",
-      selectedMonths: [],
-      selectedDates: [],
     },
   });
 
   const lookingFor = watch("lookingFor");
-  const selectedDates = watch("selectedDates") || [];
-  const selectedMonths = watch("selectedMonths") || [];
+  const selectedMonths = watch("selectedMonths");
+  const selectedDates = watch("selectedDates");
   const ageBracket = watch("ageBracket");
   const homeType = watch("homeType");
   const homeSize = watch("homeSize");
   const kids = watch("kids");
+
+  const isMonthly = lookingFor === "monthly";
+  const isDaily = lookingFor === "daily";
 
   React.useEffect(() => {
     if (kids !== "yes") {
@@ -73,31 +82,69 @@ export default function EmployerBookingFormClient() {
     }
   }, [kids, setValue]);
 
-  const bookingAmount = useMemo(() => {
-    if (lookingFor === "monthly") {
-      return selectedMonths.length * monthlyPrice;
-    } else if (lookingFor === "daily") {
-      return selectedDates.length * dailyPrice;
-    }
-    return 0;
-  }, [lookingFor, selectedMonths, selectedDates, monthlyPrice, dailyPrice]);
+  useEffect(() => {
+    const amount = isMonthly
+      ? selectedMonths.length * monthlyRate
+      : selectedDates.length * dailyRate;
+    setBookingAmount(amount);
+  }, [selectedMonths, selectedDates, isMonthly, monthlyRate, dailyRate]);
 
-  const handleLookingForChange = (val) => {
-    setValue("lookingFor", val);
-
-    setValue("selectedMonths", []);
-    setValue("selectedDates", []);
-  };
-
-  const isMonthly = lookingFor === "monthly";
-  const isDaily = lookingFor === "daily";
+  const getDatesForMonth = (monthKey) =>
+    availableDates.filter((d) => d.startsWith(monthKey));
 
   const isDateDisabled = (date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
     const d = String(date.getDate()).padStart(2, "0");
-    const dateString = `${y}-${m}-${d}`;
-    return !availableDates.includes(dateString);
+    const dateStr = `${y}-${m}-${d}`;
+    return !availableDates.includes(dateStr);
+  };
+
+  const onSubmit = async (data) => {
+    if (isSubmitting) return;
+
+    const booking_type = data.lookingFor === "monthly" ? "monthly" : "daily";
+
+    let formattedSelections = [];
+
+    if (data.lookingFor === "monthly") {
+      formattedSelections = data.selectedMonths.map((monthKey) => {
+        return {
+          dates: availableDates.filter((d) => d.startsWith(monthKey)),
+        };
+      });
+    } else {
+      formattedSelections = data.selectedDates.map((date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      });
+    }
+
+    const payload = {
+      specialistId: Number(id),
+      category: category,
+      booking_type: booking_type,
+      has_kids: data.kids === "yes" ? 1 : 0,
+      age_bracket: data.kids === "yes" ? data.ageBracket : null,
+      homeType: data.homeType,
+      homeSize: data.homeSize,
+      selected_dates_or_months: formattedSelections,
+      totalAmount: bookingAmount,
+    };
+
+    console.log("Final Payload:", payload);
+
+    try {
+      // await postApi('/bookings', payload);
+      if (res?.status === 200 || res?.status === 201) {
+        toast.success("Booking Request Sent!");
+        router.push("/dashboard/book-history");
+      }
+    } catch (error) {
+      toast.error("Failed to submit booking");
+    }
   };
 
   if (specLoading)
@@ -111,7 +158,7 @@ export default function EmployerBookingFormClient() {
       <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 space-y-6">
-          <form onSubmit={handleSubmit((data) => console.log(data))}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             {/* EMPLOYER FORM */}
             <Card className="border-none shadow-sm ring-1 ring-slate-200">
               <CardHeader className="border-b bg-white p-6">
@@ -133,12 +180,24 @@ export default function EmployerBookingFormClient() {
                     className="space-y-3"
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="yes" id="kids-yes" />
-                      <Label htmlFor="kids-yes">Yes</Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="yes"
+                        id="kids-yes"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="kids-yes">
+                        Yes
+                      </Label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="no" id="kids-no" />
-                      <Label htmlFor="kids-no">No</Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="no"
+                        id="kids-no"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="kids-no">
+                        No
+                      </Label>
                     </div>
                   </RadioGroup>
 
@@ -151,18 +210,36 @@ export default function EmployerBookingFormClient() {
                         className="space-y-2"
                       >
                         <div className="flex items-center gap-2">
-                          <RadioGroupItem value="0-3" id="age1" />
-                          <Label htmlFor="age1">0 – 3 yrs</Label>
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value="0-3"
+                            id="age1"
+                          />
+                          <Label className={"cursor-pointer"} htmlFor="age1">
+                            0 – 3 yrs
+                          </Label>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <RadioGroupItem value="4-10" id="age2" />
-                          <Label htmlFor="age2">4 – 10 yrs</Label>
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value="4-10"
+                            id="age2"
+                          />
+                          <Label className={"cursor-pointer"} htmlFor="age2">
+                            4 – 10 yrs
+                          </Label>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <RadioGroupItem value="11+" id="age3" />
-                          <Label htmlFor="age3">11 yrs and Above</Label>
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value="11+"
+                            id="age3"
+                          />
+                          <Label className={"cursor-pointer"} htmlFor="age3">
+                            11 yrs and Above
+                          </Label>
                         </div>
                       </RadioGroup>
                     </div>
@@ -184,13 +261,25 @@ export default function EmployerBookingFormClient() {
                     className="space-y-2"
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="compound" id="compound" />
-                      <Label htmlFor="compound">Own compound</Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="compound"
+                        id="compound"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="compound">
+                        Own compound
+                      </Label>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="apartment" id="apartment" />
-                      <Label htmlFor="apartment">Apartment</Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="apartment"
+                        id="apartment"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="apartment">
+                        Apartment
+                      </Label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -211,8 +300,14 @@ export default function EmployerBookingFormClient() {
                     {["1Br", "2Br", "3Br", "4Br", "5Br and above"].map(
                       (size) => (
                         <div key={size} className="flex items-center gap-2">
-                          <RadioGroupItem value={size} id={size} />
-                          <Label htmlFor={size}>{size}</Label>
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value={size}
+                            id={size}
+                          />
+                          <Label className={"cursor-pointer"} htmlFor={size}>
+                            {size}
+                          </Label>
                         </div>
                       ),
                     )}
@@ -230,44 +325,76 @@ export default function EmployerBookingFormClient() {
 
                   <RadioGroup
                     value={lookingFor}
-                    onValueChange={handleLookingForChange}
+                    onValueChange={(val) => setValue("lookingFor", val)}
                     className="space-y-3"
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="monthly" id="livein" />
-                      <Label htmlFor="livein">Live In </Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="monthly"
+                        id="livein"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="livein">
+                        Live In{" "}
+                      </Label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="daily" id="dayburg" />
-                      <Label htmlFor="dayburg">Dayburg </Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="daily"
+                        id="dayburg"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="dayburg">
+                        Dayburg{" "}
+                      </Label>
                     </div>
                   </RadioGroup>
                 </div>
               </CardHeader>
 
               <CardContent className="p-8 space-y-8">
+                {/* PLAN SELECTION CARDS */}
                 <div className="grid grid-cols-2 gap-6">
                   <div
-                    className={`p-6 rounded-2xl border-2 ${isMonthly ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100 opacity-50"}`}
+                    onClick={() => {
+                      setValue("lookingFor", "monthly");
+                      setValue("selectedMonths", []);
+                    }}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${
+                      isMonthly
+                        ? "border-[#7A295A] bg-[#7A295A]/5"
+                        : "border-slate-100"
+                    }`}
                   >
-                    <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
-                      Monthly Rate
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Monthly Plan
                     </p>
                     <p className="text-2xl font-bold mt-2">
-                      KES {monthlyPrice}
+                      KES {monthlyRate.toLocaleString()}
                     </p>
                   </div>
+
                   <div
-                    className={`p-6 rounded-2xl border-2 ${isDaily ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100 opacity-50"}`}
+                    onClick={() => {
+                      setValue("lookingFor", "daily");
+                      setValue("selectedDates", []);
+                    }}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${
+                      isDaily
+                        ? "border-[#7A295A] bg-[#7A295A]/5"
+                        : "border-slate-100"
+                    }`}
                   >
-                    <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
-                      Daily Rate
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                      Daily Plan
                     </p>
-                    <p className="text-2xl font-bold mt-2">KES {dailyPrice}</p>
+                    <p className="text-2xl font-bold mt-2">
+                      KES {dailyRate.toLocaleString()}
+                    </p>
                   </div>
                 </div>
 
-                {/* Monthly Selection */}
+                {/* MONTHLY GRID */}
                 {isMonthly && (
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
                     {Array.from({ length: 12 }).map((_, i) => {
@@ -279,7 +406,7 @@ export default function EmployerBookingFormClient() {
                       const hasAvailability = availableDates.some((d) =>
                         d.startsWith(monthKey),
                       );
-                      const selected = selectedMonths.includes(monthKey);
+                      const isSelected = selectedMonths.includes(monthKey);
 
                       return (
                         <div key={monthKey} className="relative">
@@ -287,52 +414,71 @@ export default function EmployerBookingFormClient() {
                             type="button"
                             disabled={!hasAvailability}
                             onClick={() => {
-                              const next = selected
+                              const next = isSelected
                                 ? selectedMonths.filter((m) => m !== monthKey)
                                 : [...selectedMonths, monthKey];
                               setValue("selectedMonths", next);
                             }}
-                            className={`w-full p-5 rounded-2xl border transition-all ${
-                              selected
-                                ? "bg-[#7A295A] text-white"
-                                : "bg-white text-slate-900"
-                            } ${!hasAvailability && "opacity-30 cursor-not-allowed"}`}
+                            className={`w-full p-5 rounded-xl border flex flex-col items-center cursor-pointer transition-all ${
+                              isSelected
+                                ? "bg-[#7A295A] text-white border-[#7A295A]"
+                                : "bg-white border-slate-200"
+                            } ${!hasAvailability && "opacity-25 cursor-not-allowed"}`}
                           >
-                            <p className="font-semibold">{monthLabel}</p>
-                            <p className="text-[10px]">
+                            <span className="font-bold text-sm">
+                              {monthLabel}
+                            </span>
+                            <span className="text-[10px]">
                               {hasAvailability ? "Available" : "No Dates"}
-                            </p>
+                            </span>
                           </button>
+
+                          {hasAvailability && (
+                            <button
+                              type="button"
+                              title="Preview available days"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPreviewMonth(monthKey);
+                              }}
+                              className="absolute -top-1 -right-1 bg-primary cursor-pointer text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
+                            >
+                              <span
+                                role="img"
+                                aria-label="view"
+                                className="text-[12px] cursor-pointer"
+                              >
+                                <Eye />
+                              </span>
+                            </button>
+                          )}
                         </div>
                       );
                     })}
                   </div>
                 )}
 
-                {/* Daily Selection */}
+                {/* DAILY CALENDAR */}
                 {isDaily && (
-                  <div className="flex flex-col items-center">
-                    <p className="mb-4 text-sm text-slate-500">
-                      Select available dates from the specialist's schedule:
-                    </p>
+                  <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
                     <Calendar
                       mode="multiple"
-                      selected={selectedDates.map((d) => new Date(d))}
-                      onSelect={(dates) => {
-                        const dateStrings = dates.map(
-                          (d) => d.toISOString().split("T")[0],
-                        );
-                        setValue("selectedDates", dateStrings);
-                      }}
+                      selected={selectedDates}
+                      onSelect={(val) => setValue("selectedDates", val)}
                       disabled={isDateDisabled}
+                      className="bg-white border rounded-xl w-full"
                     />
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            <Button className="w-full h-16 text-xl font-bold rounded-2xl bg-[#7A295A] hover:bg-[#65224a]">
-              Confirm & Submit
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl cursor-pointer shadow-primary/20"
+            >
+              {isSubmitting ? "Processing..." : "Confirm & Submit Booking"}
             </Button>
           </form>
         </div>
@@ -341,22 +487,27 @@ export default function EmployerBookingFormClient() {
         <aside>
           <Card className="border-none shadow-2xl rounded-[2.5rem] bg-white ring-1 ring-slate-100 sticky top-8">
             <div className="bg-[#7A295A] p-10 text-white rounded-t-[2.5rem]">
-              <p className="text-xs uppercase opacity-70">Total to Pay</p>
-              <p className="text-5xl font-black mt-2">KES {bookingAmount}</p>
+              <p className="text-xs uppercase opacity-70 font-bold">
+                Estimated Amount
+              </p>
+              <p className="text-5xl font-black mt-2">
+                KES {bookingAmount.toLocaleString()}
+              </p>
             </div>
             <CardContent className="p-10 space-y-4">
-              <div className="flex justify-between font-bold">
-                <span className="text-slate-400">UNIT PRICE</span>
-                <span>KES {isMonthly ? monthlyPrice : dailyPrice}</span>
+              <div className="flex justify-between font-bold text-sm">
+                <span className="text-slate-400">PLAN</span>
+                <span className="capitalize">{lookingFor}</span>
               </div>
-              <div className="flex justify-between font-bold">
-                <span className="text-slate-400">QUANTITY</span>
-                <span>
+              <div className="flex justify-between font-bold text-sm">
+                <span className="text-slate-400">SELECTION</span>
+                <span className="text-[#7A295A]">
                   {isMonthly
                     ? `${selectedMonths.length} Months`
                     : `${selectedDates.length} Days`}
                 </span>
               </div>
+              <Separator />
             </CardContent>
           </Card>
         </aside>
@@ -364,47 +515,49 @@ export default function EmployerBookingFormClient() {
 
       {/* MONTH PREVIEW MODAL */}
       {previewMonth && (
-        <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          onClick={() => setPreviewMonth(null)}
-        >
-          <div
-            className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex justify-between items-center p-6 border-b">
-              <h2 className="text-lg font-bold">
-                {new Date(previewMonth + "-01").toLocaleString("default", {
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
+          <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+              <CardTitle className="text-lg font-bold">
+                {new Date(previewMonth + "-02").toLocaleString("default", {
                   month: "long",
                   year: "numeric",
                 })}
-              </h2>
-
-              <button onClick={() => setPreviewMonth(null)} className="text-xl">
-                ✕
-              </button>
-            </div>
-
-            {/* Calendar */}
-            <div className="p-6">
-              <Calendar
-                month={new Date(previewMonth + "-01")}
-                mode="multiple"
-                selected={getDatesForMonth(previewMonth).map(
-                  (d) => new Date(d),
-                )}
-                disabled={() => true}
-              />
-
+              </CardTitle>
               <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-slate-100"
                 onClick={() => setPreviewMonth(null)}
-                className="w-full mt-6 bg-[#7A295A]"
+              >
+                ✕
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="flex justify-center">
+                <Calendar
+                  mode="multiple"
+                  month={new Date(previewMonth + "-02")}
+                  disableNavigation
+                  selected={availableDates
+                    .filter((d) => d.startsWith(previewMonth))
+                    .map((d) => new Date(d + "T00:00:00"))}
+                  disabled={(date) => isDateDisabled(date)}
+                  className="rounded-md border pointer-events-none"
+                />
+              </div>
+              <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-md">
+                <div className="w-3 h-3 bg-primary rounded-sm" />
+                <span>Highlighted days are available for care.</span>
+              </div>
+              <Button
+                className="w-full mt-6 cursor-pointer"
+                onClick={() => setPreviewMonth(null)}
               >
                 Got it
               </Button>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>

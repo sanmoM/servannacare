@@ -4,7 +4,14 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import { User, ShieldCheck, Activity, HeartPulse, Phone } from "lucide-react";
+import {
+  User,
+  ShieldCheck,
+  Activity,
+  HeartPulse,
+  Phone,
+  Eye,
+} from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -78,6 +85,10 @@ export default function BookingFormClient() {
       primary_doctor_name: "",
       primary_doctor_number: "",
       primary_hospital: "",
+      communication_type: "",
+      instruction_level: "",
+      communication_method: "",
+      responds_to_name: "",
       consent: false,
     },
   });
@@ -200,6 +211,8 @@ export default function BookingFormClient() {
 
       if (key === "patient_currently_on_medication") {
         formData.append(key, data[key] === "yes" ? 1 : 0);
+      } else if (key === "responds_to_name") {
+        formData.append(key, data[key] === "Yes" ? 1 : 0);
       } else {
         formData.append(key, data[key]);
       }
@@ -214,6 +227,9 @@ export default function BookingFormClient() {
 
     if (data.prescriptionFile) {
       formData.append("prescription_file", data.prescriptionFile);
+    }
+    for (let pair of formData.entries()) {
+      console.log(pair[0], ":", pair[1]);
     }
 
     try {
@@ -269,7 +285,7 @@ export default function BookingFormClient() {
                 <User size={20} className="text-primary" /> Patient Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-8 grid md:grid-cols-2 gap-6">
+            <CardContent className="px-8 grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label>Full Name of Patient *</Label>
                 <Input
@@ -346,7 +362,7 @@ export default function BookingFormClient() {
                 Health & Medical Information
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-8 space-y-8">
+            <CardContent className="px-8 space-y-8">
               <div className="space-y-4">
                 <Label className="font-bold">
                   Does the patient have any of the following conditions? *
@@ -417,12 +433,24 @@ export default function BookingFormClient() {
                       className="flex gap-8"
                     >
                       <div className="flex items-center gap-2">
-                        <RadioGroupItem value="yes" id="med-y" />
-                        <Label htmlFor="med-y">Yes</Label>
+                        <RadioGroupItem
+                          className={"cursor-pointer"}
+                          value="yes"
+                          id="med-y"
+                        />
+                        <Label className={"cursor-pointer"} htmlFor="med-y">
+                          Yes
+                        </Label>
                       </div>
                       <div className="flex items-center gap-2">
-                        <RadioGroupItem value="no" id="med-n" />
-                        <Label htmlFor="med-n">No</Label>
+                        <RadioGroupItem
+                          className={"cursor-pointer"}
+                          value="no"
+                          id="med-n"
+                        />
+                        <Label className={"cursor-pointer"} htmlFor="med-n">
+                          No
+                        </Label>
                       </div>
                     </RadioGroup>
                   )}
@@ -479,8 +507,17 @@ export default function BookingFormClient() {
                         "Other allergies",
                       ].map((a) => (
                         <div key={a} className="flex items-center gap-2">
-                          <RadioGroupItem value={a} id={`all-${a}`} />
-                          <Label htmlFor={`all-${a}`}>{a}</Label>
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value={a}
+                            id={`all-${a}`}
+                          />
+                          <Label
+                            className={"cursor-pointer"}
+                            htmlFor={`all-${a}`}
+                          >
+                            {a}
+                          </Label>
                         </div>
                       ))}
                     </RadioGroup>
@@ -503,6 +540,165 @@ export default function BookingFormClient() {
             </CardContent>
           </Card>
 
+          {/* communication profile section  */}
+          <Card className="border-none shadow-sm ring-1 ring-slate-200">
+            <CardHeader className="border-b bg-white p-6">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Activity size={20} className="text-primary" />
+                Communication Profile
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="px-8 space-y-8">
+              {/* Communication Type */}
+              <div className="space-y-4">
+                <Label className="font-bold">Communication Type *</Label>
+                <Controller
+                  name="communication_type"
+                  control={control}
+                  rules={{ required: "Communication type is required" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="flex gap-6"
+                    >
+                      {["Verbal", "Non-verbal"].map((type) => (
+                        <div key={type} className="flex items-center gap-2">
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value={type}
+                            id={`comm-${type}`}
+                          />
+                          <Label
+                            htmlFor={`comm-${type}`}
+                            className="cursor-pointer"
+                          >
+                            {type}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  )}
+                />
+              </div>
+
+              <Separator />
+
+              {/* Can Follow Instructions */}
+              <div className="space-y-4">
+                <Label className="font-bold">Can Follow Instructions *</Label>
+                <Controller
+                  name="instruction_level"
+                  control={control}
+                  rules={{ required: "Instruction level is required" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="grid grid-cols-2 gap-3"
+                    >
+                      {["1-step instructions", "2-step instructions"].map(
+                        (step) => (
+                          <div key={step} className="flex items-center gap-2">
+                            <RadioGroupItem
+                              className={"cursor-pointer"}
+                              value={step}
+                              id={`inst-${step}`}
+                            />
+                            <Label
+                              htmlFor={`inst-${step}`}
+                              className="cursor-pointer"
+                            >
+                              {step}
+                            </Label>
+                          </div>
+                        ),
+                      )}
+                    </RadioGroup>
+                  )}
+                />
+              </div>
+
+              <Separator />
+
+              {/* Communication Method */}
+              <div className="space-y-4">
+                <Label className="font-bold">
+                  Primary Communication Method *
+                </Label>
+                <Controller
+                  name="communication_method"
+                  control={control}
+                  rules={{ required: "Communication method is required" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="grid grid-cols-2 md:grid-cols-4 gap-3"
+                    >
+                      {[
+                        "Gestures",
+                        "PECS",
+                        "Communication device",
+                        "Words",
+                      ].map((method) => (
+                        <div key={method} className="flex items-center gap-2">
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value={method}
+                            id={`method-${method}`}
+                          />
+                          <Label
+                            htmlFor={`method-${method}`}
+                            className="cursor-pointer"
+                          >
+                            {method}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  )}
+                />
+              </div>
+
+              <Separator />
+
+              {/* Responds to Name */}
+              <div className="space-y-4">
+                <Label className="font-bold">Responds to Name? *</Label>
+                <Controller
+                  name="responds_to_name"
+                  control={control}
+                  rules={{ required: "Please select an option" }}
+                  render={({ field }) => (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      className="flex gap-6"
+                    >
+                      {["Yes", "No"].map((val) => (
+                        <div key={val} className="flex items-center gap-2">
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value={val}
+                            id={`name-${val}`}
+                          />
+                          <Label
+                            htmlFor={`name-${val}`}
+                            className="cursor-pointer"
+                          >
+                            {val}
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  )}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           {/* 5 & 6. Mobility & Schedule */}
           <Card className="border-none shadow-sm ring-1 ring-slate-200">
             <CardHeader className="border-b bg-white p-6">
@@ -511,7 +707,7 @@ export default function BookingFormClient() {
                 Mobility & Care Schedule
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-8 space-y-8">
+            <CardContent className="px-8 space-y-8">
               <div className="space-y-4">
                 <Label className="font-bold">
                   Mobility status of patient *
@@ -536,8 +732,14 @@ export default function BookingFormClient() {
                           key={m}
                           className="flex items-center gap-2 p-3 border rounded-lg"
                         >
-                          <RadioGroupItem value={m} id={m} />
-                          <Label htmlFor={m}>{m}</Label>
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value={m}
+                            id={m}
+                          />
+                          <Label className={"cursor-pointer"} htmlFor={m}>
+                            {m}
+                          </Label>
                         </div>
                       ))}
                     </RadioGroup>
@@ -564,8 +766,14 @@ export default function BookingFormClient() {
                       {["Private home", "Hospital", "Hospice facility"].map(
                         (l) => (
                           <div key={l} className="flex items-center gap-2">
-                            <RadioGroupItem value={l} id={l} />
-                            <Label htmlFor={l}>{l}</Label>
+                            <RadioGroupItem
+                              className={"cursor-pointer"}
+                              value={l}
+                              id={l}
+                            />
+                            <Label className={"cursor-pointer"} htmlFor={l}>
+                              {l}
+                            </Label>
                           </div>
                         ),
                       )}
@@ -594,10 +802,16 @@ export default function BookingFormClient() {
                       ].map((d) => (
                         <div key={d.value} className="flex items-center gap-2">
                           <RadioGroupItem
+                            className={"cursor-pointer"}
                             value={d.value}
                             id={`dur-${d.value}`}
                           />
-                          <Label htmlFor={`dur-${d.value}`}>{d.label}</Label>
+                          <Label
+                            className={"cursor-pointer"}
+                            htmlFor={`dur-${d.value}`}
+                          >
+                            {d.label}
+                          </Label>
                         </div>
                       ))}
                     </RadioGroup>
@@ -649,7 +863,7 @@ export default function BookingFormClient() {
                     selected={selectedDateList}
                     onSelect={setSelectedDateList}
                     disabled={isDateDisabled}
-                    className="bg-white border rounded-xl"
+                    className="bg-white border rounded-xl w-full cursor-pointer"
                   />
                 </div>
               )}
@@ -685,7 +899,7 @@ export default function BookingFormClient() {
                                 newMonths.length * selectedPrice.price,
                               );
                             }}
-                            className={`w-full py-4 px-2 rounded-lg border flex flex-col items-center transition-all shadow-sm ${
+                            className={`w-full py-4 px-2 rounded-lg border flex flex-col cursor-pointer items-center transition-all shadow-sm ${
                               isSelected
                                 ? "bg-primary border-primary text-white ring-2 ring-primary ring-offset-1"
                                 : "bg-white border-slate-200 hover:border-primary text-slate-700"
@@ -709,14 +923,14 @@ export default function BookingFormClient() {
                                 e.stopPropagation();
                                 setPreviewMonth(monthKey);
                               }}
-                              className="absolute -top-1 -right-1 bg-slate-900 text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
+                              className="absolute -top-1 -right-1 bg-primary cursor-pointer text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
                             >
                               <span
                                 role="img"
                                 aria-label="view"
-                                className="text-[12px]"
+                                className="text-[12px] cursor-pointer"
                               >
-                                👁️
+                                <Eye />
                               </span>
                             </button>
                           )}
@@ -786,7 +1000,7 @@ export default function BookingFormClient() {
                 Emergency & Logistics
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-8 space-y-8">
+            <CardContent className="px-8 space-y-8">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label>Emergency Contact Name *</Label>
