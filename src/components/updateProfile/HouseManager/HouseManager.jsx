@@ -52,6 +52,8 @@ const HouseManager = ({ data = {} }) => {
       ageOfKids: data.house_manager?.ageOfKids || [],
       isHandelingPet: data.house_manager?.isHandelingPet ?? null,
       preferredRole: data?.preferredRole || "",
+      serviceFeeMonth: data?.house_manager?.serviceFeeMonth || "",
+      serviceFeeDay: data?.house_manager?.serviceFeeDay || "",
     },
 
     documents: {
@@ -62,6 +64,8 @@ const HouseManager = ({ data = {} }) => {
       drivingLicense: data?.drivingLicense || "",
     },
   });
+
+  console.log("dfdf",formData?.additionalDetails?.serviceFeeDay)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -216,6 +220,8 @@ const HouseManager = ({ data = {} }) => {
     );
 
     fd.append("preferredRole", formData.additionalDetails.preferredRole);
+    fd.append("serviceFeeDay", formData.additionalDetails.serviceFeeDay);
+    fd.append("serviceFeeMonth", formData.additionalDetails.serviceFeeMonth);
 
     formData.additionalDetails.ageOfKids.forEach((age) =>
       fd.append("ageOfKids[]", age),
@@ -652,6 +658,51 @@ const HouseManager = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          {/* Section Label */}
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            Service Fee (KSh)
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Per Day"
+              type="number"
+              name="serviceFeeDay"
+              placeholder="e.g., 1500"
+              value={formData.additionalDetails.serviceFeeDay}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+                setFormData((prev) => ({
+                  ...prev,
+                  additionalDetails: {
+                    ...prev.additionalDetails,
+                    serviceFeeDay: val,
+                  },
+                }));
+              }}
+            />
+
+            <Input
+              label="Per Month"
+              type="number"
+              name="serviceFeeMonth"
+              placeholder="e.g., 35000"
+              value={formData.additionalDetails.serviceFeeMonth}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                setFormData((prev) => ({
+                  ...prev,
+                  additionalDetails: {
+                    ...prev.additionalDetails,
+                    serviceFeeMonth: val,
+                  },
+                }));
+              }}
+            />
           </div>
         </div>
 

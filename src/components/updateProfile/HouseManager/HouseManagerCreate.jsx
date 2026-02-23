@@ -49,6 +49,8 @@ const HouseManagerCreate = ({ data = {} }) => {
       ageOfKids: data.additionalDetails?.ageOfKids || [],
       isHandelingPet: data.additionalDetails?.isHandelingPet ?? null,
       preferredRole: data.additionalDetails?.preferredRole || "",
+      serviceFeeMonth: data?.additionalDetails?.serviceFeeMonth || "",
+      serviceFeeDay: data?.additionalDetails?.serviceFeeDay || "",
     },
 
     documents: {
@@ -67,6 +69,17 @@ const HouseManagerCreate = ({ data = {} }) => {
       basicInfo: { ...p.basicInfo, [name]: value },
     }));
   };
+
+  const handleBasicChange = (name, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      basicInfo: {
+        ...prev.basicInfo,
+        [name]: value,
+      },
+    }));
+  };
+
   const handlePhoneChange = (e) => {
     let value = e.target.value;
 
@@ -100,6 +113,15 @@ const HouseManagerCreate = ({ data = {} }) => {
     setFormData((p) => ({
       ...p,
       additionalDetails: { ...p.additionalDetails, [field]: value },
+    }));
+  };
+  const handleAdditionalChange = (name, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      additionalDetails: {
+        ...prev.additionalDetails,
+        [name]: value,
+      },
     }));
   };
 
@@ -204,8 +226,6 @@ const HouseManagerCreate = ({ data = {} }) => {
   const handleCreate = async (e) => {
     e.preventDefault();
 
-    console.log("form data", formData);
-
     const fd = new FormData();
 
     fd.append("name", formData.basicInfo.name);
@@ -233,10 +253,8 @@ const HouseManagerCreate = ({ data = {} }) => {
     // fd.append("isMother", formData.additionalDetails.isMother);
     // fd.append("isHandelingPet", formData.additionalDetails.isHandelingPet);
     fd.append("preferredRole", formData.additionalDetails.preferredRole);
-
-    for (let pair of fd.entries()) {
-      console.log(pair[0], ":", pair[1]);
-    }
+    fd.append("serviceFeeMonth", formData.additionalDetails.serviceFeeMonth);
+    fd.append("serviceFeeDay", formData.additionalDetails.serviceFeeDay);
 
     formData.additionalDetails.ageOfKids.forEach((age) =>
       fd.append("ageOfKids[]", age),
@@ -262,6 +280,10 @@ const HouseManagerCreate = ({ data = {} }) => {
 
     if (docs.drivingLicense instanceof File) {
       fd.append("drivingLicense", docs.drivingLicense);
+    }
+
+    for (let pair of fd.entries()) {
+      console.log(pair[0], ":", pair[1]);
     }
 
     try {
@@ -327,7 +349,7 @@ const HouseManagerCreate = ({ data = {} }) => {
               value={formData.basicInfo?.age}
               onChange={(e) => {
                 const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-                handleChange("basicInfo", "age", val);
+                handleBasicChange("age", val);
               }}
             />
           </div>
@@ -603,6 +625,39 @@ const HouseManagerCreate = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          {/* Section Label */}
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            Service Fee (KSh)
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Per Day"
+              type="number"
+              name="serviceFeeDay"
+              placeholder="e.g., 1500"
+              value={formData?.additionalDetails?.serviceFeeDay}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+                handleAdditionalChange("serviceFeeDay", val);
+              }}
+            />
+
+            <Input
+              label="Per Month"
+              type="number"
+              name="serviceFeeMonth"
+              placeholder="e.g., 35000"
+              value={formData?.additionalDetails?.serviceFeeMonth}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                handleAdditionalChange("serviceFeeMonth", val);
+              }}
+            />
           </div>
         </div>
 
