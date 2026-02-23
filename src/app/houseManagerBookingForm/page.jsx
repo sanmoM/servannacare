@@ -14,16 +14,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 export default function EmployerBookingFormClient() {
   const searchParams = useSearchParams();
-  const category = searchParams.get("category");
   const id = searchParams.get("id");
-  const router = useRouter();
-
-  //   const [bookingAmount, setBookingAmount] = useState(0);
-  const [selectedPrice, setSelectedPrice] = useState(null);
-  //   const [selectedMonths, setSelectedMonths] = useState([]);
-  const [selectedDateList, setSelectedDateList] = useState([]);
-  //   const [previewMonth, setPreviewMonth] = useState(null);
-
   const { data: specData, isLoading: specLoading } = useFetch("/specialist");
 
   const specialists = specData?.data?.data ?? [];
@@ -33,10 +24,18 @@ export default function EmployerBookingFormClient() {
     [specialists, id],
   );
 
-  console.log("mathdfd", matchedSpecialist);
+  // Extract Fees from Specialist Data
+  const monthlyPrice = Number(
+    matchedSpecialist?.house_manager?.serviceFeeMonth || 0,
+  );
+  const dailyPrice = Number(
+    matchedSpecialist?.house_manager?.serviceFeeDay || 0,
+  );
 
-  const availableDates =
-    matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
+  // Extract available dates from schedule
+  const availableDates = useMemo(() => {
+    return matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
+  }, [matchedSpecialist]);
 
   const [previewMonth, setPreviewMonth] = useState(null);
 
@@ -61,9 +60,8 @@ export default function EmployerBookingFormClient() {
   });
 
   const lookingFor = watch("lookingFor");
-  const selectedDates = watch("selectedDates");
-  const selectedMonths = watch("selectedMonths");
-
+  const selectedDates = watch("selectedDates") || [];
+  const selectedMonths = watch("selectedMonths") || [];
   const ageBracket = watch("ageBracket");
   const homeType = watch("homeType");
   const homeSize = watch("homeSize");
@@ -75,42 +73,31 @@ export default function EmployerBookingFormClient() {
     }
   }, [kids, setValue]);
 
-  const handleDateSelect = (date) => {
-    const currentDates = getValues("selectedDates");
-    if (!currentDates.includes(date)) {
-      setValue("selectedDates", [...currentDates, date]);
+  const bookingAmount = useMemo(() => {
+    if (lookingFor === "monthly") {
+      return selectedMonths.length * monthlyPrice;
+    } else if (lookingFor === "daily") {
+      return selectedDates.length * dailyPrice;
     }
-  };
-  const monthlyPrice = 100;
-  const dailyPrice = 4;
+    return 0;
+  }, [lookingFor, selectedMonths, selectedDates, monthlyPrice, dailyPrice]);
 
-  const handleMonthSelect = (month) => {
-    const currentMonths = getValues("selectedMonths");
-    if (!currentMonths.includes(month)) {
-      setValue("selectedMonths", [...currentMonths, month]);
-    }
-  };
+  const handleLookingForChange = (val) => {
+    setValue("lookingFor", val);
 
-  const bookingAmount =
-    lookingFor === "monthly"
-      ? selectedMonths.length * monthlyPrice
-      : selectedDates.length * dailyPrice;
+    setValue("selectedMonths", []);
+    setValue("selectedDates", []);
+  };
 
   const isMonthly = lookingFor === "monthly";
   const isDaily = lookingFor === "daily";
-
-  const onSubmit = async (data) => {
-    console.log("after select", data);
-  };
-
-  const getDatesForMonth = (monthKey) =>
-    availableDates.filter((d) => d.startsWith(monthKey));
 
   const isDateDisabled = (date) => {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, "0");
     const d = String(date.getDate()).padStart(2, "0");
-    return !availableDates.includes(`${y}-${m}-${d}`);
+    const dateString = `${y}-${m}-${d}`;
+    return !availableDates.includes(dateString);
   };
 
   if (specLoading)
@@ -119,26 +106,12 @@ export default function EmployerBookingFormClient() {
         <LoadingSpinner />
       </div>
     );
-
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-12 px-4">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 space-y-6">
-          <form
-            onSubmit={handleSubmit(onSubmit, (errors) => {
-              const firstError = Object.values(errors)[0];
-
-              if (firstError?.message) {
-                toast.error(firstError.message);
-              } else {
-                toast.error(
-                  "Please complete all required fields before submitting.",
-                );
-              }
-            })}
-            className="lg:col-span-2 space-y-6"
-          >
+          <form onSubmit={handleSubmit((data) => console.log(data))}>
             {/* EMPLOYER FORM */}
             <Card className="border-none shadow-sm ring-1 ring-slate-200">
               <CardHeader className="border-b bg-white p-6">
@@ -146,33 +119,7 @@ export default function EmployerBookingFormClient() {
               </CardHeader>
 
               <CardContent className="p-8 space-y-8">
-                {/* 1. Looking For */}
-                <div>
-                  <Label className="font-bold block mb-4">
-                    1. Looking for:
-                  </Label>
-
-                  <RadioGroup
-                    value={lookingFor}
-                    onValueChange={(val) => {
-                      setValue("lookingFor", val);
-                      setValue("selectedMonths", []);
-                      setValue("selectedDates", []);
-                    }}
-                    className="space-y-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="monthly" id="livein" />
-                      <Label htmlFor="livein">Live In</Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem value="daily" id="dayburg" />
-                      <Label htmlFor="dayburg">Dayburg</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <Separator />
+                {/* <Separator /> */}
 
                 {/* 2. Kids */}
                 <div>
@@ -274,51 +221,53 @@ export default function EmployerBookingFormClient() {
               </CardContent>
             </Card>
 
-            {/* CARE DURATION SECTION */}
-            <Card className="border-none shadow-sm ring-1 ring-slate-200">
+            <Card className="border-none shadow-sm ring-1 ring-slate-200 mt-6">
               <CardHeader className="border-b bg-white p-6">
-                <CardTitle>Care Schedule</CardTitle>
+                <div>
+                  <Label className="font-bold block mb-4">
+                    1. Looking for:
+                  </Label>
+
+                  <RadioGroup
+                    value={lookingFor}
+                    onValueChange={handleLookingForChange}
+                    className="space-y-3"
+                  >
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="monthly" id="livein" />
+                      <Label htmlFor="livein">Live In </Label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="daily" id="dayburg" />
+                      <Label htmlFor="dayburg">Dayburg </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
               </CardHeader>
 
               <CardContent className="p-8 space-y-8">
-                {/* PLAN CARDS */}
                 <div className="grid grid-cols-2 gap-6">
-                  {/* Monthly Plan */}
                   <div
-                    onClick={() => {
-                      setLookingFor("monthly");
-                      setSelectedMonths([]);
-                      setSelectedDates([]);
-                    }}
-                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all
-      ${isMonthly ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-200"}
-    `}
+                    className={`p-6 rounded-2xl border-2 ${isMonthly ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100 opacity-50"}`}
                   >
                     <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
-                      Monthly Plan
+                      Monthly Rate
                     </p>
-                    <p className="text-2xl font-bold mt-2">KES 100</p>
+                    <p className="text-2xl font-bold mt-2">
+                      KES {monthlyPrice}
+                    </p>
                   </div>
-
-                  {/* Daily Plan */}
                   <div
-                    onClick={() => {
-                      setLookingFor("daily");
-                      setSelectedMonths([]);
-                      setSelectedDates([]);
-                    }}
-                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all
-      ${isDaily ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-200"}
-    `}
+                    className={`p-6 rounded-2xl border-2 ${isDaily ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100 opacity-50"}`}
                   >
                     <p className="text-xs uppercase tracking-widest text-slate-400 font-bold">
-                      Daily Plan
+                      Daily Rate
                     </p>
-                    <p className="text-2xl font-bold mt-2">KES 4</p>
+                    <p className="text-2xl font-bold mt-2">KES {dailyPrice}</p>
                   </div>
                 </div>
 
-                {/* Monthly */}
+                {/* Monthly Selection */}
                 {isMonthly && (
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
                     {Array.from({ length: 12 }).map((_, i) => {
@@ -327,64 +276,54 @@ export default function EmployerBookingFormClient() {
                         "default",
                         { month: "long" },
                       );
-
-                      const hasAvailability =
-                        getDatesForMonth(monthKey).length > 0;
-
+                      const hasAvailability = availableDates.some((d) =>
+                        d.startsWith(monthKey),
+                      );
                       const selected = selectedMonths.includes(monthKey);
+
                       return (
                         <div key={monthKey} className="relative">
-                          {/* MONTH BUTTON */}
                           <button
                             type="button"
-                            onClick={() =>
-                              setSelectedMonths((prev) =>
-                                prev.includes(monthKey)
-                                  ? prev.filter((m) => m !== monthKey)
-                                  : [...prev, monthKey],
-                              )
-                            }
-                            className={`
-                            w-full p-5 rounded-2xl border transition-all duration-200 relative
-                            ${
+                            disabled={!hasAvailability}
+                            onClick={() => {
+                              const next = selected
+                                ? selectedMonths.filter((m) => m !== monthKey)
+                                : [...selectedMonths, monthKey];
+                              setValue("selectedMonths", next);
+                            }}
+                            className={`w-full p-5 rounded-2xl border transition-all ${
                               selected
-                                ? "bg-[#7A295A] text-white border-[#7A295A]"
-                                : "bg-white border-slate-200 hover:border-[#7A295A]"
-                            }
-  `}
+                                ? "bg-[#7A295A] text-white"
+                                : "bg-white text-slate-900"
+                            } ${!hasAvailability && "opacity-30 cursor-not-allowed"}`}
                           >
                             <p className="font-semibold">{monthLabel}</p>
-                            <p className="text-xs text-slate-500">
-                              {hasAvailability ? "Available" : "Unavailable"}
+                            <p className="text-[10px]">
+                              {hasAvailability ? "Available" : "No Dates"}
                             </p>
                           </button>
-
-                          {/* 👁 EYE BUTTON */}
-                          {hasAvailability && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewMonth(monthKey);
-                              }}
-                              className="absolute -top-2 -right-2 bg-black text-white rounded-full p-2 text-xs shadow-md"
-                            >
-                              👁
-                            </button>
-                          )}
                         </div>
                       );
                     })}
                   </div>
                 )}
 
-                {/* Daily */}
+                {/* Daily Selection */}
                 {isDaily && (
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center">
+                    <p className="mb-4 text-sm text-slate-500">
+                      Select available dates from the specialist's schedule:
+                    </p>
                     <Calendar
                       mode="multiple"
-                      selected={selectedDates}
-                      onSelect={setSelectedDates}
+                      selected={selectedDates.map((d) => new Date(d))}
+                      onSelect={(dates) => {
+                        const dateStrings = dates.map(
+                          (d) => d.toISOString().split("T")[0],
+                        );
+                        setValue("selectedDates", dateStrings);
+                      }}
                       disabled={isDateDisabled}
                     />
                   </div>
@@ -400,33 +339,23 @@ export default function EmployerBookingFormClient() {
 
         {/* RIGHT SUMMARY */}
         <aside>
-          <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100 sticky top-8">
-            <div className="bg-[#7A295A] p-10 text-white">
-              <p className="text-xs uppercase opacity-70">Estimated Amount</p>
+          <Card className="border-none shadow-2xl rounded-[2.5rem] bg-white ring-1 ring-slate-100 sticky top-8">
+            <div className="bg-[#7A295A] p-10 text-white rounded-t-[2.5rem]">
+              <p className="text-xs uppercase opacity-70">Total to Pay</p>
               <p className="text-5xl font-black mt-2">KES {bookingAmount}</p>
             </div>
-
-            <CardContent className="p-10 space-y-4 text-sm">
-              <div className="flex justify-between">
-                <span className="text-slate-400 uppercase font-bold">Plan</span>
-                <span className="font-bold capitalize">{lookingFor}</span>
+            <CardContent className="p-10 space-y-4">
+              <div className="flex justify-between font-bold">
+                <span className="text-slate-400">UNIT PRICE</span>
+                <span>KES {isMonthly ? monthlyPrice : dailyPrice}</span>
               </div>
-
-              <div className="flex justify-between">
-                <span className="text-slate-400 uppercase font-bold">
-                  Selection
-                </span>
-                <span className="font-bold text-[#7A295A]">
+              <div className="flex justify-between font-bold">
+                <span className="text-slate-400">QUANTITY</span>
+                <span>
                   {isMonthly
                     ? `${selectedMonths.length} Months`
                     : `${selectedDates.length} Days`}
                 </span>
-              </div>
-
-              <Separator />
-
-              <div className="p-4 bg-slate-50 rounded-xl text-xs text-slate-500">
-                Secure Booking: Your data is strictly confidential.
               </div>
             </CardContent>
           </Card>
