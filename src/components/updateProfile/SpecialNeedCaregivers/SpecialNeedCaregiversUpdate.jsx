@@ -358,6 +358,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
 
               <PhoneInputWithCountrySelect
                 international
+                disabled
                 defaultCountry={country}
                 value={formData?.basicInfo?.number}
                 onChange={(value) =>
@@ -367,7 +368,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
                   setCountry(countryCode);
                 }}
                 className="phone-input-custom"
-                disabled
+              
               />
 
               {formData.basicInfo.phone &&

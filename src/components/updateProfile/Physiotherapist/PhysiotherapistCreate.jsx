@@ -21,8 +21,12 @@ import toast from "react-hot-toast";
 
 import { postApi } from "@/lib/apiHandler";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+
 const PhysiotherapistCreate = ({ data = {} }) => {
-  // console.log("datas", data);
+  const [country, setCountry] = useState("KE");
   const { user } = useLocalUser();
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -30,6 +34,7 @@ const PhysiotherapistCreate = ({ data = {} }) => {
       name: data.name || "",
       location: data.location || "",
       age: data.age || "",
+      phone: data.phone || "",
       gender: data.gender || "",
       languages: data.languages || [],
       canDrive: data.canDrive || "",
@@ -163,6 +168,16 @@ const PhysiotherapistCreate = ({ data = {} }) => {
 
     const ageNumber = Number(basicInfo.age);
 
+    if (!basicInfo?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(basicInfo?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
     if (ageNumber < 25) return toast.error("You must be at least 25 years old");
 
     if (!basicInfo.gender) return toast.error("Gender is required");
@@ -179,8 +194,8 @@ const PhysiotherapistCreate = ({ data = {} }) => {
     if (!education.eduCertificate)
       return toast.error("Education certificate is required");
 
-    if (education.isRegisterPCK === "" || education.isRegisterPCK === null)
-      return toast.error("Please select PCK registration option");
+    // if (education.isRegisterPCK === "" || education.isRegisterPCK === null)
+    //   return toast.error("Please select PCK registration option");
 
     // If PCK = YES
     if (education.isRegisterPCK) {
@@ -192,8 +207,8 @@ const PhysiotherapistCreate = ({ data = {} }) => {
     }
 
     // ================= EXPERIENCE =================
-    if (experience.hospitalBasedCare === "")
-      return toast.error("Please select hospital based care option");
+    // if (experience.hospitalBasedCare === "")
+    //   return toast.error("Please select hospital based care option");
 
     if (experience.hospitalBasedCare) {
       if (!experience.hospitalBasedYearsOfExperience)
@@ -203,8 +218,8 @@ const PhysiotherapistCreate = ({ data = {} }) => {
         return toast.error("Hospital reference contact required");
     }
 
-    if (experience.homeBasedCare === "")
-      return toast.error("Please select home based care option");
+    // if (experience.homeBasedCare === "")
+    //   return toast.error("Please select home based care option");
 
     if (experience.homeBasedCare) {
       if (!experience.homeBasedYearsOfExperience)
@@ -244,6 +259,7 @@ const PhysiotherapistCreate = ({ data = {} }) => {
       fd.append("name", BASIC.name || "");
       fd.append("location", BASIC.location || "");
       fd.append("age", BASIC.age || "");
+      fd.append("phone", BASIC.phone || "");
       fd.append("gender", BASIC.gender || "");
 
       if (Array.isArray(BASIC.languages)) {
@@ -386,35 +402,59 @@ const PhysiotherapistCreate = ({ data = {} }) => {
               }
             />
           </div>
-          <div className="flex-1">
-            <Label className={"mb-2"}>Gender?</Label>
-            <RadioGroup
-              className={"flex gap-4"}
-              value={formData.basicInfo?.gender}
-              onValueChange={(value) =>
-                handleChange("basicInfo", "gender", value)
-              }
-            >
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="Male" id="r1" />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor="r1"
-                >
-                  Male
-                </Label>
-              </div>
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="Female" id="r2" />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor="r2"
-                >
-                  Female
-                </Label>
-              </div>
-            </RadioGroup>
+
+          <div>
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData.basicInfo.phone}
+                onChange={(value) =>
+                  handleChange("basicInfo", "phone", value || "")
+                }
+              />
+            </div>
+
+            {formData.basicInfo.phone &&
+              !isValidPhoneNumber(formData.basicInfo.phone) && (
+                <p className="text-red-500 text-sm mt-1">
+                  Invalid phone number for selected country
+                </p>
+              )}
           </div>
+        </div>
+
+        <div className="flex-1">
+          <Label className={"mb-2"}>Gender?</Label>
+          <RadioGroup
+            className={"flex gap-4"}
+            value={formData.basicInfo?.gender}
+            onValueChange={(value) =>
+              handleChange("basicInfo", "gender", value)
+            }
+          >
+            <div className="flex items-center gap-3">
+              <RadioGroupItem value="Male" id="r1" />
+              <Label
+                className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="r1"
+              >
+                Male
+              </Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <RadioGroupItem value="Female" id="r2" />
+              <Label
+                className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="r2"
+              >
+                Female
+              </Label>
+            </div>
+          </RadioGroup>
         </div>
 
         <div className="">
