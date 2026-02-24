@@ -27,8 +27,13 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 import { postApi } from "@/lib/apiHandler";
 import { useFetch } from "@/hooks/useFetch";
+// import PhoneInputWithCountrySelect from "react-phone-number-input";
+// import { isValidPhoneNumber } from "react-phone-number-input";
+// import { getExampleNumber } from "libphonenumber-js";
+// import "react-phone-number-input/style.css";
 
 export default function BookingFormClient() {
+  // const [country, setCountry] = useState("KE");
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const id = searchParams.get("id");
@@ -1040,6 +1045,41 @@ export default function BookingFormClient() {
                     placeholder="Doctor's Phone"
                   />
                 </div>
+                {/* <div className="space-y-2">
+                  <Label>Phone Number</Label>
+
+                  <div className="w-full mt-2">
+                    <PhoneInputWithCountrySelect
+                      className="w-full border rounded-md px-3 py-2"
+                      international
+                      defaultCountry={country}
+                      value={data?.phone}
+                      onChange={(value) => {
+                        setData((prev) => ({ ...prev, phone: value || "" }));
+                      }}
+                      onCountryChange={(countryCode) => {
+                        setCountry(countryCode);
+                        const exampleNumber = countryCode
+                          ? getExampleNumber(countryCode)
+                          : null;
+                        if (exampleNumber) {
+                          setData((prev) => ({
+                            ...prev,
+                            phone: `+${exampleNumber.countryCallingCode}`,
+                          }));
+                        } else {
+                          setData((prev) => ({ ...prev, phone: "" }));
+                        }
+                      }}
+                    />
+                  </div>
+
+                  {data?.phone && !isValidPhoneNumber(data?.phone) && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Invalid phone number for selected country
+                    </p>
+                  )}
+                </div> */}
                 <div className="md:col-span-2 space-y-2">
                   <Label>Primary Hospital *</Label>
                   <Input
