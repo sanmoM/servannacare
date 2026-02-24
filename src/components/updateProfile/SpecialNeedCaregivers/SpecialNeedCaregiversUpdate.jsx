@@ -24,7 +24,7 @@ import {
   IdCardLanyard,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import PhoneInputWithCountrySelect from "react-phone-number-input";
@@ -33,7 +33,7 @@ import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 
 const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
-  
+  console.log("data", data?.canDrive);
   const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useLocalUser();
@@ -77,6 +77,18 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
     },
   });
 
+  useEffect(() => {
+    if (data?.canDrive) {
+      setFormData((prev) => ({
+        ...prev,
+        basicInfo: {
+          ...prev.basicInfo,
+          canDrive: data.canDrive,
+        },
+      }));
+    }
+  }, [data]);
+  console.log("drvie", formData?.basicInfo?.canDrive);
 
   const documents = [
     {
@@ -355,26 +367,13 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
               Primary Number: (You can't change it.)
             </label>
             <div className="space-y-2">
-
               <PhoneInputWithCountrySelect
                 international
                 disabled
-                defaultCountry={country}
+                defaultCountry="KE"
                 value={formData?.basicInfo?.number}
-                onChange={(value) =>
-                  handleChange("basicInfo", "phone", value || "")
-                }
-                onCountryChange={(countryCode) => {
-                  setCountry(countryCode);
-                }}
-                className="phone-input-custom"
-              
+                className="w-full border rounded-md px-3 py-2 bg-gray-100"
               />
-
-              {formData.basicInfo.phone &&
-                !isValidPhoneNumber(formData.basicInfo.phone) && (
-                  <p className="text-red-500 text-sm">Invalid phone number</p>
-                )}
             </div>
           </div>
           <div className="flex-1">
@@ -391,7 +390,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
                 onCountryChange={(countryCode) => {
                   setCountry(countryCode);
                 }}
-                className="phone-input-custom"
+                className="phone-input-custom w-full border rounded-md px-3 py-2 bg-gray-100"
               />
 
               {formData.basicInfo.phone &&

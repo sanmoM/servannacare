@@ -231,14 +231,103 @@ const HouseManagerCreate = ({ data = {} }) => {
   const handleCreate = async (e) => {
     e.preventDefault();
 
-    if (!formData?.basicInfo?.phone) {
+    const { basicInfo, additionalDetails, documents } = formData;
+
+    const fieldLabels = {
+      name: "Full Name",
+      age: "Age",
+      education: "Education Level",
+      experience: "Experience",
+      salaryRange: "Salary Range",
+      location: "Location",
+    };
+
+    const requiredFields = [
+      "name",
+      "age",
+      "education",
+      "experience",
+      "salaryRange",
+      "location",
+    ];
+
+    for (let field of requiredFields) {
+      if (!basicInfo[field]) {
+        toast.error(`${fieldLabels[field]} is required!`);
+        return;
+      }
+    }
+
+    if (Number(basicInfo.age) < 25) {
+      toast.error("Age must be 25 or above");
+      return;
+    }
+
+    if (basicInfo.languages.length === 0) {
+      toast.error("Please select at least one language!");
+      return;
+    }
+
+    if (basicInfo.preferred.length === 0) {
+      toast.error("Please select at least one service preference!");
+      return;
+    }
+
+    if (!basicInfo.phone) {
       toast.error("Phone number is required!");
       return;
     }
 
-    if (!isValidPhoneNumber(formData?.basicInfo?.phone)) {
+    if (!isValidPhoneNumber(basicInfo.phone)) {
       toast.error("Phone number is invalid or incomplete!");
       return;
+    }
+
+    if (additionalDetails.isMother === null) {
+      toast.error("Please select if you are a mother!");
+      return;
+    }
+
+    if (additionalDetails.isHandelingPet === null) {
+      toast.error("Please select if you can handle pets!");
+      return;
+    }
+
+    if (additionalDetails.ageOfKids.length === 0) {
+      toast.error("Please select at least one kids age preference!");
+      return;
+    }
+
+    if (!additionalDetails.preferredRole?.trim()) {
+      toast.error("Please select a preferred role!");
+      return;
+    }
+
+    const day = additionalDetails.serviceFeeDay?.trim();
+    const month = additionalDetails.serviceFeeMonth?.trim();
+
+    if (!day || Number(day) <= 0) {
+      toast.error("Please enter a valid Per Day service fee!");
+      return;
+    }
+
+    if (!month || Number(month) <= 0) {
+      toast.error("Please enter a valid Per Month service fee!");
+      return;
+    }
+
+    const requiredDocs = [
+      { key: "firstAidCertificate", label: "First Aid Certificate" },
+      { key: "goodConductCertificate", label: "Good Conduct Certificate" },
+      { key: "iDCopy", label: "ID Copy" },
+      { key: "profilePhoto", label: "Profile Photo" },
+    ];
+
+    for (let doc of requiredDocs) {
+      if (!documents[doc.key]) {
+        toast.error(`${doc.label} is required!`);
+        return;
+      }
     }
 
     // console.log("form data", formData);
@@ -254,7 +343,7 @@ const HouseManagerCreate = ({ data = {} }) => {
     formData?.basicInfo.preferred.forEach((prep) =>
       fd.append("preferred[]", prep),
     );
-    fd.append("number", formData.basicInfo.phone);
+    fd.append("number_two", formData.basicInfo.phone);
 
     formData.basicInfo.languages.forEach((lan) =>
       fd.append("languages[]", lan),
@@ -299,9 +388,9 @@ const HouseManagerCreate = ({ data = {} }) => {
       fd.append("drivingLicense", docs.drivingLicense);
     }
 
-    for (let pair of fd.entries()) {
-      console.log(pair[0], ":", pair[1]);
-    }
+    // for (let pair of fd.entries()) {
+    //   console.log(pair[0], ":", pair[1]);
+    // }
 
     try {
       const res = await postApi("/create-profile", fd, {

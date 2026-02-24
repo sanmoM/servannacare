@@ -41,7 +41,7 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  console.log(specialistDatas);
+  console.log("dfdfd", specialistDatas);
 
   const { user, loaded } = useLocalUser();
 
@@ -188,7 +188,6 @@ export default function ProfilePage() {
             (specialistDatas?.data?.houseManager?.is_profile_completed ? (
               <HouseManager data={specialistDatas?.data?.houseManager} />
             ) : (
-        
               <HouseManagerCreate />
             ))}
 
@@ -196,7 +195,6 @@ export default function ProfilePage() {
             (specialistDatas?.data?.nurse?.is_profile_completed ? (
               <NurseUpdate data={specialistDatas?.data?.nurse} />
             ) : (
-           // country code added
               <NurseCreate />
             ))}
 
@@ -205,7 +203,6 @@ export default function ProfilePage() {
             (specialistDatas?.data?.physiotherapist?.is_profile_completed ? (
               <Physiotherapist data={specialistDatas?.data?.physiotherapist} />
             ) : (
-              // country code added
               <PhysiotherapistCreate />
             ))}
 
@@ -214,7 +211,6 @@ export default function ProfilePage() {
             (specialistDatas?.data?.nurseAssistant?.is_profile_completed ? (
               <NurseAideUpdate data={specialistDatas?.data?.nurseAssistant} />
             ) : (
-     
               <NurseAideCreate />
             ))}
 
@@ -225,7 +221,6 @@ export default function ProfilePage() {
                 data={specialistDatas?.data?.specialNeed}
               />
             ) : (
-              // country code added
               <SpecialNeedCaregiversCreate />
             ))}
         </div>

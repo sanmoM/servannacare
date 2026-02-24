@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import PhoneInputWithCountrySelect, {
@@ -79,7 +79,17 @@ const Physiotherapist = ({ data = {} }) => {
     },
   });
 
-  console.log("ex", formData?.basicInfo?.experience);
+  useEffect(() => {
+    if (data?.number_two) {
+      setFormData((prev) => ({
+        ...prev,
+        basicInfo: {
+          ...prev.basicInfo,
+          phone: data.number_two,
+        },
+      }));
+    }
+  }, [data]);
 
   const preferred = [
     {

@@ -254,7 +254,7 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
         BASIC.languages.forEach((lang) => fd.append("languages[]", lang));
       }
 
-      fd.append("phone", BASIC.phone || "");
+      fd.append("number_two", BASIC.phone || "");
 
       fd.append("canDrive", BASIC.canDrive ? 1 : 0);
 
@@ -385,25 +385,25 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
           </div>
 
           {/* PHONE */}
-
-          <div className="space-y-2">
+          <div>
             <Label>Phone Number</Label>
-            <PhoneInputWithCountrySelect
-              international
-              defaultCountry={country}
-              value={formData.basicInfo.number}
-              onChange={(value) =>
-                handleChange("basicInfo", "phone", value || "")
-              }
-              onCountryChange={(countryCode) => {
-                setCountry(countryCode);
-              }}
-              className="phone-input-custom"
-            />
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData.basicInfo.phone}
+                onChange={(value) =>
+                  handleChange("basicInfo", "phone", value || "")
+                }
+              />
+            </div>
 
             {formData.basicInfo.phone &&
               !isValidPhoneNumber(formData.basicInfo.phone) && (
-                <p className="text-red-500 text-sm">Invalid phone number</p>
+                <p className="text-red-500 text-sm mt-1">
+                  Invalid phone number for selected country
+                </p>
               )}
           </div>
         </div>

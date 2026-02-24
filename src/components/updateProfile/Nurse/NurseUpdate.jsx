@@ -16,7 +16,7 @@ import {
   IdCardLanyard,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import PhoneInputWithCountrySelect from "react-phone-number-input";
@@ -83,6 +83,17 @@ const NurseUpdate = ({ data = {} }) => {
     },
   });
 
+  useEffect(() => {
+    if (data?.number_two) {
+      setFormData((prev) => ({
+        ...prev,
+        basicInfo: {
+          ...prev.basicInfo,
+          number_two: data.number_two,
+        },
+      }));
+    }
+  }, [data]);
 
   const preferred = [
     {
@@ -438,16 +449,16 @@ const NurseUpdate = ({ data = {} }) => {
                 handleChange("basicInfo", "number_two", val);
               }}
             /> */}
-             <PhoneInputWithCountrySelect
-                  className="w-full border rounded-md px-3 py-2"
-                  disabled
-                  international
-                  defaultCountry={country}
-                  value={formData.basicInfo.phone}
-                  onChange={(value) =>
-                    handleChange("basicInfo", "phone", value || "")
-                  }
-                />
+            <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
+              disabled
+              international
+              defaultCountry={country}
+              value={formData.basicInfo.phone}
+              onChange={(value) =>
+                handleChange("basicInfo", "phone", value || "")
+              }
+            />
           </div>
           <div className="flex-1">
             <div>

@@ -34,10 +34,9 @@ import "react-phone-number-input/style.css";
 
 const HouseManager = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
-  console.log("datas", data);
+  console.log("datas", data?.number_two);
   const router = useRouter();
   const { user } = useLocalUser();
-
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
@@ -71,6 +70,18 @@ const HouseManager = ({ data = {} }) => {
     },
   });
 
+  useEffect(() => {
+    if (data?.number_two) {
+      setFormData((prev) => ({
+        ...prev,
+        basicInfo: {
+          ...prev.basicInfo,
+          phone: data?.number_two,
+        },
+      }));
+    }
+  }, [data]);
+  console.log("phone", formData?.basicInfo?.phone);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({
@@ -243,28 +254,28 @@ const HouseManager = ({ data = {} }) => {
     //   console.log(pair[0], pair[1]);
     // }
 
-    try {
-      const res = await postApi("/update-profile", fd);
+    // try {
+    //   const res = await postApi("/update-profile", fd);
 
-      if (res?.status === 200) {
-        toast.success("Profile Updated Successfully!");
-        router.push("/dashboard");
+    //   if (res?.status === 200) {
+    //     toast.success("Profile Updated Successfully!");
+    //     router.push("/dashboard");
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...user,
-            is_profile_completed: Boolean(res?.data?.is_profile_completed),
-            is_profile_verified: Boolean(res?.data?.is_profile_verified),
-          }),
-        );
-      } else {
-        toast.error(res?.data?.message || "Something went wrong.");
-      }
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Upload failed. Check console.");
-    }
+    //     localStorage.setItem(
+    //       "user",
+    //       JSON.stringify({
+    //         ...user,
+    //         is_profile_completed: Boolean(res?.data?.is_profile_completed),
+    //         is_profile_verified: Boolean(res?.data?.is_profile_verified),
+    //       }),
+    //     );
+    //   } else {
+    //     toast.error(res?.data?.message || "Something went wrong.");
+    //   }
+    // } catch (error) {
+    //   console.error("Error updating profile:", error);
+    //   toast.error("Upload failed. Check console.");
+    // }
   };
 
   return (
@@ -383,7 +394,7 @@ const HouseManager = ({ data = {} }) => {
               onChange={handleChange}
             />
           </div>
-          <div>
+          <div className="flex-1">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Primary Email: (You can't change it.)
             </label>
@@ -403,6 +414,100 @@ const HouseManager = ({ data = {} }) => {
               // }}
               // onChange={handlePhoneChange}
             />
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex-1">
+            <Label>Primary Number: (you can't change it)</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData.basicInfo.number || "+254"}
+                inputProps={{
+                  readOnly: true,
+                }}
+                disabled
+              />
+            </div>
+          </div>
+          <div className="flex-1">
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData?.basicInfo?.phone}
+                onChange={(value) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    basicInfo: {
+                      ...prev.basicInfo,
+                      phone: value || "",
+                    },
+                  }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      basicInfo: {
+                        ...prev.basicInfo,
+                        phone: `+${exampleNumber.countryCallingCode}`,
+                      },
+                    }));
+                  } else {
+                    setFormData((prev) => ({
+                      ...prev,
+                      basicInfo: {
+                        ...prev.basicInfo,
+                        phone: "",
+                      },
+                    }));
+                  }
+                }}
+              />
+            </div>
+
+            {formData?.basicInfo?.phone &&
+              !isValidPhoneNumber(formData?.basicInfo?.phone) && (
+                <p className="text-red-500 text-sm mt-1">
+                  Invalid phone number for selected country
+                </p>
+              )}
+          </div>
+        </div>
+
+        {/* Languages */}
+        <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex-1">
+            <Label className="font-medium text-gray-700">Languages</Label>
+            <div className="flex flex-wrap gap-4 mt-3">
+              {languages.map((lan) => (
+                <div key={lan.id} className="flex items-center gap-2">
+                  <Checkbox
+                    id={lan.value}
+                    checked={formData.basicInfo.languages.includes(lan.value)}
+                    onCheckedChange={() => toggleLanguage(lan.value)}
+                  />
+                  <Label
+                    className="text-gray-700 font-normal cursor-pointer"
+                    htmlFor={lan.value}
+                  >
+                    {lan.text}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex-1">
@@ -427,69 +532,6 @@ const HouseManager = ({ data = {} }) => {
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Primary Number:
-            </label>
-            <Input
-              name="phone"
-              type="tel"
-              placeholder="+254xxxxxxx"
-              value={formData.basicInfo.number || "+254"}
-              maxLength={11}
-              // onFocus={() => {
-              //   if (!formData.basicInfo.phone) {
-              //     setFormData((prev) => ({
-              //       ...prev,
-              //       basicInfo: { ...prev.basicInfo, phone: "+254" },
-              //     }));
-              //   }
-              // }}
-              // onChange={handlePhoneChange}
-            />
-          </div>
-          <div className="flex-1">
-            <Input
-              label="Alternative Number:"
-              name="phone"
-              type="tel"
-              placeholder="+254xxxxxxx"
-              value={formData.basicInfo.phone || "+254"}
-              maxLength={11}
-              onFocus={() => {
-                if (!formData.basicInfo.phone) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    basicInfo: { ...prev.basicInfo, phone: "+254" },
-                  }));
-                }
-              }}
-              onChange={handlePhoneChange}
-            />
-          </div>
-        </div>
-
-        {/* Languages */}
-        <div>
-          <Label className="font-medium text-gray-700">Languages</Label>
-          <div className="flex flex-wrap gap-4 mt-3">
-            {languages.map((lan) => (
-              <div key={lan.id} className="flex items-center gap-2">
-                <Checkbox
-                  id={lan.value}
-                  checked={formData.basicInfo.languages.includes(lan.value)}
-                  onCheckedChange={() => toggleLanguage(lan.value)}
-                />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor={lan.value}
-                >
-                  {lan.text}
-                </Label>
-              </div>
-            ))}
           </div>
         </div>
 

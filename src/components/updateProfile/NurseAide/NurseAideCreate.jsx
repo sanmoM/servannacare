@@ -19,7 +19,13 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { postApi } from "@/lib/apiHandler";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const NurseAideCreate = ({ data = {} }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -28,20 +34,38 @@ const NurseAideCreate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      phone: data?.phone || "",
       languages: data?.languages || [],
       canDrive:
-        String(data?.canDrive) === "1" || String(data?.canDrive) === "true",
+        data?.canDrive === 1 ||
+        data?.canDrive === "1" ||
+        data?.canDrive === true
+          ? true
+          : data?.canDrive === 0 ||
+              data?.canDrive === "0" ||
+              data?.canDrive === false
+            ? false
+            : null,
     },
     education: {
       education: data.education || "",
-      //   isNursingInKenya: data.education.isNursingInKenya || "",
       educationCertificate: data?.nurse_assistant?.educationCertificate || null,
     },
     experience: {
-      hospitalBasedCare: data.hospitalBasedCare || "",
+      hospitalBasedCare:
+        data.hospitalBasedCare === 1 || data.hospitalBasedCare === "1"
+          ? true
+          : data.hospitalBasedCare === 0 || data.hospitalBasedCare === "0"
+            ? false
+            : null,
       hospitalBasedYearsOfExperience: data.hospitalBasedYearsOfExperience || "",
       hospitalBasedReferenceContact: data.hospitalBasedReferenceContact || "",
-      homeBasedCare: data.homeBasedCare || "",
+      homeBasedCare:
+        data.homeBasedCare === 1 || data.homeBasedCare === "1"
+          ? true
+          : data.homeBasedCare === 0 || data.homeBasedCare === "0"
+            ? false
+            : null,
       homeBasedYearsOfExperience: data.homeBasedYearsOfExperience || "",
       homeBasedReferenceContact: data.homeBasedReferenceContact || "",
       preferred: data.preferred || [],
@@ -158,7 +182,6 @@ const NurseAideCreate = ({ data = {} }) => {
     const { basicInfo, education, experience, skillsServices, documents } =
       formData;
 
-    // ================= BASIC INFO =================
     if (!basicInfo.name.trim()) return toast.error("Full name is required");
 
     if (!basicInfo.location.trim()) return toast.error("Location is required");
@@ -177,13 +200,11 @@ const NurseAideCreate = ({ data = {} }) => {
     if (basicInfo.canDrive === null || basicInfo.canDrive === "")
       return toast.error("Please select driving option");
 
-    // ================= EDUCATION =================
     if (!education.education) return toast.error("Education level is required");
 
     if (!education.educationCertificate)
       return toast.error("Education certificate is required");
 
-    // ================= EXPERIENCE =================
     if (experience.hospitalBasedCare === "")
       return toast.error("Please select hospital based care option");
 
@@ -209,7 +230,6 @@ const NurseAideCreate = ({ data = {} }) => {
     if (!experience.preferred.length)
       return toast.error("Please select preferred intervention area");
 
-    // ================= SKILLS & SERVICES =================
     if (!skillsServices.skills.length)
       return toast.error("Please select at least one skill");
 
@@ -228,7 +248,6 @@ const NurseAideCreate = ({ data = {} }) => {
     if (!skillsServices.serviceFeeMonth)
       return toast.error("Service fee per month is required");
 
-    // ================= DOCUMENTS =================
     if (!documents.idCopy) return toast.error("ID copy is required");
 
     if (!documents.profilePhoto)
@@ -246,11 +265,11 @@ const NurseAideCreate = ({ data = {} }) => {
       const SKILL = formData.skillsServices;
       const DOC = formData.documents;
 
-      // ================= BASIC INFO =================
       fd.append("name", BASIC.name || "");
       fd.append("location", BASIC.location || "");
       fd.append("age", BASIC.age || "");
       fd.append("gender", BASIC.gender || "");
+      fd.append("number_two", BASIC.phone || "");
 
       if (Array.isArray(BASIC.languages)) {
         BASIC.languages.forEach((lang) => fd.append("languages[]", lang));
@@ -264,7 +283,6 @@ const NurseAideCreate = ({ data = {} }) => {
         fd.append("educationCertificate", EDU.educationCertificate);
       }
 
-      // ================= EXPERIENCE =================
       fd.append("hospitalBasedCare", EXP.hospitalBasedCare ? 1 : 0);
       fd.append(
         "hospitalBasedYearsOfExperience",
@@ -289,7 +307,6 @@ const NurseAideCreate = ({ data = {} }) => {
         EXP.preferred.forEach((pref) => fd.append("preferred[]", pref));
       }
 
-      // ================= SKILLS & SERVICES =================
       if (Array.isArray(SKILL.skills)) {
         SKILL.skills.forEach((skill) => fd.append("skills[]", skill));
       }
@@ -300,7 +317,6 @@ const NurseAideCreate = ({ data = {} }) => {
       fd.append("serviceFeeDay", SKILL.serviceFeeDay || "");
       fd.append("serviceFeeMonth", SKILL.serviceFeeMonth || "");
 
-      // ================= DOCUMENTS =================
       if (DOC.idCopy) fd.append("idCopy", DOC.idCopy);
       if (DOC.profilePhoto) fd.append("profilePhoto", DOC.profilePhoto);
       if (DOC.goodConductCertificate)
@@ -309,7 +325,10 @@ const NurseAideCreate = ({ data = {} }) => {
       if (DOC.referenceLetter)
         fd.append("referenceLetter", DOC.referenceLetter);
 
-      // ================= API CALL =================
+      for (let pair of fd.entries()) {
+        console.log(pair[0], ":", pair[1]);
+      }
+
       const res = await postApi("/create-profile", fd, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -323,8 +342,6 @@ const NurseAideCreate = ({ data = {} }) => {
           "user",
           JSON.stringify({
             ...user,
-            name: BASIC.name,
-            location: BASIC.location,
             is_profile_completed: Boolean(res?.data?.is_profile_completed),
             is_profile_verified: Boolean(res?.data?.is_profile_verified),
           }),
@@ -398,7 +415,84 @@ const NurseAideCreate = ({ data = {} }) => {
               }}
             />
           </div>
+          <div className="flex-1">
+            <Label>Phone Number</Label>
 
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData?.basicInfo?.phone}
+                onChange={(value) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    basicInfo: {
+                      ...prev.basicInfo,
+                      phone: value || "",
+                    },
+                  }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      basicInfo: {
+                        ...prev.basicInfo,
+                        phone: `+${exampleNumber.countryCallingCode}`,
+                      },
+                    }));
+                  } else {
+                    setFormData((prev) => ({
+                      ...prev,
+                      basicInfo: {
+                        ...prev.basicInfo,
+                        phone: "",
+                      },
+                    }));
+                  }
+                }}
+              />
+            </div>
+
+            {formData?.basicInfo?.phone &&
+              !isValidPhoneNumber(formData?.basicInfo?.phone) && (
+                <p className="text-red-500 text-sm mt-1">
+                  Invalid phone number for selected country
+                </p>
+              )}
+          </div>
+        </div>
+
+        {/* Languages + gender*/}
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
+          <div className="flex-1">
+            <Label className="font-medium mb-3 text-gray-700">Languages</Label>
+            <div className="flex flex-wrap gap-4 mt-2">
+              {languages.map((lan) => (
+                <div key={lan.id} className="flex items-center gap-2">
+                  <Checkbox
+                    className={"cursor-pointer"}
+                    id={lan.value}
+                    checked={formData.basicInfo?.languages.includes(lan.value)}
+                    onCheckedChange={() =>
+                      toggleArrayItem("basicInfo", "languages", lan.value)
+                    }
+                  />
+                  <Label
+                    htmlFor={lan.value}
+                    className="text-gray-700 font-normal cursor-pointer"
+                  >
+                    {lan.text}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
           <div className="flex-1">
             <Label className="mb-3 block">Gender</Label>
             <RadioGroup
@@ -409,7 +503,11 @@ const NurseAideCreate = ({ data = {} }) => {
               }
             >
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="Male" id="r1" />
+                <RadioGroupItem
+                  className={"cursor-pointer"}
+                  value="Male"
+                  id="r1"
+                />
                 <Label
                   htmlFor="r1"
                   className="text-gray-700 font-normal cursor-pointer"
@@ -427,30 +525,6 @@ const NurseAideCreate = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
-          </div>
-        </div>
-
-        {/* Languages */}
-        <div>
-          <Label className="font-medium mb-3 text-gray-700">Languages</Label>
-          <div className="flex flex-wrap gap-4 mt-2">
-            {languages.map((lan) => (
-              <div key={lan.id} className="flex items-center gap-2">
-                <Checkbox
-                  id={lan.value}
-                  checked={formData.basicInfo?.languages.includes(lan.value)}
-                  onCheckedChange={() =>
-                    toggleArrayItem("basicInfo", "languages", lan.value)
-                  }
-                />
-                <Label
-                  htmlFor={lan.value}
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
-                  {lan.text}
-                </Label>
-              </div>
-            ))}
           </div>
         </div>
 

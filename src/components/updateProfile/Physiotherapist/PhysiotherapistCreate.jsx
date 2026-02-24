@@ -259,7 +259,7 @@ const PhysiotherapistCreate = ({ data = {} }) => {
       fd.append("name", BASIC.name || "");
       fd.append("location", BASIC.location || "");
       fd.append("age", BASIC.age || "");
-      fd.append("phone", BASIC.phone || "");
+      fd.append("phone_number", BASIC.phone || "");
       fd.append("gender", BASIC.gender || "");
 
       if (Array.isArray(BASIC.languages)) {

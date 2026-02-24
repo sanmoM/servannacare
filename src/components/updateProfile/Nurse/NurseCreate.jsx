@@ -349,7 +349,7 @@ const NurseCreate = ({ data = {} }) => {
     fd.append("age", BASICINFO.age);
     fd.append("experience", BASICINFO.experience);
     fd.append("gender", BASICINFO.gender);
-    fd.append("phone", BASICINFO.phone);
+    fd.append("number_two", BASICINFO.phone);
     BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
     fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
 
@@ -791,19 +791,20 @@ const NurseCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="d3" />
+              <RadioGroupItem value="true" id="d3" />
               <Label
-                htmlFor="d3"
                 className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="d3"
               >
                 Yes
               </Label>
             </div>
+
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="d4" />
+              <RadioGroupItem value="false" id="d4" />
               <Label
-                htmlFor="d4"
                 className="text-gray-700 font-normal cursor-pointer"
+                htmlFor="d4"
               >
                 No
               </Label>
