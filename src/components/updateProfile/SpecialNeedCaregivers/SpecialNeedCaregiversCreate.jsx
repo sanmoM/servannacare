@@ -386,30 +386,26 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
 
           {/* PHONE */}
 
+          <div className="space-y-2">
+            <Label>Phone Number</Label>
+            <PhoneInputWithCountrySelect
+              international
+              defaultCountry={country}
+              value={formData.basicInfo.number}
+              onChange={(value) =>
+                handleChange("basicInfo", "phone", value || "")
+              }
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+              }}
+              className="phone-input-custom"
+            />
 
-            <div className="space-y-2">
-              <Label>Phone Number</Label>
-
-              <PhoneInputWithCountrySelect
-                international
-                defaultCountry={country}
-                value={formData.basicInfo.number}
-                onChange={(value) =>
-                  handleChange("basicInfo", "phone", value || "")
-                }
-                onCountryChange={(countryCode) => {
-                  setCountry(countryCode);
-                }}
-                className="phone-input-custom"
-              />
-
-              {formData.basicInfo.phone &&
-                !isValidPhoneNumber(formData.basicInfo.phone) && (
-                  <p className="text-red-500 text-sm">Invalid phone number</p>
-                )}
-            </div>
-
-
+            {formData.basicInfo.phone &&
+              !isValidPhoneNumber(formData.basicInfo.phone) && (
+                <p className="text-red-500 text-sm">Invalid phone number</p>
+              )}
+          </div>
         </div>
 
         <div className="flex-1">

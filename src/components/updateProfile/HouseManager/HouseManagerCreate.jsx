@@ -26,8 +26,13 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const HouseManagerCreate = ({ data = {} }) => {
-  // console.log("datas", data);
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useLocalUser();
 
@@ -226,7 +231,17 @@ const HouseManagerCreate = ({ data = {} }) => {
   const handleCreate = async (e) => {
     e.preventDefault();
 
-    console.log("form data", formData);
+    if (!formData?.basicInfo?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(formData?.basicInfo?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
+
+    // console.log("form data", formData);
 
     const fd = new FormData();
 
@@ -340,17 +355,15 @@ const HouseManagerCreate = ({ data = {} }) => {
               onChange={handleChange}
             />
           </div>
-
           <div className="flex-1">
             <Input
               type="number"
               placeholder="Your age"
               name="age"
               label="Age"
-              maxLength={2}
-              value={formData.basicInfo?.age}
+              value={formData?.basicInfo?.age}
               onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+                const val = e.target.value.replace(/\D/g, "").slice(0, 3);
                 handleBasicChange("age", val);
               }}
             />
@@ -468,26 +481,55 @@ const HouseManagerCreate = ({ data = {} }) => {
           </div>
 
           <div className="flex-1">
-            <Input
-              label="Phone Number"
-              name="phone"
-              type="tel"
-              placeholder="+254XXXXXXXXX"
-              value={formData.basicInfo.phone}
-              maxLength={11}
-              onFocus={() => {
-                if (!formData.basicInfo.phone) {
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData?.basicInfo?.phone}
+                onChange={(value) => {
                   setFormData((prev) => ({
                     ...prev,
                     basicInfo: {
                       ...prev.basicInfo,
-                      phone: "+254",
+                      phone: value || "",
                     },
                   }));
-                }
-              }}
-              onChange={handlePhoneChange}
-            />
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      basicInfo: {
+                        ...prev.basicInfo,
+                        phone: `+${exampleNumber.countryCallingCode}`,
+                      },
+                    }));
+                  } else {
+                    setFormData((prev) => ({
+                      ...prev,
+                      basicInfo: {
+                        ...prev.basicInfo,
+                        phone: "",
+                      },
+                    }));
+                  }
+                }}
+              />
+            </div>
+
+            {formData?.basicInfo?.phone &&
+              !isValidPhoneNumber(formData?.basicInfo?.phone) && (
+                <p className="text-red-500 text-sm mt-1">
+                  Invalid phone number for selected country
+                </p>
+              )}
           </div>
         </div>
 
@@ -562,7 +604,7 @@ const HouseManagerCreate = ({ data = {} }) => {
                     htmlFor={`age-${age}`}
                     className="text-gray-700 font-normal cursor-pointer"
                   >
-                    {age === "11+" ? "years" : `${age} years`}
+                    {age === "11+" ? "11+ years" : `${age} years`}
                   </Label>
                 </div>
               ))}
@@ -689,7 +731,7 @@ const HouseManagerCreate = ({ data = {} }) => {
         {/* submit button  */}
         <div className="flex justify-end mt-4 b-0">
           {!user?.is_profile_completed && (
-            <Button size={"lg"} type="submit">
+            <Button className="cursor-pointer" size={"lg"} type="submit">
               Submit
             </Button>
           )}

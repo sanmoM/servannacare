@@ -27,7 +27,13 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const HouseManager = ({ data = {} }) => {
+  const [country, setCountry] = useState("KE");
   console.log("datas", data);
   const router = useRouter();
   const { user } = useLocalUser();
@@ -64,8 +70,6 @@ const HouseManager = ({ data = {} }) => {
       drivingLicense: data?.drivingLicense || "",
     },
   });
-
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
