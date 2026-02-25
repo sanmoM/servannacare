@@ -3,6 +3,7 @@ import "./globals.css";
 import LayoutWrapper from "@/components/shared/LayoutWrapper";
 import AOSInit from "@/animation/AOSInit";
 import QueryProvider from "@/providers/queryProvider";
+import { AuthProvider } from "@/context/AuthContext";
 
 const ibmPlexSerif = IBM_Plex_Serif({
   subsets: ["latin"],
@@ -20,9 +21,11 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${ibmPlexSerif.variable} font-serif antialiased`}>
         <AOSInit />
-        <QueryProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
-        </QueryProvider>
+        <AuthProvider>
+          <QueryProvider>
+            <LayoutWrapper>{children}</LayoutWrapper>
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );

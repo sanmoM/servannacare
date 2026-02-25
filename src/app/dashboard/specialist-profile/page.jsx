@@ -41,9 +41,6 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  console.log("dfdfd", specialistDatas);
-
-  const { user, loaded } = useLocalUser();
 
   const { data, isLoading, error } = useFetch("/profile");
   useEffect(() => {
@@ -169,57 +166,66 @@ export default function ProfilePage() {
       <div className="flex justify-between">
         <h1 className="sectionHeading mb-4">My Profile</h1>
       </div>
-      {!user?.is_profile_completed && (
+      {!specialistDatas?.is_profile_completed && (
         <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
           <Info /> Your account is not complete.
         </p>
       )}
 
-      {user?.is_profile_completed && !user?.is_profile_verified && (
-        <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
-          <Info /> Your account is Under review.
-        </p>
-      )}
+      {specialistDatas?.is_profile_completed &&
+        !specialistDatas?.is_profile_verified && (
+          <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+            <Info /> Your account is Under review.
+          </p>
+        )}
+
+      {specialistDatas?.is_profile_completed &&
+        specialistDatas?.is_profile_verified && (
+          <div className="p-4 mb-4 rounded-xl bg-green-50 border border-green-200 flex items-center gap-3">
+            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+            <div className="text-green-700 font-medium">
+              Your profile is verified as{" "}
+              <span className="capitalize font-semibold">
+                {specialistDatas?.subRole?.replace(/-/g, " ")}
+              </span>
+            </div>
+          </div>
+        )}
 
       <div className="border flex  items-center md:items-start flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
         {/* Info Fields */}
         <div className="w-full">
-          {specialistDatas?.data?.houseManager?.subRole === "house-manager" &&
-            (specialistDatas?.data?.houseManager?.is_profile_completed ? (
-              <HouseManager data={specialistDatas?.data?.houseManager} />
+          {specialistDatas?.subRole === "house-manager" &&
+            (specialistDatas?.is_profile_completed ? (
+              <HouseManager data={specialistDatas} />
             ) : (
               <HouseManagerCreate />
             ))}
 
-          {specialistDatas?.data?.nurse?.subRole === "nurse" &&
-            (specialistDatas?.data?.nurse?.is_profile_completed ? (
-              <NurseUpdate data={specialistDatas?.data?.nurse} />
+          {specialistDatas?.subRole === "nurse" &&
+            (specialistDatas?.is_profile_completed ? (
+              <NurseUpdate data={specialistDatas} />
             ) : (
               <NurseCreate />
             ))}
 
-          {specialistDatas?.data?.physiotherapist?.subRole ===
-            "physiotherapist" &&
-            (specialistDatas?.data?.physiotherapist?.is_profile_completed ? (
-              <Physiotherapist data={specialistDatas?.data?.physiotherapist} />
+          {specialistDatas?.subRole === "physiotherapist" &&
+            (specialistDatas?.is_profile_completed ? (
+              <Physiotherapist data={specialistDatas} />
             ) : (
               <PhysiotherapistCreate />
             ))}
 
-          {specialistDatas?.data?.nurseAssistant?.subRole ===
-            "nurse-aide-or-assistant" &&
-            (specialistDatas?.data?.nurseAssistant?.is_profile_completed ? (
-              <NurseAideUpdate data={specialistDatas?.data?.nurseAssistant} />
+          {specialistDatas?.subRole === "nurse-aide-or-assistant" &&
+            (specialistDatas?.is_profile_completed ? (
+              <NurseAideUpdate data={specialistDatas} />
             ) : (
               <NurseAideCreate />
             ))}
 
-          {specialistDatas?.data?.specialNeed?.subRole ===
-            "special-need-caregivers" &&
-            (specialistDatas?.data?.specialNeed?.is_profile_completed ? (
-              <SpecialNeedCaregiversUpdate
-                data={specialistDatas?.data?.specialNeed}
-              />
+          {specialistDatas?.subRole === "special-need-caregivers" &&
+            (specialistDatas?.is_profile_completed ? (
+              <SpecialNeedCaregiversUpdate data={specialistDatas} />
             ) : (
               <SpecialNeedCaregiversCreate />
             ))}

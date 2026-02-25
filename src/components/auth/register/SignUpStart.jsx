@@ -10,16 +10,17 @@ import Link from "next/link";
 import OtpModal from "../OtpModal";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useSearchParams } from "next/navigation";
-import { postApi } from "@/lib/apiHandler";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getApi, postApi } from "@/lib/apiHandler";
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
-import {
-  getExampleNumber,
-} from "libphonenumber-js";
+import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
+import { useAuth } from "@/hooks/useAuth";
 
 const SignUpStart = ({ onSuccess }) => {
+  const router = useRouter();
+  const { user, setUser, setRole } = useAuth();
   const searchParams = useSearchParams();
   const inComingRole = searchParams.get("role");
   const SPECIALIST_SUBROLE = [
@@ -105,13 +106,12 @@ const SignUpStart = ({ onSuccess }) => {
         const { token, role, is_profile_completed } = res?.data?.data;
         localStorage.setItem("token", token);
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ role, subRole, is_profile_completed }),
-        );
+        const data = await getApi("/profile");
+        setUser(data?.data?.data);
+        setRole(data?.data?.data?.role);
+        toast.success("Account verified successfully!");
         setOpenOTP(false);
         onSuccess({ role, subRole, is_profile_completed });
-        toast.success("Account verified successfully!");
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Invalid Otp");
@@ -125,27 +125,6 @@ const SignUpStart = ({ onSuccess }) => {
           Create an Account!
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* <Input
-            label="Phone Number"
-            name="phone"
-            type="tel"
-            placeholder="+254xxxxxxx"
-            value={phone}
-            maxLength={11}
-            onFocus={() => {
-              if (!phone) setPhone("+254");
-            }}
-            onChange={(e) => {
-              let val = e.target.value;
-              if (!val.startsWith("+254")) {
-                val = "+254" + val.replace(/\D/g, "").slice(0, 7);
-              } else {
-                val = "+254" + val.slice(4).replace(/\D/g, "").slice(0, 7);
-              }
-              setPhone(val);
-            }}
-          /> */}
-
           <Label>Phone Number</Label>
 
           <div className="w-full">

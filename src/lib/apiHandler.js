@@ -5,7 +5,6 @@ export const getApi = (url, params = {}) => {
   return api.get(url, { params });
 };
 
-
 export const postApi = (url, data = {}) => {
   return api.post(url, data);
 };

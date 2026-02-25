@@ -34,7 +34,6 @@ import "react-phone-number-input/style.css";
 
 const HouseManager = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
-  console.log("datas", data?.number_two);
   const router = useRouter();
   const { user } = useLocalUser();
   const [formData, setFormData] = useState({
@@ -81,7 +80,7 @@ const HouseManager = ({ data = {} }) => {
       }));
     }
   }, [data]);
-  console.log("phone", formData?.basicInfo?.phone);
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({
@@ -249,7 +248,7 @@ const HouseManager = ({ data = {} }) => {
       }
     });
 
-    // console.log("FORMDATA PAYLOAD");
+    
     // for (let pair of fd.entries()) {
     //   console.log(pair[0], pair[1]);
     // }

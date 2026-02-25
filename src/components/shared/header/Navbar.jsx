@@ -35,12 +35,14 @@ import { userRole } from "@/utilities/data";
 import useLocalUser from "@/hooks/useLocalUser";
 import LoadingSpinner from "../LoadingSpin";
 import LoadingSpinnerSecond from "../Loadingspiner";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const { user, loaded } = useLocalUser();
+  const { loaded } = useLocalUser();
+  const { user } = useAuth();
 
   const navlinks = [
     { text: "Home", link: "/", icon: Home },
@@ -126,13 +128,17 @@ const Navbar = () => {
               <LoadingSpinnerSecond />
             ) : user ? (
               <Link href={"/dashboard"}>
-                <Button className={"rounded-full"}>Dashboard</Button>
+                <Button className={"rounded-full cursor-pointer"}>
+                  Dashboard
+                </Button>
               </Link>
             ) : (
               <>
                 <Link href={"/login"}>
                   <Button
-                    className={"rounded-full hidden md:flex text-xs"}
+                    className={
+                      "rounded-full hidden md:flex text-xs cursor-pointer"
+                    }
                     variant={"outline"}
                   >
                     LOGIN
@@ -140,7 +146,7 @@ const Navbar = () => {
                 </Link>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button className="rounded-full text-xs">
+                    <Button className="rounded-full text-xs cursor-pointer">
                       GET IN TOUCH{" "}
                     </Button>
                   </DialogTrigger>
@@ -255,14 +261,17 @@ const Navbar = () => {
                 <LoadingSpinner />
               ) : user ? (
                 <>
-                  <Button size={"lg"} className={"rounded-full"}>
+                  <Button size={"lg"} className={"rounded-full cursor-pointer"}>
                     Log Out
                   </Button>
                 </>
               ) : (
                 <>
                   <Link href={"/login"}>
-                    <Button size={"lg"} className={"w-full rounded-full"}>
+                    <Button
+                      size={"lg"}
+                      className={"w-full rounded-full cursor-pointer"}
+                    >
                       LOGIN
                     </Button>
                   </Link>

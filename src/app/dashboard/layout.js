@@ -35,15 +35,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import PrivateRoute from "@/components/shared/PrivateRoute";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, loaded } = useLocalUser();
+  const { loaded } = useLocalUser();
 
   const [token, setToken] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { logout, user } = useAuth();
 
   // const {
   //   data: profileData,
@@ -184,7 +187,7 @@ export default function DashboardLayout({ children }) {
       : []),
 
     { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
-    { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
+    { name: "Review", href: "/dashboard/feedback", icon: Smile },
   ];
 
   const agencyLinks = [
@@ -195,11 +198,11 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/agency-employee",
       icon: BriefcaseBusiness,
     },
-           {
-            name: "Subscriptions",
-            href: "/dashboard/agency-subscriptions",
-            icon: Gem,
-          },
+    {
+      name: "Subscriptions",
+      href: "/dashboard/agency-subscriptions",
+      icon: Gem,
+    },
     // { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
     { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
     // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
@@ -236,7 +239,7 @@ export default function DashboardLayout({ children }) {
   if (role === "care_institutions") links = careInstitutionLinks;
 
   const handleLogout = () => {
-    localStorage.clear();
+    logout();
     router.push("/");
     toast.success("Log Out Success!");
   };
@@ -266,89 +269,100 @@ export default function DashboardLayout({ children }) {
   // if (profileError || notificationError) return <div>Error loading data</div>;
 
   return (
-    <div className="flex h-screen w-full overflow-hidden">
-      <aside
-        className={`bg-primary text-white fixed lg:static h-full z-50 transition-all ${isSidebarOpen ? "w-72" : "w-0"}`}
-      >
-        <div className="flex flex-col h-full">
-          <div className="p-4 border-b border-white/20">
-            <Link href="/">
-              <img src="/logo2.png" className="w-20" />
-            </Link>
+    <PrivateRoute>
+      <div className="flex h-screen w-full overflow-hidden">
+        <aside
+          className={`bg-primary text-white fixed lg:static h-full z-50 transition-all ${isSidebarOpen ? "w-72" : "w-0"}`}
+        >
+          <div className="flex flex-col h-full">
+            <div className="p-4 border-b border-white/20">
+              <Link href="/">
+                <img src="/logo2.png" className="w-20" />
+              </Link>
+            </div>
+
+            <nav className="flex-grow py-3">
+              {links.map((link) => (
+                <NavLink key={link.name} link={link} />
+              ))}
+            </nav>
+
+            {/* <Button onClick={handleLogout} className="mx-3 mb-4 bg-secondary">
+              Log Out
+            </Button> */}
+            <Button
+              onClick={handleLogout}
+              className={"cursor-pointer bg-secondary"}
+            >
+              Log Out
+            </Button>
           </div>
+        </aside>
 
-          <nav className="flex-grow py-3">
-            {links.map((link) => (
-              <NavLink key={link.name} link={link} />
-            ))}
-          </nav>
+        <main className="flex-1 overflow-y-auto bg-gray-50">
+          <div className="bg-primary sticky top-0 z-30 flex justify-between p-4 text-white">
+            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+              <PanelLeft />
+            </button>
 
-          <Button onClick={handleLogout} className="mx-3 mb-4 bg-secondary">
-            Log Out
-          </Button>
-        </div>
-      </aside>
+            <div className="flex gap-6 items-center">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="relative focus:outline-none">
+                    <Bell size={28} className="cursor-pointer" />
 
-      <main className="flex-1 overflow-y-auto bg-gray-50">
-        <div className="bg-primary sticky top-0 z-30 flex justify-between p-4 text-white">
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-            <PanelLeft />
-          </button>
-
-          <div className="flex gap-6 items-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="relative focus:outline-none">
-                  <Bell size={28} className="cursor-pointer" />
-
-                  {notifications.length > 0 && (
-                    <Badge
-                      variant="destructive"
-                      className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 
+                    {notifications.length > 0 && (
+                      <Badge
+                        variant="destructive"
+                        className="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 
                  h-5 min-w-5 flex items-center justify-center px-1 text-xs"
-                    >
-                      {notifications.length}
-                    </Badge>
-                  )}
-                </button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuSeparator />
-
-                <ScrollArea className="h-80">
-                  {notifications?.length > 0 ? (
-                    notifications.map((item, index) => (
-                      <DropdownMenuItem
-                        key={index}
-                        className="flex flex-col items-start gap-1 cursor-pointer"
                       >
-                        <p className="text-sm font-medium">
-                          {item?.data?.title || "New Notification"}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {item.message || item.description}
-                        </p>
-                        <p>{item.length}</p>
-                      </DropdownMenuItem>
-                    ))
-                  ) : (
-                    <div className="p-4 text-sm text-muted-foreground text-center">
-                      No notifications
-                    </div>
-                  )}
-                </ScrollArea>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                        {notifications.length}
+                      </Badge>
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
 
-            <Link href={`/dashboard/${role}-profile`}>
-              <img src="/user.png" className="h-9 w-9 rounded-full bg-white" />
-            </Link>
+                <DropdownMenuContent align="end" className="w-80">
+                  <DropdownMenuSeparator />
+
+                  <ScrollArea className="h-80">
+                    {notifications?.length > 0 ? (
+                      notifications.map((item, index) => (
+                        <DropdownMenuItem
+                          key={index}
+                          className="flex flex-col items-start gap-1 cursor-pointer"
+                        >
+                          <p className="text-sm font-medium">
+                            {item?.data?.title || "New Notification"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.message || item.description}
+                          </p>
+                          <p>{item.length}</p>
+                        </DropdownMenuItem>
+                      ))
+                    ) : (
+                      <div className="p-4 text-sm text-muted-foreground text-center">
+                        No notifications
+                      </div>
+                    )}
+                  </ScrollArea>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <Link href={`/dashboard/${role}-profile`}>
+                <img
+                  src="/user.png"
+                  className="h-9 w-9 rounded-full bg-white"
+                />
+              </Link>
+            </div>
           </div>
-        </div>
 
-        <div className="p-4 lg:p-8">{children}</div>
-      </main>
-    </div>
+          <div className="p-4 lg:p-8">{children}</div>
+        </main>
+      </div>
+    </PrivateRoute>
   );
 }

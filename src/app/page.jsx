@@ -29,7 +29,7 @@ export default function Home() {
   if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
 
-  // console.log("Home data stored in state:", homeData);
+  // ("Home data stored in state:", homeData);
 
   // useEffect(() => {
   //   const getHomeAllData = async () => {
@@ -39,7 +39,7 @@ export default function Home() {
   //       const homeData = res?.data?.data;
   //       setData(homeData);
   //     } catch (err) {
-  //       console.log(err);
+  //       (err);
   //       setData([]);
   //     } finally {
   //       setLoading(false);

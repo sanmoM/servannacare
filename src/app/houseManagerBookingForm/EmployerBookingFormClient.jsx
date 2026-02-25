@@ -39,7 +39,7 @@ export default function EmployerBookingFormClient() {
     matchedSpecialist?.house_manager?.serviceFeeDay || 0,
   );
 
-  console.log("rate", matchedSpecialist);
+  
 
   const availableDates = useMemo(
     () => matchedSpecialist?.schedule?.flatMap((s) => s.date) || [],
@@ -128,13 +128,12 @@ export default function EmployerBookingFormClient() {
       booking_type: booking_type,
       has_kids: data.kids === "yes" ? 1 : 0,
       age_bracket: data.kids === "yes" ? data.ageBracket : null,
-      homeType: data.homeType,
-      homeSize: data.homeSize,
+      home_type: data.homeType,
+      home_size: data.homeSize,
       selected_dates_or_months: formattedSelections,
-      totalAmount: bookingAmount,
+      booking_amount: bookingAmount,
     };
 
-    console.log("Final Payload:", payload);
 
     try {
       // await postApi('/bookings', payload);
