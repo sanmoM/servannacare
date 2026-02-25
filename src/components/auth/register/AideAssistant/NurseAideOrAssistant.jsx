@@ -140,15 +140,7 @@ const NurseAideOrAssistant = ({ skills }) => {
             }),
           );
           router.push(`/dashboard/${user?.role}-profile`);
-          //todo this localStorage
-          // localStorage.setItem(
-          //   "user",
-          //   JSON.stringify({
-          //     ...user,
-          //     role: "care_institutions",
-          //     institution: formData.institution,
-          //   }),
-          // );
+    
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

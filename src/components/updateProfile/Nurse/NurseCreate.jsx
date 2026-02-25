@@ -325,17 +325,7 @@ const NurseCreate = ({ data = {} }) => {
       toast.error("Please select at least one language!");
       return;
     }
-    // localStorage.setItem("specialist", JSON.stringify(formData));
-    // localStorage.setItem(
-    //   "user",
-    //   JSON.stringify({
-    //     ...user,
-    //     name: formData.basicInfo.name,
-    //     location: formData.basicInfo.location,
-    //   }),
-    // );
-    // toast.success("Profile Updated!");
-    //   console.log("create data", formData);
+
 
     const fd = new FormData();
     const BASICINFO = formData.basicInfo;

@@ -82,18 +82,6 @@ const Agency = () => {
 
       setStep(step + 1);
     } else {
-      // const token = generateToken();
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     ...user,
-      //     role: "agency",
-      //     agency: formData.agency,
-      //     token,
-      //   }),
-      // );
-      // toast.success("Register Successfully!");
-      // router.push("/dashboard");
       const fd = new FormData();
       const AGENCY = formData.agency;
       const ALLEMPLOYEES = formData.allEmployees;

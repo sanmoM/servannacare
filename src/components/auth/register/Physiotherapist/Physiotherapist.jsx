@@ -124,20 +124,10 @@ const Physiotherapist = () => {
         });
 
         if (res?.status === 200) {
-          // console.log("res", res);
+      
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
-          //todo
-          // localStorage.setItem("token", user?.token);
-          //todo this localStorage
-          // localStorage.setItem(
-          //   "user",
-          //   JSON.stringify({
-          //     ...user,
-          //     role: user?.role,
-          //     institution: fd,
-          //   }),
-          // );
+     
           localStorage.setItem(
             "user",
             JSON.stringify({

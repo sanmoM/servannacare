@@ -48,24 +48,6 @@ const SpecialNeedCaregivers = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // const token = generateToken();
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     ...user,
-      //     location: formData.basicInfo.location,
-      //     name: formData.basicInfo.name,
-      //     profilePic: null,
-      //     role: "specialist",
-      //     subRole: "special need caregivers",
-      //     status: "under review",
-      //     token,
-      //   }),
-      // );
-      // localStorage.setItem("specialist", JSON.stringify(formData));
-      // toast.success("Register Sucessfully!");
-      // router.push("/dashboard");
-
       const fd = new FormData();
       const BASICINFO = formData.basicInfo;
       const EDUCATION = formData.education;
@@ -151,15 +133,7 @@ const SpecialNeedCaregivers = () => {
             }),
           );
           router.push(`/dashboard/${user?.role}-profile`);
-          //todo this localStorage
-          // localStorage.setItem(
-          //   "user",
-          //   JSON.stringify({
-          //     ...user,
-          //     role: "care_institutions",
-          //     institution: formData.institution,
-          //   }),
-          // );
+    
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

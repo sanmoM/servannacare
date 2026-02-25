@@ -49,24 +49,6 @@ const HouseManager = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     ...user,
-      //     location: updatedFormData.basicInfo.location,
-      //     name: updatedFormData.basicInfo.name,
-      //     profilePic: null,
-      //     role: "specialist",
-      //     subRole: "housemanager",
-      //     status: "under review",
-      //   }),
-      // );
-
-      // localStorage.setItem("specialist", JSON.stringify(updatedFormData));
-
-      // toast.success("Register Successfully!");
-      // router.push("/dashboard");
-
       const fd = new FormData();
       const BASICINFO = formData.basicInfo;
       const ADDITIONALDETAILS = formData.additionalDetails;
@@ -89,7 +71,7 @@ const HouseManager = () => {
       fd.append("preferredRole", ADDITIONALDETAILS.preferredRole);
       fd.append("serviceFeeMonth", ADDITIONALDETAILS.serviceFeeMonth);
       fd.append("serviceFeeDay", ADDITIONALDETAILS.serviceFeeDay);
-      
+
       if (DOCUMENTSUPLOADS?.iDCopy) {
         fd.append("idCopy", DOCUMENTSUPLOADS.iDCopy);
       }
@@ -115,22 +97,9 @@ const HouseManager = () => {
             "Content-Type": "multipart/form-data",
           },
         });
-        // console.log("form data", formData);
         if (res?.status === 200) {
-          // console.log("res", res);
           toast.success("Registered Successfully!");
-          // router.push(`/dashboard/${user?.role}-profile`);
-          //todo
-          // localStorage.setItem("token", user?.token);
-          //todo this localStorage
-          // localStorage.setItem(
-          //   "user",
-          //   JSON.stringify({
-          //     ...user,
-          //     role: user?.role,
-          //     institution: fd,
-          //   }),
-          // );
+
           localStorage.setItem(
             "user",
             JSON.stringify({

@@ -253,28 +253,28 @@ const HouseManager = ({ data = {} }) => {
     //   console.log(pair[0], pair[1]);
     // }
 
-    // try {
-    //   const res = await postApi("/update-profile", fd);
+    try {
+      const res = await postApi("/update-profile", fd);
 
-    //   if (res?.status === 200) {
-    //     toast.success("Profile Updated Successfully!");
-    //     router.push("/dashboard");
+      if (res?.status === 200) {
+        toast.success("Profile Updated Successfully!");
+        router.push("/dashboard");
 
-    //     localStorage.setItem(
-    //       "user",
-    //       JSON.stringify({
-    //         ...user,
-    //         is_profile_completed: Boolean(res?.data?.is_profile_completed),
-    //         is_profile_verified: Boolean(res?.data?.is_profile_verified),
-    //       }),
-    //     );
-    //   } else {
-    //     toast.error(res?.data?.message || "Something went wrong.");
-    //   }
-    // } catch (error) {
-    //   console.error("Error updating profile:", error);
-    //   toast.error("Upload failed. Check console.");
-    // }
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...user,
+            is_profile_completed: Boolean(res?.data?.is_profile_completed),
+            is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          }),
+        );
+      } else {
+        toast.error(res?.data?.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Upload failed. Check console.");
+    }
   };
 
   return (

@@ -338,16 +338,7 @@ const NurseUpdate = ({ data = {} }) => {
         toast.error("An unexpected error occurred.");
       }
     }
-    // localStorage.setItem("specialist", JSON.stringify(formData));
-    // localStorage.setItem(
-    //   "user",
-    //   JSON.stringify({
-    //     ...user,
-    //     name: formData.basicInfo.name,
-    //     location: formData.basicInfo.location,
-    //   }),
-    // );
-    // toast.success("Profile Updated!");
+ 
     router.push("/dashboard");
   };
 

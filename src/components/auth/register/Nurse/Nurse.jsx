@@ -51,40 +51,9 @@ const Nurse = ({ skills }) => {
     if (step === 5)
       setFormData((prev) => ({ ...prev, documents: dataForStep }));
 
-    // if (step === 6)
-    //   setFormData((prev) => ({ ...prev, contactAgrement: dataForStep }));
-
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-      // const token = generateToken();
-      // localStorage.setItem(
-      //   "user",
-      //   JSON.stringify({
-      //     ...user,
-      //     location: formData.basicInfo.location,
-      //     name: formData.basicInfo.name,
-      //     profilePic: null,
-      //     role: "specialist",
-      //     subRole: "nurse",
-      //     status: "under review",
-      //     token,
-      //   }),
-      // );
-
-      // localStorage.setItem("specialist", JSON.stringify(formData));
-
-      // toast.success("Register Sucessfully!");
-      // router.push("/dashboard");
-      // setFormData({
-      //   basicInfo: {},
-      //   education: {},
-      //   experience: {},
-      //   skillsServices: {},
-      //   documents: {},
-      //   // contactAgrement: {},
-      // });
-
       const fd = new FormData();
       const BASICINFO = formData.basicInfo;
       const EDUCATION = formData.education;
@@ -166,17 +135,7 @@ const Nurse = ({ skills }) => {
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
-          //todo
-          // localStorage.setItem("token", user?.token);
-          //todo this localStorage
-          // localStorage.setItem(
-          //   "user",
-          //   JSON.stringify({
-          //     ...user,
-          //     role: user?.role,
-          //     institution: fd,
-          //   }),
-          // );
+
           localStorage.setItem(
             "user",
             JSON.stringify({

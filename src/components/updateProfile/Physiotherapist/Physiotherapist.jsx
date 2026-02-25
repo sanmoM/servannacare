@@ -288,17 +288,7 @@ const Physiotherapist = ({ data = {} }) => {
       toast.error("Upload failed. Check console.");
     }
 
-    // localStorage.setItem("specialist", JSON.stringify(formData));
-    // localStorage.setItem(
-    //   "user",
-    //   JSON.stringify({
-    //     ...user,
-    //     name: formData.basicInfo.name,
-    //     location: formData.basicInfo.location,
-    //   }),
-    // );
-    // toast.success("Profile Updated!");
-    // router.push("/dashboard");
+
   };
 
   return (
