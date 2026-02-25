@@ -5,7 +5,6 @@ import { Button } from "../ui/button";
 import OTPInputs from "./OtpInput";
 
 const OtpModal = ({ email, onVerify, onClose }) => {
-  console.log("otp page", email);
   const [otp, setOtp] = useState("");
 
   const handleVerify = () => {

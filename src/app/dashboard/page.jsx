@@ -2,13 +2,22 @@
 
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import useLocalUser from "@/hooks/useLocalUser";
-import { Calendar, CheckCircle, Clock, DollarSign, Star } from "lucide-react";
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Info,
+  Star,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { user, loaded } = useLocalUser();
-  // const token = localStorage.getItem("token");
+  const { loaded } = useLocalUser();
+  const { user } = useAuth();
+  console.log("df", user);
 
   const isProfileCompleted = Boolean(user?.is_profile_completed);
   if (!loaded) {
@@ -144,7 +153,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-      {!isProfileCompleted && (
+      {/* {!isProfileCompleted && (
         <div className="mt-6 mb-8 rounded-xl border border-amber-300 bg-amber-100 p-5 shadow-md">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -165,7 +174,26 @@ export default function DashboardPage() {
             </Link>
           </div>
         </div>
+      )} */}
+      {/* {!user?.is_profile_completed && (
+        <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
+          <Info /> Your account is not complete.
+        </p>
       )}
+
+      {user?.is_profile_completed && (
+        <div className="p-4 mb-4 rounded-xl bg-green-50 border border-green-200 flex items-center gap-3">
+          <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+          <div className="text-green-700 font-medium">
+            Your profile is verified as{" "}
+            <span className="capitalize font-semibold">
+              {user?.subRole
+                ? user?.subRole?.replace(/-/g, " ")
+                : user?.role?.replace(/-/g, " ")}
+            </span>
+          </div>
+        </div>
+      )} */}
 
       <h1 className="sectionHeading">
         Hi <span className="text-primary">{user?.name || user?.email}!</span>

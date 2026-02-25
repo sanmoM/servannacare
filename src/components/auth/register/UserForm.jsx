@@ -10,13 +10,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import OtpModal from "../OtpModal";
-import { postApi } from "@/lib/apiHandler";
+import { getApi, postApi } from "@/lib/apiHandler";
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
+import { useAuth } from "@/hooks/useAuth";
 
 const UserForm = () => {
+  const { setUser, setRole } = useAuth();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
   const [redirectUrl, setRedirectUrl] = useState(null);
@@ -74,7 +76,6 @@ const UserForm = () => {
       password,
     };
 
-
     try {
       const res = await postApi("/register", userInfo);
       if (res?.data?.status) {
@@ -100,10 +101,10 @@ const UserForm = () => {
       const { token, role, is_profile_completed } = res?.data?.data;
 
       localStorage.setItem("token", token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ role, is_profile_completed }),
-      );
+      const data = await getApi("/profile");
+      setUser(data?.data?.data);
+      setRole(data?.data?.data?.role);
+
       setOpenOTP(false);
       if (redirectUrl && redirectUrl.startsWith("/")) {
         router.replace(redirectUrl);
