@@ -3,7 +3,6 @@ import Link from "next/link";
 import React from "react";
 
 const ServicesCard = ({ services }) => {
-  console.log("service", services);
 
   return (
     <>

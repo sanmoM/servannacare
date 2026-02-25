@@ -66,10 +66,10 @@ const Searchbar = () => {
       `/specialist?category=${category}&checkIn=${checkIN}&checkOut=${checkOUT}`,
     );
 
-    console.log(checkOut, checkIn);
+    
   };
 
-  console.log(checkIn, checkOut);
+  
 
   return (
     <div className="w-full mx-auto my-8 md:!mt-0 -translate-y-1/2 z-[20] relative -mb-30 md:-mb-14 max-w-4xl">

@@ -24,7 +24,7 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
-  console.log("profile", profile.type);
+  
   const router = useRouter();
   const { user, loaded } = useLocalUser();
 

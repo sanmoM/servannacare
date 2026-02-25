@@ -82,6 +82,7 @@ const SignUpStart = ({ onSuccess }) => {
     };
     try {
       const res = await postApi("/register", newUserData);
+      console.log("res", res);
       if (res?.data?.status) {
         setTemUser(newUserData);
       }

@@ -17,8 +17,7 @@ import React, { Suspense, useEffect, useState } from "react";
 const PageContent = () => {
   const searchParams = useSearchParams();
   const role = searchParams.get("role")
-  
-console.log("role",role)
+
   const ROLE_TYPE_MAP = {
     "nurse-aide-or-assistant": "nurse_ade_assistant",
     care_institutions: "institution_nurse",
