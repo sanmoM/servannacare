@@ -225,10 +225,10 @@ export default function BookingFormClient() {
 
     formData.append(
       "patient_have_any_conditions",
-      JSON.stringify(data.patient_have_any_conditions),
+      data.patient_have_any_conditions,
     );
     formData.append("booking_amount", bookingAmount);
-    formData.append("selected_dates_or_months", JSON.stringify(scheduleItems));
+    formData.append("selected_dates_or_months", scheduleItems);
 
     if (data.prescriptionFile) {
       formData.append("prescription_file", data.prescriptionFile);
