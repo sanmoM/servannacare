@@ -223,12 +223,20 @@ export default function BookingFormClient() {
       }
     });
 
-    formData.append(
-      "patient_have_any_conditions",
-      data.patient_have_any_conditions,
-    );
+    data.patient_have_any_conditions.forEach((condition) => {
+      formData.append("patient_have_any_conditions[]", condition);
+    });
     formData.append("booking_amount", bookingAmount);
-    formData.append("selected_dates_or_months", scheduleItems);
+    scheduleItems.forEach((item, index) => {
+      formData.append(`selected_dates_or_months[${index}][month]`, item.month);
+
+      item.dates.forEach((date, i) => {
+        formData.append(
+          `selected_dates_or_months[${index}][dates][${i}]`,
+          date,
+        );
+      });
+    });
 
     if (data.prescriptionFile) {
       formData.append("prescription_file", data.prescriptionFile);
