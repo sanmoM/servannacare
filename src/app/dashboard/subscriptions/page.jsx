@@ -45,10 +45,9 @@ const page = () => {
 
   const handlePayment = () => {
     setLoading(true);
-    // Simulate API Delay
+  
     setTimeout(() => {
       const date = new Date();
-      // Logic: Current date + selected months
       date.setMonth(date.getMonth() + months);
 
       localStorage.setItem("specialist_expiry", date.toISOString());

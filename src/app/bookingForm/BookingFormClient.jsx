@@ -39,17 +39,28 @@ export default function BookingFormClient() {
   const id = searchParams.get("id");
   const router = useRouter();
 
-  // const [selectedPrice, setSelectedPrice] = useState(null);
   const [selectedMonths, setSelectedMonths] = useState([]);
   const [selectedDateList, setSelectedDateList] = useState([]);
   const [previewMonth, setPreviewMonth] = useState(null);
+  const [serviceFee, setServiceFee] = useState(0);
 
   const { data: specData, isLoading: specLoading } = useFetch("/specialist");
 
-  // const { data: priceData, isLoading: priceLoading } = useFetch("/price");
+  const { data, isLoading } = useFetch("/subscription-plan");
+
+  useEffect(() => {
+    if (data?.status === 200 && data?.data?.data.length > 0) {
+      const individualPlan = data?.data?.data?.find(
+        (item) => item.name === "Service Fee",
+      );
+
+      if (individualPlan) {
+        setServiceFee(parseFloat(individualPlan.price));
+      }
+    }
+  }, [data]);
 
   const specialists = specData?.data?.data ?? [];
-  // const prices = priceData?.data?.data ?? [];
 
   const matchedSpecialist = useMemo(
     () => specialists.find((s) => s.id === Number(id)),
