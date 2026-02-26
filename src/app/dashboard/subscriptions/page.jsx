@@ -1,5 +1,8 @@
 "use client";
+import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
+import { getApi, postApi } from "@/lib/apiHandler";
+import api from "@/utils/api";
 import React, { useState, useEffect } from "react";
 
 const page = () => {
@@ -8,8 +11,12 @@ const page = () => {
   const [expiryDate, setExpiryDate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pricePerMonth, setPricePerMonth] = useState(0);
+  const [planId, setPlanId] = useState(null);
 
   const { data, isLoading } = useFetch("/subscription-plan");
+  const { user } = useAuth();
+
+  // const {data } = useFetch('/subscription-status')
 
   useEffect(() => {
     if (data?.status === 200 && data?.data?.data.length > 0) {
@@ -19,6 +26,7 @@ const page = () => {
 
       if (individualPlan) {
         setPricePerMonth(parseFloat(individualPlan.price));
+        setPlanId(individualPlan.id);
       }
     }
   }, [data]);
@@ -43,9 +51,21 @@ const page = () => {
     }
   }, []);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setLoading(true);
-  
+    const paymentData = {
+      // 'phone': user?.number,
+      'phone': "254708374149",
+      'plan_id': planId,
+      'specialist_id': user?.id,
+      'validated_month': months,
+    }
+    await postApi('/subscription-pay', paymentData).then(async (res) => {
+      await api.get(`/mpesa/query/${res.data?.checkout_id}`)
+
+    }).catch(err => {
+      console.error(err)
+    })
     setTimeout(() => {
       const date = new Date();
       date.setMonth(date.getMonth() + months);
