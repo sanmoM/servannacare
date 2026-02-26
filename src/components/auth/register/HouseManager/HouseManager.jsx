@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import Progress from "../Progress";
 import BasicInfo from "./BasicInfo";
@@ -11,12 +10,14 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
+import { useAuth } from "@/hooks/useAuth";
 
 const HouseManager = () => {
+  const { user } = useAuth();
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 4;
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -25,6 +26,12 @@ const HouseManager = () => {
     documents: {},
   });
 
+  useEffect(() => {
+    if (user && !user?.is_profile_completed) {
+      setStarted(true);
+      setStep(1);
+    }
+  }, [user]);
   // useEffect(() => {
   //   if (!user?.is_profile_completed) {
   //     setStarted(true);
@@ -34,7 +41,7 @@ const HouseManager = () => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    setUser(accountData);
+    // setUser(accountData);
   };
 
   const handleNext = async (dataForStep) => {
@@ -90,7 +97,6 @@ const HouseManager = () => {
           DOCUMENTSUPLOADS.goodConductCertificate,
         );
       }
-      console.log("formData", formData);
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {

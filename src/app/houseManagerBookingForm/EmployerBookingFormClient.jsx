@@ -124,8 +124,9 @@ export default function EmployerBookingFormClient() {
     }
 
     const payload = {
-      specialistId: Number(id),
-      category: category,
+      specialist_id: Number(id),
+      specialist_type: category,
+      subRole: category,
       booking_type: booking_type,
       has_kids: data.kids === "yes" ? 1 : 0,
       age_bracket: data.kids === "yes" ? data.ageBracket : null,

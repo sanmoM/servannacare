@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Progress from "../Progress";
 import PhysiotherapistBasigInfo from "./PhysiotherapistBasigInfo";
 import Education from "./Education";
@@ -13,13 +13,22 @@ import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
+import { useAuth } from "@/hooks/useAuth";
 
 const Physiotherapist = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 5;
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
   const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user && !user?.is_profile_completed) {
+      setStarted(true);
+      setStep(1);
+    }
+  }, [user]);
 
   const [formData, setFormData] = useState({
     basicInfo: {},
@@ -30,7 +39,7 @@ const Physiotherapist = () => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    setUser(accountData);
+    // setUser(accountData);
   };
 
   const handleNext = async (dataForStep) => {
@@ -49,8 +58,6 @@ const Physiotherapist = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
-
-
       const fd = new FormData();
       const BASICINFO = formData.basicInfo;
       const EDUCATION = formData.education;
@@ -124,10 +131,9 @@ const Physiotherapist = () => {
         });
 
         if (res?.status === 200) {
-      
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
-     
+
           localStorage.setItem(
             "user",
             JSON.stringify({

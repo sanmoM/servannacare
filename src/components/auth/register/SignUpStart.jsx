@@ -82,14 +82,20 @@ const SignUpStart = ({ onSuccess }) => {
     };
     try {
       const res = await postApi("/register", newUserData);
+
       if (res?.data?.status) {
-        toast.success(`OTP sent to ${email}!`);
-        sessionStorage.setItem("verifyEmail", email);
-        router.push("/verify-otp");
+        const emailVerified = res?.data?.email_verified;
+
+        if (emailVerified === null) {
+          toast.success(`OTP sent to ${email}!`);
+          sessionStorage.setItem("verifyEmail", email);
+          router.push("/verify-otp");
+        } else {
+          toast.success("Registration successful!");
+        }
       }
-      toast.success(`OTP send to ${email}!`);
     } catch (error) {
-      toast.error(error?.response?.data?.message || "registration failed");
+      toast.error(error?.response?.data?.message || "Registration failed");
     }
   };
 

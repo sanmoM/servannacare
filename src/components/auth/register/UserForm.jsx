@@ -22,7 +22,7 @@ const UserForm = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
   const [redirectUrl, setRedirectUrl] = useState(null);
-
+  // console.log("user form", redirectUrl);
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -78,43 +78,51 @@ const UserForm = () => {
 
     try {
       const res = await postApi("/register", userInfo);
+
       if (res?.data?.status) {
-        setTemUser(userInfo);
+        const emailVerified = res?.data?.email_verified;
+
+        if (emailVerified === null) {
+          toast.success(`OTP sent to ${email}!`);
+          sessionStorage.setItem("verifyEmail", email);
+          const redirectQuery = redirectUrl ? `?redirect=${redirectUrl}` : "";
+          router.push(`/verify-otp${redirectQuery}`);
+          // router.push("/verify-otp");
+        } else {
+          toast.success("Registration successful!");
+        }
       }
-      setOpenOTP(true);
-      toast.success(`OTP sent to ${userInfo?.email}!`);
     } catch (error) {
-      toast.error(error?.response?.data?.message || "User registration failed");
+      toast.error(error?.response?.data?.message || "Registration failed");
     }
   };
+
+  // const handleVerifyOTP = async (otp) => {
+  //   try {
+  //     const res = await postApi("/verify", {
+  //       email: temUser.email,
+  //       otp,
+  //     });
+  //     const { token, role, is_profile_completed } = res?.data?.data;
+
+  //     localStorage.setItem("token", token);
+  //     const data = await getApi("/profile");
+  //     setUser(data?.data?.data);
+  //     setRole(data?.data?.data?.role);
+  //     setOpenOTP(false);
+  //     if (redirectUrl && redirectUrl.startsWith("/")) {
+  //       router.replace(redirectUrl);
+  //     } else {
+  //       router.replace("/dashboard");
+  //       toast.success("Account verified successfully!");
+  //     }
+  //   } catch (error) {
+  //     toast.error(error?.response?.data?.message || "Invalid OtP");
+  //   }
+  // };
 
   const handleShowPassword = () => {
     setShowPass(!showPass);
-  };
-
-  const handleVerifyOTP = async (otp) => {
-    try {
-      const res = await postApi("/verify", {
-        email: temUser.email,
-        otp,
-      });
-      const { token, role, is_profile_completed } = res?.data?.data;
-
-      localStorage.setItem("token", token);
-      const data = await getApi("/profile");
-      setUser(data?.data?.data);
-      setRole(data?.data?.data?.role);
-
-      setOpenOTP(false);
-      if (redirectUrl && redirectUrl.startsWith("/")) {
-        router.replace(redirectUrl);
-      } else {
-        router.replace("/dashboard");
-        toast.success("Account verified successfully!");
-      }
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "Invalid OtP");
-    }
   };
 
   return (
@@ -201,7 +209,7 @@ const UserForm = () => {
               I agree to the terms and conditions
             </Label>
           </div>
-          <Button size={"lg"} className={"w-full "}>
+          <Button size={"lg"} className={"w-full cursor-pointer"}>
             Register
           </Button>
         </form>
@@ -214,13 +222,13 @@ const UserForm = () => {
       </div>
 
       {/* OTP Modal  */}
-      {openOTP && (
+      {/* {openOTP && (
         <OtpModal
           email={temUser?.email}
           onVerify={handleVerifyOTP}
           onClose={() => setOpenOTP(false)}
         />
-      )}
+      )} */}
     </div>
   );
 };

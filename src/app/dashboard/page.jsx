@@ -17,7 +17,6 @@ import Link from "next/link";
 export default function DashboardPage() {
   const { loaded } = useLocalUser();
   const { user } = useAuth();
-  console.log("df", user);
 
   const isProfileCompleted = Boolean(user?.is_profile_completed);
   if (!loaded) {
