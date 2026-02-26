@@ -45,7 +45,7 @@ const LoginPageContent = () => {
     }
   }, [user, loaded, redirect, router]);
 
-  const handleCreateUser = async (e) => {
+  const handleLoginUser = async (e) => {
     e.preventDefault();
 
     const form = e.target;
@@ -62,22 +62,33 @@ const LoginPageContent = () => {
       return;
     }
 
-    const userInfo = {
-      email,
-      password,
-    };
+    const userInfo = { email, password };
+
     try {
       const res = await postApi("/login", userInfo);
+
       const { token } = res.data.data;
       localStorage.setItem("token", token);
 
-      const data = await getApi("profile");
-      setUser(data?.data?.data);
-      setRole(data?.data?.data?.role);
-      toast.success("Login successful!");
-      router.replace("/dashboard");
-      if (refreshUser) refreshUser();
+      const profile = await getApi("/profile");
+      setUser(profile?.data?.data);
+      setRole(profile?.data?.data?.role);
+
+      if (redirect && redirect.startsWith("/")) {
+        router.replace(redirect);
+      } else if (profile?.data?.data?.role === "user") {
+        router.replace("/dashboard");
+      } else {
+        router.replace("/dashboard");
+      }
     } catch (error) {
+      if (error?.response?.data?.email_verified === null) {
+        sessionStorage.setItem("verifyEmail", email);
+        if (redirect) sessionStorage.setItem("redirectUrl", redirect);
+        toast.error("Please Verify Your email with otp")
+        router.replace("/verify-otp");
+        return;
+      }
       toast.error(
         error?.response?.data?.message || "Invalid email or password",
       );
@@ -104,7 +115,7 @@ const LoginPageContent = () => {
           <h2 className="text-xl font-semibold mb-6 text-center text-gray-900">
             Welcome Back!
           </h2>
-          <form onSubmit={handleCreateUser} className="space-y-5">
+          <form onSubmit={handleLoginUser} className="space-y-5">
             <Input
               label="Email"
               name="email"

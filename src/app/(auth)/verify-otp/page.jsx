@@ -18,8 +18,8 @@ const VerifyOtpPage = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
   const [redirectUrl, setRedirectUrl] = useState(null);
+
   
-  console.log("url", redirectUrl);
 
   useEffect(() => {
     if (redirect) setRedirectUrl(redirect);
@@ -27,59 +27,40 @@ const VerifyOtpPage = () => {
 
   useEffect(() => {
     const storedEmail = sessionStorage.getItem("verifyEmail");
+    const storedRedirect = sessionStorage.getItem("redirectUrl");
 
     if (!storedEmail) {
-      router.push("/");
+      router.replace("/");
     } else {
       setEmail(storedEmail);
+      setRedirectUrl(storedRedirect || null);
     }
   }, [router]);
 
   const handleVerify = async () => {
-    if (otp.length !== 6) {
-      toast.error("OTP must be 6 digits long!");
-      return;
-    }
-
     try {
-      setLoading(true);
-
       const res = await postApi("/verify", { email, otp });
+      const { token } = res.data.data;
+      localStorage.setItem("token", token);
 
-      if (res?.data?.status) {
-        const { token } = res?.data?.data;
+      const profile = await getApi("/profile");
+      setUser(profile?.data?.data);
+      setRole(profile?.data?.data?.role);
 
-        localStorage.setItem("token", token);
+      sessionStorage.removeItem("verifyEmail");
+      sessionStorage.removeItem("redirectUrl");
 
-        const profile = await getApi("/profile");
+      toast.success("Account verified successfully!");
 
-        setUser(profile?.data?.data);
-        setRole(profile?.data?.data?.role);
-        sessionStorage.removeItem("verifyEmail");
-        toast.success("Account verified successfully!");
-
-        if (profile?.data?.data?.role === "user") {
-          if (redirectUrl && redirectUrl.startsWith("/")) {
-            router.replace(redirectUrl);
-          } else {
-            router.replace("/dashboard");
-          }
-        } else {
-          router.back();
-        }
-
-        // if (redirectUrl && redirectUrl.startsWith("/")) {
-        //   router.replace(redirectUrl);
-        // } else if (profile?.data?.data?.role === "user") {
-        //   router.replace("/dashboard");
-        // } else {
-        //   router.back();
-        // }
+      if (redirectUrl && redirectUrl.startsWith("/")) {
+        router.replace(redirectUrl);
+      } else if (profile?.data?.data?.role === "user") {
+        router.replace("/dashboard");
+      } else {
+        router.back();
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Invalid OTP");
-    } finally {
-      setLoading(false);
     }
   };
 

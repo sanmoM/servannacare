@@ -22,7 +22,6 @@ const UserForm = () => {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
   const [redirectUrl, setRedirectUrl] = useState(null);
-  // console.log("user form", redirectUrl);
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -84,10 +83,11 @@ const UserForm = () => {
 
         if (emailVerified === null) {
           toast.success(`OTP sent to ${email}!`);
+          if (redirect) {
+            sessionStorage.setItem("redirectUrl", redirect);
+          }
           sessionStorage.setItem("verifyEmail", email);
-          const redirectQuery = redirectUrl ? `?redirect=${redirectUrl}` : "";
-          router.push(`/verify-otp${redirectQuery}`);
-          // router.push("/verify-otp");
+          router.replace("/verify-otp");
         } else {
           toast.success("Registration successful!");
         }
