@@ -39,7 +39,6 @@ export default function BookingFormClient() {
   const id = searchParams.get("id");
   const router = useRouter();
 
-  const [bookingAmount, setBookingAmount] = useState(0);
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [selectedMonths, setSelectedMonths] = useState([]);
   const [selectedDateList, setSelectedDateList] = useState([]);
@@ -73,6 +72,7 @@ export default function BookingFormClient() {
 
   const monthlyRate = Number(pricingData?.serviceFeeMonth || 0);
   const dailyRate = Number(pricingData?.serviceFeeDay || 0);
+
 
   const availableDates =
     matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
@@ -177,12 +177,22 @@ export default function BookingFormClient() {
     return !availableDates.includes(dateStr) || date < today;
   };
 
-  useEffect(() => {
-    const rate = selectedPrice?.price || 0;
-    setBookingAmount(
-      isDaily ? selectedDateList.length * rate : selectedMonths.length * rate,
-    );
-  }, [selectedDateList, selectedMonths, selectedPrice, isDaily]);
+    const bookingAmount = useMemo(() => {
+    if (isDaily) {
+      return selectedDateList.length * dailyRate;
+    }
+    if (isMonthly) {
+      return selectedMonths.length * monthlyRate;
+    }
+    return 0;
+  }, [
+    selectedDateList,
+    selectedMonths,
+    isDaily,
+    isMonthly,
+    dailyRate,
+    monthlyRate,
+  ]);
 
   const onSubmit = async (data) => {
     if (isSubmitting) return;
@@ -923,9 +933,7 @@ export default function BookingFormClient() {
                                 ? selectedMonths.filter((m) => m !== monthKey)
                                 : [...selectedMonths, monthKey];
                               setSelectedMonths(newMonths);
-                              setBookingAmount(
-                                newMonths.length * selectedPrice.price,
-                              );
+                              setBookingAmount(newMonths.length * monthlyRate);
                             }}
                             className={`w-full py-4 px-2 rounded-lg border flex flex-col cursor-pointer items-center transition-all shadow-sm ${
                               isSelected
