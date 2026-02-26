@@ -13,6 +13,7 @@ import { useFetch } from "@/hooks/useFetch";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import toast from "react-hot-toast";
 import { Eye } from "lucide-react";
+import { postApi } from "@/lib/apiHandler";
 
 export default function EmployerBookingFormClient() {
   const searchParams = useSearchParams();
@@ -136,7 +137,7 @@ export default function EmployerBookingFormClient() {
 
 
     try {
-      // await postApi('/bookings', payload);
+      await postApi('/booking', payload);
       if (res?.status === 200 || res?.status === 201) {
         toast.success("Booking Request Sent!");
         router.push("/dashboard/book-history");

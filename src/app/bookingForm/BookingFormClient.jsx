@@ -56,8 +56,23 @@ export default function BookingFormClient() {
     () => specialists.find((s) => s.id === Number(id)),
     [specialists, id],
   );
+  const pricingData = useMemo(() => {
+    if (!matchedSpecialist) return null;
 
-  console.log("mathdfd", matchedSpecialist);
+    const roleKeyMap = {
+      "house-manager": "house_manager",
+      nurse: "nurse",
+      physiotherapist: "physiotherapist",
+      "nurse-aide-or-assistant": "nurse_assistant",
+      "special-need-caregivers": "special_need",
+    };
+
+    const key = roleKeyMap[matchedSpecialist.subRole];
+    return key ? matchedSpecialist[key] : null;
+  }, [matchedSpecialist]);
+
+  const monthlyRate = Number(pricingData?.serviceFeeMonth || 0);
+  const dailyRate = Number(pricingData?.serviceFeeDay || 0);
 
   const availableDates =
     matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];

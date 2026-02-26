@@ -11,7 +11,7 @@ const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
 
   // Define routes where Navbar and Footer are hidden
-  const hideLayout = ["/login", "/register", "/dashboard", "/forgot-password"];
+  const hideLayout = ["/login", "/register", "/dashboard", "/forgot-password","/verify-otp"];
   const shouldHideLayout = hideLayout.some((route) =>
     pathname.startsWith(route),
   );

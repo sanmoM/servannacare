@@ -82,11 +82,11 @@ const SignUpStart = ({ onSuccess }) => {
     };
     try {
       const res = await postApi("/register", newUserData);
-      console.log("res", res);
       if (res?.data?.status) {
-        setTemUser(newUserData);
+        toast.success(`OTP sent to ${email}!`);
+        sessionStorage.setItem("verifyEmail", email);
+        router.push("/verify-otp");
       }
-      setOpenOTP(true);
       toast.success(`OTP send to ${email}!`);
     } catch (error) {
       toast.error(error?.response?.data?.message || "registration failed");
@@ -97,27 +97,27 @@ const SignUpStart = ({ onSuccess }) => {
     setShowPass(!showPass);
   };
 
-  const handleVerifyOTP = async (otp) => {
-    try {
-      const res = await postApi("/verify", {
-        email: temUser?.email,
-        otp,
-      });
-      if (res?.data?.status) {
-        const { token, role, is_profile_completed } = res?.data?.data;
-        localStorage.setItem("token", token);
+  // const handleVerifyOTP = async (otp) => {
+  //   try {
+  //     const res = await postApi("/verify", {
+  //       email: temUser?.email,
+  //       otp,
+  //     });
+  //     if (res?.data?.status) {
+  //       const { token, role, is_profile_completed } = res?.data?.data;
+  //       localStorage.setItem("token", token);
 
-        const data = await getApi("/profile");
-        setUser(data?.data?.data);
-        setRole(data?.data?.data?.role);
-        toast.success("Account verified successfully!");
-        setOpenOTP(false);
-        onSuccess({ role, subRole, is_profile_completed });
-      }
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "Invalid Otp");
-    }
-  };
+  //       const data = await getApi("/profile");
+  //       setUser(data?.data?.data);
+  //       setRole(data?.data?.data?.role);
+  //       toast.success("Account verified successfully!");
+  //       setOpenOTP(false);
+  //       onSuccess({ role, subRole, is_profile_completed });
+  //     }
+  //   } catch (error) {
+  //     toast.error(error?.response?.data?.message || "Invalid Otp");
+  //   }
+  // };
 
   return (
     <div className="w-full flex justify-center items-center min-h-screen px-2">
@@ -200,7 +200,7 @@ const SignUpStart = ({ onSuccess }) => {
             </Label>
           </div>
 
-          <Button size={"lg"} className={"w-full"}>
+          <Button size={"lg"} className={"w-full cursor-pointer"}>
             SIGN UP
           </Button>
         </form>
@@ -208,19 +208,21 @@ const SignUpStart = ({ onSuccess }) => {
         <div className="flex gap-2 mt-6 items-center">
           <p className="text-sm">Already have an account?</p>
           <Link href={"/login"}>
-            <Button variant={"link"}>Login</Button>
+            <Button className={"cursor-pointer"} variant={"link"}>
+              Login
+            </Button>
           </Link>
         </div>
       </div>
 
       {/* OTP Modal  */}
-      {openOTP && (
+      {/* {openOTP && (
         <OtpModal
           email={temUser?.email}
           onVerify={handleVerifyOTP}
           onClose={() => setOpenOTP(false)}
         />
-      )}
+      )} */}
     </div>
   );
 };
