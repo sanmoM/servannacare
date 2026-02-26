@@ -62,7 +62,6 @@ const page = () => {
     }
     await postApi('/subscription-pay', paymentData).then(async (res) => {
       await api.get(`/mpesa/query/${res.data?.checkout_id}`)
-
     }).catch(err => {
       console.error(err)
     })
