@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Progress from "../Progress";
 import NurseBasicInfo from "./NurseBasicInfo";
 import Education from "./Education";
@@ -14,13 +14,23 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
+import { useAuth } from "@/hooks/useAuth";
 
 const Nurse = ({ skills }) => {
   const [started, setStarted] = useState(false);
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
   const totalSteps = 6;
+  const {user}=useAuth();
+
+
+    useEffect(() => {
+      if (user && !user?.is_profile_completed) {
+        setStarted(true);
+        setStep(1);
+      }
+    }, [user]);
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
@@ -32,7 +42,7 @@ const Nurse = ({ skills }) => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    setUser(accountData);
+    // setUser(accountData);
   };
 
   const handleNext = async (dataForStep) => {
@@ -136,14 +146,14 @@ const Nurse = ({ skills }) => {
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
 
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...user,
-              is_profile_completed: Boolean(res?.data?.is_profile_completed),
-              is_profile_verified: Boolean(res?.data?.is_profile_verified),
-            }),
-          );
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+          //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          //   }),
+          // );
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

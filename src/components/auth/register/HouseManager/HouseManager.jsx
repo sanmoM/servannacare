@@ -106,14 +106,14 @@ const HouseManager = () => {
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
 
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...user,
-              is_profile_completed: Boolean(res?.data?.is_profile_completed),
-              is_profile_verified: Boolean(res?.data?.is_profile_verified),
-            }),
-          );
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+          //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          //   }),
+          // );
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

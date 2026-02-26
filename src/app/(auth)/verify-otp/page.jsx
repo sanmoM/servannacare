@@ -19,8 +19,6 @@ const VerifyOtpPage = () => {
   const redirect = searchParams.get("redirect");
   const [redirectUrl, setRedirectUrl] = useState(null);
 
-  
-
   useEffect(() => {
     if (redirect) setRedirectUrl(redirect);
   }, [redirect]);

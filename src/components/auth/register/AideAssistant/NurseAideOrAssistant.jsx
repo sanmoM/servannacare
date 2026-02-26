@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Progress from "../Progress";
 import toast from "react-hot-toast";
 import BasicInfo from "./BasicInfo";
@@ -13,13 +13,22 @@ import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
+import { useAuth } from "@/hooks/useAuth";
 
 const NurseAideOrAssistant = ({ skills }) => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
   const router = useRouter();
   const totalSteps = 6;
+const {user}=useAuth
+
+    useEffect(() => {
+      if (user && !user?.is_profile_completed) {
+        setStarted(true);
+        setStep(1);
+      }
+    }, [user]);
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
@@ -30,7 +39,7 @@ const NurseAideOrAssistant = ({ skills }) => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    setUser(accountData);
+    // setUser(accountData);
   };
 
   const handleNext = async (dataForStep) => {
@@ -131,14 +140,14 @@ const NurseAideOrAssistant = ({ skills }) => {
         if (res?.status === 200) {
           console.log("res", res);
           toast.success("Registered Successfully!");
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...user,
-              is_profile_completed: Boolean(res?.data?.is_profile_completed),
-              is_profile_verified: Boolean(res?.data?.is_profile_verified),
-            }),
-          );
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+          //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          //   }),
+          // );
           router.push(`/dashboard/${user?.role}-profile`);
     
         } else {

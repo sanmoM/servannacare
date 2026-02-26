@@ -338,15 +338,14 @@ const NurseAideCreate = ({ data = {} }) => {
       if (res?.status === 200) {
         toast.success("Profile Created Successfully!");
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...user,
-            is_profile_completed: Boolean(res?.data?.is_profile_completed),
-            is_profile_verified: Boolean(res?.data?.is_profile_verified),
-          }),
-        );
-
+        // localStorage.setItem(
+        //   "user",
+        //   JSON.stringify({
+        //     ...user,
+        //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+        //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+        //   }),
+        // );
         router.push("/dashboard");
       } else {
         toast.error(res?.data?.message || "Something went wrong.");

@@ -151,7 +151,7 @@ const LoginPageContent = () => {
               </Link>
             </div>
 
-            <Button size={"lg"} className={"w-full"}>
+            <Button size={"lg"} className={"w-full cursor-pointer"}>
               LOGIN
             </Button>
           </form>

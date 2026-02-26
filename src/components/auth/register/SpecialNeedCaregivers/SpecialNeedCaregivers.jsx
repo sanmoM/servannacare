@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Progress from "../Progress";
 import SpecialNeedBasicInfo from "./SpecialNeedBasicInfo";
 import SignUpStart from "../SignUpStart";
@@ -13,13 +13,23 @@ import { useRouter } from "next/navigation";
 import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
+import { useAuth } from "@/hooks/useAuth";
 
 const SpecialNeedCaregivers = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
   const router = useRouter();
   const totalSteps = 5;
+  const {user}=useAuth();
+
+    useEffect(() => {
+      if (user && !user?.is_profile_completed) {
+        setStarted(true);
+        setStep(1);
+      }
+    }, [user]);
+
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
@@ -29,7 +39,7 @@ const SpecialNeedCaregivers = () => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    setUser(accountData);
+    // setUser(accountData);
   };
 
   const handleNext = async (dataForStep) => {
@@ -124,14 +134,14 @@ const SpecialNeedCaregivers = () => {
         if (res?.status === 200) {
           console.log("res", res);
           toast.success("Registered Successfully!");
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...user,
-              is_profile_completed: Boolean(res?.data?.is_profile_completed),
-              is_profile_verified: Boolean(res?.data?.is_profile_verified),
-            }),
-          );
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+          //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          //   }),
+          // );
           router.push(`/dashboard/${user?.role}-profile`);
     
         } else {

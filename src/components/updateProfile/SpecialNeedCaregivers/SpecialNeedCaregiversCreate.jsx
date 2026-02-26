@@ -308,16 +308,16 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       if (res?.status === 200) {
         toast.success("Profile Created Successfully!");
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            ...user,
-            name: BASIC.name,
-            location: BASIC.location,
-            is_profile_completed: Boolean(res?.data?.is_profile_completed),
-            is_profile_verified: Boolean(res?.data?.is_profile_verified),
-          }),
-        );
+        // localStorage.setItem(
+        //   "user",
+        //   JSON.stringify({
+        //     ...user,
+        //     name: BASIC.name,
+        //     location: BASIC.location,
+        //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+        //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+        //   }),
+        // );
 
         router.push("/dashboard");
       } else {

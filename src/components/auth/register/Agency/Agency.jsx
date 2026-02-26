@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Progress from "../Progress";
 import AgencyBasicInfo from "./AgencyBasicInfo";
@@ -12,6 +12,7 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 
 import { postApi } from "@/lib/apiHandler";
+import { useAuth } from "@/hooks/useAuth";
 
 const validateEmployee = (data) => {
   const errors = [];
@@ -47,18 +48,26 @@ const Agency = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 3;
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
   const [employees, setEmployees] = useState([1]);
   const router = useRouter();
+
+  const { user } = useAuth();
+  useEffect(() => {
+    if (user && !user?.is_profile_completed) {
+      setStarted(true);
+      setStep(1);
+    }
+  }, [user]);
+
   const [formData, setFormData] = useState({
     agency: {},
     allEmployees: [],
   });
 
   const handleSignupSuccess = (accountData) => {
-    console.log("acount data", accountData);
     setStarted(true);
-    setUser(accountData);
+    // setUser(accountData);
   };
 
   const handleNext = async () => {
@@ -146,14 +155,14 @@ const Agency = () => {
 
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...user,
-              is_profile_completed: Boolean(res?.data?.is_profile_completed),
-              is_profile_verified: Boolean(res?.data?.is_profile_verified),
-            }),
-          );
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+          //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          //   }),
+          // );
           router.push(`/dashboard/${user?.role}-profile`);
           //todo this localStorage
         } else {

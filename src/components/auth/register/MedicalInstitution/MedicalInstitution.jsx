@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Progress from "../Progress";
 import SignUpStart from "../SignUpStart";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Review from "./Review";
 import { postApi } from "@/lib/apiHandler";
+import { useAuth } from "@/hooks/useAuth";
 
 const validateNurse = (data) => {
   const errors = [];
@@ -102,10 +103,17 @@ const MedicalInstitution = ({ skills }) => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const [nurses, setNurses] = useState([1]);
-  const [user, setUser] = useState({});
+  // const [user, setUser] = useState({});
   const router = useRouter();
-
   const totalSteps = 3;
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user && !user?.is_profile_completed) {
+      setStarted(true);
+      setStep(1);
+    }
+  }, [user]);
 
   const [formData, setFormData] = useState({
     institution: {
@@ -116,7 +124,7 @@ const MedicalInstitution = ({ skills }) => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    setUser(accountData);
+    // setUser(accountData);
   };
 
   const handleNext = async () => {
@@ -259,14 +267,14 @@ const MedicalInstitution = ({ skills }) => {
           router.push(`/dashboard/${user?.role}-profile`);
           //todo this localStorage
 
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...user,
-              is_profile_completed: Boolean(res?.data?.is_profile_completed),
-              is_profile_verified: Boolean(res?.data?.is_profile_verified),
-            }),
-          );
+          // localStorage.setItem(
+          //   "user",
+          //   JSON.stringify({
+          //     ...user,
+          //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+          //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+          //   }),
+          // );
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",
