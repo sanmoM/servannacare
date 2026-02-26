@@ -39,17 +39,17 @@ export default function BookingFormClient() {
   const id = searchParams.get("id");
   const router = useRouter();
 
-  const [selectedPrice, setSelectedPrice] = useState(null);
+  // const [selectedPrice, setSelectedPrice] = useState(null);
   const [selectedMonths, setSelectedMonths] = useState([]);
   const [selectedDateList, setSelectedDateList] = useState([]);
   const [previewMonth, setPreviewMonth] = useState(null);
 
   const { data: specData, isLoading: specLoading } = useFetch("/specialist");
 
-  const { data: priceData, isLoading: priceLoading } = useFetch("/price");
+  // const { data: priceData, isLoading: priceLoading } = useFetch("/price");
 
   const specialists = specData?.data?.data ?? [];
-  const prices = priceData?.data?.data ?? [];
+  // const prices = priceData?.data?.data ?? [];
 
   const matchedSpecialist = useMemo(
     () => specialists.find((s) => s.id === Number(id)),
@@ -72,7 +72,6 @@ export default function BookingFormClient() {
 
   const monthlyRate = Number(pricingData?.serviceFeeMonth || 0);
   const dailyRate = Number(pricingData?.serviceFeeDay || 0);
-
 
   const availableDates =
     matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
@@ -118,20 +117,20 @@ export default function BookingFormClient() {
   const watchAllergy = watch("patient_have_any_known_allergies");
   const watchbooking_type = watch("booking_type");
 
-  const isDaily = selectedPrice?.name?.toLowerCase() === "daily";
-  const isMonthly = selectedPrice?.name?.toLowerCase() === "monthly";
+  const isDaily = watchbooking_type === "daily";
+  const isMonthly = watchbooking_type === "monthly";
 
-  useEffect(() => {
-    if (!watchbooking_type || prices.length === 0) return;
+  // useEffect(() => {
+  //   if (!watchbooking_type || prices.length === 0) return;
 
-    const matchedPlan = prices.find(
-      (p) => p.name?.toLowerCase() === watchbooking_type,
-    );
+  //   const matchedPlan = prices.find(
+  //     (p) => p.name?.toLowerCase() === watchbooking_type,
+  //   );
 
-    setSelectedPrice(matchedPlan || null);
-    setSelectedMonths([]);
-    setSelectedDateList([]);
-  }, [watchbooking_type, prices]);
+  //   setSelectedPrice(matchedPlan || null);
+  //   setSelectedMonths([]);
+  //   setSelectedDateList([]);
+  // }, [watchbooking_type, prices]);
 
   useEffect(() => {
     if (!watchConditions.includes("others")) {
@@ -177,7 +176,7 @@ export default function BookingFormClient() {
     return !availableDates.includes(dateStr) || date < today;
   };
 
-    const bookingAmount = useMemo(() => {
+  const bookingAmount = useMemo(() => {
     if (isDaily) {
       return selectedDateList.length * dailyRate;
     }
@@ -286,7 +285,7 @@ export default function BookingFormClient() {
     }
   };
 
-  if (specLoading || priceLoading)
+  if (specLoading)
     return (
       <div className="h-screen flex items-center justify-center">
         <LoadingSpinner />
@@ -862,8 +861,47 @@ export default function BookingFormClient() {
                   </p>
                 )}
               </div>
-
               <div className="grid grid-cols-2 gap-4">
+                <div
+                  onClick={() => {
+                    setValue("booking_type", "monthly");
+                    setSelectedMonths([]);
+                    setSelectedDateList([]);
+                  }}
+                  className={`p-6 rounded-2xl border-2 cursor-pointer ${
+                    isMonthly
+                      ? "border-primary bg-primary/5"
+                      : "border-slate-100"
+                  }`}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    Live-in Plan
+                  </p>
+                  <div className="text-xl font-bold">
+                    KES {monthlyRate.toLocaleString()}
+                  </div>
+                </div>
+
+                <div
+                  onClick={() => {
+                    setValue("booking_type", "daily");
+                    setSelectedMonths([]);
+                    setSelectedDateList([]);
+                  }}
+                  className={`p-6 rounded-2xl border-2 cursor-pointer ${
+                    isDaily ? "border-primary bg-primary/5" : "border-slate-100"
+                  }`}
+                >
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    Daily Plan
+                  </p>
+                  <div className="text-xl font-bold">
+                    KES {dailyRate.toLocaleString()}
+                  </div>
+                </div>
+              </div>
+
+              {/* <div className="grid grid-cols-2 gap-4">
                 {prices.map((p) => (
                   <div
                     key={p.id}
@@ -892,7 +930,7 @@ export default function BookingFormClient() {
                     </div>
                   </div>
                 ))}
-              </div>
+              </div> */}
 
               {isDaily && (
                 <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
@@ -933,7 +971,7 @@ export default function BookingFormClient() {
                                 ? selectedMonths.filter((m) => m !== monthKey)
                                 : [...selectedMonths, monthKey];
                               setSelectedMonths(newMonths);
-                              setBookingAmount(newMonths.length * monthlyRate);
+                              // setBookingAmount(newMonths.length * monthlyRate);
                             }}
                             className={`w-full py-4 px-2 rounded-lg border flex flex-col cursor-pointer items-center transition-all shadow-sm ${
                               isSelected
@@ -1187,7 +1225,11 @@ export default function BookingFormClient() {
                     Plan
                   </span>
                   <span className="font-black text-slate-900">
-                    {selectedPrice?.name || "--"}
+                    {watchbooking_type
+                      ? watchbooking_type === "daily"
+                        ? "Daily"
+                        : "Live-in"
+                      : "--"}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
