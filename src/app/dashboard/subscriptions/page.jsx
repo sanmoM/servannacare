@@ -3,9 +3,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
 import { getApi, postApi } from "@/lib/apiHandler";
 import api from "@/utils/api";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
 const page = () => {
+  const router = useRouter();
   const [months, setMonths] = useState(1);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [expiryDate, setExpiryDate] = useState(null);
@@ -54,17 +56,20 @@ const page = () => {
   const handlePayment = async () => {
     setLoading(true);
     const paymentData = {
-      // 'phone': user?.number,
-      'phone': "254708374149",
-      'plan_id': planId,
-      'specialist_id': user?.id,
-      'validated_month': months,
-    }
-    await postApi('/subscription-pay', paymentData).then(async (res) => {
-      await api.get(`/mpesa/query/${res.data?.checkout_id}`)
-    }).catch(err => {
-      console.error(err)
-    })
+      'phone': user?.number,
+      // phone: "+254708374149",
+      plan_id: planId,
+      specialist_id: user?.id,
+      validated_month: months,
+    };
+    await postApi("/subscription-pay", paymentData)
+      .then(async (res) => {
+        await getApi(`/mpesa/query/${res.data?.checkout_id}`);
+        router.push("/dashboard/payment-history")
+      })
+      .catch((err) => {
+        console.error(err);
+      });
     setTimeout(() => {
       const date = new Date();
       date.setMonth(date.getMonth() + months);

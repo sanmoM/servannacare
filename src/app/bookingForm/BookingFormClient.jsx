@@ -45,6 +45,7 @@ export default function BookingFormClient() {
   const [selectedDateList, setSelectedDateList] = useState([]);
   const [previewMonth, setPreviewMonth] = useState(null);
   const [serviceFee, setServiceFee] = useState(0);
+  const [planId, setPlanId] = useState(0);
 
   const { data: specData, isLoading: specLoading } = useFetch("/specialist");
 
@@ -58,6 +59,7 @@ export default function BookingFormClient() {
 
       if (individualPlan) {
         setServiceFee(parseFloat(individualPlan.price));
+        setPlanId(individualPlan.id);
       }
     }
   }, [data]);
@@ -274,30 +276,31 @@ export default function BookingFormClient() {
     }
 
     try {
-      const res = await postApi("/booking", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (res?.status === 200 || res?.status === 201) {
-        toast.success("Booking Request Sent!");
-        router.push("/dashboard/book-history");
-      }
-
-      // const res = await postApi("/booking", formData);
+      // const res = await postApi("/booking", formData, {
+      //   headers: {
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
 
       // if (res?.status === 200 || res?.status === 201) {
-      //   await postApi("/checkout", {
-      //     phone: paymentPhone,
-      //     plan_id: planId,
-      //     specialist_id: id,
-      //     specialist_type: matchedSpecialist?.type,
-      //     book_amount: totalAmount,
-      //   });
-
-      //   toast.success("Payment request sent!");
+      //   toast.success("Booking Request Sent!");
+      //   router.push("/dashboard/book-history");
       // }
+
+      const res = await postApi("/booking", formData);
+
+      if (res?.status === 200 || res?.status === 201) {
+        await postApi("/checkout", {
+          // phone: user?.number,
+          phone: "254201234567",
+          plan_id: planId,
+          specialist_id: id,
+          specialist_type: matchedSpecialist?.type,
+          book_amount: bookingAmount,
+        });
+        router.push("/dashboard/payment-history");
+        toast.success("Payment request sent!");
+      }
     } catch (error) {
       toast.error("Submission failed. Please try again.");
     }

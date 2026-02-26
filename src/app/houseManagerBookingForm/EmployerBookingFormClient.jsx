@@ -164,13 +164,14 @@ export default function EmployerBookingFormClient() {
 
       if (res?.status === 200 || res?.status === 201) {
         await postApi("/checkout", {
-          phone: "01712928333",
+          // phone: user?.number,
+          phone: "254201234567",
           plan_id: planId,
           specialist_id: id,
           specialist_type: matchedSpecialist?.type,
           book_amount: bookingAmount,
         });
-
+        router.push("/dashboard/payment-history");
         toast.success("Payment request sent!");
       }
     } catch (error) {

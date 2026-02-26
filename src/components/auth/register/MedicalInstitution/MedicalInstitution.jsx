@@ -262,7 +262,7 @@ const MedicalInstitution = ({ skills }) => {
         });
 
         if (res?.status === 200) {
-          console.log("after medical institutions create profile", res);
+          
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
           //todo this localStorage

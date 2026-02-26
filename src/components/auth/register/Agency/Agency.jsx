@@ -155,6 +155,7 @@ const Agency = () => {
 
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
+          
           // localStorage.setItem(
           //   "user",
           //   JSON.stringify({

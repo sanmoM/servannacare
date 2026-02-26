@@ -104,7 +104,8 @@ const HouseManager = () => {
           },
         });
         if (res?.status === 200) {
-          toast.success("Registered Successfully!");
+          toast.success("Profile Create Successfully!");
+          router.push(`/dashboard/${user?.role}-profile`);
 
           // localStorage.setItem(
           //   "user",
