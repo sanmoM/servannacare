@@ -27,6 +27,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 import { postApi } from "@/lib/apiHandler";
 import { useFetch } from "@/hooks/useFetch";
+import { useAuth } from "@/hooks/useAuth";
 // import PhoneInputWithCountrySelect from "react-phone-number-input";
 // import { isValidPhoneNumber } from "react-phone-number-input";
 // import { getExampleNumber } from "libphonenumber-js";
@@ -38,6 +39,7 @@ export default function BookingFormClient() {
   const category = searchParams.get("category");
   const id = searchParams.get("id");
   const router = useRouter();
+  const { user } = useAuth();
 
   const [selectedMonths, setSelectedMonths] = useState([]);
   const [selectedDateList, setSelectedDateList] = useState([]);
@@ -131,18 +133,6 @@ export default function BookingFormClient() {
   const isDaily = watchbooking_type === "daily";
   const isMonthly = watchbooking_type === "monthly";
 
-  // useEffect(() => {
-  //   if (!watchbooking_type || prices.length === 0) return;
-
-  //   const matchedPlan = prices.find(
-  //     (p) => p.name?.toLowerCase() === watchbooking_type,
-  //   );
-
-  //   setSelectedPrice(matchedPlan || null);
-  //   setSelectedMonths([]);
-  //   setSelectedDateList([]);
-  // }, [watchbooking_type, prices]);
-
   useEffect(() => {
     if (!watchConditions.includes("others")) {
       setValue("patient_have_any_others_conditions", "");
@@ -203,6 +193,10 @@ export default function BookingFormClient() {
     dailyRate,
     monthlyRate,
   ]);
+  const totalAmount = useMemo(() => {
+    if (bookingAmount === 0) return 0;
+    return bookingAmount + serviceFee;
+  }, [bookingAmount, serviceFee]);
 
   const onSubmit = async (data) => {
     if (isSubmitting) return;
@@ -216,7 +210,6 @@ export default function BookingFormClient() {
       return;
     }
 
-    // Schedule validation
     if (
       (isDaily && selectedDateList.length === 0) ||
       (isMonthly && selectedMonths.length === 0)
@@ -261,7 +254,7 @@ export default function BookingFormClient() {
     data.patient_have_any_conditions.forEach((condition) => {
       formData.append("patient_have_any_conditions[]", condition);
     });
-    formData.append("booking_amount", bookingAmount);
+    formData.append("booking_amount", totalAmount);
     scheduleItems.forEach((item, index) => {
       formData.append(`selected_dates_or_months[${index}][month]`, item.month);
 
@@ -291,6 +284,20 @@ export default function BookingFormClient() {
         toast.success("Booking Request Sent!");
         router.push("/dashboard/book-history");
       }
+
+      // const res = await postApi("/booking", formData);
+
+      // if (res?.status === 200 || res?.status === 201) {
+      //   await postApi("/checkout", {
+      //     phone: paymentPhone,
+      //     plan_id: planId,
+      //     specialist_id: id,
+      //     specialist_type: matchedSpecialist?.type,
+      //     book_amount: totalAmount,
+      //   });
+
+      //   toast.success("Payment request sent!");
+      // }
     } catch (error) {
       toast.error("Submission failed. Please try again.");
     }
@@ -1219,7 +1226,7 @@ export default function BookingFormClient() {
                   Estimated Amount
                 </p>
                 <div className="text-5xl font-black">
-                  KES {bookingAmount.toLocaleString()}
+                  KES {totalAmount.toLocaleString()}
                 </div>
               </div>
               <CardContent className="p-10 space-y-6">
@@ -1250,6 +1257,30 @@ export default function BookingFormClient() {
                   <span className="font-black text-primary">
                     {isDaily ? selectedDateList.length : selectedMonths.length}{" "}
                     {isDaily ? "Days" : "Months"}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-bold uppercase">
+                    Plan Cost
+                  </span>
+                  <span className="font-black text-slate-900">
+                    KES {bookingAmount.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span className="text-slate-400 font-bold uppercase">
+                    Service Fee
+                  </span>
+                  <span className="font-black text-slate-900">
+                    KES {serviceFee.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-base pt-3 border-t font-bold">
+                  <span>Total</span>
+                  <span className="text-primary">
+                    KES {totalAmount.toLocaleString()}
                   </span>
                 </div>
                 <Separator />

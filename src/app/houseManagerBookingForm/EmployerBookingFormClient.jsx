@@ -14,6 +14,7 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 import toast from "react-hot-toast";
 import { Eye } from "lucide-react";
 import { postApi } from "@/lib/apiHandler";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function EmployerBookingFormClient() {
   const searchParams = useSearchParams();
@@ -23,8 +24,26 @@ export default function EmployerBookingFormClient() {
 
   const [previewMonth, setPreviewMonth] = useState(null);
   const [bookingAmount, setBookingAmount] = useState(0);
+  const [serviceFee, setServiceFee] = useState(0);
+  const [planId, setPlanId] = useState(0);
+  const { user } = useAuth();
 
   const { data: specData, isLoading: specLoading } = useFetch("/specialist");
+  const { data, isLoading } = useFetch("/subscription-plan");
+
+  useEffect(() => {
+    if (data?.status === 200 && data?.data?.data.length > 0) {
+      const individualPlan = data?.data?.data?.find(
+        (item) => item.name === "Service Fee",
+      );
+
+      if (individualPlan) {
+        setServiceFee(parseFloat(individualPlan.price));
+        setPlanId(individualPlan.id);
+      }
+    }
+  }, [data]);
+
   const specialists = specData?.data?.data ?? [];
 
   const matchedSpecialist = useMemo(
@@ -39,8 +58,6 @@ export default function EmployerBookingFormClient() {
   const dailyRate = Number(
     matchedSpecialist?.house_manager?.serviceFeeDay || 0,
   );
-
-  
 
   const availableDates = useMemo(
     () => matchedSpecialist?.schedule?.flatMap((s) => s.date) || [],
@@ -89,6 +106,7 @@ export default function EmployerBookingFormClient() {
       : selectedDates.length * dailyRate;
     setBookingAmount(amount);
   }, [selectedMonths, selectedDates, isMonthly, monthlyRate, dailyRate]);
+  const totalAmount = bookingAmount + serviceFee;
 
   const getDatesForMonth = (monthKey) =>
     availableDates.filter((d) => d.startsWith(monthKey));
@@ -133,15 +151,27 @@ export default function EmployerBookingFormClient() {
       home_type: data.homeType,
       home_size: data.homeSize,
       selected_dates_or_months: formattedSelections,
-      booking_amount: bookingAmount,
+      booking_amount: totalAmount,
     };
 
-
     try {
-      await postApi('/booking', payload);
+      // await postApi("/booking", payload);
+      // if (res?.status === 200 || res?.status === 201) {
+      //   toast.success("Booking Request Sent!");
+      //   router.push("/dashboard/book-history");
+      // }
+      const res = await postApi("/booking", formData);
+
       if (res?.status === 200 || res?.status === 201) {
-        toast.success("Booking Request Sent!");
-        router.push("/dashboard/book-history");
+        await postApi("/checkout", {
+          phone: user?.number,
+          plan_id: planId,
+          specialist_id: id,
+          specialist_type: matchedSpecialist?.type,
+          book_amount: bookingAmount,
+        });
+
+        toast.success("Payment request sent!");
       }
     } catch (error) {
       toast.error("Failed to submit booking");
@@ -492,7 +522,7 @@ export default function EmployerBookingFormClient() {
                 Estimated Amount
               </p>
               <p className="text-5xl font-black mt-2">
-                KES {bookingAmount.toLocaleString()}
+                KES {totalAmount.toLocaleString()}
               </p>
             </div>
             <CardContent className="p-10 space-y-4">
@@ -506,6 +536,24 @@ export default function EmployerBookingFormClient() {
                   {isMonthly
                     ? `${selectedMonths.length} Months`
                     : `${selectedDates.length} Days`}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Booking Amount</span>
+                <span>KES {bookingAmount.toLocaleString()}</span>
+              </div>
+
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Service Fee</span>
+                <span>KES {serviceFee.toLocaleString()}</span>
+              </div>
+
+              <Separator />
+
+              <div className="flex justify-between font-bold text-sm">
+                <span>Total</span>
+                <span className="text-[#7A295A]">
+                  KES {totalAmount.toLocaleString()}
                 </span>
               </div>
               <Separator />
