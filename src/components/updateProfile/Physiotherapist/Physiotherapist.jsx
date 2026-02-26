@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/hooks/useAuth";
 import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
@@ -34,8 +35,8 @@ import PhoneInputWithCountrySelect, {
 import "react-phone-number-input/style.css";
 
 const Physiotherapist = ({ data = {} }) => {
-  console.log("datas", data);
-  const { user } = useLocalUser();
+
+  const { user } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     basicInfo: {

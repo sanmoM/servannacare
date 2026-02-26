@@ -151,7 +151,7 @@ export default function EmployerBookingFormClient() {
       home_type: data.homeType,
       home_size: data.homeSize,
       selected_dates_or_months: formattedSelections,
-      booking_amount: totalAmount,
+      booking_amount: bookingAmount,
     };
 
     try {
@@ -160,11 +160,11 @@ export default function EmployerBookingFormClient() {
       //   toast.success("Booking Request Sent!");
       //   router.push("/dashboard/book-history");
       // }
-      const res = await postApi("/booking", formData);
+      const res = await postApi("/booking", payload);
 
       if (res?.status === 200 || res?.status === 201) {
         await postApi("/checkout", {
-          phone: user?.number,
+          phone: "01712928333",
           plan_id: planId,
           specialist_id: id,
           specialist_type: matchedSpecialist?.type,

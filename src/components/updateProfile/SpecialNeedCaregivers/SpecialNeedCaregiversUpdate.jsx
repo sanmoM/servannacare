@@ -31,12 +31,13 @@ import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
+import { useAuth } from "@/hooks/useAuth";
 
 const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
   console.log("data", data?.canDrive);
   const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const { user } = useLocalUser();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",

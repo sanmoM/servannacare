@@ -24,10 +24,11 @@ import { postApi } from "@/lib/apiHandler";
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { useAuth } from "@/hooks/useAuth";
 
 const PhysiotherapistCreate = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
-  const { user } = useLocalUser();
+  const { user } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     basicInfo: {
