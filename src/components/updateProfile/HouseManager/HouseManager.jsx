@@ -36,7 +36,7 @@ import { useAuth } from "@/hooks/useAuth";
 const HouseManager = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const {user}=useAuth()
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
@@ -81,7 +81,7 @@ const HouseManager = ({ data = {} }) => {
       }));
     }
   }, [data]);
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({
@@ -249,7 +249,6 @@ const HouseManager = ({ data = {} }) => {
       }
     });
 
-    
     // for (let pair of fd.entries()) {
     //   console.log(pair[0], pair[1]);
     // }

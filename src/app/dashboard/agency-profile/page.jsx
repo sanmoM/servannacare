@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import AgencyUpdate from "@/components/updateProfile/Agency/AgencyUpdate";
+import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
 import useLocalUser from "@/hooks/useLocalUser";
 import {
@@ -36,16 +37,15 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export default function AgencyProfile() {
-  const { user, loaded } = useLocalUser();
+  const { user } = useAuth();
 
   const [agencyData, setAgencyData] = useState(null);
 
-
-
   const { data, isLoading, error } = useFetch("/profile");
+
   useEffect(() => {
     if (data) {
-      setAgencyData(data?.data?.data ?? data?.data?.agency);
+      setAgencyData(data?.data ?? data?.data?.agency);
     }
   }, [data]);
 
@@ -69,8 +69,20 @@ export default function AgencyProfile() {
           <Info /> Your account is Under review.
         </p>
       )}
+
+      {user?.is_profile_completed && user?.is_profile_verified && (
+        <div className="p-4 mb-4 rounded-xl bg-green-50 border border-green-200 flex items-center gap-3">
+          <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+          <div className="text-green-700 font-medium">
+            Your profile is verified as{" "}
+            <span className="capitalize font-semibold">
+              {user?.role?.replace(/-/g, " ")}
+            </span>
+          </div>
+        </div>
+      )}
       {user?.is_profile_completed ? (
-        <UpdateBasicInfo agencyData={agencyData} />
+        <UpdateBasicInfo agencyData={agencyData?.agency} />
       ) : (
         <>
           <CreateBasicInfo />

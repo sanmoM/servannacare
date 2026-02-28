@@ -160,18 +160,28 @@ export default function EmployerBookingFormClient() {
       //   toast.success("Booking Request Sent!");
       //   router.push("/dashboard/book-history");
       // }
+
+      const paymentData = {
+        phone: user?.number,
+        // phone: "254201234567",
+        plan_id: planId,
+        specialist_id: id,
+        specialist_type: matchedSpecialist?.type,
+        book_amount: bookingAmount,
+      };
+
       const res = await postApi("/booking", payload);
 
       if (res?.status === 200 || res?.status === 201) {
-        await postApi("/checkout", {
-          // phone: user?.number,
-          phone: "254201234567",
-          plan_id: planId,
-          specialist_id: id,
-          specialist_type: matchedSpecialist?.type,
-          book_amount: bookingAmount,
-        });
-        router.push("/dashboard/payment-history");
+        const paymentRes = await postApi("/checkout", paymentData);
+
+        const queryRes = await getApi(
+          `/mpesa/query/${paymentRes?.data?.checkout_id}`,
+        );
+
+        console.log("payment Response:", paymentRes);
+        console.log("Mpesa Query Data:", queryRes);
+
         toast.success("Payment request sent!");
       }
     } catch (error) {

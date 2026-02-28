@@ -66,7 +66,7 @@ const VerifyOtpPage = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-slate-50 px-4">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-gradient-to-b from-blue-50/50 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-linear-to-b from-blue-50/50 to-transparent blur-3xl pointer-events-none" />
 
       <div className="relative bg-white/80 backdrop-blur-xl w-full max-w-md rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-white p-10">
         <div className="flex flex-col items-center mb-8">

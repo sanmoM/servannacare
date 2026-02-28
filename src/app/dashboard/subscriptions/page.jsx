@@ -54,37 +54,31 @@ const page = () => {
   }, []);
 
   const handlePayment = async () => {
-    setLoading(true);
-    const paymentData = {
-      'phone': user?.number,
-      // phone: "+254708374149",
-      plan_id: planId,
-      specialist_id: user?.id,
-      validated_month: months,
-    };
-    await postApi("/subscription-pay", paymentData)
-      .then(async (res) => {
-        await getApi(`/mpesa/query/${res.data?.checkout_id}`);
-        router.push("/dashboard/payment-history")
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-    setTimeout(() => {
-      const date = new Date();
-      date.setMonth(date.getMonth() + months);
+    try {
+      setLoading(true);
 
-      localStorage.setItem("specialist_expiry", date.toISOString());
-      setExpiryDate(
-        date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+      const paymentData = {
+        phone: user?.number,
+        plan_id: planId,
+        specialist_id: user?.id,
+        validated_month: months,
+      };
+
+      const paymentRes = await postApi("/subscription-pay", paymentData);
+
+      const queryRes = await getApi(
+        `/mpesa/query/${paymentRes?.data?.checkout_id}`,
       );
-      setIsSubscribed(true);
+
+      console.log("payment Response:", paymentRes);
+      console.log("Mpesa Query Data:", queryRes);
+
+      // router.push("/dashboard/payment-history");
+    } catch (err) {
+      console.error("Payment Error:", err);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -178,7 +172,7 @@ const page = () => {
                     <span>Processing...</span>
                   </span>
                 ) : (
-                  <span className="text-xl tracking-tight uppercase font-primary">
+                  <span className="text-xl tracking-tight uppercase font-primary cursor-pointer">
                     {localStorage.getItem("specialist_expiry")
                       ? "Renew Subscription"
                       : "Confirm & Pay Now"}

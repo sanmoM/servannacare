@@ -1,14 +1,19 @@
 "use client";
+import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
+import { getApi, postApi } from "@/lib/apiHandler";
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 const SpecialistSubscription = () => {
+  const { user } = useAuth();
   const [tier, setTier] = useState("Silver");
   const [months, setMonths] = useState(1);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [expiryDate, setExpiryDate] = useState(null);
   const [loading, setLoading] = useState(false);
   const [planPrices, setPlanPrices] = useState({ Silver: 0, Gold: 0 });
+  const [planId, setPlanId] = useState(null);
 
   const { data, isLoading } = useFetch("/subscription-plan");
 
@@ -22,6 +27,10 @@ const SpecialistSubscription = () => {
       setPlanPrices({
         Silver: silverPlan ? parseFloat(silverPlan.price) : 500,
         Gold: goldPlan ? parseFloat(goldPlan.price) : 800,
+      });
+      setPlanId({
+        Silver: silverPlan?.id,
+        Gold: goldPlan?.id,
       });
     }
   }, [data]);
@@ -47,22 +56,37 @@ const SpecialistSubscription = () => {
     }
   }, []);
 
-  const handlePayment = () => {
-    setLoading(true);
-    setTimeout(() => {
-      const date = new Date();
-      date.setMonth(date.getMonth() + months);
-      localStorage.setItem("specialist_expiry", date.toISOString());
-      setExpiryDate(
-        date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+  const handlePayment = async () => {
+    try {
+      setLoading(true);
+
+      if (!planId?.[tier]) {
+        toast.error("Plan not loaded yet. Please wait.");
+        return;
+      }
+
+      const paymentData = {
+        phone: user?.number,
+        plan_id: planId[tier],
+        specialist_id: user?.id,
+        validated_month: months,
+      };
+
+      const paymentRes = await postApi("/subscription-pay", paymentData);
+
+      const queryRes = await getApi(
+        `/mpesa/query/${paymentRes?.data?.checkout_id}`,
       );
-      setIsSubscribed(true);
+
+      console.log("payment Response:", paymentRes);
+      console.log("Mpesa Query Data:", queryRes);
+
+      // router.push("/dashboard/payment-history");
+    } catch (err) {
+      console.error("Payment Error:", err);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   if (isLoading)
@@ -205,7 +229,7 @@ const SpecialistSubscription = () => {
                     <span>Processing...</span>
                   </span>
                 ) : (
-                  <span className="text-xl tracking-tight uppercase">
+                  <span className="text-xl tracking-tight uppercase cursor-pointer">
                     {localStorage.getItem("specialist_expiry")
                       ? "Renew Subscription"
                       : "Confirm & Pay Now"}

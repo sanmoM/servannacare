@@ -12,9 +12,16 @@ import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+import { useAuth } from "@/hooks/useAuth";
+
 const UpdateBasicInfo = ({ agencyData }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const { user, loaded } = useLocalUser();
+  const { user} = useAuth();
   const [data, setData] = useState({
     companyName: agencyData?.companyName || "",
     kraPin: agencyData?.kraPin || "",
@@ -27,7 +34,6 @@ const UpdateBasicInfo = ({ agencyData }) => {
     replacementWindow: agencyData?.replacementWindow || "",
     numberOfReplacement: agencyData?.numberOfReplacement || "",
   });
-  console.log("areas", data?.number);
 
   const train = [
     "Cooking",
@@ -115,12 +121,15 @@ const UpdateBasicInfo = ({ agencyData }) => {
       }
     }
 
-    if (data.number.length !== 11) {
-      toast.error("Mobile number must be exactly 11 digits.");
+    if (!data?.number) {
+      toast.error("Phone number is required!");
       return;
     }
 
-    console.log("Agency Data:", data);
+    if (!isValidPhoneNumber(data?.number)) {
+      toast.error("Phone number is invalid or incomplete!");
+      return;
+    }
 
     const fd = new FormData();
 
@@ -186,31 +195,51 @@ const UpdateBasicInfo = ({ agencyData }) => {
         </div>
 
         <div className="flex flex-col py-6 sm:flex-row gap-6 sm:gap-4">
-          <Input
-            label="Company Registration Number"
-            name="companyRegistrationNumber"
-            placeholder="Company registration number"
-            value={data.companyRegistrationNumber}
-            onChange={handleChange}
-          />
+          <div className="flex-1">
+            <Input
+              label="Company Registration Number"
+              name="companyRegistrationNumber"
+              placeholder="Company registration number"
+              value={data.companyRegistrationNumber}
+              onChange={handleChange}
+            />
+          </div>
 
-          <Input
-            label="Mobile Number"
-            name="number"
-            type="tel"
-            placeholder="+254xxxxxxx"
-            value={data.number || "+254"}
-            maxLength={11}
-            onFocus={() => {
-              if (!data.number) {
-                setData((prev) => ({
-                  ...prev,
-                  number: "+254",
-                }));
-              }
-            }}
-            onChange={handlePhoneChange}
-          />
+          <div className="flex-1">
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={data?.number}
+                onChange={(value) => {
+                  setData((prev) => ({ ...prev, number: value || "" }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setData((prev) => ({
+                      ...prev,
+                      number: `+${exampleNumber.countryCallingCode}`,
+                    }));
+                  } else {
+                    setData((prev) => ({ ...prev, number: "" }));
+                  }
+                }}
+              />
+            </div>
+
+            {data?.number && !isValidPhoneNumber(data?.number) && (
+              <p className="text-red-500 text-sm mt-1">
+                Invalid phone number for selected country
+              </p>
+            )}
+          </div>
         </div>
 
         <Input
@@ -292,7 +321,7 @@ const UpdateBasicInfo = ({ agencyData }) => {
       {/* Submit button */}
       <div className="flex justify-end">
         {user?.is_profile_completed && (
-          <Button className="w-full sm:w-auto" size="lg" type="submit">
+          <Button className="w-full sm:w-auto cursor-pointer" size="lg" type="submit">
             Update
           </Button>
         )}

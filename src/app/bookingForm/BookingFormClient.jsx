@@ -25,7 +25,7 @@ import { Calendar } from "@/components/ui/calendar";
 import FileUpload from "@/components/auth/register/FileUpload";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 
-import { postApi } from "@/lib/apiHandler";
+import { getApi, postApi } from "@/lib/apiHandler";
 import { useFetch } from "@/hooks/useFetch";
 import { useAuth } from "@/hooks/useAuth";
 // import PhoneInputWithCountrySelect from "react-phone-number-input";
@@ -260,7 +260,7 @@ export default function BookingFormClient() {
     scheduleItems.forEach((item, index) => {
       formData.append(`selected_dates_or_months[${index}][month]`, item.month);
 
-      item.dates.forEach((date, i) => {
+      item?.dates?.forEach((date, i) => {
         formData.append(
           `selected_dates_or_months[${index}][dates][${i}]`,
           date,
@@ -286,19 +286,28 @@ export default function BookingFormClient() {
       //   toast.success("Booking Request Sent!");
       //   router.push("/dashboard/book-history");
       // }
+      const paymentData = {
+        phone: user?.number,
+        // phone: "254201234567",
+        plan_id: planId,
+        specialist_id: id,
+        specialist_type: matchedSpecialist?.type,
+        book_amount: bookingAmount,
+      };
 
       const res = await postApi("/booking", formData);
 
       if (res?.status === 200 || res?.status === 201) {
-        await postApi("/checkout", {
-          // phone: user?.number,
-          phone: "254201234567",
-          plan_id: planId,
-          specialist_id: id,
-          specialist_type: matchedSpecialist?.type,
-          book_amount: bookingAmount,
-        });
-        router.push("/dashboard/payment-history");
+        const paymentRes = await postApi("/checkout", paymentData);
+
+        const queryRes = await getApi(
+          `/mpesa/query/${paymentRes?.data?.checkout_id}`,
+        );
+
+        console.log("payment Response:", paymentRes);
+        console.log("Mpesa Query Data:", queryRes);
+
+        // router.push("/dashboard/payment-history");
         toast.success("Payment request sent!");
       }
     } catch (error) {
@@ -1214,7 +1223,7 @@ export default function BookingFormClient() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl shadow-primary/20"
+            className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl shadow-primary/20 cursor-pointer"
           >
             {isSubmitting ? "Processing..." : "Confirm & Submit Booking"}
           </Button>

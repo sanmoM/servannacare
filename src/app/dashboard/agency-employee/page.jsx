@@ -33,9 +33,12 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { deleteApi } from "@/lib/apiHandler";
 import SelectableCalendar from "@/components/SelectableCalendar";
+import { useRouter } from "next/navigation";
 
 const EmployeePage = () => {
+  const router = useRouter();
   const [employees, setEmployees] = useState([]);
+  const [agencyExist, setAgencyExist] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
 
   const [editModalId, setEditModalId] = useState(null);
@@ -47,6 +50,7 @@ const EmployeePage = () => {
   useEffect(() => {
     if (data) {
       setEmployees(data?.data?.agencyEmployees || data?.agencyEmployees || []);
+      setAgencyExist(data?.data?.agency || data?.agency || []);
     }
   }, [data]);
 
@@ -80,6 +84,16 @@ const EmployeePage = () => {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const handleAddEmployeeClick = () => {
+    if (!agencyExist || Object.keys(agencyExist).length === 0) {
+      toast.error("Please complete your agency profile first.");
+      router.push("/dashboard/agency-profile");
+      return;
+    }
+
+    setShowAddModal(true);
+  };
+
   return (
     <div className="p-4 lg:p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
       {/* Header Section */}
@@ -93,11 +107,12 @@ const EmployeePage = () => {
           </p>
         </div>
         <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-          <DialogTrigger asChild>
-            <Button className="bg-primary shadow-sm w-full sm:w-auto">
-              <Plus className="mr-2" size={18} /> Add New Employee
-            </Button>
-          </DialogTrigger>
+          <Button
+            onClick={handleAddEmployeeClick}
+            className="bg-primary shadow-sm w-full sm:w-auto cursor-pointer"
+          >
+            <Plus className="mr-2" size={18} /> Add New Employee
+          </Button>
           <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Register New Employee</DialogTitle>

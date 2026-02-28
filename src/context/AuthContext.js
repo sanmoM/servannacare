@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const router=useRouter()
+  const router = useRouter();
 
   const fetchCurrentUser = async () => {
     try {
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
-    router.push("/")
+    router.push("/");
     setUser(null);
     setRole(null);
   };
