@@ -80,7 +80,7 @@ const SpecialistSubscription = () => {
 
       await getApi(`/mpesa/query/${paymentRes?.data?.checkout_id}`);
 
-            toast.success("Payment request sent! Check your phone.");
+      toast.success("Payment request sent! Check your phone.");
       router.push("/dashboard/agency-payment-history");
       setIsDialogOpen(false);
       setPhoneNumber("");

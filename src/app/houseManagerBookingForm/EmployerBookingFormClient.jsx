@@ -7,14 +7,22 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFetch } from "@/hooks/useFetch";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import toast from "react-hot-toast";
-import { Eye } from "lucide-react";
-import { postApi } from "@/lib/apiHandler";
+import { Eye, Smartphone, Info } from "lucide-react";
+import { postApi, getApi } from "@/lib/apiHandler";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export default function EmployerBookingFormClient() {
   const searchParams = useSearchParams();
@@ -28,6 +36,11 @@ export default function EmployerBookingFormClient() {
   const [planId, setPlanId] = useState(0);
   const { user } = useAuth();
 
+  // Modal States
+  const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
   const { data: specData, isLoading: specLoading } = useFetch("/specialist");
   const { data, isLoading } = useFetch("/subscription-plan");
 
@@ -36,7 +49,6 @@ export default function EmployerBookingFormClient() {
       const individualPlan = data?.data?.data?.find(
         (item) => item.name === "Service Fee",
       );
-
       if (individualPlan) {
         setServiceFee(parseFloat(individualPlan.price));
         setPlanId(individualPlan.id);
@@ -45,13 +57,11 @@ export default function EmployerBookingFormClient() {
   }, [data]);
 
   const specialists = specData?.data?.data ?? [];
-
   const matchedSpecialist = useMemo(
     () => specialists.find((s) => s.id === Number(id)),
     [specialists, id],
   );
 
-  // Specialist Fees
   const monthlyRate = Number(
     matchedSpecialist?.house_manager?.serviceFeeMonth || 0,
   );
@@ -73,7 +83,7 @@ export default function EmployerBookingFormClient() {
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      lookingFor: "",
+      lookingFor: "monthly",
       selectedMonths: [],
       selectedDates: [],
       kids: "",
@@ -86,18 +96,15 @@ export default function EmployerBookingFormClient() {
   const lookingFor = watch("lookingFor");
   const selectedMonths = watch("selectedMonths");
   const selectedDates = watch("selectedDates");
-  const ageBracket = watch("ageBracket");
+  const kids = watch("kids");
   const homeType = watch("homeType");
   const homeSize = watch("homeSize");
-  const kids = watch("kids");
 
   const isMonthly = lookingFor === "monthly";
   const isDaily = lookingFor === "daily";
 
-  React.useEffect(() => {
-    if (kids !== "yes") {
-      setValue("ageBracket", "");
-    }
+  useEffect(() => {
+    if (kids !== "yes") setValue("ageBracket", "");
   }, [kids, setValue]);
 
   useEffect(() => {
@@ -106,10 +113,8 @@ export default function EmployerBookingFormClient() {
       : selectedDates.length * dailyRate;
     setBookingAmount(amount);
   }, [selectedMonths, selectedDates, isMonthly, monthlyRate, dailyRate]);
-  const totalAmount = bookingAmount + serviceFee;
 
-  const getDatesForMonth = (monthKey) =>
-    availableDates.filter((d) => d.startsWith(monthKey));
+  const totalAmount = bookingAmount + serviceFee;
 
   const isDateDisabled = (date) => {
     const y = date.getFullYear();
@@ -119,21 +124,39 @@ export default function EmployerBookingFormClient() {
     return !availableDates.includes(dateStr);
   };
 
-  const onSubmit = async (data) => {
-    if (isSubmitting) return;
+  // STEP 1: Main Form Submit - Just opens the modal
+  const onSubmit = async (formData) => {
+    if (isMonthly && selectedMonths.length === 0) {
+      return toast.error("Please select at least one month");
+    }
+    if (isDaily && selectedDates.length === 0) {
+      return toast.error("Please select at least one date");
+    }
+    if (!homeType || !homeSize || !kids) {
+      return toast.error("Please complete all form fields");
+    }
 
-    const booking_type = data.lookingFor === "monthly" ? "monthly" : "daily";
+    setPhoneNumber(user?.number || "");
+    setIsPayModalOpen(true);
+  };
 
+  // STEP 2: Final Submission within Modal
+  const handleFinalSubmit = async () => {
+    if (!phoneNumber || phoneNumber.length < 10) {
+      return toast.error("Please enter a valid M-Pesa number");
+    }
+
+    setIsProcessingPayment(true);
+    const formData = watch();
+
+    // Format selections
     let formattedSelections = [];
-
-    if (data.lookingFor === "monthly") {
-      formattedSelections = data.selectedMonths.map((monthKey) => {
-        return {
-          dates: availableDates.filter((d) => d.startsWith(monthKey)),
-        };
-      });
+    if (isMonthly) {
+      formattedSelections = formData.selectedMonths.map((monthKey) => ({
+        dates: availableDates.filter((d) => d.startsWith(monthKey)),
+      }));
     } else {
-      formattedSelections = data.selectedDates.map((date) => {
+      formattedSelections = formData.selectedDates.map((date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const day = String(date.getDate()).padStart(2, "0");
@@ -145,46 +168,42 @@ export default function EmployerBookingFormClient() {
       specialist_id: Number(id),
       specialist_type: category,
       subRole: category,
-      booking_type: booking_type,
-      has_kids: data.kids === "yes" ? 1 : 0,
-      age_bracket: data.kids === "yes" ? data.ageBracket : null,
-      home_type: data.homeType,
-      home_size: data.homeSize,
+      booking_type: isMonthly ? "monthly" : "daily",
+      has_kids: formData.kids === "yes" ? 1 : 0,
+      age_bracket: formData.kids === "yes" ? formData.ageBracket : null,
+      home_type: formData.homeType,
+      home_size: formData.homeSize,
       selected_dates_or_months: formattedSelections,
       booking_amount: bookingAmount,
     };
 
     try {
-      // await postApi("/booking", payload);
-      // if (res?.status === 200 || res?.status === 201) {
-      //   toast.success("Booking Request Sent!");
-      //   router.push("/dashboard/book-history");
-      // }
-
-      const paymentData = {
-        phone: user?.number,
-        plan_id: planId,
-        specialist_id: id,
-        specialist_type: matchedSpecialist?.type,
-        book_amount: bookingAmount,
-      };
-
+      // 1. Create Booking
       const res = await postApi("/booking", payload);
 
       if (res?.status === 200 || res?.status === 201) {
+        // 2. Trigger Checkout
+        const paymentData = {
+          phone: phoneNumber,
+          plan_id: planId,
+          specialist_id: id,
+          specialist_type: category,
+          book_amount: totalAmount,
+        };
+
         const paymentRes = await postApi("/checkout", paymentData);
 
-        const queryRes = await getApi(
-          `/mpesa/query/${paymentRes?.data?.checkout_id}`,
-        );
-
-        console.log("payment Response:", paymentRes);
-        console.log("Mpesa Query Data:", queryRes);
-
-        toast.success("Payment request sent!");
+        if (paymentRes?.status === 200 || paymentRes?.status === 201) {
+          toast.success("M-Pesa prompt sent to your phone!");
+          setIsPayModalOpen(false);
+          router.push("/dashboard/payment-history");
+        }
       }
     } catch (error) {
-      toast.error("Failed to submit booking");
+      console.error(error);
+      toast.error("Failed to process payment. Please try again.");
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -194,51 +213,36 @@ export default function EmployerBookingFormClient() {
         <LoadingSpinner />
       </div>
     );
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-12 px-4">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 space-y-6">
           <form onSubmit={handleSubmit(onSubmit)}>
-            {/* EMPLOYER FORM */}
             <Card className="border-none shadow-sm ring-1 ring-slate-200">
               <CardHeader className="border-b bg-white p-6">
                 <CardTitle>Booking Form</CardTitle>
               </CardHeader>
 
               <CardContent className="p-8 space-y-8">
-                {/* <Separator /> */}
-
                 {/* 2. Kids */}
                 <div>
                   <Label className="font-bold block mb-4">
                     2. Do you have kids?
                   </Label>
-
                   <RadioGroup
                     value={kids}
                     onValueChange={(val) => setValue("kids", val)}
                     className="space-y-3"
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="yes"
-                        id="kids-yes"
-                      />
-                      <Label className={"cursor-pointer"} htmlFor="kids-yes">
-                        Yes
-                      </Label>
+                      <RadioGroupItem value="yes" id="kids-yes" />
+                      <Label htmlFor="kids-yes">Yes</Label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="no"
-                        id="kids-no"
-                      />
-                      <Label className={"cursor-pointer"} htmlFor="kids-no">
-                        No
-                      </Label>
+                      <RadioGroupItem value="no" id="kids-no" />
+                      <Label htmlFor="kids-no">No</Label>
                     </div>
                   </RadioGroup>
 
@@ -250,38 +254,16 @@ export default function EmployerBookingFormClient() {
                         onValueChange={(val) => setValue("ageBracket", val)}
                         className="space-y-2"
                       >
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem
-                            className={"cursor-pointer"}
-                            value="0-3"
-                            id="age1"
-                          />
-                          <Label className={"cursor-pointer"} htmlFor="age1">
-                            0 – 3 yrs
-                          </Label>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem
-                            className={"cursor-pointer"}
-                            value="4-10"
-                            id="age2"
-                          />
-                          <Label className={"cursor-pointer"} htmlFor="age2">
-                            4 – 10 yrs
-                          </Label>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem
-                            className={"cursor-pointer"}
-                            value="11+"
-                            id="age3"
-                          />
-                          <Label className={"cursor-pointer"} htmlFor="age3">
-                            11 yrs and Above
-                          </Label>
-                        </div>
+                        {["0-3", "4-10", "11+"].map((range) => (
+                          <div key={range} className="flex items-center gap-2">
+                            <RadioGroupItem value={range} id={`age-${range}`} />
+                            <Label htmlFor={`age-${range}`}>
+                              {range === "11+"
+                                ? "11 yrs and Above"
+                                : `${range} yrs`}
+                            </Label>
+                          </div>
+                        ))}
                       </RadioGroup>
                     </div>
                   )}
@@ -294,33 +276,18 @@ export default function EmployerBookingFormClient() {
                   <Label className="font-bold block mb-4">
                     3. Type of home:
                   </Label>
-
                   <RadioGroup
                     value={homeType}
-                    // onValueChange={setHomeType}
                     onValueChange={(val) => setValue("homeType", val)}
                     className="space-y-2"
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="compound"
-                        id="compound"
-                      />
-                      <Label className={"cursor-pointer"} htmlFor="compound">
-                        Own compound
-                      </Label>
+                      <RadioGroupItem value="compound" id="compound" />
+                      <Label htmlFor="compound">Own compound</Label>
                     </div>
-
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="apartment"
-                        id="apartment"
-                      />
-                      <Label className={"cursor-pointer"} htmlFor="apartment">
-                        Apartment
-                      </Label>
+                      <RadioGroupItem value="apartment" id="apartment" />
+                      <Label htmlFor="apartment">Apartment</Label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -332,7 +299,6 @@ export default function EmployerBookingFormClient() {
                   <Label className="font-bold block mb-4">
                     4. How Big is your home:
                   </Label>
-
                   <RadioGroup
                     value={homeSize}
                     onValueChange={(val) => setValue("homeSize", val)}
@@ -341,14 +307,8 @@ export default function EmployerBookingFormClient() {
                     {["1Br", "2Br", "3Br", "4Br", "5Br and above"].map(
                       (size) => (
                         <div key={size} className="flex items-center gap-2">
-                          <RadioGroupItem
-                            className={"cursor-pointer"}
-                            value={size}
-                            id={size}
-                          />
-                          <Label className={"cursor-pointer"} htmlFor={size}>
-                            {size}
-                          </Label>
+                          <RadioGroupItem value={size} id={size} />
+                          <Label htmlFor={size}>{size}</Label>
                         </div>
                       ),
                     )}
@@ -359,53 +319,31 @@ export default function EmployerBookingFormClient() {
 
             <Card className="border-none shadow-sm ring-1 ring-slate-200 mt-6">
               <CardHeader className="border-b bg-white p-6">
-                <div>
-                  <Label className="font-bold block mb-4">
-                    1. Looking for:
-                  </Label>
-
-                  <RadioGroup
-                    value={lookingFor}
-                    onValueChange={(val) => setValue("lookingFor", val)}
-                    className="space-y-3"
-                  >
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="monthly"
-                        id="livein"
-                      />
-                      <Label className={"cursor-pointer"} htmlFor="livein">
-                        Live In{" "}
-                      </Label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="daily"
-                        id="dayburg"
-                      />
-                      <Label className={"cursor-pointer"} htmlFor="dayburg">
-                        Dayburg{" "}
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                <Label className="font-bold block mb-4">1. Looking for:</Label>
+                <RadioGroup
+                  value={lookingFor}
+                  onValueChange={(val) => setValue("lookingFor", val)}
+                  className="space-y-3"
+                >
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="monthly" id="livein" />
+                    <Label htmlFor="livein">Live In</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <RadioGroupItem value="daily" id="dayburg" />
+                    <Label htmlFor="dayburg">Dayburg</Label>
+                  </div>
+                </RadioGroup>
               </CardHeader>
 
               <CardContent className="p-8 space-y-8">
-                {/* PLAN SELECTION CARDS */}
                 <div className="grid grid-cols-2 gap-6">
                   <div
                     onClick={() => {
                       setValue("lookingFor", "monthly");
                       setValue("selectedMonths", []);
                     }}
-                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${
-                      isMonthly
-                        ? "border-[#7A295A] bg-[#7A295A]/5"
-                        : "border-slate-100"
-                    }`}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${isMonthly ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100"}`}
                   >
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       Monthly Plan
@@ -420,11 +358,7 @@ export default function EmployerBookingFormClient() {
                       setValue("lookingFor", "daily");
                       setValue("selectedDates", []);
                     }}
-                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${
-                      isDaily
-                        ? "border-[#7A295A] bg-[#7A295A]/5"
-                        : "border-slate-100"
-                    }`}
+                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${isDaily ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100"}`}
                   >
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       Daily Plan
@@ -435,7 +369,6 @@ export default function EmployerBookingFormClient() {
                   </div>
                 </div>
 
-                {/* MONTHLY GRID */}
                 {isMonthly && (
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
                     {Array.from({ length: 12 }).map((_, i) => {
@@ -460,11 +393,7 @@ export default function EmployerBookingFormClient() {
                                 : [...selectedMonths, monthKey];
                               setValue("selectedMonths", next);
                             }}
-                            className={`w-full p-5 rounded-xl border flex flex-col items-center cursor-pointer transition-all ${
-                              isSelected
-                                ? "bg-[#7A295A] text-white border-[#7A295A]"
-                                : "bg-white border-slate-200"
-                            } ${!hasAvailability && "opacity-25 cursor-not-allowed"}`}
+                            className={`w-full p-5 rounded-xl border flex flex-col items-center transition-all ${isSelected ? "bg-[#7A295A] text-white border-[#7A295A]" : "bg-white border-slate-200"} ${!hasAvailability && "opacity-25 cursor-not-allowed"}`}
                           >
                             <span className="font-bold text-sm">
                               {monthLabel}
@@ -473,24 +402,16 @@ export default function EmployerBookingFormClient() {
                               {hasAvailability ? "Available" : "No Dates"}
                             </span>
                           </button>
-
                           {hasAvailability && (
                             <button
                               type="button"
-                              title="Preview available days"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setPreviewMonth(monthKey);
                               }}
-                              className="absolute -top-1 -right-1 bg-primary cursor-pointer text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
+                              className="absolute -top-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg"
                             >
-                              <span
-                                role="img"
-                                aria-label="view"
-                                className="text-[12px] cursor-pointer"
-                              >
-                                <Eye />
-                              </span>
+                              <Eye size={14} />
                             </button>
                           )}
                         </div>
@@ -499,7 +420,6 @@ export default function EmployerBookingFormClient() {
                   </div>
                 )}
 
-                {/* DAILY CALENDAR */}
                 {isDaily && (
                   <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
                     <Calendar
@@ -517,9 +437,9 @@ export default function EmployerBookingFormClient() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl cursor-pointer shadow-primary/20"
+              className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl mt-8 bg-[#7A295A] hover:bg-[#631f49] text-white"
             >
-              {isSubmitting ? "Processing..." : "Confirm & Submit Booking"}
+              {isSubmitting ? "Processing..." : "Go To Checkout"}
             </Button>
           </form>
         </div>
@@ -552,29 +472,83 @@ export default function EmployerBookingFormClient() {
                 <span className="text-slate-400">Booking Amount</span>
                 <span>KES {bookingAmount.toLocaleString()}</span>
               </div>
-
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Service Fee</span>
                 <span>KES {serviceFee.toLocaleString()}</span>
               </div>
-
               <Separator />
-
               <div className="flex justify-between font-bold text-sm">
                 <span>Total</span>
                 <span className="text-[#7A295A]">
                   KES {totalAmount.toLocaleString()}
                 </span>
               </div>
-              <Separator />
             </CardContent>
           </Card>
         </aside>
       </div>
 
-      {/* MONTH PREVIEW MODAL */}
+      {/* 1. M-PESA PAYMENT MODAL */}
+      <Dialog open={isPayModalOpen} onOpenChange={setIsPayModalOpen}>
+        <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 border-none bg-white overflow-hidden">
+          <div className="bg-[#7A295A] p-8 text-white text-center">
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Smartphone size={32} />
+            </div>
+            <DialogTitle className="text-2xl font-black">
+              M-Pesa Checkout
+            </DialogTitle>
+            <DialogDescription className="text-white/70 mt-2 font-medium">
+              Enter your M-Pesa number to receive the payment prompt.
+            </DialogDescription>
+          </div>
+
+          <div className="p-8 space-y-6">
+            <div className="space-y-2">
+              <Label
+                htmlFor="phone"
+                className="text-xs font-black uppercase text-slate-400 ml-1"
+              >
+                M-Pesa Phone Number
+              </Label>
+              <Input
+                id="phone"
+                placeholder="+254 20 1234567"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className="h-14 rounded-2xl border-slate-200 bg-slate-50 px-6 text-lg font-bold focus:ring-[#7A295A]"
+              />
+            </div>
+
+            <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 flex justify-between items-center">
+              <span className="text-xs font-black text-slate-400 uppercase">
+                Amount Due:
+              </span>
+              <span className="text-2xl font-black text-[#7A295A]">
+                KES {totalAmount.toLocaleString()}
+              </span>
+            </div>
+
+            <Button
+              onClick={handleFinalSubmit}
+              disabled={isProcessingPayment}
+              className="w-full h-14 bg-[#7A295A] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-[#631f49]"
+            >
+              {isProcessingPayment ? (
+                <div className="flex items-center gap-2">
+                  <span>Requesting...</span>
+                </div>
+              ) : (
+                "Confirm & Pay"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 2. MONTH PREVIEW MODAL */}
       {previewMonth && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
           <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
               <CardTitle className="text-lg font-bold">
@@ -586,7 +560,7 @@ export default function EmployerBookingFormClient() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full hover:bg-slate-100"
+                className="rounded-full"
                 onClick={() => setPreviewMonth(null)}
               >
                 ✕
@@ -601,16 +575,11 @@ export default function EmployerBookingFormClient() {
                   selected={availableDates
                     .filter((d) => d.startsWith(previewMonth))
                     .map((d) => new Date(d + "T00:00:00"))}
-                  disabled={(date) => isDateDisabled(date)}
                   className="rounded-md border pointer-events-none"
                 />
               </div>
-              <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-md">
-                <div className="w-3 h-3 bg-primary rounded-sm" />
-                <span>Highlighted days are available for care.</span>
-              </div>
               <Button
-                className="w-full mt-6 cursor-pointer"
+                className="w-full mt-6 bg-[#7A295A] text-white"
                 onClick={() => setPreviewMonth(null)}
               >
                 Got it
