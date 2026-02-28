@@ -437,7 +437,7 @@ export default function EmployerBookingFormClient() {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl mt-8 bg-[#7A295A] hover:bg-[#631f49] text-white"
+              className="w-full h-16 text-xl font-bold rounded-2xl cursor-pointer shadow-xl mt-8 bg-[#7A295A] hover:bg-[#631f49] text-white"
             >
               {isSubmitting ? "Processing..." : "Go To Checkout"}
             </Button>
@@ -532,7 +532,7 @@ export default function EmployerBookingFormClient() {
             <Button
               onClick={handleFinalSubmit}
               disabled={isProcessingPayment}
-              className="w-full h-14 bg-[#7A295A] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-[#631f49]"
+              className="w-full h-14 bg-[#7A295A] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-[#631f49] cursor-pointer"
             >
               {isProcessingPayment ? (
                 <div className="flex items-center gap-2">
