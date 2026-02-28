@@ -5,13 +5,11 @@ import { getApi, postApi } from "@/lib/apiHandler";
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-// Phone Input Imports
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 
-// Shadcn UI Components
 import {
   Dialog,
   DialogContent,
@@ -19,8 +17,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 
 const SpecialistSubscription = () => {
+  const router = useRouter();
   const { user } = useAuth();
   const [tier, setTier] = useState("Silver");
   const [months, setMonths] = useState(1);
@@ -28,9 +28,8 @@ const SpecialistSubscription = () => {
   const [planPrices, setPlanPrices] = useState({ Silver: 0, Gold: 0 });
   const [planId, setPlanId] = useState(null);
 
-  // Modal and Phone States
   const [country, setCountry] = useState("KE");
-  const [phoneNumber, setPhoneNumber] = useState(user?.number || "");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data, isLoading } = useFetch("/subscription-plan");
@@ -58,7 +57,7 @@ const SpecialistSubscription = () => {
 
   const handlePayment = async () => {
     if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
-      toast.error("Phone number is invalid or incomplete!");
+      toast.error("Please enter a valid phone number!");
       return;
     }
 
@@ -78,12 +77,13 @@ const SpecialistSubscription = () => {
       };
 
       const paymentRes = await postApi("/subscription-pay", paymentData);
-      
-      // Mpesa Query
+
       await getApi(`/mpesa/query/${paymentRes?.data?.checkout_id}`);
 
-           toast.success("Payment request sent! Check your phone.");
-      setIsDialogOpen(false); 
+            toast.success("Payment request sent! Check your phone.");
+      router.push("/dashboard/agency-payment-history");
+      setIsDialogOpen(false);
+      setPhoneNumber("");
     } catch (err) {
       console.error("Payment Error:", err);
       toast.error("Payment failed. Please try again.");
@@ -127,8 +127,6 @@ const SpecialistSubscription = () => {
   return (
     <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-4 md:p-10 font-sans">
       <div className="max-w-6xl w-full bg-white rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col lg:flex-row border border-slate-100">
-        
-        {/* LEFT ACTION PANEL (Reverted to Original Design) */}
         <div className="flex-1 p-8 md:p-14 lg:p-20 space-y-12">
           <header>
             <div className="inline-block px-3 py-1 rounded-full bg-blue-50 text-primary text-[10px] font-bold uppercase tracking-widest mb-4">
@@ -139,7 +137,6 @@ const SpecialistSubscription = () => {
             </h2>
           </header>
 
-          {/* TIER TOGGLE */}
           <div className="flex p-1.5 bg-slate-100 rounded-[2rem] border border-slate-200/50">
             <button
               onClick={() => setTier("Silver")}
@@ -155,7 +152,6 @@ const SpecialistSubscription = () => {
             </button>
           </div>
 
-          {/* DURATION SELECTOR */}
           <div className="space-y-6">
             <div className="flex justify-between items-center px-2">
               <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">
@@ -180,7 +176,6 @@ const SpecialistSubscription = () => {
             </div>
           </div>
 
-          {/* PAYMENT BREAKDOWN */}
           <div className="bg-[#fcfcfd] rounded-[2.5rem] p-10 border border-slate-100 relative overflow-hidden">
             <div className="flex justify-between items-center mb-6">
               <span className="text-slate-500 font-medium">Monthly Rate</span>
@@ -200,27 +195,28 @@ const SpecialistSubscription = () => {
             </div>
           </div>
 
-          {/* DIALOG FOR CHECKOUT */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <button className="w-full bg-primary hover:opacity-90 text-white font-black py-5 rounded-2xl shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97]">
-                <span className="text-xl tracking-tight uppercase cursor-pointer">
-                  Confirm & Pay Now
+              <button className="w-full bg-primary hover:opacity-90 text-white font-black py-5 rounded-2xl shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97] cursor-pointer">
+                <span className="text-xl tracking-tight uppercase ">
+                  Go To Checkout
                 </span>
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8 border-none">
+            <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8 border-none bg-white">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-center mb-4">M-Pesa Payment</DialogTitle>
+                <DialogTitle className="text-2xl font-black text-center mb-4 text-slate-900">
+                  M-Pesa Payment
+                </DialogTitle>
               </DialogHeader>
-              
+
               <div className="space-y-6">
                 <div>
                   <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1">
-                    M-Pesa Number
+                    Enter M-Pesa Number
                   </label>
                   <div className="phone-input-container">
-       <PhoneInputWithCountrySelect
+                    <PhoneInputWithCountrySelect
                       className="w-full flex border rounded-2xl px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all"
                       international
                       defaultCountry={country}
@@ -228,7 +224,9 @@ const SpecialistSubscription = () => {
                       onChange={(value) => setPhoneNumber(value || "")}
                       onCountryChange={(countryCode) => {
                         setCountry(countryCode || "KE");
-                        const example = countryCode ? getExampleNumber(countryCode) : null;
+                        const example = countryCode
+                          ? getExampleNumber(countryCode)
+                          : null;
                         if (example) {
                           setPhoneNumber(`+${example.countryCallingCode}`);
                         } else {
@@ -250,24 +248,31 @@ const SpecialistSubscription = () => {
                     <span>{months} Mo.</span>
                   </div>
                   <div className="flex justify-between items-end border-t border-primary/10 pt-2">
-                    <span className="text-xs font-black uppercase text-slate-400">Total Payable:</span>
-                    <span className="text-2xl font-black text-primary">{TOTAL_PRICE.toLocaleString()}</span>
+                    <span className="text-xs font-black uppercase text-slate-400">
+                      Total Payable:
+                    </span>
+                    <span className="text-2xl font-black text-primary">
+                      {TOTAL_PRICE.toLocaleString()}
+                    </span>
                   </div>
                 </div>
 
                 <button
                   onClick={handlePayment}
                   disabled={loading}
-                  className="w-full bg-primary text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all disabled:bg-slate-300"
+                  className="w-full bg-primary text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all disabled:bg-slate-300 flex items-center justify-center cursor-pointer"
                 >
-                  {loading ? "Processing..." : "Pay Now"}
+                  {loading ? (
+                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    "Pay Now"
+                  )}
                 </button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
-        {/* RIGHT INFO SIDEBAR (Original Design) */}
         <div className="w-full lg:w-[420px] bg-primary p-12 md:p-16 text-white flex flex-col justify-between relative">
           <div className="space-y-16 relative z-10">
             <h3 className="text-3xl font-black leading-[0.9] tracking-tighter uppercase italic">

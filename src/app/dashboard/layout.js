@@ -183,10 +183,15 @@ export default function DashboardLayout({ children }) {
             href: "/dashboard/subscriptions",
             icon: Gem,
           },
+          {
+            name: "Payment History",
+            href: "/dashboard/house-manager-payment-history",
+            icon: History,
+          },
         ]
       : []),
 
-    { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
+    { name: "Inbox", href: "/dashboard/inbox", icon: NotepadText },
     { name: "Review", href: "/dashboard/feedback", icon: Smile },
   ];
 
@@ -202,6 +207,11 @@ export default function DashboardLayout({ children }) {
       name: "Subscriptions",
       href: "/dashboard/agency-subscriptions",
       icon: Gem,
+    },
+    {
+      name: "Payment History",
+      href: "/dashboard/agency-payment-history",
+      icon: History,
     },
     // { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
     { name: "Inbox", href: "/dashboard/note", icon: NotepadText },

@@ -163,7 +163,6 @@ export default function EmployerBookingFormClient() {
 
       const paymentData = {
         phone: user?.number,
-        // phone: "254201234567",
         plan_id: planId,
         specialist_id: id,
         specialist_type: matchedSpecialist?.type,

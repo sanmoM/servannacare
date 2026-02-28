@@ -2,11 +2,26 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
 import { getApi, postApi } from "@/lib/apiHandler";
-import api from "@/utils/api";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
-const page = () => {
+// Phone Input Imports
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
+// Shadcn UI Components
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+const Page = () => {
   const router = useRouter();
   const [months, setMonths] = useState(1);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -15,10 +30,13 @@ const page = () => {
   const [pricePerMonth, setPricePerMonth] = useState(0);
   const [planId, setPlanId] = useState(null);
 
+  // Phone & Modal States
+  const [country, setCountry] = useState("KE");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const { data, isLoading } = useFetch("/subscription-plan");
   const { user } = useAuth();
-
-  // const {data } = useFetch('/subscription-status')
 
   useEffect(() => {
     if (data?.status === 200 && data?.data?.data.length > 0) {
@@ -54,11 +72,16 @@ const page = () => {
   }, []);
 
   const handlePayment = async () => {
+    if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
+      toast.error("Please enter a valid phone number!");
+      return;
+    }
+
     try {
       setLoading(true);
 
       const paymentData = {
-        phone: user?.number,
+        phone: phoneNumber,
         plan_id: planId,
         specialist_id: user?.id,
         validated_month: months,
@@ -66,24 +89,29 @@ const page = () => {
 
       const paymentRes = await postApi("/subscription-pay", paymentData);
 
-      const queryRes = await getApi(
-        `/mpesa/query/${paymentRes?.data?.checkout_id}`,
-      );
+      await getApi(`/mpesa/query/${paymentRes?.data?.checkout_id}`);
 
-      console.log("payment Response:", paymentRes);
-      console.log("Mpesa Query Data:", queryRes);
-
-      // router.push("/dashboard/payment-history");
+      toast.success("Payment request sent! Check your phone.");
+      setIsDialogOpen(false);
+      router.push("/dashboard/house-manager-payment-history");
     } catch (err) {
       console.error("Payment Error:", err);
+      toast.error("Payment failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
+  if (isLoading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-5xl w-full bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col lg:row-reverse lg:flex-row border border-slate-100">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
+      <div className="max-w-5xl w-full bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col lg:flex-row border border-slate-100">
         {/* Left Section: Action Area */}
         <div className="w-full lg:w-3/5 p-8 md:p-16">
           {!isSubscribed ? (
@@ -114,7 +142,6 @@ const page = () => {
                   value={months}
                   onChange={(e) => setMonths(parseInt(e.target.value))}
                   className="w-full h-3 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
-                  style={{ accentColor: "var(--primary)" }}
                 />
                 <div className="flex justify-between text-xs font-bold text-slate-400">
                   <span>1 MONTH</span>
@@ -144,41 +171,84 @@ const page = () => {
                 </div>
               </div>
 
-              <button
-                onClick={handlePayment}
-                disabled={loading}
-                className="w-full bg-primary hover:opacity-90 disabled:bg-slate-300 text-white font-black py-5 rounded-2xl shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97]"
-              >
-                {loading ? (
-                  <span className="flex items-center space-x-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      viewBox="0 0 24 24"
+              {/* DIALOG FOR PAYMENT */}
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <button className="w-full bg-primary hover:opacity-90 text-white font-black py-5 rounded-2xl shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97] cursor-pointer">
+                    <span className="text-xl tracking-tight uppercase ">
+                      Go To Checkout
+                    </span>
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8 border-none bg-white">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-black text-center mb-4 text-slate-900">
+                      M-Pesa Payment
+                    </DialogTitle>
+                  </DialogHeader>
+
+                  <div className="space-y-6">
+                    <div>
+                      <label className="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1">
+                        Enter M-Pesa Number
+                      </label>
+                      <div className="phone-input-container">
+                        <PhoneInputWithCountrySelect
+                          className="w-full flex border rounded-2xl px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all"
+                          international
+                          defaultCountry={country}
+                          value={phoneNumber}
+                          onChange={(value) => setPhoneNumber(value || "")}
+                          onCountryChange={(countryCode) => {
+                            setCountry(countryCode || "KE");
+                            const example = countryCode
+                              ? getExampleNumber(countryCode)
+                              : null;
+                            if (example) {
+                              setPhoneNumber(`+${example.countryCallingCode}`);
+                            } else {
+                              setPhoneNumber("");
+                            }
+                          }}
+                        />
+                      </div>
+                      {phoneNumber && !isValidPhoneNumber(phoneNumber) && (
+                        <p className="text-red-500 text-[11px] font-bold mt-2 ml-1">
+                          Invalid phone number for {country}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 space-y-2">
+                      <div className="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
+
+                        <span>Period</span>
+                        <span>{months} Mo.</span>
+                      </div>
+                      <div className="flex justify-between items-end border-t border-primary/10 pt-2">
+                        <span className="text-xs font-black uppercase text-slate-400">
+                          Total Payable:
+                        </span>
+                        <span className="text-2xl font-black text-primary">
+                          {TOTAL_PRICE.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handlePayment}
+                      disabled={loading}
+                      className="w-full bg-primary text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all disabled:bg-slate-300 flex items-center justify-center cursor-pointer"
                     >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    <span>Processing...</span>
-                  </span>
-                ) : (
-                  <span className="text-xl tracking-tight uppercase font-primary cursor-pointer">
-                    {localStorage.getItem("specialist_expiry")
-                      ? "Renew Subscription"
-                      : "Confirm & Pay Now"}
-                  </span>
-                )}
-              </button>
+                      {loading ? (
+                        <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        "Pay Now"
+                      )}
+                    </button>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           ) : (
             /* Success State */
@@ -195,7 +265,7 @@ const page = () => {
                     strokeLinejoin="round"
                     strokeWidth="3"
                     d="M5 13l4 4L19 7"
-                  ></path>
+                  />
                 </svg>
               </div>
               <div className="space-y-2">
@@ -216,25 +286,16 @@ const page = () => {
                   </p>
                 </div>
               </div>
-              <p className="text-slate-400 text-xs font-medium">
-                Renewal available after expiry.
-              </p>
             </div>
           )}
         </div>
 
-        {/* Right Section: Visual Detail Sidebar */}
+        {/* Right Section: Visual Sidebar */}
         <div className="w-full lg:w-2/5 bg-primary p-12 text-white flex flex-col justify-between">
           <div className="space-y-12">
-            <div className="flex items-center space-x-3">
-              {/* <div className="w-10 h-10 bg-white/20 backdrop-blur-lg rounded-xl flex items-center justify-center border border-white/30">
-                <div className="w-5 h-5 bg-white rounded-md"></div>
-              </div> */}
-              <span className="font-black text-2xl tracking-tighter italic">
-                SPECIALIST
-              </span>
-            </div>
-
+            <span className="font-black text-2xl tracking-tighter italic">
+              SPECIALIST
+            </span>
             <div className="space-y-8">
               <h4 className="text-sm font-bold uppercase tracking-[0.3em] text-blue-200 opacity-80">
                 Benefits Included
@@ -243,15 +304,15 @@ const page = () => {
                 {[
                   {
                     title: "Verified profile listing",
-                    desc: "Get a verified badge on your profile to build trust with employers.",
+                    desc: "Get a verified badge on your profile to build trust.",
                   },
                   {
                     title: "Visibility to employers",
-                    desc: "See who viewed your profile and increase your exposure to potential employers.",
+                    desc: "See who viewed your profile and increase exposure.",
                   },
                   {
                     title: "Access to direct job inquiries",
-                    desc: "Receive direct job requests from employers without any middleman.",
+                    desc: "Receive job requests directly from employers.",
                   },
                 ].map((item, idx) => (
                   <li key={idx} className="flex space-x-4">
@@ -271,8 +332,7 @@ const page = () => {
               </ul>
             </div>
           </div>
-
-          <div className="mt-12 space-y-4">
+          <div className="mt-12">
             <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm">
               <p className="text-xs font-bold text-blue-200 uppercase mb-2">
                 Support Tier
@@ -289,4 +349,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
