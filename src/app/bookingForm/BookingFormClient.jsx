@@ -28,13 +28,24 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { getApi, postApi } from "@/lib/apiHandler";
 import { useFetch } from "@/hooks/useFetch";
 import { useAuth } from "@/hooks/useAuth";
-// import PhoneInputWithCountrySelect from "react-phone-number-input";
-// import { isValidPhoneNumber } from "react-phone-number-input";
-// import { getExampleNumber } from "libphonenumber-js";
-// import "react-phone-number-input/style.css";
+
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function BookingFormClient() {
-  // const [country, setCountry] = useState("KE");
+  const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [country, setCountry] = useState("KE");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [bookingFormData, setBookingFormData] = useState(null);
+
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const id = searchParams.get("id");
@@ -271,49 +282,58 @@ export default function BookingFormClient() {
     if (data.prescriptionFile) {
       formData.append("prescription_file", data.prescriptionFile);
     }
-    for (let pair of formData.entries()) {
-      console.log(pair[0], ":", pair[1]);
-    }
 
-    try {
-      // const res = await postApi("/booking", formData, {
-      //   headers: {
-      //     "Content-Type": "multipart/form-data",
-      //   },
-      // });
-
-      // if (res?.status === 200 || res?.status === 201) {
-      //   toast.success("Booking Request Sent!");
-      //   router.push("/dashboard/book-history");
-      // }
-      const paymentData = {
-        phone: user?.number,
-        // phone: "254201234567",
-        plan_id: planId,
-        specialist_id: id,
-        specialist_type: matchedSpecialist?.type,
-        book_amount: bookingAmount,
-      };
-
-      const res = await postApi("/booking", formData);
-
-      if (res?.status === 200 || res?.status === 201) {
-        const paymentRes = await postApi("/checkout", paymentData);
-
-        const queryRes = await getApi(
-          `/mpesa/query/${paymentRes?.data?.checkout_id}`,
-        );
-
-        console.log("payment Response:", paymentRes);
-        console.log("Mpesa Query Data:", queryRes);
-
-        // router.push("/dashboard/payment-history");
-        toast.success("Payment request sent!");
-      }
-    } catch (error) {
-      toast.error("Submission failed. Please try again.");
-    }
+    setBookingFormData(formData);
+    setPhoneNumber(""); // empty
+    setIsPayModalOpen(true);
   };
+
+const handlePayment = async () => {
+  if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
+    return toast.error("Enter valid phone number");
+  }
+
+  setIsProcessingPayment(true);
+
+  try {
+  
+    const paymentRes = await postApi("/checkout", {
+      phone: phoneNumber,
+      plan_id: planId,
+      specialist_id: id,
+      specialist_type: matchedSpecialist?.type,
+      book_amount: totalAmount,
+    });
+
+    const checkoutId = paymentRes?.data?.checkout_id;
+
+    if (!checkoutId) {
+      throw new Error("Checkout failed");
+    }
+
+    toast.success("M-Pesa prompt sent!");
+
+    
+    const queryRes = await getApi(`/mpesa/query/${checkoutId}`);
+
+    if (queryRes?.status === 200) {
+      
+      const bookingRes = await postApi("/booking", bookingFormData);
+
+      if (bookingRes?.status === 200 || bookingRes?.status === 201) {
+        toast.success("Booking confirmed successfully!");
+        setIsPayModalOpen(false);
+        router.push("/dashboard/book-history");
+      }
+    } else {
+      toast.error("Payment not completed.");
+    }
+  } catch (error) {
+    toast.error("Payment failed or cancelled.");
+  } finally {
+    setIsProcessingPayment(false);
+  }
+};
 
   if (specLoading)
     return (
@@ -484,7 +504,7 @@ export default function BookingFormClient() {
 
               <Separator />
 
-              {/* Medication */}
+              
               <div className="space-y-4">
                 <Label className="font-bold">
                   Is the patient currently on medication? *
@@ -552,7 +572,7 @@ export default function BookingFormClient() {
 
               <Separator />
 
-              {/* Allergies */}
+              
               <div className="space-y-4">
                 <Label className="font-bold">
                   Does the patient have any known allergies? *
@@ -607,7 +627,7 @@ export default function BookingFormClient() {
             </CardContent>
           </Card>
 
-          {/* communication profile section  */}
+          
           <Card className="border-none shadow-sm ring-1 ring-slate-200">
             <CardHeader className="border-b bg-white p-6">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -617,7 +637,7 @@ export default function BookingFormClient() {
             </CardHeader>
 
             <CardContent className="px-8 space-y-8">
-              {/* Communication Type */}
+              
               <div className="space-y-4">
                 <Label className="font-bold">Communication Type *</Label>
                 <Controller
@@ -652,7 +672,7 @@ export default function BookingFormClient() {
 
               <Separator />
 
-              {/* Can Follow Instructions */}
+              
               <div className="space-y-4">
                 <Label className="font-bold">Can Follow Instructions *</Label>
                 <Controller
@@ -689,7 +709,7 @@ export default function BookingFormClient() {
 
               <Separator />
 
-              {/* Communication Method */}
+              
               <div className="space-y-4">
                 <Label className="font-bold">
                   Primary Communication Method *
@@ -731,7 +751,7 @@ export default function BookingFormClient() {
 
               <Separator />
 
-              {/* Responds to Name */}
+              
               <div className="space-y-4">
                 <Label className="font-bold">Responds to Name? *</Label>
                 <Controller
@@ -766,7 +786,7 @@ export default function BookingFormClient() {
             </CardContent>
           </Card>
 
-          {/* 5 & 6. Mobility & Schedule */}
+          
           <Card className="border-none shadow-sm ring-1 ring-slate-200">
             <CardHeader className="border-b bg-white p-6">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -1096,7 +1116,7 @@ export default function BookingFormClient() {
             </CardContent>
           </Card>
 
-          {/* 7. Emergency & Consent */}
+          
           <Card className="border-none shadow-sm ring-1 ring-slate-200">
             <CardHeader className="border-b bg-white p-6">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -1212,20 +1232,14 @@ export default function BookingFormClient() {
             </CardContent>
           </Card>
 
-          {/* <Button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl shadow-primary/20"
-          >
-            {isSubmitting ? <LoadingSpinner /> : "Confirm & Submit Booking"}
-          </Button> */}
+ 
 
           <Button
             type="submit"
             disabled={isSubmitting}
             className="w-full h-16 text-xl font-bold rounded-2xl shadow-xl shadow-primary/20 cursor-pointer"
           >
-            {isSubmitting ? "Processing..." : "Confirm & Submit Booking"}
+            {isSubmitting ? "Processing..." : "Go To Checkout"}
           </Button>
         </form>
 
@@ -1307,6 +1321,64 @@ export default function BookingFormClient() {
             </Card>
           </div>
         </aside>
+
+        <Dialog open={isPayModalOpen} onOpenChange={setIsPayModalOpen}>
+          <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 border-none bg-white overflow-hidden">
+            <div className="bg-primary p-8 text-white text-center">
+              <DialogTitle className="text-2xl font-black">
+                M-Pesa Checkout
+              </DialogTitle>
+              <DialogDescription className="text-white/70">
+                Enter your number to initiate payment.
+              </DialogDescription>
+            </div>
+
+            <div className="p-8 space-y-6">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase text-slate-400">
+                  Enter M-Pesa Number
+                </label>
+
+                <PhoneInputWithCountrySelect
+                  className="w-full flex border rounded-2xl px-4 py-3 bg-slate-50"
+                  international
+                  defaultCountry={country}
+                  value={phoneNumber}
+                  onChange={(value) => setPhoneNumber(value || "")}
+                  onCountryChange={(countryCode) =>
+                    setCountry(countryCode || "KE")
+                  }
+                />
+
+                {phoneNumber && !isValidPhoneNumber(phoneNumber) && (
+                  <p className="text-red-500 text-xs font-bold">
+                    Invalid phone number for {country}
+                  </p>
+                )}
+              </div>
+
+              <div className="bg-slate-50 p-6 rounded-3xl border flex justify-between">
+                <span className="text-xs font-black text-slate-400">
+                  TOTAL:
+                </span>
+                <span className="text-2xl font-black text-primary">
+                  KES {totalAmount.toLocaleString()}
+                </span>
+              </div>
+
+              <Button
+                onClick={handlePayment}
+                disabled={
+                  isProcessingPayment ||
+                  (phoneNumber !== "" && !isValidPhoneNumber(phoneNumber))
+                }
+                className="w-full h-14 bg-primary text-white rounded-2xl font-black uppercase cursor-pointer"
+              >
+                {isProcessingPayment ? "Requesting..." : "Confirm & Pay"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
