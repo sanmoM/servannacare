@@ -33,7 +33,7 @@ const SearchContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // State
+
   const [selectedCategory, setSelectedCategory] = useState("house-manager");
   const [selectedServices, setSelectedServices] = useState([]);
   const [sortBy, setSortBy] = useState("relevance");
@@ -160,19 +160,19 @@ const SearchContent = () => {
 
     salaryString = salaryString.replace(/\s/g, "");
 
-    // Case 1: "1000+"
+
     if (salaryString.includes("+")) {
       const min = parseInt(salaryString.replace("+", ""));
       return { min, max: Infinity };
     }
 
-    // Case 2: "800-1000"
+
     if (salaryString.includes("-")) {
       const [min, max] = salaryString.split("-").map(Number);
       return { min, max };
     }
 
-    // Case 3: Single number "900"
+
     const value = parseInt(salaryString);
     return { min: value, max: value };
   };
@@ -188,7 +188,7 @@ const SearchContent = () => {
     if (!rawData.length) return [];
 
     return rawData.filter((item) => {
-      // --- Category Filter ---
+      
       const matchesCategory =
         !selectedCategory ||
         [item.subRole]
@@ -197,30 +197,30 @@ const SearchContent = () => {
             (role) => role.toLowerCase() === selectedCategory.toLowerCase(),
           );
 
-      // --- Location Filter ---
+      
       const matchesLocation =
         !selectedLocation ||
         item.location?.toLowerCase().includes(selectedLocation.toLowerCase());
 
-      // --- Services Filter ---
+      
       const matchesServices =
         selectedServices.length === 0 ||
         (Array.isArray(item.preferred) &&
           selectedServices.every((s) => item.preferred.includes(s)));
 
-      // --- Languages Filter ---
+      
       const matchesLanguages =
         selectedLanguages.length === 0 ||
         selectedLanguages.every((lang) =>
           item.languages?.some((l) => l.toLowerCase() === lang.toLowerCase()),
         );
 
-      // --- Rating Filter ---
+      
       const matchesRating =
         !selectedRating ||
         (item.rating && item.rating >= Number(selectedRating));
 
-      // --- Salary Filter (house-manager & others) ---
+      
       let matchesSalary = true;
       if (selectedCategory === "house-manager") {
         const salaryString = item.house_manager?.salaryRange || "";
@@ -230,10 +230,10 @@ const SearchContent = () => {
           (!salaryRange.min || max >= Number(salaryRange.min)) &&
           (!salaryRange.max || min <= Number(salaryRange.max));
       } else {
-        matchesSalary = true; // Non-house-manager salary filter handled separately if needed
+        matchesSalary = true; 
       }
 
-      // --- Experience Filter (non-house-manager only) ---
+      
       let matchesExperience = true;
       if (selectedCategory !== "house-manager") {
         const roleData = item[selectedCategory];
@@ -246,20 +246,20 @@ const SearchContent = () => {
           (!experienceRange.max || experience <= Number(experienceRange.max));
       }
 
-      // --- Kid Age Filter (house-manager only) ---
+      
       let matchesKidAge = true;
       if (selectedCategory === "house-manager") {
         const kidAges = item.house_manager?.ageOfKids || [];
         matchesKidAge = !selectedKidAge || kidAges.includes(selectedKidAge);
       }
 
-      // --- Age Filter (both categories) ---
+
       let matchesAge = true;
       let specialistAge;
       if (selectedCategory === "house-manager") {
-        specialistAge = item.age ?? 0; // house-manager age at root
+        specialistAge = item.age ?? 0; 
       } else {
-        specialistAge = item[selectedCategory]?.age ?? item.age ?? 0; // non-house-manager
+        specialistAge = item[selectedCategory]?.age ?? item.age ?? 0; 
       }
 
       if (specialistAge !== undefined && specialistAge !== null) {
@@ -293,7 +293,7 @@ const SearchContent = () => {
     ageRange,
   ]);
 
-  // --- Sorting Logic ---
+  
   const sortedSpecialists = useMemo(() => {
     let result = [...filteredSpecialists];
     switch (sortBy) {

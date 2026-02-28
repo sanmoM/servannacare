@@ -284,7 +284,7 @@ export default function BookingFormClient() {
     }
 
     setBookingFormData(formData);
-    setPhoneNumber(""); // empty
+    setPhoneNumber(""); 
     setIsPayModalOpen(true);
   };
 

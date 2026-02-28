@@ -16,63 +16,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useFetch } from "@/hooks/useFetch";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
-const page = () => {
+const PaymentHistoryPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const itemsPerPage = 4;
   const currentPage = Number(searchParams.get("page")) || 1;
   const filterStatus = searchParams.get("status") || "All";
 
-  const paymentHistory = [
-    {
-      id: 1,
-      date: "25 Nov 2025",
-      amount: 2500,
-      method: "Bkash",
-      status: "Paid",
-      transactionId: "TXN-9834521",
-    },
-    {
-      id: 2,
-      date: "10 Jan 2025",
-      amount: 1800,
-      method: "Nagad",
-      status: "Paid",
-      transactionId: "TXN-8213409",
-    },
-    {
-      id: 3,
-      date: "25 Feb 2025",
-      amount: 3200,
-      method: "Bank Transfer",
-      status: "Pending",
-      transactionId: "TXN-7645123",
-    },
-    {
-      id: 4,
-      date: "16 Feb 2025",
-      amount: 1500,
-      method: "Rocket",
-      status: "Paid",
-      transactionId: "TXN-6542387",
-    },
-    {
-      id: 5,
-      date: "04 Mar 2025",
-      amount: 2900,
-      method: "Bkash",
-      status: "Failed",
-      transactionId: "TXN-5321098",
-    },
-  ];
 
+  const { data, isLoading } = useFetch("/user-payment");
+  
+
+  const rawPayments = data?.data?.payments || [];
+
+  
   const filteredPayments =
     filterStatus !== "All"
-      ? paymentHistory.filter((b) => b.status === filterStatus)
-      : paymentHistory;
+      ? rawPayments.filter((p) => p.payment_status?.toLowerCase() === filterStatus.toLowerCase())
+      : rawPayments;
 
   const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -90,123 +55,131 @@ const page = () => {
     router.push(`?page=1&status=${value}`);
   };
 
+  
   const statusColors = {
-    Pending: "bg-amber-300",
-    Paid: "bg-green-300",
-    Failed: "bg-red-300",
+    pending: "bg-amber-500",
+    paid: "bg-green-500",
+    failed: "bg-red-500",
   };
+
+  if (isLoading) return <div className="p-10 text-center">Loading History...</div>;
 
   return (
     <div>
-      <h1 className="sectionHeading">Payment History</h1>
+      <h1 className="sectionHeading text-2xl font-bold mb-4">Payment History</h1>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end mb-4">
         <Select value={filterStatus} onValueChange={onFilterChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Sort By" />
+            <SelectValue placeholder="Sort By Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Sort By</SelectLabel>
               <SelectItem value="All">All</SelectItem>
-              <SelectItem value="Pending">Pending</SelectItem>
-              <SelectItem value="Paid">Paid</SelectItem>
-              <SelectItem value="Failed">Failed</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="mt-6 overflow-x-auto w-full">
-        <table className="min-w-[700px] w-full text-sm text-left text-gray-700 border rounded-xl shadow">
+      <div className="mt-6 overflow-x-auto w-full border rounded-xl shadow">
+        <table className="min-w-[800px] w-full text-sm text-left text-gray-700">
           <thead className="bg-gray-100 border-b">
             <tr className="text-xs sm:text-sm lg:text-base">
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Date
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Amount (KSh)
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Payment Method
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Status
-              </th>
-              <th className="px-6 py-3 lg:py-4 whitespace-nowrap font-semibold">
-                Transaction ID
-              </th>
+              <th className="px-6 py-4 font-semibold">Date</th>
+              <th className="px-6 py-4 font-semibold">Service/Plan</th>
+              <th className="px-6 py-4 font-semibold">Amount (KES)</th>
+              <th className="px-6 py-4 font-semibold">Method</th>
+              <th className="px-6 py-4 font-semibold">Status</th>
+              <th className="px-6 py-4 font-semibold">Reference ID</th>
             </tr>
           </thead>
 
           <tbody>
-            {currentPayments.map((row) => (
-              <tr
-                key={row.id}
-                className="bg-white border-b hover:bg-gray-50 transition text-xs sm:text-sm lg:text-base"
-              >
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.date}
+            {currentPayments.length > 0 ? (
+              currentPayments.map((row) => (
+                <tr key={row.id} className="bg-white border-b hover:bg-gray-50 transition">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {/* Formatting the ISO date to readable string */}
+                    {new Date(row.created_at).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
+                  <td className="px-6 py-4 font-medium">
+                    {row.plan_type}
+                  </td>
+                  <td className="px-6 py-4">
+                    {row.amount}
+                  </td>
+                  <td className="px-6 py-4 uppercase">
+                    {row.payment_method}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`${
+                        statusColors[row.payment_status?.toLowerCase()] || "bg-gray-400"
+                      } text-white px-3 py-1 rounded-full text-xs font-semibold capitalize`}
+                    >
+                      {row.payment_status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 font-mono text-xs text-gray-500">
+                    {/* Show transaction_id, if null show checkout_request_id */}
+                    {row.transaction_id || row.checkout_request_id}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="px-6 py-10 text-center text-gray-400">
+                  No payment records found.
                 </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.amount}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.method}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  <span
-                    className={`${
-                      statusColors[row.status]
-                    } text-white px-3 py-1 rounded-full text-xs sm:text-sm`}
-                  >
-                    {row.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.transactionId}
-                </td>
-                {/* <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.totalDays}
-                </td>
-                <td className="px-6 py-4 lg:py-6 whitespace-nowrap">
-                  {row.amountPaid}
-                </td> */}
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
+      </div>
 
-        <div className="mt-6">
-          {totalPages > 1 && (
-            <Pagination className="mt-6 flex justify-center md:justify-end">
-              <PaginationContent>
+      <div className="mt-6">
+        {totalPages > 1 && (
+          <Pagination className="flex justify-center md:justify-end">
+            <PaginationContent>
+              <PaginationItem>
                 <PaginationPrevious
-                  disabled={currentPage === 1}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
                   onClick={() => goToPage(currentPage - 1)}
                 />
+              </PaginationItem>
 
-                {Array.from({ length: totalPages }, (_, i) => (
+              {Array.from({ length: totalPages }, (_, i) => (
+                <PaginationItem key={i}>
                   <PaginationLink
-                    key={i}
+                    className="cursor-pointer"
                     isActive={currentPage === i + 1}
                     onClick={() => goToPage(i + 1)}
                   >
                     {i + 1}
                   </PaginationLink>
-                ))}
+                </PaginationItem>
+              ))}
 
+              <PaginationItem>
                 <PaginationNext
-                  disabled={currentPage === totalPages}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
                   onClick={() => goToPage(currentPage + 1)}
                 />
-              </PaginationContent>
-            </Pagination>
-          )}
-        </div>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
       </div>
     </div>
   );
 };
 
-export default page;
+export default PaymentHistoryPage;
