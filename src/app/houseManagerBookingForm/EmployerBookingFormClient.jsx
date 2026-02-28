@@ -24,6 +24,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 export default function EmployerBookingFormClient() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -36,10 +41,10 @@ export default function EmployerBookingFormClient() {
   const [planId, setPlanId] = useState(0);
   const { user } = useAuth();
 
-  // Modal States
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [country, setCountry] = useState("KE");
 
   const { data: specData, isLoading: specLoading } = useFetch("/specialist");
   const { data, isLoading } = useFetch("/subscription-plan");
@@ -124,47 +129,35 @@ export default function EmployerBookingFormClient() {
     return !availableDates.includes(dateStr);
   };
 
-  // STEP 1: Main Form Submit - Just opens the modal
-  const onSubmit = async (formData) => {
-    if (isMonthly && selectedMonths.length === 0) {
-      return toast.error("Please select at least one month");
+  const onSubmit = async () => {
+    if (
+      (isMonthly && !selectedMonths.length) ||
+      (isDaily && !selectedDates.length)
+    ) {
+      return toast.error("Please select dates/months");
     }
-    if (isDaily && selectedDates.length === 0) {
-      return toast.error("Please select at least one date");
-    }
-    if (!homeType || !homeSize || !kids) {
-      return toast.error("Please complete all form fields");
-    }
+    if (!homeType || !homeSize || !kids)
+      return toast.error("Please complete all fields");
 
-    setPhoneNumber(user?.number || "");
+    // setPhoneNumber(user?.number || "");
     setIsPayModalOpen(true);
   };
 
-  // STEP 2: Final Submission within Modal
   const handleFinalSubmit = async () => {
-    if (!phoneNumber || phoneNumber.length < 10) {
-      return toast.error("Please enter a valid M-Pesa number");
+    if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
+      return toast.error("Please enter a valid phone number");
     }
 
     setIsProcessingPayment(true);
     const formData = watch();
 
-    // Format selections
-    let formattedSelections = [];
-    if (isMonthly) {
-      formattedSelections = formData.selectedMonths.map((monthKey) => ({
-        dates: availableDates.filter((d) => d.startsWith(monthKey)),
-      }));
-    } else {
-      formattedSelections = formData.selectedDates.map((date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-      });
-    }
+    let formattedSelections = isMonthly
+      ? formData.selectedMonths.map((m) => ({
+          dates: availableDates.filter((d) => d.startsWith(m)),
+        }))
+      : formData.selectedDates.map((d) => d.toISOString().split("T")[0]);
 
-    const payload = {
+    const bookingPayload = {
       specialist_id: Number(id),
       specialist_type: category,
       subRole: category,
@@ -178,30 +171,37 @@ export default function EmployerBookingFormClient() {
     };
 
     try {
-      // 1. Create Booking
-      const res = await postApi("/booking", payload);
+      const paymentRes = await postApi("/checkout", {
+        phone: phoneNumber,
+        plan_id: planId,
+        specialist_id: id,
+        specialist_type: category,
+        book_amount: totalAmount,
+      });
 
-      if (res?.status === 200 || res?.status === 201) {
-        // 2. Trigger Checkout
-        const paymentData = {
-          phone: phoneNumber,
-          plan_id: planId,
-          specialist_id: id,
-          specialist_type: category,
-          book_amount: totalAmount,
-        };
+      const checkoutId = paymentRes?.data?.checkout_id;
 
-        const paymentRes = await postApi("/checkout", paymentData);
+      if (!checkoutId) {
+        throw new Error("Checkout failed");
+      }
 
-        if (paymentRes?.status === 200 || paymentRes?.status === 201) {
-          toast.success("M-Pesa prompt sent to your phone!");
+      toast.success("M-Pesa prompt sent!");
+
+      const queryRes = await getApi(`/mpesa/query/${checkoutId}`);
+
+      if (queryRes?.status === 200) {
+        const bookingRes = await postApi("/booking", bookingPayload);
+
+        if (bookingRes?.status === 200 || bookingRes?.status === 201) {
+          toast.success("Booking confirmed successfully!");
           setIsPayModalOpen(false);
-          router.push("/dashboard/payment-history");
+          router.push("/dashboard/book-history");
         }
+      } else {
+        toast.error("Payment not completed.");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to process payment. Please try again.");
+      toast.error("Payment failed. Try again.");
     } finally {
       setIsProcessingPayment(false);
     }
@@ -498,32 +498,45 @@ export default function EmployerBookingFormClient() {
             <DialogTitle className="text-2xl font-black">
               M-Pesa Checkout
             </DialogTitle>
-            <DialogDescription className="text-white/70 mt-2 font-medium">
-              Enter your M-Pesa number to receive the payment prompt.
+            <DialogDescription className="text-white/70">
+              Confirm your number to initiate payment.
             </DialogDescription>
           </div>
 
           <div className="p-8 space-y-6">
             <div className="space-y-2">
-              <Label
-                htmlFor="phone"
-                className="text-xs font-black uppercase text-slate-400 ml-1"
-              >
-                M-Pesa Phone Number
-              </Label>
-              <Input
-                id="phone"
-                placeholder="+254 20 1234567"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="h-14 rounded-2xl border-slate-200 bg-slate-50 px-6 text-lg font-bold focus:ring-[#7A295A]"
-              />
+              <label className="text-[10px] font-black uppercase text-slate-400 block ml-1">
+                Enter M-Pesa Number
+              </label>
+              <div className="phone-input-container">
+                <PhoneInputWithCountrySelect
+                  className="w-full flex border rounded-2xl px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all"
+                  international
+                  defaultCountry={country}
+                  value={phoneNumber}
+                  onChange={(value) => setPhoneNumber(value || "")}
+                  onCountryChange={(countryCode) => {
+                    setCountry(countryCode || "KE");
+                    const example = countryCode
+                      ? getExampleNumber(countryCode)
+                      : null;
+                    if (example) {
+                      setPhoneNumber(`+${example.countryCallingCode}`);
+                    } else {
+                      setPhoneNumber("");
+                    }
+                  }}
+                />
+              </div>
+              {phoneNumber && !isValidPhoneNumber(phoneNumber) && (
+                <p className="text-red-500 text-[11px] font-bold mt-2 ml-1">
+                  Invalid phone number for {country}
+                </p>
+              )}
             </div>
 
-            <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 flex justify-between items-center">
-              <span className="text-xs font-black text-slate-400 uppercase">
-                Amount Due:
-              </span>
+            <div className="bg-slate-50 p-6 rounded-3xl border flex justify-between items-center">
+              <span className="text-xs font-black text-slate-400">TOTAL:</span>
               <span className="text-2xl font-black text-[#7A295A]">
                 KES {totalAmount.toLocaleString()}
               </span>
@@ -531,16 +544,13 @@ export default function EmployerBookingFormClient() {
 
             <Button
               onClick={handleFinalSubmit}
-              disabled={isProcessingPayment}
-              className="w-full h-14 bg-[#7A295A] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-[#631f49] cursor-pointer"
+              disabled={
+                isProcessingPayment ||
+                (phoneNumber !== "" && !isValidPhoneNumber(phoneNumber))
+              }
+              className="w-full h-14 bg-[#7A295A] text-white rounded-2xl font-black uppercase cursor-pointer tracking-widest shadow-xl"
             >
-              {isProcessingPayment ? (
-                <div className="flex items-center gap-2">
-                  <span>Requesting...</span>
-                </div>
-              ) : (
-                "Confirm & Pay"
-              )}
+              {isProcessingPayment ? "Requesting...." : "Confirm & Pay"}
             </Button>
           </div>
         </DialogContent>
