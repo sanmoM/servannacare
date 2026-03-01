@@ -12,6 +12,7 @@ import {
   History,
   HomeIcon,
   Inbox,
+  Notebook,
   PanelLeft,
   Search,
   Smile,
@@ -166,6 +167,7 @@ export default function DashboardLayout({ children }) {
     { name: "Profile", href: "/dashboard/user-profile", icon: User },
     { name: "Find Services", href: "/specialist?", icon: Search },
     { name: "Inbox", href: "/dashboard/user-inbox", icon: Inbox },
+    { name: "Note", href: "/dashboard/note", icon: Notebook },
     {
       name: "Book History",
       href: "/dashboard/book-history",
@@ -187,6 +189,7 @@ export default function DashboardLayout({ children }) {
       icon: Calendar,
     },
     { name: "Clients", href: "/dashboard/specialist-clients", icon: Users },
+    { name: "Note", href: "/dashboard/specialist-note", icon: Notebook },
 
     ...(user?.subRole === "house-manager"
       ? [
@@ -266,37 +269,37 @@ export default function DashboardLayout({ children }) {
     toast.success("Log Out Success!");
   };
 
-const NavLink = ({ link }) => {
-  const Icon = link.icon;
-  const isActive = pathname === link.href;
+  const NavLink = ({ link }) => {
+    const Icon = link.icon;
+    const isActive = pathname === link.href;
 
-  const handleClick = () => {
-    if (isMobile) setIsSidebarOpen(false);
+    const handleClick = () => {
+      if (isMobile) setIsSidebarOpen(false);
 
-    if (!isProfileCompleted) {
-      toast.error("Your profile is not complete.");
-    } else if (role !== "user" && !isProfileVerified) {
-      toast.error("Your profile is not verified yet.");
-    }
-  };
+      if (!isProfileCompleted) {
+        toast.error("Please complete your profile to unlock full features.");
+      } else if (role !== "user" && !isProfileVerified) {
+        toast.error("Your profile is not verified yet.");
+      }
+    };
 
-  return (
-    <Link
-      href={link.href}
-      onClick={handleClick}
-      className={`flex items-center p-3 mx-2 my-1 rounded-lg transition
+    return (
+      <Link
+        href={link.href}
+        onClick={handleClick}
+        className={`flex items-center p-3 mx-2 my-1 rounded-lg transition
         ${
           isActive
             ? "bg-white text-gray-900 font-semibold shadow"
             : "text-white hover:bg-white/20"
         }
       `}
-    >
-      <Icon className="w-5 h-5 mr-3" />
-      {link.name}
-    </Link>
-  );
-};
+      >
+        <Icon className="w-5 h-5 mr-3" />
+        {link.name}
+      </Link>
+    );
+  };
 
   if (notificationLoading) return <LoadingSpinner />;
 
