@@ -11,7 +11,6 @@ import {
   Info,
   Star,
 } from "lucide-react";
-import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();

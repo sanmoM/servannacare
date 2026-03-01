@@ -147,7 +147,7 @@ const ProfileCard = ({ profile }) => {
         <div className="flex gap-4 mt-5 pt-5 border-t border-gray-100">
           <div className="flex-1">
             <Link
-              href={`/profile?category=${profile.subRole?.toLowerCase()}&id=${profile.id}`}
+              href={`/profile?type=${profile.type?.toLowerCase()}&id=${profile.id}`}
             >
               <Button className="w-full cursor-pointer" variant="outline">
                 View Profile

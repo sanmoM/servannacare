@@ -97,17 +97,17 @@ export default function DashboardLayout({ children }) {
     const role = user?.role;
     if (!role) return;
 
-    const config = restrictedRoutes[role];
-    if (!config) return;
+    // const config = restrictedRoutes[role];
+    // if (!config) return;
 
-    const allowedPaths = [config.profile, config.extra].filter(Boolean);
+    // const allowedPaths = [config.profile, config.extra].filter(Boolean);
 
-    if (!isProfileCompleted || (role !== "user" && !isProfileVerified)) {
-      if (!allowedPaths.includes(pathname)) {
-        router.replace(config.profile);
-      }
-      return;
-    }
+    // if (!isProfileCompleted || (role !== "user" && !isProfileVerified)) {
+    //   if (!allowedPaths.includes(pathname)) {
+    //     router.replace(config.profile);
+    //   }
+    //   return;
+    // }
 
     if (
       role !== "user" &&
@@ -146,12 +146,12 @@ export default function DashboardLayout({ children }) {
   }, []);
 
   useEffect(() => {
-  if (isSidebarOpen) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "auto";
-  }
-}, [isSidebarOpen]);
+    if (isSidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [isSidebarOpen]);
 
   if (loading) {
     return (
@@ -266,23 +266,37 @@ export default function DashboardLayout({ children }) {
     toast.success("Log Out Success!");
   };
 
-  const NavLink = ({ link }) => {
-    const Icon = link.icon;
-    const isActive = pathname === link.href;
+const NavLink = ({ link }) => {
+  const Icon = link.icon;
+  const isActive = pathname === link.href;
 
-    return (
-      <Link
-        href={link.href}
-        onClick={() => isMobile && setIsSidebarOpen(false)}
-        className={`flex items-center p-3 mx-2 my-1 rounded-lg transition
-          ${isActive ? "bg-white text-gray-900 font-semibold shadow" : "text-white hover:bg-white/20"}
-        `}
-      >
-        <Icon className="w-5 h-5 mr-3" />
-        {link.name}
-      </Link>
-    );
+  const handleClick = () => {
+    if (isMobile) setIsSidebarOpen(false);
+
+    if (!isProfileCompleted) {
+      toast.error("Your profile is not complete.");
+    } else if (role !== "user" && !isProfileVerified) {
+      toast.error("Your profile is not verified yet.");
+    }
   };
+
+  return (
+    <Link
+      href={link.href}
+      onClick={handleClick}
+      className={`flex items-center p-3 mx-2 my-1 rounded-lg transition
+        ${
+          isActive
+            ? "bg-white text-gray-900 font-semibold shadow"
+            : "text-white hover:bg-white/20"
+        }
+      `}
+    >
+      <Icon className="w-5 h-5 mr-3" />
+      {link.name}
+    </Link>
+  );
+};
 
   if (notificationLoading) return <LoadingSpinner />;
 
@@ -325,7 +339,7 @@ export default function DashboardLayout({ children }) {
             </Button> */}
             <Button
               onClick={handleLogout}
-              className={"cursor-pointer bg-secondary"}
+              className={"cursor-pointer bg-secondary mx-3 mb-4"}
             >
               Log Out
             </Button>
@@ -333,10 +347,10 @@ export default function DashboardLayout({ children }) {
         </aside>
 
         <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="bg-primary sticky top-0 z-30 flex justify-between p-4 text-white">
-            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          <div className="bg-primary sticky top-0 z-30 flex justify-end p-4 text-white">
+            {/* <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
               <PanelLeft />
-            </button>
+            </button> */}
 
             <div className="flex gap-6 items-center">
               <DropdownMenu>

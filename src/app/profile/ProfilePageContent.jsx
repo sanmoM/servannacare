@@ -1,40 +1,44 @@
 "use client";
 
 import Container from "@/components/shared/Container";
-import CustomModal from "@/components/shared/CustomModal";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import PageBanner from "@/components/shared/PageBanner";
-import { SubscriptionPlans } from "@/components/shared/Plan";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
-import { Building, Check, CheckCircle, Mail, Phone } from "lucide-react";
-import Link from "next/link";
+import {
+  Building,
+  Check,
+  CheckCircle,
+  Mail,
+  Phone,
+  Calendar,
+  Globe,
+  Car,
+  GraduationCap,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const ProfilePageContent = () => {
   const searchParams = useSearchParams();
-  const category = searchParams.get("category");
+  const type = searchParams.get("type");
   const id = searchParams.get("id");
   const { user, loading } = useAuth();
   const router = useRouter();
 
   const { data, isLoading, error } = useFetch("/specialist");
-
   const specialists = data?.data?.data ?? [];
 
-  const matchedData = specialists.find(
+  const matchedData = specialists?.find(
     (item) =>
-      item.id === Number(id) &&
-      item.subRole?.toLowerCase() === category?.toLowerCase(),
+      String(item.id) === String(id) &&
+      item.type?.toLowerCase() === type?.toLowerCase(),
   );
 
   const handleBookNow = () => {
     if (loading) return;
-
     const bookingUrl = `/bookingForm?category=${matchedData?.subRole?.toLowerCase() ?? "unknown"}&id=${matchedData.id}`;
 
     if (!user) {
@@ -44,196 +48,201 @@ const ProfilePageContent = () => {
       return;
     }
 
-    if (user.role != "user") {
+    if (user.role !== "user") {
       toast.error(`${user?.subRole} can't make Booking`);
-      router.push(`/dashboard/${user?.role}-profile`);
       return;
     }
     router.push(bookingUrl);
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <div>Error loading data</div>;
-  if (!matchedData) return <div>No matching data found</div>;
+  if (error || !matchedData)
+    return <div className="py-20 text-center">Data not found</div>;
+
+  // Helper to extract nested role data (nurse, physiotherapist, or house_manager)
+  const roleSpecificInfo =
+    matchedData.house_manager ||
+    matchedData.nurse ||
+    matchedData.physiotherapist;
 
   return (
     <>
       <PageBanner
-        title="Profile"
-        image={
-          "https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/cf136a11386527.560f6e447cc13.jpg"
-        }
+        title={`${matchedData.name}'s Profile`}
+        image="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/cf136a11386527.560f6e447cc13.jpg"
       />
-      <Container className={"py-16 grid md:grid-cols-6 gap-8"}>
-        <div className=" md:col-span-2 ">
-          <div className="p-4 rounded-md items-center relative border-t-primary justify-center  border flex flex-col border-t-4">
+      <Container className="py-16 grid md:grid-cols-6 gap-8">
+        {/* Left Sidebar */}
+        <div className="md:col-span-2 space-y-6">
+          <div className="p-4 rounded-md items-center border-t-primary border flex flex-col border-t-4 shadow-sm">
             <img
-              className="object-cover h-40 w-40 lg:w-60 lg:h-60  rounded-full border-4 border-white shadow-lg"
+              className="object-cover h-40 w-40 lg:w-60 lg:h-60 rounded-full border-4 border-white shadow-lg"
               src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${matchedData?.profilePhoto}`}
-              alt={`profile`}
+              alt={matchedData.name}
               onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = `https://placehold.co/160x160/6366f1/white?text=${matchedData?.name?.charAt(
-                  0,
-                )}`;
+                e.target.src = `https://placehold.co/160x160/6366f1/white?text=${matchedData?.name?.charAt(0)}`;
               }}
             />
-            <span className="text-xs  absolute top-3 right-3  bg-green-600 p-1 rounded-full px-2 text-white">
-              Available Now
-            </span>
-
-            <h2 className="text-2xl mt-4 lg:text-3xl text-gray-800 font-semibold">
+            <h2 className="text-2xl mt-4 text-gray-800 font-semibold text-center">
               {matchedData?.name}
             </h2>
-            <p className="text-sm mt-2 font-semibold text-primary">
-              {matchedData?.subRole}
+            <p className="text-sm mt-1 font-bold text-primary uppercase">
+              {matchedData?.subRole?.replace("-", " ")}
             </p>
           </div>
-          <div className="p-4 mt-6 rounded-md border">
-            <h2 className="subHeading mb-3">PERSONAL INFO</h2>
-            <div className="flex gap-2 items-center">
-              <Phone />
-              <div>
-                <Label className={"text-xs"}>Phone</Label>
-                <p className="text-sm mt-1 text-gray-600">
-                  {matchedData?.number}
-                </p>
-              </div>
-            </div>
 
-            <div className="flex gap-2 my-4 items-center">
-              <Building />
-              <div>
-                <Label className={"text-xs"}>Office</Label>
-                <p className="text-sm mt-1 text-gray-600">
-                  {matchedData?.location}
-                </p>
+          <div className="p-4 rounded-md border bg-gray-50/50">
+            <h2 className="font-bold text-gray-700 mb-4 border-b pb-2">
+              CONTACT INFO
+            </h2>
+            <div className="space-y-4">
+              <div className="flex gap-3 items-center">
+                <Phone className="w-4 h-4 text-primary" />
+                <div>
+                  <Label className="text-xs text-gray-400">Phone</Label>
+                  <p className="text-sm font-medium">{matchedData?.number}</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Mail className="w-4 h-4 text-primary" />
+                <div>
+                  <Label className="text-xs text-gray-400">Email</Label>
+                  <p className="text-sm font-medium">{matchedData?.email}</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-center">
+                <Building className="w-4 h-4 text-primary" />
+                <div>
+                  <Label className="text-xs text-gray-400">Location</Label>
+                  <p className="text-sm font-medium">{matchedData?.location}</p>
+                </div>
               </div>
             </div>
-
-            <div className="flex gap-2 my-4 items-center">
-              <Mail />
-              <div>
-                <Label className={"text-xs"}>Mail</Label>
-                <p className="text-sm mt-1 text-gray-600">
-                  {matchedData?.email}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="flex-1">
             <Button
               onClick={handleBookNow}
               disabled={loading}
-              className="w-full cursor-pointer"
+              className="w-full mt-6"
             >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Book Now
+              <CheckCircle className="w-4 h-4 mr-2" /> Book Now
             </Button>
           </div>
-          {/* <div className="flex-1">
-            <Link
-              href={{
-                pathname: "/bookingForm",
-                query: {
-                  category: profile.category.toLowerCase(),
-                  id: profile.id,
-                },
-              }}
-            >
-              <Button className="w-full cursor-pointer">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Book Now
-              </Button>
-            </Link>
-          </div> */}
         </div>
-        <div className=" md:col-span-4 ">
-          <h2 className="subHeading border-b border-primary mb-4">BIO</h2>
-          <p className="text-sm">
-            Efficiently myocardinate market-driven innovation via open-source
-            alignments. Dramatically engage high-Phosfluorescently expedite
-            impactful supply chains via focused results. Holistically .
-            Compellingly supply just in time catalysts for change through..
-          </p>
-          <p className="text-sm text-gray-600 my-6">
-            Exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea
-            commodo non habent claritatem insitamconsequat duis autem facilisis
-            at vero eros vel eum iriure. Duis autem vel eum iriure dolor in
-            hendrerit in vulputate velit esse molestie consequat, vel illum
-            dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto
-            odio dignissim qui blandit praesent luptatum zzril delenit augue
-            duis dolore te feugait nulla facilisi.Exerci tation ullamcorper
-          </p>
-          <div className="my-8">
-            <h2 className="subHeading border-b border-primary mb-4">
-              BASIC INFO
-            </h2>
-            <span className="flex gap-1 flex-wrap ">
-              <Label>Location :</Label>{" "}
-              <p className="text-sm text-gray-500">{matchedData?.location}</p>
-            </span>
-            <span className="flex gap-1 my-1 flex-wrap ">
-              <Label>Age :</Label>{" "}
-              <p className="text-sm text-gray-500">{matchedData?.age}</p>
-            </span>
-            <span className="flex gap-1 flex-wrap ">
-              <Label>Language Spoken :</Label>{" "}
-              <p className="text-sm text-gray-500">Eglish, French, Arabic</p>
-            </span>
-          </div>
 
-          <div className="mb-8">
-            <h2 className="subHeading border-b border-primary mb-4">
-              EDUCATION & SKILLS
+        {/* Right Content Area */}
+        <div className="md:col-span-4 space-y-8">
+          {/* Bio Section */}
+          <section>
+            <h2 className="text-xl font-bold border-b-2 border-primary w-fit mb-4">
+              BIO
             </h2>
-            <span className="flex flex-wrap  gap-1">
-              <Label>Degree :</Label>{" "}
-              <p className="text-sm text-gray-500">Diploma In Nursing</p>
-            </span>
+            <p className="text-gray-600 leading-relaxed">
+              {matchedData?.bio || "No biography provided by the specialist."}
+            </p>
+          </section>
 
-            <span className="flex flex-wrap  gap-1 my-1">
-              <Label>Experience in :</Label>{" "}
-              <p className="text-sm text-gray-500">
-                Basic Patient Care (Bathing, dressing, feeding, mobility),
-                Medical Assistance, Communication skills
+          {/* Key Details Grid */}
+          <section className="grid sm:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-lg">
+            <div>
+              <h3 className="font-bold text-sm text-gray-400 uppercase mb-3">
+                Professional Info
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="w-4 h-4" />
+                  <p className="text-sm">
+                    <b>Education:</b> {matchedData.education}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  <p className="text-sm">
+                    <b>Exp:</b> {roleSpecificInfo?.experience || 0} Years
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Globe className="w-4 h-4" />
+                  <p className="text-sm">
+                    <b>Languages:</b> {matchedData.languages?.join(", ")}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm text-gray-400 uppercase mb-3">
+                Preferences
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Car className="w-4 h-4" />
+                  <p className="text-sm">
+                    <b>Can Drive:</b> {matchedData.canDrive ? "Yes" : "No"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  <p className="text-sm">
+                    <b>Preferred Role:</b> {matchedData.preferredRole}
+                  </p>
+                </div>
+                {roleSpecificInfo?.salaryRange && (
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm">
+                      <b>Salary Range:</b> ${roleSpecificInfo.salaryRange}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* VERY IMPORTANT: Available Schedule */}
+          <section>
+            <h2 className="text-xl font-bold border-b-2 border-primary w-fit mb-4 uppercase">
+              Available Schedule
+            </h2>
+            {matchedData.schedule && matchedData.schedule.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {matchedData.schedule[0].date.map((date, idx) => (
+                  <span
+                    key={idx}
+                    className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium border border-primary/20"
+                  >
+                    <Calendar className="w-3 h-3" />
+                    {new Date(date).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 italic">
+                No specific availability dates listed. Please contact for
+                details.
               </p>
-            </span>
+            )}
+          </section>
 
-            <span className="flex gap-1 flex-wrap ">
-              <Label>Intersted in :</Label>{" "}
-              <p className="text-sm text-gray-500">
-                ElDery Care, Disability Support, Post Surgery Care
-              </p>
-            </span>
-
-            <span className="flex gap-1 mt-1 flex-wrap ">
-              <Label>Can Drive :</Label>{" "}
-              <p className="text-sm text-gray-500">Yes</p>
-            </span>
-          </div>
-
-          <div>
-            <h2 className="subHeading border-b border-primary mb-4">
-              Experience
-            </h2>
-            <span className="flex gap-1 flex-wrap ">
-              <Label>Years of Experience :</Label>{" "}
-              <p className="text-sm text-gray-500">7</p>
-            </span>
-            <span className="flex gap-1 my-1 flex-wrap ">
-              <Check className="text-primary" />
-              <Label>Nursign Council of Kenya</Label>
-            </span>
-            <span className="flex gap-1 flex-wrap ">
-              <Check className="text-primary" />
-              <Label>Hospital Based Care</Label>
-            </span>
-            <span className="flex gap-1 mt-1 flex-wrap ">
-              <Check className="text-primary" />
-              <Label>Home Based Care</Label>
-            </span>
-          </div>
+          {/* Services Section (For Nurses/Specialists) */}
+          {matchedData.services && (
+            <section>
+              <h2 className="text-xl font-bold border-b-2 border-primary w-fit mb-4 uppercase">
+                Services Offered
+              </h2>
+              <ul className="grid gap-2">
+                {matchedData.services.map((service, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-sm text-gray-600"
+                  >
+                    <Check className="w-4 h-4 mt-0.5 text-primary shrink-0" />{" "}
+                    {service}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
       </Container>
     </>
