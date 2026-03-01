@@ -10,7 +10,6 @@ import React, { useEffect, useState } from "react";
 
 const page = () => {
   const [abouts, setAbouts] = useState(null);
-  console.log("abouts", abouts?.ourCore);
   const description = abouts?.about?.description || "";
   const boldWords = ["Myhauzhelp", "Cervanna"];
   const { data, isLoading, error } = useFetch("/abouts");

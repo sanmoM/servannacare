@@ -16,7 +16,7 @@ export default function useLocalUser() {
         setUser(null);
       }
     } catch (error) {
-      console.log("Error parsing user:", error);
+      // console.log("Error parsing user:", error);
       setUser(null);
     }
     setLoaded(true);

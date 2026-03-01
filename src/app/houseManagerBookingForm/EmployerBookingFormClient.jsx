@@ -74,10 +74,22 @@ export default function EmployerBookingFormClient() {
     matchedSpecialist?.house_manager?.serviceFeeDay || 0,
   );
 
-  const availableDates = useMemo(
-    () => matchedSpecialist?.schedule?.flatMap((s) => s.date) || [],
-    [matchedSpecialist],
-  );
+  const availableDates = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return (
+      matchedSpecialist?.schedule
+        ?.flatMap((s) => s.date)
+        ?.filter((d) => {
+          const dateObj = new Date(d);
+          dateObj.setHours(0, 0, 0, 0);
+          return dateObj >= today;
+        }) || []
+    );
+  }, [matchedSpecialist]);
+
+  const hasSchedule = availableDates.length > 0;
 
   const {
     register,
@@ -122,10 +134,19 @@ export default function EmployerBookingFormClient() {
   const totalAmount = bookingAmount + serviceFee;
 
   const isDateDisabled = (date) => {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, "0");
-    const d = String(date.getDate()).padStart(2, "0");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const current = new Date(date);
+    current.setHours(0, 0, 0, 0);
+
+    if (current < today) return true;
+
+    const y = current.getFullYear();
+    const m = String(current.getMonth() + 1).padStart(2, "0");
+    const d = String(current.getDate()).padStart(2, "0");
     const dateStr = `${y}-${m}-${d}`;
+
     return !availableDates.includes(dateStr);
   };
 
@@ -237,12 +258,24 @@ export default function EmployerBookingFormClient() {
                     className="space-y-3"
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="yes" id="kids-yes" />
-                      <Label htmlFor="kids-yes">Yes</Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="yes"
+                        id="kids-yes"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="kids-yes">
+                        Yes
+                      </Label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="no" id="kids-no" />
-                      <Label htmlFor="kids-no">No</Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="no"
+                        id="kids-no"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="kids-no">
+                        No
+                      </Label>
                     </div>
                   </RadioGroup>
 
@@ -256,8 +289,15 @@ export default function EmployerBookingFormClient() {
                       >
                         {["0-3", "4-10", "11+"].map((range) => (
                           <div key={range} className="flex items-center gap-2">
-                            <RadioGroupItem value={range} id={`age-${range}`} />
-                            <Label htmlFor={`age-${range}`}>
+                            <RadioGroupItem
+                              className={"cursor-pointer"}
+                              value={range}
+                              id={`age-${range}`}
+                            />
+                            <Label
+                              className={"cursor-pointer"}
+                              htmlFor={`age-${range}`}
+                            >
                               {range === "11+"
                                 ? "11 yrs and Above"
                                 : `${range} yrs`}
@@ -282,12 +322,24 @@ export default function EmployerBookingFormClient() {
                     className="space-y-2"
                   >
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="compound" id="compound" />
-                      <Label htmlFor="compound">Own compound</Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="compound"
+                        id="compound"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="compound">
+                        Own compound
+                      </Label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem value="apartment" id="apartment" />
-                      <Label htmlFor="apartment">Apartment</Label>
+                      <RadioGroupItem
+                        className={"cursor-pointer"}
+                        value="apartment"
+                        id="apartment"
+                      />
+                      <Label className={"cursor-pointer"} htmlFor="apartment">
+                        Apartment
+                      </Label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -307,8 +359,14 @@ export default function EmployerBookingFormClient() {
                     {["1Br", "2Br", "3Br", "4Br", "5Br and above"].map(
                       (size) => (
                         <div key={size} className="flex items-center gap-2">
-                          <RadioGroupItem value={size} id={size} />
-                          <Label htmlFor={size}>{size}</Label>
+                          <RadioGroupItem
+                            className={"cursor-pointer"}
+                            value={size}
+                            id={size}
+                          />
+                          <Label className={"cursor-pointer"} htmlFor={size}>
+                            {size}
+                          </Label>
                         </div>
                       ),
                     )}
@@ -326,12 +384,24 @@ export default function EmployerBookingFormClient() {
                   className="space-y-3"
                 >
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem value="monthly" id="livein" />
-                    <Label htmlFor="livein">Live In</Label>
+                    <RadioGroupItem
+                      className={"cursor-pointer"}
+                      value="monthly"
+                      id="livein"
+                    />
+                    <Label className={"cursor-pointer"} htmlFor="livein">
+                      Live In
+                    </Label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem value="daily" id="dayburg" />
-                    <Label htmlFor="dayburg">Dayburg</Label>
+                    <RadioGroupItem
+                      className={"cursor-pointer"}
+                      value="daily"
+                      id="dayburg"
+                    />
+                    <Label className={"cursor-pointer"} htmlFor="dayburg">
+                      Dayburg
+                    </Label>
                   </div>
                 </RadioGroup>
               </CardHeader>
@@ -370,73 +440,108 @@ export default function EmployerBookingFormClient() {
                 </div>
 
                 {isMonthly && (
-                  <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-                    {Array.from({ length: 12 }).map((_, i) => {
-                      const monthKey = `2026-${String(i + 1).padStart(2, "0")}`;
-                      const monthLabel = new Date(2026, i).toLocaleString(
-                        "default",
-                        { month: "long" },
-                      );
-                      const hasAvailability = availableDates.some((d) =>
-                        d.startsWith(monthKey),
-                      );
-                      const isSelected = selectedMonths.includes(monthKey);
+                  <>
+                    {!hasSchedule ? (
+                      <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        <p className="text-lg font-semibold text-slate-500">
+                          No available month for this specialist.
+                        </p>
+                        <p className="text-sm text-slate-400 mt-2">
+                          Please select another specialist.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+                        {Array.from({ length: 12 }).map((_, i) => {
+                          const monthKey = `2026-${String(i + 1).padStart(2, "0")}`;
+                          const monthLabel = new Date(2026, i).toLocaleString(
+                            "default",
+                            { month: "long" },
+                          );
+                          const hasAvailability = availableDates.some((d) => {
+                            if (!d.startsWith(monthKey)) return false;
 
-                      return (
-                        <div key={monthKey} className="relative">
-                          <button
-                            type="button"
-                            disabled={!hasAvailability}
-                            onClick={() => {
-                              const next = isSelected
-                                ? selectedMonths.filter((m) => m !== monthKey)
-                                : [...selectedMonths, monthKey];
-                              setValue("selectedMonths", next);
-                            }}
-                            className={`w-full p-5 rounded-xl border flex flex-col items-center transition-all ${isSelected ? "bg-[#7A295A] text-white border-[#7A295A]" : "bg-white border-slate-200"} ${!hasAvailability && "opacity-25 cursor-not-allowed"}`}
-                          >
-                            <span className="font-bold text-sm">
-                              {monthLabel}
-                            </span>
-                            <span className="text-[10px]">
-                              {hasAvailability ? "Available" : "No Dates"}
-                            </span>
-                          </button>
-                          {hasAvailability && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewMonth(monthKey);
-                              }}
-                              className="absolute -top-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg"
-                            >
-                              <Eye size={14} />
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                            const dateObj = new Date(d);
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            dateObj.setHours(0, 0, 0, 0);
+
+                            return dateObj >= today;
+                          });
+                          const isSelected = selectedMonths.includes(monthKey);
+
+                          return (
+                            <div key={monthKey} className="relative">
+                              <button
+                                type="button"
+                                disabled={!hasAvailability}
+                                onClick={() => {
+                                  const next = isSelected
+                                    ? selectedMonths.filter(
+                                        (m) => m !== monthKey,
+                                      )
+                                    : [...selectedMonths, monthKey];
+                                  setValue("selectedMonths", next);
+                                }}
+                                className={`w-full cursor-pointer p-5 rounded-xl border flex flex-col items-center transition-all ${isSelected ? "bg-[#7A295A] text-white border-[#7A295A]" : "bg-white border-slate-200"} ${!hasAvailability && "opacity-25 cursor-not-allowed"}`}
+                              >
+                                <span className="font-bold text-sm">
+                                  {monthLabel}
+                                </span>
+                                <span className="text-[10px]">
+                                  {hasAvailability ? "Available" : "No Dates"}
+                                </span>
+                              </button>
+                              {hasAvailability && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPreviewMonth(monthKey);
+                                  }}
+                                  className="absolute -top-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg cursor-pointer"
+                                >
+                                  <Eye size={14} />
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {isDaily && (
-                  <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
-                    <Calendar
-                      mode="multiple"
-                      selected={selectedDates}
-                      onSelect={(val) => setValue("selectedDates", val)}
-                      disabled={isDateDisabled}
-                      className="bg-white border rounded-xl w-full"
-                    />
-                  </div>
+                  <>
+                    {!hasSchedule ? (
+                      <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                        <p className="text-lg font-semibold text-slate-500">
+                          No available dates for this specialist.
+                        </p>
+                        <p className="text-sm text-slate-400 mt-2">
+                          Please select another specialist.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
+                        <Calendar
+                          mode="multiple"
+                          selected={selectedDates}
+                          onSelect={(val) => setValue("selectedDates", val)}
+                          disabled={isDateDisabled}
+                          className="bg-white border rounded-xl w-full cursor-pointer"
+                        />
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
 
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={!hasSchedule && isSubmitting}
               className="w-full h-16 text-xl font-bold rounded-2xl cursor-pointer shadow-xl mt-8 bg-[#7A295A] hover:bg-[#631f49] text-white"
             >
               {isSubmitting ? "Processing..." : "Go To Checkout"}
@@ -589,7 +694,7 @@ export default function EmployerBookingFormClient() {
                 />
               </div>
               <Button
-                className="w-full mt-6 bg-[#7A295A] text-white"
+                className="w-full mt-6 bg-[#7A295A] text-white cursor-pointer"
                 onClick={() => setPreviewMonth(null)}
               >
                 Got it

@@ -26,7 +26,7 @@ const Page = () => {
 
   const [clients, setClients] = useState([]);
 
-  console.log("clients", clients);
+  
   const { data, isLoading, error, mutate } = useFetch("/specialist-booking");
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const Page = () => {
           ? JSON.parse(row.selected_dates_or_months)
           : row.selected_dates_or_months;
     } catch (e) {
-      console.error("Error parsing dates:", e);
+      
       return [];
     }
     if (!Array.isArray(parsed) || parsed.length === 0) return [];

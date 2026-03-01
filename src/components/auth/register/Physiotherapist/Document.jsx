@@ -72,7 +72,7 @@ const Document = ({ defaultValues, onNext, onBack }) => {
       }
     }
 
-    console.log(files);
+  
     onNext(files);
   };
   return (

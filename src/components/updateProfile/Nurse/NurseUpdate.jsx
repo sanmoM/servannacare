@@ -311,14 +311,14 @@ const NurseUpdate = ({ data = {} }) => {
     if (EDUCATION?.practiceLicense instanceof File) {
       fd.append("practiceLicense", EDUCATION.practiceLicense);
     }
-    console.log("form data", formData);
+
     try {
       const res = await postApi("/update-profile", fd, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("res", res);
+      
       if (res?.status === 200) {
         toast.success("data Updated Successfully!");
       } else {
@@ -327,7 +327,8 @@ const NurseUpdate = ({ data = {} }) => {
         );
       }
     } catch (error) {
-      console.error("Error creating profile:", error);
+      
+       toast.error("Error creating profile",error)
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,

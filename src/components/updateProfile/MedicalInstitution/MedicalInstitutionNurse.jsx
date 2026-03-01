@@ -148,7 +148,7 @@ const MedicalInstitutionNurse = ({
     }
   }, [initialData, isUpdate]);
 
-  console.log(data);
+ 
 
   // Handlers
   const handleChange = (e) => {
@@ -270,7 +270,7 @@ const MedicalInstitutionNurse = ({
 
       onSuccess?.();
     } catch (error) {
-      console.error(error);
+     
       toast.error(error.message || "Failed to submit nurse data", {
         id: loadingToast,
       });

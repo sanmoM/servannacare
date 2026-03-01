@@ -94,7 +94,6 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
       return;
     }
 
-    console.log(data);
 
     onNext(data);
   };

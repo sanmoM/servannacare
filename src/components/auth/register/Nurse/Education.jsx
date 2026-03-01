@@ -48,7 +48,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
         return;
       }
     }
-    console.log("Education data:", data);
+    
     onNext(data);
   };
 

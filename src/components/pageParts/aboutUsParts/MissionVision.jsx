@@ -4,7 +4,7 @@ import React from "react";
 import WhyChooseUs from "../homeParts/WhyChooseUs";
 
 const MissionVision = (data) => {
-  console.log("mission vission", data?.data?.chooses);
+  
 
   return (
     <div className="">

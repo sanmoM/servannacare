@@ -88,7 +88,7 @@ const Exprience = ({ defaultValues = {}, onNext, onBack }) => {
       return;
     }
 
-    console.log(data);
+
     onNext(data);
   };
 

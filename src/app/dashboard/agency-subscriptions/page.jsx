@@ -86,7 +86,7 @@ const SpecialistSubscription = () => {
       setIsDialogOpen(false);
       setPhoneNumber("");
     } catch (err) {
-      console.error("Payment Error:", err);
+      
       toast.error("Payment failed. Please try again.");
     } finally {
       setLoading(false);

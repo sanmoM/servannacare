@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 
 const page = () => {
   const [reviews, setReviews] = useState(null);
-  console.log("reviews", reviews);
+  
   const { data, isLoading, error } = useFetch("/specialist-review");
 
   useEffect(() => {

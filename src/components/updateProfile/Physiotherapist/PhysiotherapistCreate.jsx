@@ -343,8 +343,8 @@ const PhysiotherapistCreate = ({ data = {} }) => {
         );
       }
     } catch (error) {
-      console.error("Profile Update Error:", error);
-
+      
+ toast.error("Error update profile",error)
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,

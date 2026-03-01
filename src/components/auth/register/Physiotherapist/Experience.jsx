@@ -121,7 +121,7 @@ const Experience = ({ defaultValues = {}, onNext, onBack }) => {
       toast.error("Please select at least one preferred area");
       return;
     }
-    console.log(data);
+  
     onNext(data);
   };
 

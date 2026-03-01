@@ -122,7 +122,7 @@ const Physiotherapist = () => {
         fd.append("practiceLicense", EDUCATION.practiceLicense);
       }
 
-      console.log("form Data", formData);
+ 
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -148,7 +148,8 @@ const Physiotherapist = () => {
           );
         }
       } catch (error) {
-        console.error("Error creating profile:", error);
+        
+         toast.error("Error creating profile",error)
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,

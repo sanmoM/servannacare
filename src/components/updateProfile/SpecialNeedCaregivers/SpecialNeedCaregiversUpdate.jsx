@@ -33,7 +33,7 @@ import "react-phone-number-input/style.css";
 import { useAuth } from "@/hooks/useAuth";
 
 const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
-  console.log("data", data?.canDrive);
+
   const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useAuth();
@@ -88,7 +88,7 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
       }));
     }
   }, [data]);
-  console.log("drvie", formData?.basicInfo?.canDrive);
+
 
   const documents = [
     {
@@ -282,8 +282,8 @@ const SpecialNeedCaregiversUpdate = ({ data = {} }) => {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Upload failed. Check console.");
+      
+      toast.error("Upload failed.",error);
     }
   };
   return (

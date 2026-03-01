@@ -423,7 +423,7 @@ const BookingHistoryPage = () => {
                   setReviewMessage("");
                   setSelectedBooking(null);
                 } catch (err) {
-                  console.error(err);
+                  
                   toast.error("Failed to submit review.");
                 } finally {
                   setIsSubmittingReview(false);

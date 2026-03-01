@@ -64,7 +64,7 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     },
   });
 
-  console.log("formData", formData);
+
 
   const documents = [
     {
@@ -324,8 +324,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      console.error("Error:", error);
 
+ toast.error("Error ",error)
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,

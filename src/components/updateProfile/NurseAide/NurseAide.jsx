@@ -282,8 +282,8 @@ const NurseAideUpdate = ({ data = {} }) => {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Upload failed. Check console.");
+      
+      toast.error("Upload failed.",error);
     }
   };
 

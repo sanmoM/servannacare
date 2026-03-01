@@ -48,7 +48,7 @@ const ContactAgreement = ({ defaultValues, onNext, onBack }) => {
       return;
     }
 
-    console.log(form);
+
 
     onNext(form);
   };

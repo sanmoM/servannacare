@@ -61,7 +61,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
       delete finalData.practiceLicense;
     }
 
-    console.log("Education data:", finalData);
+
     onNext(finalData);
   };
 

@@ -21,7 +21,7 @@ export default function page() {
     location: "",
   });
   
-  console.log("form data",form)
+  
 
   // Create a URL for the profile photo if available
   const [imagePreview, setImagePreview] = useState(null);

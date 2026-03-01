@@ -330,7 +330,7 @@ const HouseManagerCreate = ({ data = {} }) => {
       }
     }
 
-    // console.log("form data", formData);
+
 
     const fd = new FormData();
 
@@ -416,7 +416,8 @@ const HouseManagerCreate = ({ data = {} }) => {
         );
       }
     } catch (error) {
-      console.error("Error creating profile:", error);
+      
+       toast.error("Error creating profile",error)
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,

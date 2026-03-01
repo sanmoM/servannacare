@@ -108,7 +108,7 @@ try {
         });
 
         if (res?.status === 200) {
-          console.log("after medical institutions create profile", res);
+          
           toast.success("Institutions Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
           //todo this localStorage
@@ -127,7 +127,8 @@ try {
           );
         }
       } catch (error) {
-        console.error("Error creating profile:", error);
+         toast.error("Error creating profile",error)
+        
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,

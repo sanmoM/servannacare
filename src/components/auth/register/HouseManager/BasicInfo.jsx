@@ -124,7 +124,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
       toast.error("Please select at least one service preference!");
       return;
     }
-    // console.log("basicinfo", data);
+  
     onNext(data);
   };
 

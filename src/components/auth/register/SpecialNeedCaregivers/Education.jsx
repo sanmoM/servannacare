@@ -29,14 +29,14 @@ const Education = ({ defaultValues, onNext, onBack }) => {
 
     if (!data.educationCertificate) return toast.error("Select file");
 
-    // Filter out unwanted fields if PCK = No
+
     const finalData = { ...data };
     if (data.isRegisterPCK === "false") {
       delete finalData.registrationNumber;
       delete finalData.practiceLicense;
     }
 
-    console.log("Education data:", data);
+
     onNext(data);
   };
 

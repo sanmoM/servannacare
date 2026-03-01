@@ -122,7 +122,7 @@ const SpecialNeedCaregivers = () => {
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
-      console.log("form Data", formData);
+ 
 
       try {
         const res = await postApi("/create-profile", fd, {
@@ -132,7 +132,7 @@ const SpecialNeedCaregivers = () => {
         });
 
         if (res?.status === 200) {
-          console.log("res", res);
+ 
           toast.success("Registered Successfully!");
           // localStorage.setItem(
           //   "user",
@@ -150,7 +150,8 @@ const SpecialNeedCaregivers = () => {
           );
         }
       } catch (error) {
-        console.error("Error creating profile:", error);
+        
+         toast.error("Error creating profile",error)
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,

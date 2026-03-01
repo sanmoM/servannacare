@@ -48,7 +48,6 @@ const ContactAgreement = ({ defaultValues, onNext, onBack }) => {
       return;
     }
 
-    console.log(data);
 
     onNext(data);
   };

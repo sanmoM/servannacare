@@ -90,7 +90,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
       toast.error("Service fee must be a valid number greater than 0");
       return;
     }
-    console.log(data);
+
     onNext(data);
   };
 

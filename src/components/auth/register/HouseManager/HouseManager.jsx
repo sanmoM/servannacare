@@ -121,7 +121,8 @@ const HouseManager = () => {
           );
         }
       } catch (error) {
-        console.error("Error creating profile:", error);
+         toast.error("Error creating profile",error)
+        
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,

@@ -95,7 +95,7 @@ const Page = () => {
       setIsDialogOpen(false);
       router.push("/dashboard/house-manager-payment-history");
     } catch (err) {
-      console.error("Payment Error:", err);
+      
       toast.error("Payment failed. Please try again.");
     } finally {
       setLoading(false);

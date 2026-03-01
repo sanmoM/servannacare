@@ -70,7 +70,7 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
         return;
       }
     }
-    console.log(data);
+
     onNext(data);
   };
 

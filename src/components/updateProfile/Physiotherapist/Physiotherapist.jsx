@@ -260,10 +260,10 @@ const Physiotherapist = ({ data = {} }) => {
       }
     });
 
-    console.log("FORMDATA PAYLOAD");
-    for (let pair of fd.entries()) {
-      console.log(pair[0], pair[1]);
-    }
+  
+    // for (let pair of fd.entries()) {
+    //   console.log(pair[0], pair[1]);
+    // }
 
     try {
       const res = await postApi("/update-profile", fd);
@@ -284,8 +284,8 @@ const Physiotherapist = ({ data = {} }) => {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Upload failed. Check console.");
+      
+      toast.error("Upload failed.",error);
     }
 
 

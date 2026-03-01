@@ -74,7 +74,7 @@ const ProfessionalSchedule = () => {
 
     try {
       const response = await postApi("/schedule", payload);
-      console.log("res", response?.data?.data?.date);
+      
 
       if (response.status === 200) {
         toast.success(`Successfully published ${selectedDates.size} days!`, {
@@ -89,7 +89,7 @@ const ProfessionalSchedule = () => {
         throw new Error("Failed to publish schedule");
       }
     } catch (error) {
-      console.error("Payload Error:", error);
+      
       toast.error("API Error: Could not save schedule.");
     } finally {
       setIsPublishing(false);

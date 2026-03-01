@@ -129,7 +129,7 @@ const {user}=useAuth
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
-      console.log("formData", formData);
+    
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -138,7 +138,7 @@ const {user}=useAuth
         });
 
         if (res?.status === 200) {
-          console.log("res", res);
+       
           toast.success("Registered Successfully!");
           // localStorage.setItem(
           //   "user",
@@ -156,7 +156,8 @@ const {user}=useAuth
           );
         }
       } catch (error) {
-        console.error("Error creating profile:", error);
+        toast.error("Error creating profile",error)
+        
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,

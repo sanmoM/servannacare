@@ -252,7 +252,7 @@ const MedicalInstitution = ({ skills }) => {
         fd.append(`institutionNurses[${i}][idCopy]`, nurse.idCopy);
         fd.append(`institutionNurses[${i}][profilePhoto]`, nurse.profilePhoto);
       });
-      console.log("form data", formData);
+  
 
       try {
         const res = await postApi("/create-profile", fd, {
@@ -281,7 +281,8 @@ const MedicalInstitution = ({ skills }) => {
           );
         }
       } catch (error) {
-        console.error("Error creating profile:", error);
+         toast.error("Error creating profile",error)
+   
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,

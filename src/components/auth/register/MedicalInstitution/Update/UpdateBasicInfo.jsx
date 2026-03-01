@@ -117,8 +117,9 @@ const UpdateBasicInfo = ({ instituteData }) => {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Upload failed. Check console.");
+      toast.error("Error updating profile", error);
+
+   
     }
   };
 

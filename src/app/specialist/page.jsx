@@ -50,7 +50,7 @@ const SearchContent = () => {
   const ITEMS_PER_PAGE = 6;
 
   const { data, isLoading } = useFetch("/specialist");
-  // console.log("data", data?.data?.data);
+  
 
   const isFirstLoad = useRef(true);
   useEffect(() => {

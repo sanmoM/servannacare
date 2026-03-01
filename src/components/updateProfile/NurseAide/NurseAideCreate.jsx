@@ -325,9 +325,9 @@ const NurseAideCreate = ({ data = {} }) => {
       if (DOC.referenceLetter)
         fd.append("referenceLetter", DOC.referenceLetter);
 
-      for (let pair of fd.entries()) {
-        console.log(pair[0], ":", pair[1]);
-      }
+      // for (let pair of fd.entries()) {
+      //   console.log(pair[0], ":", pair[1]);
+      // }
 
       const res = await postApi("/create-profile", fd, {
         headers: {
@@ -351,8 +351,8 @@ const NurseAideCreate = ({ data = {} }) => {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      console.error("Error:", error);
-
+      
+ toast.error("Error",error)
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,

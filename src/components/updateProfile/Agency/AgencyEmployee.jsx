@@ -107,7 +107,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     }
   }, [initialData, isUpdate]);
 
-  console.log(formData);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -205,7 +205,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     return payload;
   };
 
-  // console.log("form data", formData);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -227,7 +227,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
 
       onSuccess?.();
     } catch (error) {
-      console.error(error);
+  
       toast.error(error.message || "Operation failed", { id: loadingToast });
     }
   };

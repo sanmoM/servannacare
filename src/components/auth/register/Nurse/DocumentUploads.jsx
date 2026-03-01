@@ -74,7 +74,7 @@ const DocumentUploads = ({ defaultValues , onNext, onBack }) => {
       }
     }
 
-    console.log(files);
+    
     onNext(files);
   };
 

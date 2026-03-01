@@ -90,7 +90,7 @@ const SkillsServices = ({ defaultValues = {}, onNext, onBack }) => {
       }
     }
 
-    console.log(data);
+
     onNext(data);
   };
 

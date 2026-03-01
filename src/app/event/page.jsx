@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 
 const page = () => {
   const [events, setevents] = useState(null);
-  console.log(events);
+  
 
   const { data, isLoading, error } = useFetch("/events");
   useEffect(() => {
