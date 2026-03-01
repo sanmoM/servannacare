@@ -1005,6 +1005,7 @@ const SearchContent = () => {
                     value={selectedCategory}
                     onChange={(e) => handleCategoryChange(e.target.value)}
                   >
+                    <option value="">All Specialists</option>
                     {serviceCategory?.map((cat) => (
                       <option key={cat.value} value={cat.value}>
                         {cat.mainCategory}

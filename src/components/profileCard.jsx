@@ -11,8 +11,8 @@ import {
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import useLocalUser from "@/hooks/useLocalUser";
 import toast from "react-hot-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const InfoItem = ({ icon: Icon, label, value }) => (
   <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -24,12 +24,11 @@ const InfoItem = ({ icon: Icon, label, value }) => (
 );
 
 const ProfileCard = ({ profile }) => {
-  
   const router = useRouter();
-  const { user, loaded } = useLocalUser();
+  const { user, loading } = useAuth();
 
   const handleBookNow = () => {
-    if (!loaded) return;
+    if (loading) return;
 
     const category = profile.subRole
       ? profile.subRole.toLowerCase().replace(/\s+/g, "-")
@@ -57,12 +56,13 @@ const ProfileCard = ({ profile }) => {
 
     router.push(bookingUrl);
   };
+
   return (
     <div
       data-aos="fade-up"
-      className="w-full  flex flex-col overflow-hidden bg-white border border-gray-200 rounded-2xl  transition-all duration-300 ease-in-out hover:shadow-md"
+      className="w-full flex flex-col overflow-hidden bg-white border border-gray-200 rounded-2xl transition-all duration-300 ease-in-out hover:shadow-md"
     >
-      <div className="w-full  flex items-center justify-center p-6 lg:rounded-l-2xl relative">
+      <div className="w-full flex items-center justify-center p-6 relative">
         <div className="absolute inset-0">
           <div className="h-1/2 bg-[#bb92ad5b]"></div>
           <div className="h-1/2 bg-white"></div>
@@ -82,7 +82,7 @@ const ProfileCard = ({ profile }) => {
         </div>
       </div>
 
-      <div className="flex flex-col justify-between w-full  p-5">
+      <div className="flex flex-col justify-between w-full p-5">
         <div>
           <div className="flex items-start justify-between mb-3">
             <div>
@@ -101,7 +101,6 @@ const ProfileCard = ({ profile }) => {
             </div>
           </div>
 
-          {/* Details */}
           <div className="space-y-2.5 mt-4">
             {profile.experience && (
               <InfoItem
@@ -122,9 +121,7 @@ const ProfileCard = ({ profile }) => {
         <div className="flex gap-4 mt-5 pt-5 border-t border-gray-100">
           <div className="flex-1">
             <Link
-              href={`/profile?category=${profile.subRole?.toLowerCase()}&id=${
-                profile.id
-              }`}
+              href={`/profile?category=${profile.subRole?.toLowerCase()}&id=${profile.id}`}
             >
               <Button className="w-full cursor-pointer" variant="outline">
                 View Profile
@@ -134,7 +131,7 @@ const ProfileCard = ({ profile }) => {
           <div className="flex-1">
             <Button
               onClick={handleBookNow}
-              disabled={!loaded}
+              disabled={loading}
               className="w-full cursor-pointer"
             >
               <CheckCircle className="w-4 h-4 mr-2" />
