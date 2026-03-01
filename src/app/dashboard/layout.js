@@ -43,14 +43,9 @@ export default function DashboardLayout({ children }) {
 
   const [token, setToken] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { logout, user, loading } = useAuth();
-
-  // const {
-  //   data: profileData,
-  //   isLoading: profileLoading,
-  //   error: profileError,
-  // } = useFetch("/profile");
 
   const {
     data: notificationData,
@@ -59,7 +54,6 @@ export default function DashboardLayout({ children }) {
   } = useFetch("/notifications");
 
   const notifications = notificationData?.data?.data ?? [];
-  // const specialistDatas = profileData?.data?.houseManager ?? [];
 
   const isProfileCompleted = Boolean(user?.is_profile_completed);
   const isProfileVerified = Boolean(user?.is_profile_verified);
@@ -139,6 +133,25 @@ export default function DashboardLayout({ children }) {
       notFound();
     }
   }, [loading, token, user, pathname]);
+
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
+
+  useEffect(() => {
+  if (isSidebarOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+}, [isSidebarOpen]);
 
   if (loading) {
     return (
@@ -235,7 +248,7 @@ export default function DashboardLayout({ children }) {
     //   href: "/dashboard/care-institution-clients",
     //   icon: Users2,
     // },
-   { name: "Inbox", href: "/dashboard/care-institution-inbox", icon: Inbox },
+    { name: "Inbox", href: "/dashboard/care-institution-inbox", icon: Inbox },
     // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
 
@@ -260,6 +273,7 @@ export default function DashboardLayout({ children }) {
     return (
       <Link
         href={link.href}
+        onClick={() => isMobile && setIsSidebarOpen(false)}
         className={`flex items-center p-3 mx-2 my-1 rounded-lg transition
           ${isActive ? "bg-white text-gray-900 font-semibold shadow" : "text-white hover:bg-white/20"}
         `}
@@ -280,8 +294,18 @@ export default function DashboardLayout({ children }) {
   return (
     <PrivateRoute>
       <div className="flex h-screen w-full overflow-hidden">
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 z-40 lg:hidden transition-opacity duration-300"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
         <aside
-          className={`bg-primary text-white fixed lg:static h-full z-50 transition-all ${isSidebarOpen ? "w-72" : "w-0"}`}
+          className={`bg-primary text-white fixed top-0 left-0 h-full z-50
+  transition-transform duration-300
+  w-72
+  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+  lg:translate-x-0 lg:static`}
         >
           <div className="flex flex-col h-full">
             <div className="p-4 border-b border-white/20">
