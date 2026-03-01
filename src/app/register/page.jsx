@@ -10,13 +10,14 @@ import SpecialNeedCaregivers from "@/components/auth/register/SpecialNeedCaregiv
 import UserForm from "@/components/auth/register/UserForm";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import LoadingSpinnerSecond from "@/components/shared/Loadingspiner";
+import PublicRoute from "@/components/shared/PublicRoute";
 import { useFetch } from "@/hooks/useFetch";
 import { notFound, useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 
 const PageContent = () => {
   const searchParams = useSearchParams();
-  const role = searchParams.get("role")
+  const role = searchParams.get("role");
 
   const ROLE_TYPE_MAP = {
     "nurse-aide-or-assistant": "nurse_ade_assistant",
@@ -91,7 +92,9 @@ const Page = () => {
         </div>
       }
     >
-      <PageContent />
+      <PublicRoute>
+        <PageContent />
+      </PublicRoute>
     </Suspense>
   );
 };

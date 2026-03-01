@@ -32,7 +32,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { userRole } from "@/utilities/data";
-import useLocalUser from "@/hooks/useLocalUser";
 import LoadingSpinner from "../LoadingSpin";
 import LoadingSpinnerSecond from "../Loadingspiner";
 import { useAuth } from "@/hooks/useAuth";
@@ -41,8 +40,7 @@ const Navbar = () => {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const { loaded } = useLocalUser();
-  const { user } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   const navlinks = [
     { text: "Home", link: "/", icon: Home },
@@ -124,7 +122,7 @@ const Navbar = () => {
 
           {/* CTA Button */}
           <div className="flex gap-2">
-            {!loaded ? (
+            {loading ? (
               <LoadingSpinnerSecond />
             ) : user ? (
               <Link href={"/dashboard"}>
@@ -257,11 +255,18 @@ const Navbar = () => {
             </ul>
 
             <div className="mt-6 flex flex-col gap-4 px-5">
-              {!loaded ? (
+              {loading ? (
                 <LoadingSpinner />
               ) : user ? (
                 <>
-                  <Button size={"lg"} className={"rounded-full cursor-pointer"}>
+                  <Button
+                    size={"lg"}
+                    onClick={() => {
+                      logout();
+                      handleCloseSidebar();
+                    }}
+                    className={"rounded-full cursor-pointer"}
+                  >
                     Log Out
                   </Button>
                 </>

@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
-import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import {

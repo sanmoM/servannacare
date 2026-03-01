@@ -21,7 +21,6 @@ import { Label } from "@/components/ui/label";
 import AgencyUpdate from "@/components/updateProfile/Agency/AgencyUpdate";
 import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
-import useLocalUser from "@/hooks/useLocalUser";
 import {
   Calendar,
   Camera,

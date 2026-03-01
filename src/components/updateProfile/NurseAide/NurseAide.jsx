@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import {

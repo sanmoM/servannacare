@@ -3,7 +3,6 @@
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import useLocalUser from "@/hooks/useLocalUser";
 import {
   Calendar,
   CheckCircle,
@@ -15,11 +14,10 @@ import {
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { loaded } = useLocalUser();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
   const isProfileCompleted = Boolean(user?.is_profile_completed);
-  if (!loaded) {
+  if (loading) {
     return <LoadingSpinner />;
   }
 

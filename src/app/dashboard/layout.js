@@ -11,7 +11,7 @@ import {
   Gem,
   History,
   HomeIcon,
-  NotepadText,
+  Inbox,
   PanelLeft,
   Search,
   Smile,
@@ -21,7 +21,6 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import useLocalUser from "@/hooks/useLocalUser";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import Link from "next/link";
@@ -41,12 +40,11 @@ import { useAuth } from "@/hooks/useAuth";
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { loaded } = useLocalUser();
 
   const [token, setToken] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const { logout, user } = useAuth();
+  const { logout, user, loading } = useAuth();
 
   // const {
   //   data: profileData,
@@ -94,7 +92,8 @@ export default function DashboardLayout({ children }) {
   };
 
   useEffect(() => {
-    if (!loaded || token === null) return;
+    if (loading) return;
+    if (token === null) return;
 
     if (!token) {
       router.push("/login");
@@ -139,9 +138,9 @@ export default function DashboardLayout({ children }) {
     ) {
       notFound();
     }
-  }, [loaded, token, user, pathname]);
+  }, [loading, token, user, pathname]);
 
-  if (!loaded) {
+  if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">
         <LoadingSpinner />
@@ -153,7 +152,7 @@ export default function DashboardLayout({ children }) {
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/user-profile", icon: User },
     { name: "Find Services", href: "/specialist?", icon: Search },
-
+    { name: "Inbox", href: "/dashboard/user-inbox", icon: Inbox },
     {
       name: "Book History",
       href: "/dashboard/book-history",
@@ -191,7 +190,7 @@ export default function DashboardLayout({ children }) {
         ]
       : []),
 
-    { name: "Inbox", href: "/dashboard/inbox", icon: NotepadText },
+    { name: "Inbox", href: "/dashboard/specialist-inbox", icon: Inbox },
     { name: "Review", href: "/dashboard/feedback", icon: Smile },
   ];
 
@@ -214,7 +213,7 @@ export default function DashboardLayout({ children }) {
       icon: History,
     },
     // { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
-    { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
+    { name: "Inbox", href: "/dashboard/agency-inbox", icon: Inbox },
     // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
 
@@ -236,7 +235,7 @@ export default function DashboardLayout({ children }) {
     //   href: "/dashboard/care-institution-clients",
     //   icon: Users2,
     // },
-    { name: "Inbox", href: "/dashboard/note", icon: NotepadText },
+   { name: "Inbox", href: "/dashboard/care-institution-inbox", icon: Inbox },
     // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
 

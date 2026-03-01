@@ -13,7 +13,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
-import useLocalUser from "@/hooks/useLocalUser";
 import { getApi, postApi } from "@/lib/apiHandler";
 import { userRole } from "@/utilities/data";
 import { Eye, EyeOff } from "lucide-react";
@@ -27,13 +26,14 @@ const LoginPageContent = () => {
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { loaded, refreshUser } = useLocalUser();
-  const { user, setUser, setRole } = useAuth();
+  const { user, setUser, setRole, loading } = useAuth();
 
   const redirect = searchParams.get("redirect");
 
   useEffect(() => {
-    if (!loaded || !user) return;
+    if (loading) return;
+
+    if (!user) return;
 
     if (user?.role === "user") {
       router.replace(redirect || "/dashboard");
@@ -43,7 +43,7 @@ const LoginPageContent = () => {
       }
       router.replace("/dashboard");
     }
-  }, [user, loaded, redirect, router]);
+  }, [user, loading, redirect, router]);
 
   const handleLoginUser = async (e) => {
     e.preventDefault();
@@ -85,7 +85,7 @@ const LoginPageContent = () => {
       if (error?.response?.data?.email_verified === null) {
         sessionStorage.setItem("verifyEmail", email);
         if (redirect) sessionStorage.setItem("redirectUrl", redirect);
-        toast.error("Please Verify Your email with otp")
+        toast.error("Please Verify Your email with otp");
         router.replace("/verify-otp");
         return;
       }

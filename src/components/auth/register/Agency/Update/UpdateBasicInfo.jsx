@@ -8,7 +8,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import FileUpload from "../../FileUpload";
-import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
 

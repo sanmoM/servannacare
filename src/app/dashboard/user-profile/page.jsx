@@ -5,7 +5,6 @@ import Input from "@/components/shared/Input";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
-import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { Calendar, Camera, Mail, Phone, User } from "lucide-react";
 import { useEffect, useState } from "react";

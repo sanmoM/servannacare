@@ -7,8 +7,8 @@ import PageBanner from "@/components/shared/PageBanner";
 import { SubscriptionPlans } from "@/components/shared/Plan";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
-import useLocalUser from "@/hooks/useLocalUser";
 import { Building, Check, CheckCircle, Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -19,9 +19,8 @@ const ProfilePageContent = () => {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const id = searchParams.get("id");
-
+  const { user, loading } = useAuth();
   const router = useRouter();
-  const { user, loaded } = useLocalUser();
 
   const { data, isLoading, error } = useFetch("/specialist");
 
@@ -34,7 +33,7 @@ const ProfilePageContent = () => {
   );
 
   const handleBookNow = () => {
-    if (!loaded) return;
+    if (loading) return;
 
     const bookingUrl = `/bookingForm?category=${matchedData?.subRole?.toLowerCase() ?? "unknown"}&id=${matchedData.id}`;
 
@@ -125,7 +124,7 @@ const ProfilePageContent = () => {
           <div className="flex-1">
             <Button
               onClick={handleBookNow}
-              disabled={!loaded}
+              disabled={loading}
               className="w-full cursor-pointer"
             >
               <CheckCircle className="w-4 h-4 mr-2" />

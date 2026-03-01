@@ -26,7 +26,6 @@ import PhysiotherapistCreate from "@/components/updateProfile/Physiotherapist/Ph
 import SpecialNeedCaregiversCreate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversCreate";
 import SpecialNeedCaregiversUpdate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversUpdate";
 import { useFetch } from "@/hooks/useFetch";
-import useLocalUser from "@/hooks/useLocalUser";
 import {
   Calendar,
   FileText,

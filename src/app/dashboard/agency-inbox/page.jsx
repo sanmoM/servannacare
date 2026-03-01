@@ -24,7 +24,7 @@ const page = () => {
   return (
      <div>
       <div className="mb-10">
-        <h1 className="sectionHeading">Notes</h1>
+        <h1 className="sectionHeading">Inbox</h1>
       </div>
 
       {/* If no notes */}

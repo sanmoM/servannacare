@@ -7,13 +7,13 @@ import toast from "react-hot-toast";
 import FileUpload from "../../FileUpload";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import useLocalUser from "@/hooks/useLocalUser";
 import { postApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const UpdateBasicInfo = ({ instituteData }) => {
   const router = useRouter();
-  const { user, loaded } = useLocalUser();
+  const { user } = useAuth();
 
   const [data, setData] = useState({
     companyName: "",

@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/MedicalInstitution";
+import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
-import useLocalUser from "@/hooks/useLocalUser";
 import {
   Calendar,
   Camera,
@@ -34,7 +34,7 @@ import {
 import { useEffect, useState } from "react";
 
 export default function MedicalInstitutionProfile() {
-  const { user, loaded } = useLocalUser();
+  const { user } = useAuth();
 
   const [instituteData, setInstituteData] = useState(null);
 
@@ -64,6 +64,18 @@ export default function MedicalInstitutionProfile() {
         <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
           <Info /> Your account is Under review.
         </p>
+      )}
+
+      {user?.is_profile_completed && user?.is_profile_verified && (
+        <div className="p-4 mb-4 rounded-xl bg-green-50 border border-green-200 flex items-center gap-3">
+          <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
+          <div className="text-green-700 font-medium">
+            Your profile is verified as{" "}
+            <span className="capitalize font-semibold">
+              {user?.role?.replace(/-/g, " ")}
+            </span>
+          </div>
+        </div>
       )}
       {user?.is_profile_completed ? (
         <UpdateBasicInfo instituteData={instituteData?.data?.careInstitution} />

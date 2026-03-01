@@ -20,15 +20,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import FileUpload from "../../FileUpload";
-import useLocalUser from "@/hooks/useLocalUser";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const UpdateNurseDetails = ({
   nurseNumber = 1,
   onDataChange,
   defaultValues = {},
 }) => {
-  const { user, loaded } = useLocalUser();
+    const { user } = useAuth();
   const documents = [
     {
       id: "idCopy",

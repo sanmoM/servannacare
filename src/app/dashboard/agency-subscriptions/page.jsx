@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 const SpecialistSubscription = () => {
   const router = useRouter();
@@ -94,9 +95,10 @@ const SpecialistSubscription = () => {
 
   if (isLoading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
-      </div>
+      // <div className="min-h-screen flex items-center justify-center">
+      //   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
+      // </div>
+      <LoadingSpinner/>
     );
 
   const benefits = {
