@@ -317,7 +317,7 @@ export default function BookingFormClient() {
         plan_id: planId,
         specialist_id: id,
         specialist_type: matchedSpecialist?.type,
-        book_amount: totalAmount,
+        book_amount: bookingAmount,
       });
 
       const checkoutId = paymentRes?.data?.checkout_id;

@@ -5,72 +5,49 @@ import { Star } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 const page = () => {
-  const [reviews, setReviews] = useState(null);
-  
+  const [reviews, setReviews] = useState([]);
+  const [ratings, setRatings] = useState({
+    average: 0,
+    totalReviews: 0,
+    stars: {
+      5: 0,
+      4: 0,
+      3: 0,
+      2: 0,
+      1: 0,
+    },
+  });
+
   const { data, isLoading, error } = useFetch("/specialist-review");
 
   useEffect(() => {
     if (data) {
-      setReviews(data?.data?.data ?? data);
+      const reviewsData = data?.data?.data ?? [];
+      setReviews(reviewsData);
+
+      const starCount = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      let totalRating = 0;
+
+      reviewsData?.forEach((review) => {
+        const rating = review.rating;
+        starCount[rating] = (starCount[rating] || 0) + 1;
+        totalRating += rating;
+      });
+
+      const totalReviews = reviewsData.length;
+      const averageRating =
+        totalReviews > 0 ? (totalRating / totalReviews).toFixed(1) : 0;
+
+      setRatings({
+        average: averageRating,
+        totalReviews,
+        stars: starCount,
+      });
     }
   }, [data]);
 
   if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
-
-  const ratings = {
-    average: 4.2,
-    totalReviews: 18,
-    stars: {
-      5: 10,
-      4: 4,
-      3: 2,
-      2: 1,
-      1: 1,
-    },
-  };
-
-  const feedbackMessages = [
-    {
-      id: 1,
-      name: "John Williams",
-      rating: 5,
-      message: "Amazing service! Very professional and helpful.",
-      date: "2025-01-08",
-    },
-    {
-      id: 2,
-      name: "Sarah Ahmed",
-      rating: 4,
-      message: "Good experience overall, but slight timing issue.",
-      date: "2025-01-10",
-    },
-    {
-      id: 3,
-      name: "Mahfuz Rahman",
-      rating: 3,
-      message: "Average service, could be better.",
-      date: "2025-01-15",
-    },
-    {
-      id: 4,
-      name: "Ayesha Khan",
-      rating: 5,
-      message: "Very caring and punctual. Recommended!",
-      date: "2025-01-16",
-    },
-  ];
-
-  const calculateAverage = (stars) => {
-    const total =
-      stars[5] * 5 + stars[4] * 4 + stars[3] * 3 + stars[2] * 2 + stars[1] * 1;
-
-    const count = stars[5] + stars[4] + stars[3] + stars[2] + stars[1];
-
-    return (total / count).toFixed(1);
-  };
-
-  const averageRating = ratings.average || calculateAverage(ratings.stars);
 
   return (
     <div>
@@ -82,14 +59,14 @@ const page = () => {
         {/* Left: Average Rating */}
         <div className="bg-white shadow rounded-xl p-6 w-full lg:w-1/3 text-center">
           <h2 className="text-5xl font-bold text-yellow-500">
-            {averageRating}
+            {ratings.average}
           </h2>
           <div className="flex justify-center mt-2">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
                 className={`w-7 h-7 ${
-                  i < Math.round(averageRating)
+                  i < Math.round(ratings.average)
                     ? "text-yellow-500 fill-yellow-500"
                     : "text-gray-300"
                 }`}
@@ -107,7 +84,10 @@ const page = () => {
             .sort((a, b) => b - a)
             .map((star) => {
               const count = ratings.stars[star];
-              const percentage = (count / ratings.totalReviews) * 100;
+              const percentage =
+                ratings.totalReviews > 0
+                  ? (count / ratings.totalReviews) * 100
+                  : 0;
               return (
                 <div key={star} className="flex items-center gap-4 mb-3">
                   <div className="flex items-center gap-1 w-16">
@@ -128,6 +108,7 @@ const page = () => {
             })}
         </div>
       </div>
+
       <div className="overflow-x-auto mt-10">
         <table className="w-full min-w-[600px] text-sm text-left border rounded-xl shadow">
           <thead className="bg-gray-100 border-b">
@@ -140,11 +121,9 @@ const page = () => {
           </thead>
 
           <tbody>
-            {reviews?.map((fb) => (
+            {reviews.map((fb) => (
               <tr key={fb.id} className="border-b hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {fb?.user?.name}
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{fb.user?.name}</td>
 
                 <td className="px-6 py-4 whitespace-nowrap flex">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -159,10 +138,10 @@ const page = () => {
                   ))}
                 </td>
 
-                <td className="px-6 py-4">{fb?.review}</td>
+                <td className="px-6 py-4">{fb.review}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {(() => {
-                    const date = new Date(fb?.created_at);
+                    const date = new Date(fb.created_at);
                     const day = String(date.getDate()).padStart(2, "0");
                     const month = String(date.getMonth() + 1).padStart(2, "0");
                     const year = date.getFullYear();

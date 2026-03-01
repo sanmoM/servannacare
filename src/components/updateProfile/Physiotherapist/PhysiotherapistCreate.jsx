@@ -843,7 +843,7 @@ const PhysiotherapistCreate = ({ data = {} }) => {
         {/* submit button  */}
         <div className="flex justify-end mt-4 b-0">
           {!user?.is_profile_completed && (
-            <Button size={"lg"} type="submit">
+            <Button className={"cursor-pointer"} size={"lg"} type="submit">
               Submit
             </Button>
           )}

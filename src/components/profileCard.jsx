@@ -57,6 +57,10 @@ const ProfileCard = ({ profile }) => {
     router.push(bookingUrl);
   };
 
+  // Parse the average rating as a number
+  const avgRating = parseFloat(profile.review_avg_rating || 0);
+  const reviewCount = profile.review_count || 0;
+
   return (
     <div
       data-aos="fade-up"
@@ -93,12 +97,26 @@ const ProfileCard = ({ profile }) => {
                 {profile.subRole}
               </p>
             </div>
-            <div className="flex items-center px-2.5 py-1 text-sm font-semibold text-yellow-800 bg-yellow-100 rounded-lg border border-yellow-300 shrink-0">
-              <Star
-                className="w-4 h-4 mr-1 text-yellow-500"
-                fill="currentColor"
-              />
-            </div>
+            {reviewCount > 0 && (
+              <div className="flex items-center px-3 py-1 text-sm font-semibold text-yellow-800  shrink-0">
+                <div className="flex items-center">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${
+                        i < Math.round(avgRating)
+                          ? "text-yellow-500 fill-yellow-500"
+                          : "text-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+                {/* Inline review count */}
+                <span className="ml-1 text-xs text-gray-700">
+                  ({reviewCount})
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2.5 mt-4">
@@ -109,12 +127,20 @@ const ProfileCard = ({ profile }) => {
                 value={`${profile.experience} years`}
               />
             )}
-            <InfoItem
-              icon={GraduationCap}
-              label="Education"
-              value={profile.education}
-            />
-            <InfoItem icon={MapPin} label="Location" value={profile.location} />
+            {profile.education && (
+              <InfoItem
+                icon={GraduationCap}
+                label="Education"
+                value={profile.education}
+              />
+            )}
+            {profile.location && (
+              <InfoItem
+                icon={MapPin}
+                label="Location"
+                value={profile.location}
+              />
+            )}
           </div>
         </div>
 

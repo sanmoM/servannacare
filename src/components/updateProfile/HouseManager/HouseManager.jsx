@@ -370,11 +370,12 @@ const HouseManager = ({ data = {} }) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="200-400">200 - 400</SelectItem>
-                  <SelectItem value="400-600">400 - 600</SelectItem>
-                  <SelectItem value="600-800">600 - 800</SelectItem>
-                  <SelectItem value="800-1000">800 - 1000</SelectItem>
-                  <SelectItem value="1000+">More than 1000</SelectItem>
+                             <SelectItem value="1000-20000">1000 - 20000</SelectItem>
+                                 <SelectItem value="21000-40000">21000 - 40000</SelectItem>
+                                 <SelectItem value="41000-60000">41000 - 60000</SelectItem>
+                                 <SelectItem value="61000-80000">61000 - 80000</SelectItem>
+                                 <SelectItem value="81000-90000">81000 - 90000</SelectItem>
+                                 <SelectItem value="100000+">More than 100000</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -781,7 +782,7 @@ const HouseManager = ({ data = {} }) => {
         </div>
         <div className="flex justify-end mt-4 b-0">
           {user?.is_profile_completed && (
-            <Button size={"lg"} type="submit">
+            <Button className={"cursor-pointer"} size={"lg"} type="submit">
               Update
             </Button>
           )}

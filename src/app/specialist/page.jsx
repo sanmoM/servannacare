@@ -33,7 +33,6 @@ const SearchContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-
   const [selectedCategory, setSelectedCategory] = useState("house-manager");
   const [selectedServices, setSelectedServices] = useState([]);
   const [sortBy, setSortBy] = useState("relevance");
@@ -50,7 +49,6 @@ const SearchContent = () => {
   const ITEMS_PER_PAGE = 6;
 
   const { data, isLoading } = useFetch("/specialist");
-  
 
   const isFirstLoad = useRef(true);
   useEffect(() => {
@@ -160,18 +158,15 @@ const SearchContent = () => {
 
     salaryString = salaryString.replace(/\s/g, "");
 
-
     if (salaryString.includes("+")) {
       const min = parseInt(salaryString.replace("+", ""));
       return { min, max: Infinity };
     }
 
-
     if (salaryString.includes("-")) {
       const [min, max] = salaryString.split("-").map(Number);
       return { min, max };
     }
-
 
     const value = parseInt(salaryString);
     return { min: value, max: value };
@@ -188,7 +183,6 @@ const SearchContent = () => {
     if (!rawData.length) return [];
 
     return rawData.filter((item) => {
-      
       const matchesCategory =
         !selectedCategory ||
         [item.subRole]
@@ -197,30 +191,25 @@ const SearchContent = () => {
             (role) => role.toLowerCase() === selectedCategory.toLowerCase(),
           );
 
-      
       const matchesLocation =
         !selectedLocation ||
         item.location?.toLowerCase().includes(selectedLocation.toLowerCase());
 
-      
       const matchesServices =
         selectedServices.length === 0 ||
         (Array.isArray(item.preferred) &&
           selectedServices.every((s) => item.preferred.includes(s)));
 
-      
       const matchesLanguages =
         selectedLanguages.length === 0 ||
         selectedLanguages.every((lang) =>
           item.languages?.some((l) => l.toLowerCase() === lang.toLowerCase()),
         );
 
-      
       const matchesRating =
         !selectedRating ||
         (item.rating && item.rating >= Number(selectedRating));
 
-      
       let matchesSalary = true;
       if (selectedCategory === "house-manager") {
         const salaryString = item.house_manager?.salaryRange || "";
@@ -230,10 +219,9 @@ const SearchContent = () => {
           (!salaryRange.min || max >= Number(salaryRange.min)) &&
           (!salaryRange.max || min <= Number(salaryRange.max));
       } else {
-        matchesSalary = true; 
+        matchesSalary = true;
       }
 
-      
       let matchesExperience = true;
       if (selectedCategory !== "house-manager") {
         const roleData = item[selectedCategory];
@@ -246,20 +234,18 @@ const SearchContent = () => {
           (!experienceRange.max || experience <= Number(experienceRange.max));
       }
 
-      
       let matchesKidAge = true;
       if (selectedCategory === "house-manager") {
         const kidAges = item.house_manager?.ageOfKids || [];
         matchesKidAge = !selectedKidAge || kidAges.includes(selectedKidAge);
       }
 
-
       let matchesAge = true;
       let specialistAge;
       if (selectedCategory === "house-manager") {
-        specialistAge = item.age ?? 0; 
+        specialistAge = item.age ?? 0;
       } else {
-        specialistAge = item[selectedCategory]?.age ?? item.age ?? 0; 
+        specialistAge = item[selectedCategory]?.age ?? item.age ?? 0;
       }
 
       if (specialistAge !== undefined && specialistAge !== null) {
@@ -293,7 +279,6 @@ const SearchContent = () => {
     ageRange,
   ]);
 
-  
   const sortedSpecialists = useMemo(() => {
     let result = [...filteredSpecialists];
     switch (sortBy) {
@@ -515,19 +500,25 @@ const SearchContent = () => {
                 </div>
 
                 <div className="space-y-6">
+                  {/* Label */}
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-semibold text-slate-700 ml-1">
                       Salary Range
                     </label>
                   </div>
 
+                  {/* Slider */}
                   <div className="px-2">
                     <Slider.Root
                       className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
-                      defaultValue={[0, 500]}
-                      value={[salaryRange.min || 0, salaryRange.max || 500]}
-                      max={1000}
-                      step={100}
+                      defaultValue={[1000, 100000]}
+                      value={[
+                        salaryRange.min || 15000,
+                        salaryRange.max || 50000,
+                      ]}
+                      min={1000}
+                      max={100000}
+                      step={1000} 
                       onValueChange={([min, max]) => {
                         updateQueryParams({
                           minSalary: min,
@@ -544,13 +535,14 @@ const SearchContent = () => {
                     </Slider.Root>
                   </div>
 
+                  {/* Min/Max Display */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
                       <p className="text-[10px] text-slate-400 font-bold uppercase ml-1 mb-1">
                         Min
                       </p>
                       <p className="text-sm font-semibold text-slate-700 ml-1">
-                        KSH {salaryRange.min || 0}
+                        KSH {salaryRange.min || 1000}
                       </p>
                     </div>
                     <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
@@ -558,7 +550,7 @@ const SearchContent = () => {
                         Max
                       </p>
                       <p className="text-sm font-semibold text-slate-700 ml-1">
-                        KSH {salaryRange.max || 500}+
+                        KSH {salaryRange.max || 100000}+
                       </p>
                     </div>
                   </div>

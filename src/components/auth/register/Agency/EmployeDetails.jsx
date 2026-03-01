@@ -76,16 +76,16 @@ const EmployeDetails = ({
     handlePets: null,
     preferredRole: "",
     languages: [],
-    cooking:"",
-    housekeeping:"",
-    childcare:"",
+    cooking: "",
+    housekeeping: "",
+    childcare: "",
     preferred: "",
-    bio:"",
-    aidCertificate:null,
-    goodConductCertificate:null,
-    idCopy:null,
-    profilePhoto:null,
-    drivingLicense:null,
+    bio: "",
+    aidCertificate: null,
+    goodConductCertificate: null,
+    idCopy: null,
+    profilePhoto: null,
+    drivingLicense: null,
     ...defaultValues,
   });
 
@@ -138,10 +138,10 @@ const EmployeDetails = ({
   // file upload
   const handleFileSelect = (id, file) => {
     setData((prev) => ({
-      ...prev,[id]:file
+      ...prev,
+      [id]: file,
     }));
   };
-
 
   return (
     <div>
@@ -218,7 +218,9 @@ const EmployeDetails = ({
                   <SelectItem value="3 years">3 years</SelectItem>
                   <SelectItem value="4 years">4 years</SelectItem>
                   <SelectItem value="5 years">5 years</SelectItem>
-                  <SelectItem value="More than 5+ years">More than 5 years</SelectItem>
+                  <SelectItem value="More than 5+ years">
+                    More than 5 years
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -237,11 +239,12 @@ const EmployeDetails = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="200-400">200 - 400</SelectItem>
-                  <SelectItem value="400-600">400 - 600</SelectItem>
-                  <SelectItem value="600-800">600 - 800</SelectItem>
-                  <SelectItem value="800-1000">800 - 1000</SelectItem>
-                  <SelectItem value="1000+">More than 1000</SelectItem>
+                  <SelectItem value="1000-20000">1000 - 20000</SelectItem>
+                  <SelectItem value="21000-40000">21000 - 40000</SelectItem>
+                  <SelectItem value="41000-60000">41000 - 60000</SelectItem>
+                  <SelectItem value="61000-80000">61000 - 80000</SelectItem>
+                  <SelectItem value="81000-90000">81000 - 90000</SelectItem>
+                  <SelectItem value="100000+">More than 100000</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -274,7 +277,9 @@ const EmployeDetails = ({
         </div>
 
         <div className="flex-1">
-          <Label className="mb-3">What age of kinds do you prefer working with?</Label>
+          <Label className="mb-3">
+            What age of kinds do you prefer working with?
+          </Label>
           <div className="flex flex-wrap gap-y-2 gap-x-4">
             {["0-3", "4-10", "11+"].map((age) => (
               <div key={age} className="flex items-center gap-2">
@@ -368,7 +373,7 @@ const EmployeDetails = ({
               <Label className="block mb-2 capitalize">{skill}</Label>
               <Select
                 value={data[skill] || ""}
-              onValueChange={(v) => handleSelect(skill, v)}
+                onValueChange={(v) => handleSelect(skill, v)}
               >
                 <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                   <SelectValue placeholder="Select proficiency" />
@@ -415,12 +420,11 @@ const EmployeDetails = ({
         <label htmlFor="bio">Bio</label>
         <textarea
           value={data.bio}
-          name="bio"  
+          name="bio"
           placeholder="Write a brief bio about yourself and the services you offer.."
           className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
           rows={6}
           onChange={handleChange}
-
         />
       </div>
 
@@ -440,7 +444,7 @@ const EmployeDetails = ({
             accept={doc.accept}
             icon={doc.icon}
             optional={doc.optional}
-            file={data[doc.id]|| null}
+            file={data[doc.id] || null}
             onFileSelect={(file) => handleFileSelect(doc.id, file)}
           />
         ))}

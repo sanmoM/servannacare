@@ -197,7 +197,7 @@ export default function EmployerBookingFormClient() {
         plan_id: planId,
         specialist_id: id,
         specialist_type: category,
-        book_amount: totalAmount,
+        book_amount: bookingAmount,
       });
 
       const checkoutId = paymentRes?.data?.checkout_id;
