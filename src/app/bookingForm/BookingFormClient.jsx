@@ -99,8 +99,24 @@ export default function BookingFormClient() {
   const monthlyRate = Number(pricingData?.serviceFeeMonth || 0);
   const dailyRate = Number(pricingData?.serviceFeeDay || 0);
 
-  const availableDates =
-    matchedSpecialist?.schedule?.flatMap((s) => s.date) || [];
+  const availableDates = useMemo(() => {
+    if (!matchedSpecialist?.schedule) return [];
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return (
+      matchedSpecialist?.schedule
+        ?.flatMap((s) => s.date)
+        ?.filter((d) => {
+          const dateObj = new Date(d);
+          dateObj.setHours(0, 0, 0, 0);
+          return dateObj >= today;
+        }) || []
+    );
+  }, [matchedSpecialist]);
+
+  const hasSchedule = availableDates.length > 0;
 
   const {
     register,
@@ -284,56 +300,53 @@ export default function BookingFormClient() {
     }
 
     setBookingFormData(formData);
-    setPhoneNumber(""); 
+    setPhoneNumber("");
     setIsPayModalOpen(true);
   };
 
-const handlePayment = async () => {
-  if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
-    return toast.error("Enter valid phone number");
-  }
-
-  setIsProcessingPayment(true);
-
-  try {
-  
-    const paymentRes = await postApi("/checkout", {
-      phone: phoneNumber,
-      plan_id: planId,
-      specialist_id: id,
-      specialist_type: matchedSpecialist?.type,
-      book_amount: totalAmount,
-    });
-
-    const checkoutId = paymentRes?.data?.checkout_id;
-
-    if (!checkoutId) {
-      throw new Error("Checkout failed");
+  const handlePayment = async () => {
+    if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
+      return toast.error("Enter valid phone number");
     }
 
-    toast.success("M-Pesa prompt sent!");
+    setIsProcessingPayment(true);
 
-    
-    const queryRes = await getApi(`/mpesa/query/${checkoutId}`);
+    try {
+      const paymentRes = await postApi("/checkout", {
+        phone: phoneNumber,
+        plan_id: planId,
+        specialist_id: id,
+        specialist_type: matchedSpecialist?.type,
+        book_amount: totalAmount,
+      });
 
-    if (queryRes?.status === 200) {
-      
-      const bookingRes = await postApi("/booking", bookingFormData);
+      const checkoutId = paymentRes?.data?.checkout_id;
 
-      if (bookingRes?.status === 200 || bookingRes?.status === 201) {
-        toast.success("Booking confirmed successfully!");
-        setIsPayModalOpen(false);
-        router.push("/dashboard/book-history");
+      if (!checkoutId) {
+        throw new Error("Checkout failed");
       }
-    } else {
-      toast.error("Payment not completed.");
+
+      toast.success("M-Pesa prompt sent!");
+
+      const queryRes = await getApi(`/mpesa/query/${checkoutId}`);
+
+      if (queryRes?.status === 200) {
+        const bookingRes = await postApi("/booking", bookingFormData);
+
+        if (bookingRes?.status === 200 || bookingRes?.status === 201) {
+          toast.success("Booking confirmed successfully!");
+          setIsPayModalOpen(false);
+          router.push("/dashboard/book-history");
+        }
+      } else {
+        toast.error("Payment not completed.");
+      }
+    } catch (error) {
+      toast.error("Payment failed or cancelled.");
+    } finally {
+      setIsProcessingPayment(false);
     }
-  } catch (error) {
-    toast.error("Payment failed or cancelled.");
-  } finally {
-    setIsProcessingPayment(false);
-  }
-};
+  };
 
   if (specLoading)
     return (
@@ -504,7 +517,6 @@ const handlePayment = async () => {
 
               <Separator />
 
-              
               <div className="space-y-4">
                 <Label className="font-bold">
                   Is the patient currently on medication? *
@@ -572,7 +584,6 @@ const handlePayment = async () => {
 
               <Separator />
 
-              
               <div className="space-y-4">
                 <Label className="font-bold">
                   Does the patient have any known allergies? *
@@ -627,7 +638,6 @@ const handlePayment = async () => {
             </CardContent>
           </Card>
 
-          
           <Card className="border-none shadow-sm ring-1 ring-slate-200">
             <CardHeader className="border-b bg-white p-6">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -637,7 +647,6 @@ const handlePayment = async () => {
             </CardHeader>
 
             <CardContent className="px-8 space-y-8">
-              
               <div className="space-y-4">
                 <Label className="font-bold">Communication Type *</Label>
                 <Controller
@@ -672,7 +681,6 @@ const handlePayment = async () => {
 
               <Separator />
 
-              
               <div className="space-y-4">
                 <Label className="font-bold">Can Follow Instructions *</Label>
                 <Controller
@@ -709,7 +717,6 @@ const handlePayment = async () => {
 
               <Separator />
 
-              
               <div className="space-y-4">
                 <Label className="font-bold">
                   Primary Communication Method *
@@ -751,7 +758,6 @@ const handlePayment = async () => {
 
               <Separator />
 
-              
               <div className="space-y-4">
                 <Label className="font-bold">Responds to Name? *</Label>
                 <Controller
@@ -786,7 +792,6 @@ const handlePayment = async () => {
             </CardContent>
           </Card>
 
-          
           <Card className="border-none shadow-sm ring-1 ring-slate-200">
             <CardHeader className="border-b bg-white p-6">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -983,140 +988,172 @@ const handlePayment = async () => {
               </div> */}
 
               {isDaily && (
-                <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
-                  <Calendar
-                    mode="multiple"
-                    selected={selectedDateList}
-                    onSelect={setSelectedDateList}
-                    disabled={isDateDisabled}
-                    className="bg-white border rounded-xl w-full cursor-pointer"
-                  />
-                </div>
+                <>
+                  {!hasSchedule ? (
+                    <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                      <p className="text-lg font-semibold text-slate-500">
+                        No available dates for this specialist.
+                      </p>
+                      <p className="text-sm text-slate-400 mt-2">
+                        Please select another specialist.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
+                      <Calendar
+                        mode="multiple"
+                        selected={selectedDateList}
+                        onSelect={setSelectedDateList}
+                        disabled={isDateDisabled}
+                        className="bg-white border rounded-xl w-full cursor-pointer"
+                      />
+                    </div>
+                  )}
+                </>
               )}
 
               {isMonthly && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                    {Array.from({ length: 12 }).map((_, i) => {
-                      const monthNumber = String(i + 1).padStart(2, "0");
-                      const monthKey = `2026-${monthNumber}`;
+                <>
+                  {!hasSchedule ? (
+                    <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                      <p className="text-lg font-semibold text-slate-500">
+                        No available month for this specialist.
+                      </p>
+                      <p className="text-sm text-slate-400 mt-2">
+                        Please select another specialist.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                        {Array.from({ length: 12 }).map((_, i) => {
+                          const monthNumber = String(i + 1).padStart(2, "0");
+                          const monthKey = `2026-${monthNumber}`;
 
-                      const displayDate = new Date(2026, i, 1);
-                      const monthLabel = displayDate.toLocaleString("default", {
-                        month: "long",
-                      });
+                          const displayDate = new Date(2026, i, 1);
+                          const monthLabel = displayDate.toLocaleString(
+                            "default",
+                            {
+                              month: "long",
+                            },
+                          );
 
-                      const hasAvailability = availableDates.some((d) =>
-                        d.startsWith(monthKey),
-                      );
-                      const isSelected = selectedMonths.includes(monthKey);
+                          const hasAvailability = availableDates.some((d) =>
+                            d.startsWith(monthKey),
+                          );
+                          const isSelected = selectedMonths.includes(monthKey);
 
-                      return (
-                        <div key={monthKey} className="relative group">
-                          <button
-                            type="button"
-                            disabled={!hasAvailability}
-                            onClick={() => {
-                              const newMonths = isSelected
-                                ? selectedMonths.filter((m) => m !== monthKey)
-                                : [...selectedMonths, monthKey];
-                              setSelectedMonths(newMonths);
-                              // setBookingAmount(newMonths.length * monthlyRate);
-                            }}
-                            className={`w-full py-4 px-2 rounded-lg border flex flex-col cursor-pointer items-center transition-all shadow-sm ${
-                              isSelected
-                                ? "bg-primary border-primary text-white ring-2 ring-primary ring-offset-1"
-                                : "bg-white border-slate-200 hover:border-primary text-slate-700"
-                            } ${!hasAvailability && "opacity-25 cursor-not-allowed bg-slate-50"}`}
-                          >
-                            <span className="text-sm font-bold">
-                              {monthLabel}
-                            </span>
-                            <span
-                              className={`text-[10px] mt-1 font-medium ${isSelected ? "text-white/80" : "text-slate-400"}`}
-                            >
-                              {hasAvailability ? "Available" : "Unavailable"}
-                            </span>
-                          </button>
-
-                          {hasAvailability && (
-                            <button
-                              type="button"
-                              title="Preview available days"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setPreviewMonth(monthKey);
-                              }}
-                              className="absolute -top-1 -right-1 bg-primary cursor-pointer text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
-                            >
-                              <span
-                                role="img"
-                                aria-label="view"
-                                className="text-[12px] cursor-pointer"
+                          return (
+                            <div key={monthKey} className="relative group">
+                              <button
+                                type="button"
+                                disabled={!hasAvailability}
+                                onClick={() => {
+                                  const newMonths = isSelected
+                                    ? selectedMonths.filter(
+                                        (m) => m !== monthKey,
+                                      )
+                                    : [...selectedMonths, monthKey];
+                                  setSelectedMonths(newMonths);
+                                  // setBookingAmount(newMonths.length * monthlyRate);
+                                }}
+                                className={`w-full py-4 px-2 rounded-lg border flex flex-col cursor-pointer items-center transition-all shadow-sm ${
+                                  isSelected
+                                    ? "bg-primary border-primary text-white ring-2 ring-primary ring-offset-1"
+                                    : "bg-white border-slate-200 hover:border-primary text-slate-700"
+                                } ${!hasAvailability && "opacity-25 cursor-not-allowed bg-slate-50"}`}
                               >
-                                <Eye />
-                              </span>
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+                                <span className="text-sm font-bold">
+                                  {monthLabel}
+                                </span>
+                                <span
+                                  className={`text-[10px] mt-1 font-medium ${isSelected ? "text-white/80" : "text-slate-400"}`}
+                                >
+                                  {hasAvailability
+                                    ? "Available"
+                                    : "Unavailable"}
+                                </span>
+                              </button>
 
-                  {previewMonth && (
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
-                      <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
-                          <CardTitle className="text-lg font-bold">
-                            {new Date(previewMonth + "-02").toLocaleString(
-                              "default",
-                              { month: "long", year: "numeric" },
-                            )}
-                          </CardTitle>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="rounded-full hover:bg-slate-100"
-                            onClick={() => setPreviewMonth(null)}
-                          >
-                            ✕
-                          </Button>
-                        </CardHeader>
-                        <CardContent className="pt-6">
-                          <div className="flex justify-center">
-                            <Calendar
-                              mode="multiple"
-                              month={new Date(previewMonth + "-02")}
-                              disableNavigation
-                              selected={availableDates
-                                .filter((d) => d.startsWith(previewMonth))
-                                .map((d) => new Date(d + "T00:00:00"))}
-                              disabled={(date) => isDateDisabled(date)}
-                              className="rounded-md border pointer-events-none"
-                            />
-                          </div>
-                          <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-md">
-                            <div className="w-3 h-3 bg-primary rounded-sm" />
-                            <span>
-                              Highlighted days are available for care.
-                            </span>
-                          </div>
-                          <Button
-                            className="w-full mt-6"
-                            onClick={() => setPreviewMonth(null)}
-                          >
-                            Got it
-                          </Button>
-                        </CardContent>
-                      </Card>
+                              {hasAvailability && (
+                                <button
+                                  type="button"
+                                  title="Preview available days"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPreviewMonth(monthKey);
+                                  }}
+                                  className="absolute -top-1 -right-1 bg-primary cursor-pointer text-white p-1.5 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-transform z-10"
+                                >
+                                  <span
+                                    role="img"
+                                    aria-label="view"
+                                    className="text-[12px] cursor-pointer"
+                                  >
+                                    <Eye />
+                                  </span>
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {previewMonth && (
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
+                          <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
+                              <CardTitle className="text-lg font-bold">
+                                {new Date(previewMonth + "-02").toLocaleString(
+                                  "default",
+                                  { month: "long", year: "numeric" },
+                                )}
+                              </CardTitle>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-full hover:bg-slate-100"
+                                onClick={() => setPreviewMonth(null)}
+                              >
+                                ✕
+                              </Button>
+                            </CardHeader>
+                            <CardContent className="pt-6">
+                              <div className="flex justify-center">
+                                <Calendar
+                                  mode="multiple"
+                                  month={new Date(previewMonth + "-02")}
+                                  disableNavigation
+                                  selected={availableDates
+                                    .filter((d) => d.startsWith(previewMonth))
+                                    .map((d) => new Date(d + "T00:00:00"))}
+                                  disabled={(date) => isDateDisabled(date)}
+                                  className="rounded-md border pointer-events-none"
+                                />
+                              </div>
+                              <div className="mt-4 flex items-center gap-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-md">
+                                <div className="w-3 h-3 bg-primary rounded-sm" />
+                                <span>
+                                  Highlighted days are available for care.
+                                </span>
+                              </div>
+                              <Button
+                                className="w-full mt-6"
+                                onClick={() => setPreviewMonth(null)}
+                              >
+                                Got it
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      )}
                     </div>
                   )}
-                </div>
+                </>
               )}
             </CardContent>
           </Card>
 
-          
           <Card className="border-none shadow-sm ring-1 ring-slate-200">
             <CardHeader className="border-b bg-white p-6">
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -1231,8 +1268,6 @@ const handlePayment = async () => {
               />
             </CardContent>
           </Card>
-
- 
 
           <Button
             type="submit"
