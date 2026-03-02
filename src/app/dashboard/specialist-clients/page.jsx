@@ -26,7 +26,6 @@ const Page = () => {
 
   const [clients, setClients] = useState([]);
 
-  
   const { data, isLoading, error, mutate } = useFetch("/specialist-booking");
 
   useEffect(() => {
@@ -66,31 +65,32 @@ const Page = () => {
           ? JSON.parse(row.selected_dates_or_months)
           : row.selected_dates_or_months;
     } catch (e) {
-      
       return [];
     }
+
     if (!Array.isArray(parsed) || parsed.length === 0) return [];
 
-    if (row.booking_type === "daily") {
+    if (parsed[0]?.dates) {
+      return parsed.flatMap((item) =>
+        Array.isArray(item.dates) ? item.dates.map((d) => new Date(d)) : [],
+      );
+    }
+
+    // Fallback for simple string arrays (e.g. ["2026-03-01"])
+    if (typeof parsed[0] === "string" && parsed[0].length > 7) {
       return parsed.map((d) => new Date(d));
     }
 
-    if (row.booking_type === "monthly") {
-      if (parsed[0]?.dates) {
-        return parsed.flatMap((item) =>
-          Array.isArray(item.dates) ? item.dates.map((d) => new Date(d)) : [],
-        );
-      }
-      if (typeof parsed[0] === "string" && parsed[0].length === 7) {
-        const [year, month] = parsed[0].split("-").map(Number);
-        const daysInMonth = new Date(year, month, 0).getDate();
-        return Array.from(
-          { length: daysInMonth },
-          (_, i) => new Date(year, month - 1, i + 1),
-        );
-      }
-      return parsed.map((d) => new Date(d));
+    // Fallback for full month selection (YYYY-MM)
+    if (typeof parsed[0] === "string" && parsed[0].length === 7) {
+      const [year, month] = parsed[0].split("-").map(Number);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      return Array.from(
+        { length: daysInMonth },
+        (_, i) => new Date(year, month - 1, i + 1),
+      );
     }
+
     return [];
   };
 
@@ -150,6 +150,7 @@ const Page = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredClients.slice(indexOfFirstItem, indexOfLastItem);
+
   const totalPages = Math.ceil(filteredClients.length / itemsPerPage);
 
   if (isLoading) return <LoadingSpinner />;
@@ -171,7 +172,7 @@ const Page = () => {
       case "rejected":
         return "bg-rose-100 text-red-700 border-rose-200";
       case "completed":
-        return "bg-blue-100 text-green-700 border-blue-200";
+        return "bg-green-100 text-green-700 border-green-200";
       default:
         return "bg-gray-100 text-gray-700";
     }
@@ -238,19 +239,26 @@ const Page = () => {
                   return (
                     <tr
                       key={row.id}
-                      className="hover:bg-blue-50/10 transition-colors group"
+                      className="hover:bg-green-50/10 transition-colors group"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-blue-50 text-primary flex items-center justify-center font-bold text-sm border border-blue-100">
-                            {row?.patient_name?.charAt(0)}
+                          <div className="h-10 w-10 rounded-full bg-green-50 text-primary flex items-center justify-center font-bold text-sm border border-green-100">
+                            {/* {row?.patient_name?.charAt(0)} */}
+                            {row?.patient_name
+                              ? row?.patient_name?.charAt(0)
+                              : row?.user?.name?.charAt(0)}
                           </div>
                           <div>
                             <div className="font-semibold text-gray-900">
-                              {row.patient_name}
+                              {row?.patient_name
+                                ? row?.patient_name
+                                : row?.user?.name}
                             </div>
                             <div className="text-xs text-gray-500">
-                              {row.patient_age} yrs • {row.patient_gender}
+                              {row?.patient_age && row.patient_age}
+                              {row.patient_gender &&
+                                `yrs • ${row.patient_gender}`}
                             </div>
                           </div>
                         </div>
@@ -260,7 +268,8 @@ const Page = () => {
                           {row.emergency_contact_number}
                         </div>
                         <div className="text-xs text-gray-400">
-                          Guardian: {row.user?.name}
+                          {row?.relationship_to_booking_person ?
+                            `Guardian • ${row?.relationship_to_booking_person}` : "N/A"}
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -269,7 +278,7 @@ const Page = () => {
                             <div className="text-sm font-medium text-gray-700 capitalize">
                               {row.booking_type}
                             </div>
-                            <div className="text-[11px] text-blue-500 font-bold">
+                            <div className="text-[11px] text-green-500 font-bold">
                               {row.booking_type === "monthly" ? (
                                 (() => {
                                   const parsed =
@@ -305,7 +314,7 @@ const Page = () => {
                           </div>
                           <Dialog>
                             <DialogTrigger asChild>
-                              <button className="p-2 cursor-pointer bg-white border border-gray-200 text-gray-400 hover:text-primary hover:border-blue-200 rounded-lg shadow-sm transition-all ">
+                              <button className="p-2 cursor-pointer bg-white border border-gray-200 text-gray-400 hover:text-primary hover:border-green-200 rounded-lg shadow-sm transition-all ">
                                 <Eye size={16} />
                               </button>
                             </DialogTrigger>
@@ -332,7 +341,7 @@ const Page = () => {
                                   className="rounded-md border shadow-sm"
                                 />
                               </div>
-                              <div className="bg-blue-50 p-3 rounded-lg text-xs text-primary font-medium">
+                              <div className="bg-green-50 p-3 rounded-lg text-xs text-primary font-medium">
                                 Highlighting dates for{" "}
                                 <strong>{row.booking_type}</strong> plan.
                               </div>
@@ -340,9 +349,10 @@ const Page = () => {
                           </Dialog>
                         </div>
                       </td>
+
                       <td className="px-6 py-4 text-sm text-gray-600">
                         <span className="bg-gray-100 px-2 py-1 rounded text-[12px]">
-                          {row.location_of_care}
+                          {row.location_of_care || "Not Specified"}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right font-bold text-gray-900">

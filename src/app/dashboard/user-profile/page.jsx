@@ -23,7 +23,6 @@ export default function page() {
   
   
 
-  // Create a URL for the profile photo if available
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
@@ -57,10 +56,10 @@ export default function page() {
     if (file) {
       setForm((prev) => ({
         ...prev,
-        profilePhoto: file, // Store the actual file object
+        profilePhoto: file, 
       }));
 
-      // Generate a URL for image preview
+
       setImagePreview(URL.createObjectURL(file));
     }
   };
@@ -102,12 +101,10 @@ export default function page() {
   if (error) return <div>Error loading profile data</div>;
 
   return (
-    <div className="p-4 lg:p-8">
+    <div className="lg:p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="sectionHeading">My Profile</h1>
-        <div className="flex items-center text-xs text-gray-700 gap-2">
-          <Calendar size={16} />
-        </div>
+       
       </div>
 
       <div className="border rounded-2xl p-6 flex flex-col md:flex-row gap-8 items-center md:items-start">

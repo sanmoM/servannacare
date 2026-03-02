@@ -325,10 +325,17 @@ export default function DashboardLayout({ children }) {
   lg:translate-x-0 lg:static`}
         >
           <div className="flex flex-col h-full">
-            <div className="p-4 border-b border-white/20">
+            <div className="p-4 border-b border-white/20 flex justify-between items-center">
               <Link href="/">
                 <img src="/logo2.png" className="w-20" />
               </Link>
+
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="lg:hidden"
+              >
+                <X size={22} />
+              </button>
             </div>
 
             <nav className="flex-grow py-3">
@@ -336,10 +343,6 @@ export default function DashboardLayout({ children }) {
                 <NavLink key={link.name} link={link} />
               ))}
             </nav>
-
-            {/* <Button onClick={handleLogout} className="mx-3 mb-4 bg-secondary">
-              Log Out
-            </Button> */}
             <Button
               onClick={handleLogout}
               className={"cursor-pointer bg-secondary mx-3 mb-4"}
@@ -350,10 +353,13 @@ export default function DashboardLayout({ children }) {
         </aside>
 
         <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="bg-primary sticky top-0 z-30 flex justify-end p-4 text-white">
-            {/* <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          <div className="bg-primary sticky top-0 z-30 flex md:justify-end justify-between p-4 text-white">
+            <button
+              className="md:hidden"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
               <PanelLeft />
-            </button> */}
+            </button>
 
             <div className="flex gap-6 items-center">
               <DropdownMenu>
