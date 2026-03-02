@@ -39,7 +39,17 @@ const ProfilePageContent = () => {
 
   const handleBookNow = () => {
     if (loading) return;
-    const bookingUrl = `/bookingForm?category=${matchedData?.subRole?.toLowerCase() ?? "unknown"}&id=${matchedData.id}`;
+
+    const category = matchedData.subRole
+      ? matchedData.subRole.toLowerCase().replace(/\s+/g, "-")
+      : "unknown";
+
+    const isHouseFlow =
+      matchedData.type === "house-manager" || matchedData.type === "agency-employee";
+
+    const basePath = isHouseFlow ? "/houseManagerBookingForm" : "/bookingForm";
+
+    const bookingUrl = `${basePath}?category=${category}&id=${matchedData.id}`;
 
     if (!user) {
       router.push(
@@ -48,8 +58,9 @@ const ProfilePageContent = () => {
       return;
     }
 
-    if (user.role !== "user") {
+    if (user?.role !== "user") {
       toast.error(`${user?.subRole} can't make Booking`);
+      router.push(`/dashboard/${user?.role}-profile`);
       return;
     }
     router.push(bookingUrl);
@@ -121,7 +132,7 @@ const ProfilePageContent = () => {
             <Button
               onClick={handleBookNow}
               disabled={loading}
-              className="w-full mt-6"
+              className="w-full mt-6 cursor-pointer"
             >
               <CheckCircle className="w-4 h-4 mr-2" /> Book Now
             </Button>

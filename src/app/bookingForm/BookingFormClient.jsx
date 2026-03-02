@@ -250,14 +250,32 @@ export default function BookingFormClient() {
     const formData = new FormData();
 
     const scheduleItems = isDaily
-      ? selectedDateList.map(
-          (d) =>
-            `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+      ? Object.values(
+          selectedDateList.reduce((acc, date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            const monthKey = `${year}-${month}`;
+            const fullDate = `${year}-${month}-${day}`;
+
+            if (!acc[monthKey]) {
+              acc[monthKey] = {
+                month: monthKey,
+                dates: [],
+              };
+            }
+
+            acc[monthKey].dates.push(fullDate);
+
+            return acc;
+          }, {}),
         )
       : selectedMonths.map((month) => ({
           month,
           dates: getDatesForMonth(month),
         }));
+
     if (matchedSpecialist) {
       formData.append("specialist_id", id);
       formData.append("specialist_type", matchedSpecialist?.type);
@@ -298,6 +316,10 @@ export default function BookingFormClient() {
     if (data.prescriptionFile) {
       formData.append("prescription_file", data.prescriptionFile);
     }
+
+    // for (let pair of formData.entries()) {
+    //   console.log("payload", pair[0], pair[1]);
+    // }
 
     setBookingFormData(formData);
     setPhoneNumber("");

@@ -172,11 +172,37 @@ export default function EmployerBookingFormClient() {
     setIsProcessingPayment(true);
     const formData = watch();
 
-    let formattedSelections = isMonthly
-      ? formData.selectedMonths.map((m) => ({
-          dates: availableDates.filter((d) => d.startsWith(m)),
-        }))
-      : formData.selectedDates.map((d) => d.toISOString().split("T")[0]);
+    let formattedSelections = [];
+
+    if (isMonthly) {
+      formattedSelections = selectedMonths.map((month) => {
+        const monthDates = availableDates.filter((date) =>
+          date.startsWith(month),
+        );
+
+        return {
+          month,
+          dates: monthDates,
+        };
+      });
+    } else {
+      const groupedByMonth = selectedDates.reduce((acc, dateObj) => {
+        const formattedDate = dateObj.toISOString().split("T")[0];
+        const month = formattedDate.slice(0, 7);
+
+        if (!acc[month]) {
+          acc[month] = [];
+        }
+
+        acc[month].push(formattedDate);
+        return acc;
+      }, {});
+
+      formattedSelections = Object.keys(groupedByMonth).map((month) => ({
+        month,
+        dates: groupedByMonth[month],
+      }));
+    }
 
     const bookingPayload = {
       specialist_id: Number(id),
@@ -190,43 +216,43 @@ export default function EmployerBookingFormClient() {
       selected_dates_or_months: formattedSelections,
       booking_amount: bookingAmount,
     };
-    console.log("booking payload",bookingPayload)
+    
 
-    // try {
-    //   const paymentRes = await postApi("/checkout", {
-    //     phone: phoneNumber,
-    //     plan_id: planId,
-    //     specialist_id: id,
-    //     specialist_type: category,
-    //     book_amount: bookingAmount,
-    //   });
+    try {
+      const paymentRes = await postApi("/checkout", {
+        phone: phoneNumber,
+        plan_id: planId,
+        specialist_id: id,
+        specialist_type: category,
+        book_amount: bookingAmount,
+      });
 
-    //   const checkoutId = paymentRes?.data?.checkout_id;
+      const checkoutId = paymentRes?.data?.checkout_id;
 
-    //   if (!checkoutId) {
-    //     throw new Error("Checkout failed");
-    //   }
+      if (!checkoutId) {
+        throw new Error("Checkout failed");
+      }
 
-    //   toast.success("M-Pesa prompt sent!");
+      toast.success("M-Pesa prompt sent!");
 
-    //   const queryRes = await getApi(`/mpesa/query/${checkoutId}`);
+      const queryRes = await getApi(`/mpesa/query/${checkoutId}`);
 
-    //   if (queryRes?.status === 200) {
-    //     const bookingRes = await postApi("/booking", bookingPayload);
+      if (queryRes?.status === 200) {
+        const bookingRes = await postApi("/booking", bookingPayload);
 
-    //     if (bookingRes?.status === 200 || bookingRes?.status === 201) {
-    //       toast.success("Booking confirmed successfully!");
-    //       setIsPayModalOpen(false);
-    //       router.push("/dashboard/book-history");
-    //     }
-    //   } else {
-    //     toast.error("Payment not completed.");
-    //   }
-    // } catch (error) {
-    //   toast.error("Payment failed. Try again.");
-    // } finally {
-    //   setIsProcessingPayment(false);
-    // }
+        if (bookingRes?.status === 200 || bookingRes?.status === 201) {
+          toast.success("Booking confirmed successfully!");
+          setIsPayModalOpen(false);
+          router.push("/dashboard/book-history");
+        }
+      } else {
+        toast.error("Payment not completed.");
+      }
+    } catch (error) {
+      toast.error("Payment failed. Try again.");
+    } finally {
+      setIsProcessingPayment(false);
+    }
   };
 
   if (specLoading)
