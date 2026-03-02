@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -20,7 +20,9 @@ import { useFetch } from "@/hooks/useFetch";
 const ProfessionalSchedule = () => {
   const [mounted, setMounted] = useState(false);
   const [selectedDates, setSelectedDates] = useState(new Set());
- 
+  const [isMobile, setIsMobile] = useState(false);
+  const isDraggingRef = useRef(false);
+
   const [isPublishing, setIsPublishing] = useState(false);
   const today = startOfToday();
   const BRAND_COLOR = "#72275b";
@@ -37,30 +39,60 @@ const ProfessionalSchedule = () => {
     setMounted(true);
   }, []);
 
-  const handleSelect = useCallback(
-    (selectionInfo) => {
-      const start = selectionInfo.start;
-      const end = new Date(selectionInfo.end);
-      end.setDate(end.getDate() - 1);
+ const handleSelect = useCallback((selectionInfo) => {
+  isDraggingRef.current = true;
 
-      if (isBefore(start, today)) return;
+  const start = selectionInfo.start;
+  const end = new Date(selectionInfo.end);
+  end.setDate(end.getDate() - 1);
 
-      const range = eachDayOfInterval({ start, end }).map((d) =>
-        format(d, "yyyy-MM-dd"),
-      );
+  if (isBefore(start, today)) return;
 
-      setSelectedDates((prev) => {
-        const next = new Set(prev);
-        const isSingleToggle = range.length === 1;
-        range.forEach((date) => {
-          if (isSingleToggle && next.has(date)) next.delete(date);
-          else next.add(date);
-        });
-        return next;
-      });
-    },
-    [today],
+  const range = eachDayOfInterval({ start, end }).map((d) =>
+    format(d, "yyyy-MM-dd"),
   );
+
+  setSelectedDates((prev) => {
+    const next = new Set(prev);
+    const isSingleToggle = range.length === 1;
+
+    range.forEach((date) => {
+      if (isSingleToggle && next.has(date)) next.delete(date);
+      else next.add(date);
+    });
+
+    return next;
+  });
+
+  // allow click again after short delay
+  setTimeout(() => {
+    isDraggingRef.current = false;
+  }, 50);
+}, [today]);
+
+  useEffect(() => {
+    const checkScreen = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
+
+const handleDateClick = (info) => {
+  if (isDraggingRef.current) return;
+
+  const dateStr = format(info.date, "yyyy-MM-dd");
+  if (isBefore(info.date, today)) return;
+
+  setSelectedDates((prev) => {
+    const next = new Set(prev);
+    if (next.has(dateStr)) next.delete(dateStr);
+    else next.add(dateStr);
+    return next;
+  });
+};
 
   const handlePublish = async () => {
     if (selectedDates.size === 0)
@@ -74,14 +106,12 @@ const ProfessionalSchedule = () => {
 
     try {
       const response = await postApi("/schedule", payload);
-      
 
       if (response.status === 200) {
         toast.success(`Successfully published ${selectedDates.size} days!`, {
           style: { background: BRAND_COLOR, color: "#fff" },
         });
 
-        // Update selectedDates from server response
         if (response.data?.data?.date) {
           setSelectedDates(new Set(response.data.data.date));
         }
@@ -89,7 +119,6 @@ const ProfessionalSchedule = () => {
         throw new Error("Failed to publish schedule");
       }
     } catch (error) {
-      
       toast.error("API Error: Could not save schedule.");
     } finally {
       setIsPublishing(false);
@@ -99,14 +128,14 @@ const ProfessionalSchedule = () => {
   if (!mounted || loading) return null;
 
   return (
-    <div className="min-h-screen bg-[#FDFCFD] p-4 md:p-10 font-sans text-slate-900">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#FDFCFD] font-sans text-slate-900">
+      <div className="w-full py-4 space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-[2.5rem] p-6 md:p-10 border border-slate-100 shadow-xl flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="bg-white rounded-lg p-6 md:p-10 border border-slate-100 shadow-xl flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-6">
             <div
               style={{ backgroundColor: BRAND_COLOR }}
-              className="w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-white shadow-2xl"
+              className="w-16 h-16 rounded-lg flex items-center justify-center text-white shadow-2xl"
             >
               <CalIcon size={32} />
             </div>
@@ -121,13 +150,13 @@ const ProfessionalSchedule = () => {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="hidden sm:flex flex-col items-end px-6 border-r border-slate-100">
+            <div className="flex flex-col sm:flex-row items-center sm:items-end gap-2 sm:gap-0 sm:px-6 sm:border-r border-slate-100">
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                 Selected
               </span>
               <span
                 style={{ color: BRAND_COLOR }}
-                className="text-2xl font-black leading-none"
+                className="text-xl sm:text-2xl font-black leading-none"
               >
                 {selectedDates.size}
               </span>
@@ -136,7 +165,7 @@ const ProfessionalSchedule = () => {
               onClick={handlePublish}
               disabled={isPublishing}
               style={{ backgroundColor: BRAND_COLOR }}
-              className="hover:opacity-90 text-white h-16 px-10 rounded-2xl font-bold shadow-xl shadow-[#72275b]/20 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+              className="hover:opacity-90 text-white h-16 px-10 rounded-lg font-bold shadow-xl shadow-[#72275b]/20 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
             >
               {isPublishing ? (
                 <Loader2 size={20} className="mr-2 animate-spin" />
@@ -149,7 +178,7 @@ const ProfessionalSchedule = () => {
         </div>
 
         {/* Calendar */}
-        <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl p-6 md:p-12 relative overflow-hidden">
+        <div className="bg-white rounded-lg border border-slate-100 shadow-2xl p-6 md:p-12 relative overflow-hidden">
           <div className="flex justify-between mb-10">
             <div className="flex items-center gap-3 text-slate-400">
               <MousePointer2 size={16} style={{ color: BRAND_COLOR }} />
@@ -181,19 +210,30 @@ const ProfessionalSchedule = () => {
               selectMirror={true}
               unselectAuto={false}
               select={handleSelect}
+              dateClick={handleDateClick}
+              longPressDelay={300}
+              selectLongPressDelay={300}
               headerToolbar={{
                 left: "title",
                 center: "",
                 right: "prev,next today",
               }}
               height="auto"
+              contentHeight="auto"
+              aspectRatio={1.35}
               fixedWeekCount={false}
               dayCellClassNames={(arg) => {
                 const dateStr = format(arg.date, "yyyy-MM-dd");
                 let classes = [];
-                if (isBefore(arg.date, today))
+
+                if (isBefore(arg.date, today)) {
                   classes.push("disabled-day-cell");
-                if (selectedDates.has(dateStr)) classes.push("is-selected-day");
+                }
+
+                if (selectedDates.has(dateStr)) {
+                  classes.push("is-selected-day");
+                }
+
                 return classes;
               }}
             />
@@ -204,10 +244,9 @@ const ProfessionalSchedule = () => {
       <style jsx global>{`
         .fc-daygrid-day {
           cursor: pointer !important;
+          touch-action: manipulation;
         }
-        .fc .fc-view-harness {
-          cursor: default !important;
-        }
+
         .fc-highlight {
           cursor: pointer !important;
           opacity: 0.1;
@@ -296,7 +335,7 @@ const ProfessionalSchedule = () => {
         .is-selected-day {
           background-color: ${BRAND_COLOR} !important;
           color: white !important;
-          border-radius: 1rem; /* optional: rounded corners for nicer look */
+          border-radius: 0.5rem; /* optional: rounded corners for nicer look */
           box-shadow: 0 4px 10px rgba(114, 39, 91, 0.3);
         }
 
