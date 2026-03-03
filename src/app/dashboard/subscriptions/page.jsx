@@ -31,13 +31,20 @@ const Page = () => {
   const [pricePerMonth, setPricePerMonth] = useState(0);
   const [planId, setPlanId] = useState(null);
 
-  // Phone & Modal States
   const [country, setCountry] = useState("KE");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data, isLoading } = useFetch("/subscription-plan");
   const { user } = useAuth();
+
+  useEffect(() => {
+    if (user?.is_subscription_active) {
+      setIsSubscribed(true);
+    } else {
+      setIsSubscribed(false);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (data?.status === 200 && data?.data?.data.length > 0) {
@@ -245,7 +252,6 @@ const Page = () => {
               </Dialog>
             </div>
           ) : (
-            /* Success State */
             <div className="h-full flex flex-col justify-center items-center text-center py-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
               <div className="w-24 h-24 bg-green-100 text-green-600 rounded-lg flex items-center justify-center shadow-inner">
                 <svg

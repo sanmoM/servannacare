@@ -22,15 +22,14 @@ const Nurse = ({ skills }) => {
   const [step, setStep] = useState(1);
   // const [user, setUser] = useState({});
   const totalSteps = 6;
-  const {user}=useAuth();
+  const { user } = useAuth();
 
-
-    useEffect(() => {
-      if (user && !user?.is_profile_completed) {
-        setStarted(true);
-        setStep(1);
-      }
-    }, [user]);
+  useEffect(() => {
+    if (user && !user?.is_profile_completed) {
+      setStarted(true);
+      setStep(1);
+    }
+  }, [user]);
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
@@ -134,14 +133,14 @@ const Nurse = ({ skills }) => {
       if (EDUCATION?.practiceLicense) {
         fd.append("practiceLicense", EDUCATION.practiceLicense);
       }
-    
+
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-      
+
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
           router.push(`/dashboard/${user?.role}-profile`);
@@ -160,7 +159,7 @@ const Nurse = ({ skills }) => {
           );
         }
       } catch (error) {
-         toast.error("Error creating profile",error)
+        toast.error("Error creating profile", error);
 
         if (error.response) {
           toast.error(
