@@ -110,7 +110,7 @@ const page = () => {
       </div>
 
       <div className="overflow-x-auto mt-10">
-        <table className="w-full min-w-[600px] text-sm text-left border rounded-xl shadow">
+        <table className="w-full min-w-[600px] text-sm text-left border rounded-lg shadow">
           <thead className="bg-gray-100 border-b">
             <tr>
               <th className="px-6 py-3 font-semibold">Name</th>

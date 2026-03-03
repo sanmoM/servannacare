@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 const Page = () => {
   const router = useRouter();
@@ -95,23 +96,17 @@ const Page = () => {
       setIsDialogOpen(false);
       router.push("/dashboard/house-manager-payment-history");
     } catch (err) {
-      
       toast.error("Payment failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  if (isLoading)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
+  if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
-      <div className="max-w-5xl w-full bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col lg:flex-row border border-slate-100">
+    <div className="min-h-screen bg-slate-50 font-sans">
+      <div className="w-full bg-white rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col lg:flex-row border border-slate-100">
         {/* Left Section: Action Area */}
         <div className="w-full lg:w-3/5 p-8 md:p-16">
           {!isSubscribed ? (
@@ -131,7 +126,7 @@ const Page = () => {
                   <label className="text-sm font-bold uppercase tracking-widest text-slate-400">
                     Select Duration
                   </label>
-                  <span className="text-primary font-bold text-2xl bg-blue-50 px-4 py-1 rounded-full">
+                  <span className="text-primary font-bold text-2xl bg-blue-50 px-4 py-1 rounded-lg">
                     {months} {months === 1 ? "Month" : "Months"}
                   </span>
                 </div>
@@ -151,7 +146,7 @@ const Page = () => {
               </div>
 
               {/* Summary Card */}
-              <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100">
+              <div className="bg-slate-50 rounded-lg p-8 border border-slate-100">
                 <div className="space-y-4">
                   <div className="flex justify-between text-slate-600 font-medium">
                     <span>Base Subscription</span>
@@ -174,13 +169,13 @@ const Page = () => {
               {/* DIALOG FOR PAYMENT */}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <button className="w-full bg-primary hover:opacity-90 text-white font-black py-5 rounded-2xl shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97] cursor-pointer">
+                  <button className="w-full bg-primary hover:opacity-90 text-white font-black py-5 rounded-lg shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97] cursor-pointer">
                     <span className="text-xl tracking-tight uppercase ">
                       Go To Checkout
                     </span>
                   </button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8 border-none bg-white">
+                <DialogContent className="sm:max-w-md rounded-lg p-8 border-none bg-white">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-black text-center mb-4 text-slate-900">
                       M-Pesa Payment
@@ -194,7 +189,7 @@ const Page = () => {
                       </label>
                       <div className="phone-input-container">
                         <PhoneInputWithCountrySelect
-                          className="w-full flex border rounded-2xl px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all"
+                          className="w-full flex border rounded-lg px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all"
                           international
                           defaultCountry={country}
                           value={phoneNumber}
@@ -219,9 +214,8 @@ const Page = () => {
                       )}
                     </div>
 
-                    <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 space-y-2">
+                    <div className="bg-primary/5 p-5 rounded-lg border border-primary/10 space-y-2">
                       <div className="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
-
                         <span>Period</span>
                         <span>{months} Mo.</span>
                       </div>
@@ -238,10 +232,10 @@ const Page = () => {
                     <button
                       onClick={handlePayment}
                       disabled={loading}
-                      className="w-full bg-primary text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all disabled:bg-slate-300 flex items-center justify-center cursor-pointer"
+                      className="w-full bg-primary text-white py-4 rounded-lg font-black uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all disabled:bg-slate-300 flex items-center justify-center cursor-pointer"
                     >
                       {loading ? (
-                        <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-lg animate-spin" />
                       ) : (
                         "Pay Now"
                       )}
@@ -253,7 +247,7 @@ const Page = () => {
           ) : (
             /* Success State */
             <div className="h-full flex flex-col justify-center items-center text-center py-12 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center shadow-inner">
+              <div className="w-24 h-24 bg-green-100 text-green-600 rounded-lg flex items-center justify-center shadow-inner">
                 <svg
                   className="w-12 h-12"
                   fill="none"
@@ -276,8 +270,8 @@ const Page = () => {
                   Your specialist privileges have been successfully provisioned.
                 </p>
               </div>
-              <div className="w-full max-w-sm bg-primary p-1 rounded-3xl">
-                <div className="bg-white rounded-[1.4rem] p-6">
+              <div className="w-full max-w-sm bg-primary p-1 rounded-lg">
+                <div className="bg-white rounded-lg p-6">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                     Valid Until
                   </p>
@@ -316,7 +310,7 @@ const Page = () => {
                   },
                 ].map((item, idx) => (
                   <li key={idx} className="flex space-x-4">
-                    <div className="flex-shrink-0 w-6 h-6 bg-white/10 rounded-full flex items-center justify-center text-xs font-bold text-blue-200">
+                    <div className="flex-shrink-0 w-6 h-6 bg-white/10 rounded-lg flex items-center justify-center text-xs font-bold text-blue-200">
                       0{idx + 1}
                     </div>
                     <div>
@@ -333,7 +327,7 @@ const Page = () => {
             </div>
           </div>
           <div className="mt-12">
-            <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm">
+            <div className="p-6 bg-white/5 rounded-lg border border-white/10 backdrop-blur-sm">
               <p className="text-xs font-bold text-blue-200 uppercase mb-2">
                 Support Tier
               </p>

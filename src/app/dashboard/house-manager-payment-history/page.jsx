@@ -65,7 +65,7 @@ const PaymentPage = () => {
   if (isLoading) return <div className="p-10 text-center">Loading payments...</div>;
 
   return (
-    <div className="p-4">
+    <div className="">
       <h1 className="sectionHeading text-2xl font-bold mb-4">Payment History</h1>
 
       <div className="flex justify-end mb-4">
@@ -85,7 +85,7 @@ const PaymentPage = () => {
         </Select>
       </div>
 
-      <div className="overflow-x-auto w-full border rounded-xl shadow-sm">
+      <div className="overflow-x-auto w-full border rounded-lg shadow-sm">
         <table className="min-w-full text-sm text-left text-gray-700">
           <thead className="bg-gray-100 border-b">
             <tr>

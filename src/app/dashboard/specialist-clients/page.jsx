@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFetch } from "@/hooks/useFetch";
 import { postApi } from "@/lib/apiHandler";
 import { Eye, ChevronLeft, ChevronRight } from "lucide-react";
@@ -94,30 +95,6 @@ const Page = () => {
     return [];
   };
 
-  // const handleStatusChange = async (id, newStatus) => {
-  //   const previousClients = [...clients];
-
-  //   setClients((prev) =>
-  //     prev.map((c) => (c.id === id ? { ...c, booking_status: newStatus } : c)),
-  //   );
-
-  //   try {
-  //     const response = await postApi(`/update-booking-status/${id}`, {
-  //       booking_status: newStatus,
-  //     });
-
-  //     if (response.status === 200) {
-  //       toast.success(`Status updated to ${newStatus}`);
-  //     } else {
-  //       throw new Error("Failed");
-  //     }
-  //   } catch (err) {
-  //     toast.error("Failed to update status");
-
-  //     setClients(previousClients);
-  //   }
-  // };
-
   const handleStatusChange = async (id, newStatus) => {
     const previousClients = [...clients];
 
@@ -179,8 +156,8 @@ const Page = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div className="w-full sm:px-6 lg:px-8 py-6 bg-gray-50 min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
             Client Management
@@ -190,7 +167,7 @@ const Page = () => {
           </p>
         </div>
 
-        <div className="flex bg-gray-200/50 p-1 rounded-xl border border-gray-200">
+        {/* <div className="flex overflow-x-auto no-scrollbar bg-gray-200/50 p-1 rounded-xl border border-gray-200">
           {["all", ...statusOptions].map((status) => (
             <button
               key={status}
@@ -204,12 +181,30 @@ const Page = () => {
               {status}
             </button>
           ))}
+        </div> */}
+        <div className="w-full sm:w-[220px]">
+          <Select
+            value={activeFilter}
+            onValueChange={(value) => updateParams(value, null)}
+          >
+            <SelectTrigger className="w-full bg-white">
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              {statusOptions.map((status) => (
+                <SelectItem key={status} value={status} className="capitalize">
+                  {status}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="min-w-[900px] w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
@@ -268,8 +263,9 @@ const Page = () => {
                           {row.emergency_contact_number}
                         </div>
                         <div className="text-xs text-gray-400">
-                          {row?.relationship_to_booking_person ?
-                            `Guardian • ${row?.relationship_to_booking_person}` : "N/A"}
+                          {row?.relationship_to_booking_person
+                            ? `Guardian • ${row?.relationship_to_booking_person}`
+                            : "N/A"}
                         </div>
                       </td>
                       <td className="px-6 py-4">
