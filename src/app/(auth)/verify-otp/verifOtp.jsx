@@ -11,7 +11,7 @@ import OTPInputs from "@/components/auth/OtpInput";
 
 const VerifyOtpPage = () => {
   const router = useRouter();
-  const { setUser, setRole } = useAuth();
+  const { setUser, setRole, user } = useAuth();
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -49,6 +49,13 @@ const VerifyOtpPage = () => {
       sessionStorage.removeItem("redirectUrl");
 
       toast.success("Account verified successfully!");
+
+      // if (!profile?.data?.data?.is_profile_completed) {
+      //   router.replace(`/register?role=${profile?.data?.data?.subRole}`);
+      //   return;
+      // }
+
+      // router.replace(`/dashboard/${profile?.data?.data?.subRole}-profile`);
 
       if (redirectUrl && redirectUrl.startsWith("/")) {
         router.replace(redirectUrl);

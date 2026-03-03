@@ -318,7 +318,7 @@ const NurseUpdate = ({ data = {} }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      
+
       if (res?.status === 200) {
         toast.success("data Updated Successfully!");
       } else {
@@ -327,8 +327,7 @@ const NurseUpdate = ({ data = {} }) => {
         );
       }
     } catch (error) {
-      
-       toast.error("Error creating profile",error)
+      toast.error("Error creating profile", error);
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,
@@ -339,7 +338,7 @@ const NurseUpdate = ({ data = {} }) => {
         toast.error("An unexpected error occurred.");
       }
     }
- 
+
     router.push("/dashboard");
   };
 
@@ -349,7 +348,6 @@ const NurseUpdate = ({ data = {} }) => {
         {/* basic info  */}
 
         <h4 className="formHeading">Basic Information</h4>
-        <h1>update</h1>
 
         {/* Name + Location */}
         <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">

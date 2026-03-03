@@ -40,11 +40,13 @@ const NurseCreate = ({ data = {} }) => {
     },
     education: {
       education: data.education || "",
-
       isNursingInKenya:
-        data?.nurse?.isNursingInKenya === undefined
+        data?.isNursingInKenya === undefined
           ? null
-          : Boolean(data?.nurse?.isNursingInKenya),
+          : Boolean(data?.isNursingInKenya),
+      registrationNumber: data?.nurse?.registrationNumber || "",
+      practiceLicense: data?.nurse?.practiceLicense || null,
+      educationCertificate: data?.nurse?.educationCertificate || null,
     },
 
     experience: {
@@ -254,10 +256,10 @@ const NurseCreate = ({ data = {} }) => {
       return toast.error("Please select NCK registration option");
 
     if (education.isNursingInKenya) {
-      if (!experience.registrationNumber?.trim())
+      if (!education.registrationNumber?.trim())
         return toast.error("Registration number is required");
 
-      if (!experience.practiceLicense)
+      if (!education.practiceLicense)
         return toast.error("Practising license is required");
     }
 
@@ -325,7 +327,6 @@ const NurseCreate = ({ data = {} }) => {
       return;
     }
 
-
     const fd = new FormData();
     const BASICINFO = formData.basicInfo;
     const EDUCATION = formData.education;
@@ -344,7 +345,7 @@ const NurseCreate = ({ data = {} }) => {
 
     fd.append("education", EDUCATION.education);
     fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
-    fd.append("registrationNumber", EXPERIENCE.registrationNumber);
+    fd.append("registrationNumber", EDUCATION.registrationNumber);
 
     fd.append("hospitalBasedCare", EXPERIENCE.hospitalBasedCare ? 1 : 0);
     fd.append(
@@ -391,9 +392,13 @@ const NurseCreate = ({ data = {} }) => {
     if (EDUCATION?.educationCertificate) {
       fd.append("educationCertificate", EDUCATION.educationCertificate);
     }
-    if (EXPERIENCE?.practiceLicense) {
-      fd.append("practiceLicense", EXPERIENCE.practiceLicense);
+    if (EDUCATION?.practiceLicense) {
+      fd.append("practiceLicense", EDUCATION.practiceLicense);
     }
+
+    // for (let pair of fd.entries()) {
+    //   console.log(pair[0], pair[1]);
+    // }
 
     try {
       const res = await postApi("/create-profile", fd, {
@@ -401,26 +406,17 @@ const NurseCreate = ({ data = {} }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      
+
       if (res?.status === 200) {
         toast.success("Registered Successfully!");
         router.push("/dashboard");
-        // localStorage.setItem(
-        //   "user",
-        //   JSON.stringify({
-        //     ...user,
-        //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
-        //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
-        //   }),
-        // );
       } else {
         toast.error(
           res?.data?.message || "Something went wrong. Please try again.",
         );
       }
     } catch (error) {
-      
-       toast.error("Error creating profile",error)
+      toast.error("Error creating profile", error);
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,

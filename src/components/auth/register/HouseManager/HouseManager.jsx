@@ -17,7 +17,7 @@ const HouseManager = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 4;
-  // const [user, setUser] = useState({});
+
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -32,16 +32,9 @@ const HouseManager = () => {
       setStep(1);
     }
   }, [user]);
-  // useEffect(() => {
-  //   if (!user?.is_profile_completed) {
-  //     setStarted(true);
-  //     setStep(1);
-  //   }
-  // }, []);
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    // setUser(accountData);
   };
 
   const handleNext = async (dataForStep) => {
@@ -121,8 +114,8 @@ const HouseManager = () => {
           );
         }
       } catch (error) {
-         toast.error("Error creating profile",error)
-        
+        toast.error("Error creating profile", error);
+
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,
