@@ -1,4 +1,5 @@
 "use client";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import {
   Pagination,
   PaginationContent,
@@ -23,19 +24,19 @@ import React from "react";
 const PaymentPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const itemsPerPage = 5; 
+  const itemsPerPage = 5;
   const currentPage = Number(searchParams.get("page")) || 1;
   const filterStatus = searchParams.get("status") || "All";
 
   const { data, isLoading } = useFetch("/subscription-payment");
-  
 
   const rawPayments = data?.data?.payments || [];
 
-  
   const filteredPayments =
     filterStatus !== "All"
-      ? rawPayments.filter((p) => p.payment_status?.toLowerCase() === filterStatus.toLowerCase())
+      ? rawPayments.filter(
+          (p) => p.payment_status?.toLowerCase() === filterStatus.toLowerCase(),
+        )
       : rawPayments;
 
   const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
@@ -54,19 +55,20 @@ const PaymentPage = () => {
     router.push(`?page=1&status=${value}`);
   };
 
-  
   const statusColors = {
     pending: "bg-amber-500",
     paid: "bg-green-500",
     failed: "bg-red-500",
-    completed: "bg-blue-500"
+    completed: "bg-blue-500",
   };
 
-  if (isLoading) return <div className="p-10 text-center">Loading payments...</div>;
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="">
-      <h1 className="sectionHeading text-2xl font-bold mb-4">Payment History</h1>
+      <h1 className="sectionHeading text-2xl font-bold mb-4">
+        Payment History
+      </h1>
 
       <div className="flex justify-end mb-4">
         <Select value={filterStatus} onValueChange={onFilterChange}>
@@ -94,14 +96,19 @@ const PaymentPage = () => {
               <th className="px-6 py-4 font-semibold">Amount</th>
               <th className="px-6 py-4 font-semibold">Method</th>
               <th className="px-6 py-4 font-semibold">Status</th>
-              <th className="px-6 py-4 font-semibold">Transaction / Request ID</th>
+              <th className="px-6 py-4 font-semibold">
+                Transaction / Request ID
+              </th>
             </tr>
           </thead>
 
           <tbody>
             {currentPayments.length > 0 ? (
               currentPayments.map((row) => (
-                <tr key={row.id} className="bg-white border-b hover:bg-gray-50 transition">
+                <tr
+                  key={row.id}
+                  className="bg-white border-b hover:bg-gray-50 transition"
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     {new Date(row.created_at).toLocaleDateString("en-GB", {
                       day: "2-digit",
@@ -130,7 +137,10 @@ const PaymentPage = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                <td
+                  colSpan="6"
+                  className="px-6 py-10 text-center text-gray-500"
+                >
                   No payment records found.
                 </td>
               </tr>
@@ -143,7 +153,11 @@ const PaymentPage = () => {
         <Pagination className="mt-6 flex justify-center md:justify-end">
           <PaginationContent>
             <PaginationPrevious
-              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+              className={
+                currentPage === 1
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
               onClick={() => currentPage > 1 && goToPage(currentPage - 1)}
             />
             {Array.from({ length: totalPages }, (_, i) => (
@@ -158,8 +172,14 @@ const PaymentPage = () => {
               </PaginationItem>
             ))}
             <PaginationNext
-              className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              onClick={() => currentPage < totalPages && goToPage(currentPage + 1)}
+              className={
+                currentPage === totalPages
+                  ? "pointer-events-none opacity-50"
+                  : "cursor-pointer"
+              }
+              onClick={() =>
+                currentPage < totalPages && goToPage(currentPage + 1)
+              }
             />
           </PaginationContent>
         </Pagination>

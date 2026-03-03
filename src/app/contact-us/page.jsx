@@ -18,7 +18,7 @@ const page = () => {
     }
   }, [data]);
 
-  if (isLoading) return <LoadingSpinner/>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
 
   return (
@@ -42,30 +42,28 @@ const page = () => {
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Location Card */}
+              {contacts?.card?.map((item, indx) => (
+                <div
+                  key={indx}
+                  data-aos="fade-up"
+                  className="flex flex-col items-center p-8 rounded-lg border border-border bg-background hover:shadow-md transition-shadow duration-200"
+                >
+                  <div className="flex items-center justify-center h-14 w-14 rounded-full bg-primary/10 mb-4">
+                    <span
+                      dangerouslySetInnerHTML={{ __html: item?.icon }}
+                      className="w-6 h-6 text-primary"
+                    />
+                  </div>
 
-              {contacts?.card &&
-                contacts?.card?.map((item, indx) => (
-                  <>
-                    <div
-                      data-aos="fade-up"
-                      className="flex flex-col items-center p-8 rounded-lg border border-border bg-background hover:shadow-md transition-shadow duration-200"
-                    >
-                      <div className="flex items-center justify-center h-14 w-14 rounded-full bg-blue-100 mb-4">
-                        <span
-                          dangerouslySetInnerHTML={{ __html: item?.icon }}
-                          className="w-6 h-6"
-                        />
-                      </div>
-                      <h3 className="text-lg font-semibold text-foreground mb-2">
-                        {item?.title}
-                      </h3>
-                      <p className="text-center text-muted-foreground text-sm">
-                        {item?.subtitle}
-                      </p>
-                    </div>
-                  </>
-                ))}
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {item?.title}
+                  </h3>
+
+                  <p className="text-center text-muted-foreground text-sm">
+                    {item?.subtitle}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

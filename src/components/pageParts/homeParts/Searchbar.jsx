@@ -34,12 +34,12 @@ const Searchbar = () => {
 
   const today = startOfDay(new Date());
 
-  // Disable past dates for check-in
+
   const disabledCheckInDates = (date) => {
     return isBefore(date, today);
   };
 
-  // Disable dates before check-in for check-out
+
   const disabledCheckOutDates = (date) => {
     if (!checkIn) return isBefore(date, today);
     return isBefore(date, startOfDay(checkIn));
@@ -55,7 +55,7 @@ const Searchbar = () => {
       return;
     }
     if (!checkOut) {
-      toast.error("Please select checkout date!");
+      toast.error("Please select end date!");
       return;
     }
 
@@ -65,11 +65,7 @@ const Searchbar = () => {
     router.push(
       `/specialist?category=${category}&checkIn=${checkIN}&checkOut=${checkOUT}`,
     );
-
-    
   };
-
-  
 
   return (
     <div className="w-full mx-auto my-8 md:!mt-0 -translate-y-1/2 z-[20] relative -mb-30 md:-mb-14 max-w-4xl">
@@ -270,7 +266,11 @@ const Searchbar = () => {
         <div className="hidden lg:block w-px h-12 bg-gray-200"></div>
 
         {/* Search Button */}
-        <Button onClick={handleSearch} className="rounded-full" size="lg">
+        <Button
+          onClick={handleSearch}
+          className="rounded-full cursor-pointer"
+          size="lg"
+        >
           <Search className="w-7 h-7" /> SEARCH
         </Button>
       </div>

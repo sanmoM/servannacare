@@ -4,17 +4,17 @@ import Container from '@/components/shared/Container'
 import LoadingSpinner from '@/components/shared/LoadingSpin';
 import PageBanner from '@/components/shared/PageBanner'
 import { useFetch } from '@/hooks/useFetch';
-import { blogs } from '@/utilities/data';
+// import { blogs } from '@/utilities/data';
 import React, { useEffect, useState } from 'react'
 
 const page = () => {
-  const [homeData, setHomeData] = useState(null);
+  const [blogs, setBlogs] = useState(null);
 
 
   const { data, isLoading, error } = useFetch("/home");
   useEffect(() => {
     if (data) {
-      setHomeData(data?.data?.data ?? data); 
+      setBlogs(data?.data?.data ?? data); 
     }
   }, [data]);
 
@@ -30,7 +30,7 @@ const page = () => {
 
       <Container className={"grid grid-cols-1 gap-6 py-10 md:py-16 md:grid-cols-2"}>
         {
-          blogs.map((blog,indx) => {
+          blogs?.blogs?.map((blog,indx) => {
             const slug = blog.title.toLowerCase().replace(/ /g, "-");
             return(
               <BlogCard key={indx} blog={blog} slug={slug}></BlogCard>

@@ -76,7 +76,7 @@ export default function Home() {
           })}
         </Container>
         <Link href={"/blog"} className="mt-8 flex justify-center">
-          <Button size={"lg"}>
+          <Button className={"cursor-pointer"} size={"lg"}>
             More <ChevronRight />
           </Button>
         </Link>

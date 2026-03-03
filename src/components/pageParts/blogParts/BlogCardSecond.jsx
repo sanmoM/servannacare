@@ -4,32 +4,33 @@ import Link from "next/link";
 import React from "react";
 
 const BlogCardSecond = ({ blog, slug }) => {
-  const { id, title, description, image, category, comments, date } = blog;
+  const { id, title, description, image, category, comments, created_at } =
+    blog;
   return (
     <div className="grid grid-cols-4 gap-2">
       <div className="h-20 md:h-16 col-span-1">
         <Link className="" href={`/blog/${slug}?id=${id}`}>
-          {/* <Image
-            src={image}
-            height={100}
-            width={100}
-            quality={100}
-            alt="blog image"
-            className="h-full"
-          /> */}
+    
           <Image
             src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${image}`}
             alt={title}
-            fill
+            // fill
+            width={500}
+            height={200}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-110"
+            className="rounded-md"
           />
         </Link>
       </div>
       <div className="col-span-3">
         <div className="flex items-center gap-2">
           <Calendar width={14} />
-          <p className="text-xs">{date}</p>
+          <p className="text-xs">
+            {new Date(created_at)
+              .toLocaleDateString("en-GB")
+              .replace(/\//g, "-")
+              .slice(0, 8)}
+          </p>
         </div>
         <Link
           href={`/blog/${slug}?id=${id}`}
