@@ -127,11 +127,11 @@ const SpecialistSubscription = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-4 md:p-10 font-sans">
-      <div className="max-w-6xl w-full bg-white rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col lg:flex-row border border-slate-100">
+    <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center font-sans">
+      <div className=" w-full bg-white rounded-lg shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col lg:flex-row border border-slate-100">
         <div className="flex-1 p-8 md:p-14 lg:p-20 space-y-12">
           <header>
-            <div className="inline-block px-3 py-1 rounded-full bg-blue-50 text-primary text-[10px] font-bold uppercase tracking-widest mb-4">
+            <div className="inline-block px-3 py-1 rounded-lg bg-blue-50 text-primary text-[10px] font-bold uppercase tracking-widest mb-4">
               Agency Portal
             </div>
             <h2 className="text-4xl font-black text-slate-900 tracking-tight leading-none">
@@ -139,16 +139,16 @@ const SpecialistSubscription = () => {
             </h2>
           </header>
 
-          <div className="flex p-1.5 bg-slate-100 rounded-[2rem] border border-slate-200/50">
+          <div className="flex p-1.5 bg-slate-100 rounded-lg border border-slate-200/50">
             <button
               onClick={() => setTier("Silver")}
-              className={`flex-1 py-4 rounded-[1.6rem] cursor-pointer font-bold transition-all text-sm ${tier === "Silver" ? "bg-white text-primary shadow-lg translate-y-[-2px]" : "text-slate-500 hover:text-slate-700"}`}
+              className={`flex-1 py-4 rounded-lg cursor-pointer font-bold transition-all text-sm ${tier === "Silver" ? "bg-primary text-white shadow-lg translate-y-[-2px]" : "text-slate-500 hover:text-slate-700"}`}
             >
               Silver Tier
             </button>
             <button
               onClick={() => setTier("Gold")}
-              className={`flex-1 py-4 rounded-[1.6rem] cursor-pointer font-bold transition-all text-sm ${tier === "Gold" ? "bg-primary text-white shadow-xl translate-y-[-2px]" : "text-slate-500 hover:text-slate-700"}`}
+              className={`flex-1 py-4 rounded-lg cursor-pointer font-bold transition-all text-sm ${tier === "Gold" ? "bg-primary text-white shadow-xl translate-y-[-2px]" : "text-slate-500 hover:text-slate-700"}`}
             >
               Gold Tier
             </button>
@@ -159,7 +159,7 @@ const SpecialistSubscription = () => {
               <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">
                 Billing Period
               </span>
-              <span className="text-primary font-bold px-4 py-1.5 bg-blue-50 rounded-2xl text-sm border border-blue-100">
+              <span className="text-primary font-bold px-4 py-1.5 bg-blue-50 rounded-lg text-sm border border-blue-100">
                 {months} {months === 1 ? "Month" : "Months"}
               </span>
             </div>
@@ -178,7 +178,7 @@ const SpecialistSubscription = () => {
             </div>
           </div>
 
-          <div className="bg-[#fcfcfd] rounded-[2.5rem] p-10 border border-slate-100 relative overflow-hidden">
+          <div className="bg-[#fcfcfd] rounded-lg p-10 border border-slate-100 relative overflow-hidden">
             <div className="flex justify-between items-center mb-6">
               <span className="text-slate-500 font-medium">Monthly Rate</span>
               <span className="font-mono font-bold text-slate-900">
@@ -199,13 +199,13 @@ const SpecialistSubscription = () => {
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <button className="w-full bg-primary hover:opacity-90 text-white font-black py-5 rounded-2xl shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97] cursor-pointer">
+              <button className="w-full bg-primary hover:opacity-90 text-white font-black py-5 rounded-lg shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97] cursor-pointer">
                 <span className="text-xl tracking-tight uppercase ">
                   Go To Checkout
                 </span>
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md rounded-[2.5rem] p-8 border-none bg-white">
+            <DialogContent className="sm:max-w-md rounded-lg p-8 border-none bg-white">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-center mb-4 text-slate-900">
                   M-Pesa Payment
@@ -219,7 +219,7 @@ const SpecialistSubscription = () => {
                   </label>
                   <div className="phone-input-container">
                     <PhoneInputWithCountrySelect
-                      className="w-full flex border rounded-2xl px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all"
+                      className="w-full flex border rounded-lg px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all"
                       international
                       defaultCountry={country}
                       value={phoneNumber}
@@ -244,7 +244,7 @@ const SpecialistSubscription = () => {
                   )}
                 </div>
 
-                <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 space-y-2">
+                <div className="bg-primary/5 p-5 rounded-lg border border-primary/10 space-y-2">
                   <div className="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wider">
                     <span>{tier} Tier Plan</span>
                     <span>{months} Mo.</span>
@@ -262,10 +262,10 @@ const SpecialistSubscription = () => {
                 <button
                   onClick={handlePayment}
                   disabled={loading}
-                  className="w-full bg-primary text-white py-4 rounded-xl font-black uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all disabled:bg-slate-300 flex items-center justify-center cursor-pointer"
+                  className="w-full bg-primary text-white py-4 rounded-lg font-black uppercase tracking-widest shadow-lg hover:shadow-primary/20 transition-all disabled:bg-slate-300 flex items-center justify-center cursor-pointer"
                 >
                   {loading ? (
-                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-lg animate-spin" />
                   ) : (
                     "Pay Now"
                   )}
@@ -287,7 +287,7 @@ const SpecialistSubscription = () => {
                   key={idx}
                   className="flex space-x-4 transition-all duration-500"
                 >
-                  <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center text-[10px] font-bold">
+                  <div className="h-6 w-6 rounded-lg bg-white/20 flex items-center justify-center text-[10px] font-bold">
                     0{idx + 1}
                   </div>
                   <div>

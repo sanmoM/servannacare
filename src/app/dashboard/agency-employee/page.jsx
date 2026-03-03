@@ -95,7 +95,7 @@ const EmployeePage = () => {
   };
 
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
+    <div className=" mx-auto bg-gray-50 min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
@@ -128,7 +128,7 @@ const EmployeePage = () => {
       </div>
 
       {/* Main Table */}
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold tracking-wider">
@@ -149,7 +149,7 @@ const EmployeePage = () => {
                     {/* Basic Info */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-purple-100 flex-shrink-0 border overflow-hidden">
+                        <div className="h-10 w-10 rounded-lg bg-purple-100 flex-shrink-0 border overflow-hidden">
                           <img
                             src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${emp?.profilePhoto}`}
                             alt={emp.name}

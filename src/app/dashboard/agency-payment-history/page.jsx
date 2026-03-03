@@ -1,4 +1,5 @@
 "use client";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 import {
   Pagination,
   PaginationContent,
@@ -27,16 +28,15 @@ const PaymentHistoryPage = () => {
   const currentPage = Number(searchParams.get("page")) || 1;
   const filterStatus = searchParams.get("status") || "All";
 
-  
   const { data, isLoading } = useFetch("/subscription-payment");
-  
-  
-  const payments = data?.data?.payments || [];
 
+  const payments = data?.data?.payments || [];
 
   const filteredPayments =
     filterStatus !== "All"
-      ? payments.filter((p) => p.payment_status?.toLowerCase() === filterStatus.toLowerCase())
+      ? payments.filter(
+          (p) => p.payment_status?.toLowerCase() === filterStatus.toLowerCase(),
+        )
       : payments;
 
   const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
@@ -55,18 +55,19 @@ const PaymentHistoryPage = () => {
     router.push(`?page=1&status=${value}`);
   };
 
-
   const statusColors = {
     pending: "bg-amber-500",
     paid: "bg-green-600",
     failed: "bg-red-600",
   };
 
-  if (isLoading) return <div className="p-10 text-center">Loading payments...</div>;
+  if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="p-4">
-      <h1 className="sectionHeading text-2xl font-bold mb-4">Payment History</h1>
+    <div className="">
+      <h1 className="sectionHeading text-2xl font-bold mb-4">
+        Payment History
+      </h1>
 
       <div className="flex justify-end mb-4">
         <Select value={filterStatus} onValueChange={onFilterChange}>
@@ -91,10 +92,14 @@ const PaymentHistoryPage = () => {
             <tr className="text-xs sm:text-sm lg:text-base">
               <th className="px-6 py-4 font-semibold">Date</th>
               <th className="px-6 py-4 font-semibold">Plan Type</th>
-              <th className="px-6 py-4 font-semibold">Amount ({payments[0]?.currency || 'KES'})</th>
+              <th className="px-6 py-4 font-semibold">
+                Amount ({payments[0]?.currency || "KES"})
+              </th>
               <th className="px-6 py-4 font-semibold">Method</th>
               <th className="px-6 py-4 font-semibold">Status</th>
-              <th className="px-6 py-4 font-semibold">Transaction / Request ID</th>
+              <th className="px-6 py-4 font-semibold">
+                Transaction / Request ID
+              </th>
             </tr>
           </thead>
 
@@ -106,26 +111,20 @@ const PaymentHistoryPage = () => {
                   className="bg-white border-b hover:bg-gray-50 transition"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-           
                     {new Date(row.created_at).toLocaleDateString("en-GB", {
                       day: "2-digit",
                       month: "short",
                       year: "numeric",
                     })}
                   </td>
-                  <td className="px-6 py-4 font-medium">
-                    {row.plan_type}
-                  </td>
-                  <td className="px-6 py-4">
-                    {row.amount}
-                  </td>
-                  <td className="px-6 py-4 uppercase">
-                    {row.payment_method}
-                  </td>
+                  <td className="px-6 py-4 font-medium">{row.plan_type}</td>
+                  <td className="px-6 py-4">{row.amount}</td>
+                  <td className="px-6 py-4 uppercase">{row.payment_method}</td>
                   <td className="px-6 py-4">
                     <span
                       className={`${
-                        statusColors[row.payment_status.toLowerCase()] || "bg-gray-400"
+                        statusColors[row.payment_status.toLowerCase()] ||
+                        "bg-gray-400"
                       } text-white px-3 py-1 rounded-full text-xs font-medium capitalize`}
                     >
                       {row.payment_status}
@@ -154,7 +153,11 @@ const PaymentHistoryPage = () => {
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious
-                  className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
                   onClick={() => goToPage(currentPage - 1)}
                 />
               </PaginationItem>
@@ -173,7 +176,11 @@ const PaymentHistoryPage = () => {
 
               <PaginationItem>
                 <PaginationNext
-                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
                   onClick={() => goToPage(currentPage + 1)}
                 />
               </PaginationItem>

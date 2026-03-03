@@ -3,6 +3,7 @@
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useFetch } from "@/hooks/useFetch";
 import {
   Calendar,
   CheckCircle,
@@ -11,11 +12,24 @@ import {
   Info,
   Star,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
 
-  const isProfileCompleted = Boolean(user?.is_profile_completed);
+  const [stats, setStats] = useState(null);
+  console.log("stts", stats?.data);
+
+  const { data, isLoading, error } = useFetch("/dashboard-data");
+  useEffect(() => {
+    if (data) {
+      setStats(data?.data?.data ?? data);
+    }
+  }, [data]);
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -25,28 +39,28 @@ export default function DashboardPage() {
       id: 1,
       title: "Total Bookings",
       icon: <Calendar size={28} />,
-      count: 12,
+      count: stats?.data?.total_booking,
       color: "blue",
     },
     {
       id: 2,
       title: "Completed Services",
       icon: <CheckCircle size={28} />,
-      count: 8,
+      count: stats?.data?.total_booking_completed,
       color: "green",
     },
     {
       id: 3,
       title: "Pending Services",
       icon: <Clock size={28} />,
-      count: 4,
+      count: stats?.data?.total_booking_pending,
       color: "yellow",
     },
     {
       id: 4,
       title: "Total Spent",
       icon: <DollarSign size={28} />,
-      count: "KSh 45,000",
+      count: `KSh ${Number(stats?.data?.total_booking_amount).toLocaleString()}`,
       color: "purple",
     },
   ];
@@ -56,74 +70,73 @@ export default function DashboardPage() {
       id: 1,
       title: "Total Jobs Received",
       icon: <Calendar size={28} />,
-      count: 34,
+      count: stats?.data?.total_booking ?? 0,
       color: "blue",
     },
     {
       id: 2,
       title: "Jobs Completed",
       icon: <CheckCircle size={28} />,
-      count: 27,
+      count: stats?.data?.total_booking_completed ?? 0,
       color: "green",
     },
     {
       id: 3,
       title: "Pending Jobs",
       icon: <Clock size={28} />,
-      count: 5,
+      count: stats?.data?.total_booking_pending ?? 0,
       color: "yellow",
     },
     {
       id: 4,
       title: "Total Earnings",
       icon: <DollarSign size={28} />,
-      count: "KSh 125,400",
+      count: `KSh ${Number(stats?.data?.total_booking_amount ?? 0).toLocaleString()}`,
       color: "purple",
     },
-
     {
       id: 5,
       title: "Average Rating",
       icon: <Star size={28} />,
-      count: "4.8",
+      count: Number(stats?.data?.average_rating ?? 0).toFixed(1),
       color: "pink",
     },
   ];
+
   const agencyDashboardStats = [
     {
       id: 1,
       title: "Total Jobs Received",
       icon: <Calendar size={28} />,
-      count: 34,
+      count: stats?.data?.total_booking ?? 0,
       color: "blue",
     },
     {
       id: 2,
       title: "Jobs Completed",
       icon: <CheckCircle size={28} />,
-      count: 27,
+      count: stats?.data?.total_booking_completed ?? 0,
       color: "green",
     },
     {
       id: 3,
       title: "Pending Jobs",
       icon: <Clock size={28} />,
-      count: 5,
+      count: stats?.data?.total_booking_pending ?? 0,
       color: "yellow",
     },
     {
       id: 4,
       title: "Total Earnings",
       icon: <DollarSign size={28} />,
-      count: "KSh 125,400",
+      count: `KSh ${stats?.data?.total_booking_amount ?? 0}`,
       color: "purple",
     },
-
     {
       id: 5,
       title: "Average Rating",
       icon: <Star size={28} />,
-      count: "4.8",
+      count: stats?.data?.average_rating ?? 0,
       color: "pink",
     },
   ];
@@ -149,48 +162,6 @@ export default function DashboardPage() {
 
   return (
     <div>
-      {/* {!isProfileCompleted && (
-        <div className="mt-6 mb-8 rounded-xl border border-amber-300 bg-amber-100 p-5 shadow-md">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-amber-900">
-                Your profile is not complete
-              </h3>
-              <p className="text-sm text-amber-800 mt-1 max-w-lg">
-                Complete your profile to get verified faster and start receiving
-                more.
-              </p>
-            </div>
-
-            <Link
-              href={`/dashboard/${user?.role}-profile`}
-              className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-6 py-3 text-white font-medium hover:bg-amber-700 transition"
-            >
-              Complete Profile
-            </Link>
-          </div>
-        </div>
-      )} */}
-      {/* {!user?.is_profile_completed && (
-        <p className="p-4 mb-4 flex gap-2 text-base items-center font-medium rounded-xl text-white bg-red-400">
-          <Info /> Your account is not complete.
-        </p>
-      )}
-
-      {user?.is_profile_completed && (
-        <div className="p-4 mb-4 rounded-xl bg-green-50 border border-green-200 flex items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
-          <div className="text-green-700 font-medium">
-            Your profile is verified as{" "}
-            <span className="capitalize font-semibold">
-              {user?.subRole
-                ? user?.subRole?.replace(/-/g, " ")
-                : user?.role?.replace(/-/g, " ")}
-            </span>
-          </div>
-        </div>
-      )} */}
-
       <h1 className="sectionHeading">
         Hi <span className="text-primary">{user?.name || user?.email}!</span>
       </h1>

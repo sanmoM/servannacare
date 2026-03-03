@@ -18,7 +18,6 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [homeData, setHomeData] = useState(null);
-  console.log("homedata",homeData)
 
   const { data, isLoading, error } = useFetch("/home");
   useEffect(() => {
