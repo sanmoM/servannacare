@@ -254,7 +254,7 @@ const Navbar = () => {
               })}
             </ul>
 
-            <div className="mt-6 flex flex-col gap-4 px-5">
+            <div className="mb-6 flex flex-col gap-4 px-5">
               {loading ? (
                 <LoadingSpinner />
               ) : user ? (

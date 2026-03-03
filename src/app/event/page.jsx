@@ -10,7 +10,6 @@ import React, { useEffect, useState } from "react";
 
 const page = () => {
   const [events, setevents] = useState(null);
-  
 
   const { data, isLoading, error } = useFetch("/events");
   useEffect(() => {
@@ -19,7 +18,7 @@ const page = () => {
     }
   }, [data]);
 
-  if (isLoading) return <LoadingSpinner/>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
 
   const tfbEvents = [
@@ -105,7 +104,7 @@ const page = () => {
           </p>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {events?.map((event, indx) => {
-              const slug = event.title.toLowerCase().replace(/ /g, "-");
+              const slug = event?.title?.toLowerCase().replace(/ /g, "-");
               return (
                 <div
                   key={indx}
@@ -132,7 +131,7 @@ const page = () => {
                     </p>
                     <div className="mt-8 flex justify-end">
                       <Link href={`/event/${slug}?id=${event.id}`}>
-                        <Button>Read More</Button>
+                        <Button className={"cursor-pointer"}>Read More</Button>
                       </Link>
                     </div>
                   </div>

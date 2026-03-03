@@ -1,13 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/formatDate";
-import { Calendar, MessageCircleMoreIcon, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 const BlogCard = ({ blog, slug }) => {
   const { id, title, description, image, category, comments } = blog;
-  const date = new Date(blog.created_at);
   return (
     <div data-aos="fade-up" className="flex flex-col lg:flex-row gap-4">
       <div className="flex-1">

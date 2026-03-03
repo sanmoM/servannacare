@@ -253,7 +253,6 @@ const NurseCreate = ({ data = {} }) => {
     if (education.isNursingInKenya === null)
       return toast.error("Please select NCK registration option");
 
-    // If NCK = YES
     if (education.isNursingInKenya) {
       if (!experience.registrationNumber?.trim())
         return toast.error("Registration number is required");

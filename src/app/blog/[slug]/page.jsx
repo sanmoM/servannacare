@@ -15,7 +15,7 @@ const BlogDetails = () => {
   const paramsId = searchParams.get("id");
 
   const [blogData, setBlogData] = useState(null);
-  console.log("blogdfd",blogData)
+
 
   const { data, isLoading, error } = useFetch("/home");
 
@@ -32,7 +32,7 @@ const BlogDetails = () => {
 
   const blog = blogData?.blogs?.find((blog) => blog.id === parseInt(paramsId));
   const slug = blog.title.toLowerCase().replace(/ /g, "-");
-  console.log("blog", blog);
+
 
   if (!blog) {
     return notFound();

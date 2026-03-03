@@ -10,6 +10,72 @@ import React, { useEffect, useState } from "react";
 
 const page = () => {
   const [contacts, setcontacts] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "name" && value.length > 15) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.length > 15) {
+      newErrors.name = "Name must be max 15 characters";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!formData.subject.trim()) {
+      newErrors.subject = "Subject is required";
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Message is required";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!validate()) return;
+
+    // console.log("Form Data:", formData);
+
+    setFormData({
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
+  };
 
   const { data, isLoading, error } = useFetch("/contacts");
   useEffect(() => {
@@ -71,8 +137,8 @@ const page = () => {
         <div className="py-10 flex flex-col gap-6 lg:flex-row lg:py12">
           <div className="flex-1">
             <form
-              className="space-y-4  p-6 rounded-xl border-2 lg:max-w-7xl mx-auto"
-              action=""
+              onSubmit={handleSubmit}
+              className="space-y-4 p-6 rounded-xl border-2 lg:max-w-7xl mx-auto"
               data-aos="fade-up"
             >
               <Input
@@ -80,19 +146,34 @@ const page = () => {
                 name="name"
                 placeholder="Enter your Name"
                 label="Name"
+                value={formData.name}
+                onChange={handleChange}
               />
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+              )}
               <Input
                 type="email"
                 name="email"
                 placeholder="Enter your email"
                 label="Email"
+                value={formData.email}
+                onChange={handleChange}
               />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
               <Input
                 type="text"
                 name="subject"
                 placeholder="Subject"
                 label="Subject"
+                value={formData.subject}
+                onChange={handleChange}
               />
+              {errors.subject && (
+                <p className="text-red-500 text-xs mt-1">{errors.subject}</p>
+              )}
               <div>
                 <label
                   className="block mb-2 text-sm font-medium text-gray-700"
@@ -101,17 +182,21 @@ const page = () => {
                   Message
                 </label>
                 <textarea
+                  name="message"
                   placeholder="Message"
-                  className="border rounded-xl w-full  px-4 py-3 text-sm outline-primary"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="border rounded-xl w-full px-4 py-3 text-sm outline-primary"
                   rows={4}
-                  name=""
-                  id=""
-                ></textarea>
+                />
+                {errors.message && (
+                  <p className="text-red-500 text-xs mt-1">{errors.message}</p>
+                )}
               </div>
               <div className="flex justify-end">
-                <Button className={"mt-4 w-full sm:w-auto "} size={"lg"}>
-                  Submit
-                </Button>
+               <Button type="submit" className="mt-4 w-full sm:w-auto cursor-pointer" size="lg">
+  Submit
+</Button>
               </div>
             </form>
           </div>
