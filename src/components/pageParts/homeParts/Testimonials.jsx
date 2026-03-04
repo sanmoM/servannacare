@@ -13,6 +13,8 @@ import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
 import toast from "react-hot-toast";
+import { useFetch } from "@/hooks/useFetch";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 export default function Testimonials({ homeData }) {
   const [startCount, setStartCount] = useState(false);
@@ -22,6 +24,15 @@ export default function Testimonials({ homeData }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const [homeFeedback, setHomeFeedback] = useState(null);
+  console.log("dfdf", homeFeedback);
+  const { data, isLoading } = useFetch("/home-feedback");
+  useEffect(() => {
+    if (data) {
+      setHomeFeedback(data?.data?.data ?? data);
+    }
+  }, [data]);
 
   const isValidEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -75,6 +86,9 @@ export default function Testimonials({ homeData }) {
     return () => observer.disconnect();
   }, []);
 
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <div>Error loading data</div>;
+
   return (
     <section className="w-full py-10 md:py-16 bg-[#ccb7c65b]">
       <Container>
@@ -116,9 +130,9 @@ export default function Testimonials({ homeData }) {
             }}
             className="pb-24"
           >
-            {testimonials.map((t) => (
-              <SwiperSlide key={t.id}>
-                <TestimonialCard testimonial={t} />
+            {homeFeedback?.map((item) => (
+              <SwiperSlide key={item.id}>
+                <TestimonialCard testimonial={item} />
               </SwiperSlide>
             ))}
           </Swiper>
@@ -179,42 +193,50 @@ export default function Testimonials({ homeData }) {
 }
 
 function TestimonialCard({ testimonial }) {
+  const { message, rating, specialist } = testimonial;
+
+  const words = message?.split(" ") || [];
+  const shortMessage =
+    words.slice(0, 16).join(" ") + (words.length > 16 ? "..." : "");
+
   return (
     <div data-aos="fade-up" className="h-full">
-      <div className="bg-card border border-border rounded-xl  h-full flex flex-col hover:border-primary/30 transition-all duration-300 hover:shadow-md  hover:shadow-primary/5  group">
+      <div className="bg-card border border-border rounded-xl h-full flex flex-col hover:border-primary/30 transition-all duration-300 hover:shadow-md hover:shadow-primary/5 group">
         <div className="px-6 pt-8">
-          {/* Quote Icon */}
           <Quote className="w-8 h-8 text-primary mb-6" />
 
-          {/* Rating Stars */}
+          {/* Dynamic Stars */}
           <div className="flex items-center gap-1 mb-4">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className="w-4 h-4 text-yellow-400 fill-yellow-400 transition-transform duration-200 group-hover:scale-110"
+                className={`w-4 h-4 transition-transform duration-200 group-hover:scale-110 ${
+                  i < Number(rating)
+                    ? "text-yellow-400 fill-yellow-400"
+                    : "text-gray-300"
+                }`}
               />
             ))}
           </div>
 
           <p className="text-card-foreground text-sm lg:text-base leading-relaxed mb-8 font-light italic">
-            “{testimonial.content.split(" ").slice(0, 16).join(" ")}
-            {testimonial.content.split(" ").length > 16 ? "..." : ""}”
+            “{shortMessage}”
           </p>
         </div>
 
         {/* Client Info */}
         <div className="flex bg-primary p-6 rounded-b-2xl items-center gap-4">
           <img
-            src={testimonial.image || "/placeholder.svg"}
-            alt={testimonial.name}
+            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${specialist?.profilePhoto}`}
+            alt={specialist?.name}
             className="w-12 h-12 rounded-full object-cover"
           />
-          <div className="">
-            <p className="font-semibold text-gray-100 text-card-foreground text-sm">
-              {testimonial.name}
+          <div>
+            <p className="font-semibold text-gray-100 text-sm">
+              {specialist?.name}
             </p>
-            <p className="text-xs text-gray-200  font-light">
-              {testimonial.role} • {testimonial.company}
+            <p className="text-xs text-gray-200 font-light">
+              {specialist?.role}
             </p>
           </div>
         </div>

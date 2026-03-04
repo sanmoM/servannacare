@@ -108,28 +108,28 @@ const Footer = () => {
             <a
               href="#"
               aria-label="Facebook"
-              className="text-blue-200 transition-colors duration-200"
+              className="text-white transition-colors duration-200"
             >
               <Facebook size={20} />
             </a>
             <a
               href="#"
               aria-label="Twitter"
-              className="text-blue-200 transition-colors duration-200"
+              className="text-white transition-colors duration-200"
             >
               <Twitter size={20} />
             </a>
             <a
               href="#"
               aria-label="Instagram"
-              className="text-blue-200 transition-colors duration-200"
+              className="text-white transition-colors duration-200"
             >
               <Instagram size={20} />
             </a>
             <a
               href="#"
               aria-label="LinkedIn"
-              className="text-blue-200 transition-colors duration-200"
+              className="text-white transition-colors duration-200"
             >
               <Linkedin size={20} />
             </a>
