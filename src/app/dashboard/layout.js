@@ -321,10 +321,10 @@ export default function DashboardLayout({ children }) {
         )}
         <aside
           className={`bg-primary text-white fixed top-0 left-0 h-full z-50
-  transition-transform duration-300
-  w-72
-  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-  lg:translate-x-0 lg:static`}
+            transform transition-transform duration-300
+    w-72
+    ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    lg:translate-x-0 lg:static`}
         >
           <div className="flex flex-col h-full">
             <div className="p-4 border-b border-white/20 flex justify-between items-center">
@@ -345,19 +345,17 @@ export default function DashboardLayout({ children }) {
                 <NavLink key={link.name} link={link} />
               ))}
             </nav>
-            <Button
-              onClick={handleLogout}
-              className={"cursor-pointer bg-secondary mx-3 mb-4 "}
-            >
+
+            <Button onClick={handleLogout} className="bg-secondary mx-3 mb-4 cursor-pointer">
               Log Out
             </Button>
           </div>
         </aside>
 
         <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="bg-primary sticky top-0 z-30 flex md:justify-end justify-between p-4 text-white">
+          <div className="bg-primary sticky top-0 z-30 flex lg:justify-end justify-between p-4 text-white">
             <button
-              className="md:hidden"
+              className="block lg:hidden"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
               <PanelLeft />
