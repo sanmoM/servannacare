@@ -418,7 +418,7 @@ export default function DashboardLayout({ children }) {
             </div>
           </div>
 
-          <div className=" lg:p-4">{children}</div>
+          <div className="p-4 lg:p-4">{children}</div>
         </main>
       </div>
     </PrivateRoute>
