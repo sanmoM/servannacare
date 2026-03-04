@@ -226,7 +226,7 @@ const ChatInbox = () => {
   );
 
   return (
-    <div className="flex h-screen md:h-[85vh] md:border md:rounded-lg overflow-hidden bg-white md:shadow-2xl">
+    <div className="flex h-[85vh] md:h-[85vh] md:border md:rounded-lg overflow-hidden bg-white md:shadow-2xl">
       {/* SIDEBAR */}
       <div
         className={`${view === "chat" ? "hidden" : "flex"} w-full md:flex md:w-80 border-r flex-col bg-gray-50/50`}

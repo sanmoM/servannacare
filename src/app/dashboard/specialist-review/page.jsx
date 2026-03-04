@@ -121,35 +121,51 @@ const page = () => {
           </thead>
 
           <tbody>
-            {reviews.map((fb) => (
-              <tr key={fb.id} className="border-b hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">{fb.user?.name}</td>
+            {reviews && reviews.length > 0 ? (
+              reviews.map((fb) => (
+                <tr key={fb.id} className="border-b hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {fb.user?.name}
+                  </td>
 
-                <td className="px-6 py-4 whitespace-nowrap flex">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-4 h-4 ${
-                        i < fb.rating
-                          ? "text-yellow-500 fill-yellow-500"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </td>
+                  <td className="px-6 py-4 whitespace-nowrap flex">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < fb.rating
+                            ? "text-yellow-500 fill-yellow-500"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </td>
 
-                <td className="px-6 py-4">{fb.review}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {(() => {
-                    const date = new Date(fb.created_at);
-                    const day = String(date.getDate()).padStart(2, "0");
-                    const month = String(date.getMonth() + 1).padStart(2, "0");
-                    const year = date.getFullYear();
-                    return `${day}-${month}-${year}`;
-                  })()}
+                  <td className="px-6 py-4">{fb.review}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {(() => {
+                      const date = new Date(fb.created_at);
+                      const day = String(date.getDate()).padStart(2, "0");
+                      const month = String(date.getMonth() + 1).padStart(
+                        2,
+                        "0",
+                      );
+                      const year = date.getFullYear();
+                      return `${day}-${month}-${year}`;
+                    })()}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={4}
+                  className="text-center py-4 text-gray-500 italic"
+                >
+                  No reviews yet
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
