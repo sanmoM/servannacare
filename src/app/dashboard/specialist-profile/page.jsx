@@ -25,6 +25,7 @@ import Physiotherapist from "@/components/updateProfile/Physiotherapist/Physioth
 import PhysiotherapistCreate from "@/components/updateProfile/Physiotherapist/PhysiotherapistCreate";
 import SpecialNeedCaregiversCreate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversCreate";
 import SpecialNeedCaregiversUpdate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversUpdate";
+import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
 import {
   Calendar,
@@ -40,13 +41,15 @@ import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
-  // console.log(specialistDatas);
+  const [schedule, setSchedule] = useState(null);
+  const { user } = useAuth();
 
   const { data, isLoading, error } = useFetch("/profile");
 
   useEffect(() => {
     if (data) {
-      setSpecialistDatas(data?.data?.data ?? data);
+      setSpecialistDatas(user);
+      setSchedule(data?.data ?? data);
     }
   }, [data]);
 

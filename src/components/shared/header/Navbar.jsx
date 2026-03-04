@@ -46,7 +46,7 @@ const Navbar = () => {
     { text: "Home", link: "/", icon: Home },
     { text: "Our Services", link: "/services", icon: HandHeart },
     { text: "Specialist", link: "/specialist", icon: Users },
-    // { text: "Blog", link: "/blog",icon:LayoutList  },
+    { text: "Blog", link: "/blog",icon:LayoutList  },
     { text: "About Us", link: "/about-us", icon: BookAlert },
     // { text: "FAQ", link: "/faq",icon:CircleQuestionMark  },
     { text: "Event", link: "/event", icon: BookImage },

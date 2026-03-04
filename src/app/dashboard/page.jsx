@@ -18,7 +18,6 @@ export default function DashboardPage() {
   const { user, loading } = useAuth();
 
   const [stats, setStats] = useState(null);
-  console.log("stts", stats?.data);
 
   const { data, isLoading, error } = useFetch("/dashboard-data");
   useEffect(() => {

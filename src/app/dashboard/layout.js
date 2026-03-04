@@ -47,6 +47,7 @@ export default function DashboardLayout({ children }) {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { logout, user, loading } = useAuth();
+  // console.log(user)
 
   const {
     data: notificationData,
@@ -183,12 +184,14 @@ export default function DashboardLayout({ children }) {
   const specialistLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/specialist-profile", icon: User },
+    { name: "Feedback", href: "/dashboard/specialist-feedback", icon: Smile },
     {
       name: "Schedule",
       href: "/dashboard/specialist-schedule",
       icon: Calendar,
     },
     { name: "Clients", href: "/dashboard/specialist-clients", icon: Users },
+    { name: "Inbox", href: "/dashboard/specialist-inbox", icon: Inbox },
     { name: "Note", href: "/dashboard/specialist-note", icon: Notebook },
 
     ...(user?.subRole === "house-manager"
@@ -206,8 +209,7 @@ export default function DashboardLayout({ children }) {
         ]
       : []),
 
-    { name: "Inbox", href: "/dashboard/specialist-inbox", icon: Inbox },
-    { name: "Review", href: "/dashboard/feedback", icon: Smile },
+    { name: "Review", href: "/dashboard/specialist-review", icon: Smile },
   ];
 
   const agencyLinks = [
@@ -345,7 +347,7 @@ export default function DashboardLayout({ children }) {
             </nav>
             <Button
               onClick={handleLogout}
-              className={"cursor-pointer bg-secondary mx-3 mb-4"}
+              className={"cursor-pointer bg-secondary mx-3 mb-4 "}
             >
               Log Out
             </Button>
@@ -416,7 +418,7 @@ export default function DashboardLayout({ children }) {
             </div>
           </div>
 
-          <div className="p-4 lg:p-8">{children}</div>
+          <div className=" lg:p-4">{children}</div>
         </main>
       </div>
     </PrivateRoute>

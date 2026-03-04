@@ -27,7 +27,7 @@ import { useAuth } from "@/hooks/useAuth";
 const NurseUpdate = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
@@ -320,6 +320,7 @@ const NurseUpdate = ({ data = {} }) => {
       });
 
       if (res?.status === 200) {
+        await refreshUser();
         toast.success("data Updated Successfully!");
       } else {
         toast.error(

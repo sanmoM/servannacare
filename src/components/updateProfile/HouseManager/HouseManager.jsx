@@ -1,4 +1,3 @@
-import FilePreview from "@/components/auth/register/FilePreview";
 import FileUpload from "@/components/auth/register/FileUpload";
 import Input from "@/components/shared/Input";
 import { Button } from "@/components/ui/button";
@@ -35,7 +34,7 @@ import { useAuth } from "@/hooks/useAuth";
 const HouseManager = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
@@ -256,6 +255,8 @@ const HouseManager = ({ data = {} }) => {
       const res = await postApi("/update-profile", fd);
 
       if (res?.status === 200) {
+        await refreshUser();
+
         toast.success("Profile Updated Successfully!");
         router.push("/dashboard");
 
@@ -271,8 +272,7 @@ const HouseManager = ({ data = {} }) => {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      
-      toast.error("Upload failed",error);
+      toast.error("Upload failed", error);
     }
   };
 
@@ -293,15 +293,22 @@ const HouseManager = ({ data = {} }) => {
           </div>
           <div className="flex-1">
             <Input
-              type="number"
+              type="text"
+              inputMode="numeric"
               placeholder="Your age"
               name="age"
               label="Age"
-              maxLength={2}
               value={formData.basicInfo?.age}
               onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-                handleChange("basicInfo", "age", val);
+                const val = e.target.value.replace(/\D/g, "").slice(0, 3);
+
+                setFormData((prev) => ({
+                  ...prev,
+                  basicInfo: {
+                    ...prev.basicInfo,
+                    age: val,
+                  },
+                }));
               }}
             />
           </div>
@@ -370,12 +377,12 @@ const HouseManager = ({ data = {} }) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                             <SelectItem value="1000-20000">1000 - 20000</SelectItem>
-                                 <SelectItem value="21000-40000">21000 - 40000</SelectItem>
-                                 <SelectItem value="41000-60000">41000 - 60000</SelectItem>
-                                 <SelectItem value="61000-80000">61000 - 80000</SelectItem>
-                                 <SelectItem value="81000-90000">81000 - 90000</SelectItem>
-                                 <SelectItem value="100000+">More than 100000</SelectItem>
+                  <SelectItem value="1000-20000">1000 - 20000</SelectItem>
+                  <SelectItem value="21000-40000">21000 - 40000</SelectItem>
+                  <SelectItem value="41000-60000">41000 - 60000</SelectItem>
+                  <SelectItem value="61000-80000">61000 - 80000</SelectItem>
+                  <SelectItem value="81000-90000">81000 - 90000</SelectItem>
+                  <SelectItem value="100000+">More than 100000</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -738,7 +745,7 @@ const HouseManager = ({ data = {} }) => {
               placeholder="e.g., 35000"
               value={formData.additionalDetails.serviceFeeMonth}
               onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                const val = e.target.value.replace(/\D/g, "").slice(0, 8);
                 setFormData((prev) => ({
                   ...prev,
                   additionalDetails: {

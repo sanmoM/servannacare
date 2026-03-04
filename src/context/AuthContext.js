@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useCallback } from "react";
 import { getApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
 
@@ -12,22 +12,27 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const fetchCurrentUser = async () => {
+ 
+  const fetchCurrentUser = useCallback(async (showLoader = true) => {
     try {
+      if (showLoader) setLoading(true);
+
       const res = await getApi("/profile");
+
       if (res?.data?.status) {
         const userData = res.data.data;
         setUser(userData);
         setRole(userData.role);
+         return userData
       } else {
         logout();
       }
     } catch (error) {
       logout();
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -37,30 +42,23 @@ export const AuthProvider = ({ children }) => {
     } else {
       setLoading(false);
     }
-  }, []);
-
-  // const login = (userData, token) => {
-  //   localStorage.setItem("token", token);
-  //   setUser(userData);
-  //   setRole(userData.role);
-  // };
+  }, [fetchCurrentUser]);
 
   const logout = () => {
     localStorage.removeItem("token");
-    router.push("/");
     setUser(null);
     setRole(null);
+    router.push("/");
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        setUser,
         role,
-        setRole,
         loading,
         logout,
+        refreshUser: () => fetchCurrentUser(false), 
       }}
     >
       {children}

@@ -35,7 +35,7 @@ import { useAuth } from "@/hooks/useAuth";
 const NurseAideUpdate = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
@@ -276,14 +276,14 @@ const NurseAideUpdate = ({ data = {} }) => {
       const res = await postApi("/update-profile", fd);
 
       if (res?.status === 200) {
+        await refreshUser();
         toast.success("Profile Updated Successfully!");
         router.push("/dashboard");
       } else {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      
-      toast.error("Upload failed.",error);
+      toast.error("Upload failed.", error);
     }
   };
 

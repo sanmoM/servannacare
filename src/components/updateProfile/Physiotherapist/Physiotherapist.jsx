@@ -34,8 +34,7 @@ import PhoneInputWithCountrySelect, {
 import "react-phone-number-input/style.css";
 
 const Physiotherapist = ({ data = {} }) => {
-
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     basicInfo: {
@@ -260,7 +259,6 @@ const Physiotherapist = ({ data = {} }) => {
       }
     });
 
-  
     // for (let pair of fd.entries()) {
     //   console.log(pair[0], pair[1]);
     // }
@@ -269,6 +267,7 @@ const Physiotherapist = ({ data = {} }) => {
       const res = await postApi("/update-profile", fd);
 
       if (res?.status === 200) {
+        await refreshUser();
         toast.success("Profile Updated Successfully!");
         router.push("/dashboard");
 
@@ -284,11 +283,8 @@ const Physiotherapist = ({ data = {} }) => {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-      
-      toast.error("Upload failed.",error);
+      toast.error("Upload failed.", error);
     }
-
-
   };
 
   return (
