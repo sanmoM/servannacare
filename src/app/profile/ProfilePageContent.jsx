@@ -17,6 +17,7 @@ import {
   Globe,
   Car,
   GraduationCap,
+  MessageCircle,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -45,7 +46,8 @@ const ProfilePageContent = () => {
       : "unknown";
 
     const isHouseFlow =
-      matchedData.type === "house-manager" || matchedData.type === "agency-employee";
+      matchedData.type === "house-manager" ||
+      matchedData.type === "agency-employee";
 
     const basePath = isHouseFlow ? "/houseManagerBookingForm" : "/bookingForm";
 
@@ -130,6 +132,14 @@ const ProfilePageContent = () => {
               </div>
             </div>
             <Button
+              // onClick={handleBookNow}
+              // disabled={loading}
+              variant="outline"
+              className="w-full mt-6 cursor-pointer text-primary"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" /> Message
+            </Button>
+            <Button
               onClick={handleBookNow}
               disabled={loading}
               className="w-full mt-6 cursor-pointer"
@@ -165,7 +175,7 @@ const ProfilePageContent = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
+                  <Check className="w-4 h-4 text-primary" />
                   <p className="text-sm">
                     <b>Exp:</b> {roleSpecificInfo?.experience || 0} Years
                   </p>
@@ -190,7 +200,7 @@ const ProfilePageContent = () => {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
+                  <Check className="w-4 h-4 text-primary" />
                   <p className="text-sm">
                     <b>Preferred Role:</b> {matchedData.preferredRole}
                   </p>
