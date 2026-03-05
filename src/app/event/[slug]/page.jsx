@@ -15,7 +15,7 @@ const EventDetails = () => {
   const paramsId = searchParams.get("id");
 
   const [events, setEvents] = useState(null);
-  console.log(events);
+
   const { data, isLoading, error } = useFetch("/events");
 
   useEffect(() => {

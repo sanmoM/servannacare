@@ -114,7 +114,6 @@ const Page = () => {
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
       <div className="w-full bg-white rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden flex flex-col lg:flex-row border border-slate-100">
-        {/* Left Section: Action Area */}
         <div className="w-full lg:w-3/5 p-8 md:p-16">
           {!isSubscribed ? (
             <div className="space-y-10">

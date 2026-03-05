@@ -40,12 +40,14 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { deleteApi } from "@/lib/apiHandler";
 import SelectableCalendar from "@/components/SelectableCalendar";
+import { useRouter } from "next/navigation";
 
 const InstitutionNursePage = () => {
   const [nurses, setNurses] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [institute, setInstitute] = useState([]);
   const [isEditOpen, setIsEditOpen] = useState(null);
-
+  const router = useRouter();
   const [scheduleViewId, setScheduleViewId] = useState(null);
 
   const { data, isLoading, refetch } = useFetch("/profile");
@@ -53,6 +55,7 @@ const InstitutionNursePage = () => {
   useEffect(() => {
     if (data) {
       setNurses(data?.data?.institutionNurses || data?.institutionNurses || []);
+      setInstitute(data?.data?.careInstitution || data?.careInstitution || []);
     }
   }, [data]);
 
@@ -84,28 +87,41 @@ const InstitutionNursePage = () => {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const handleAddSpecialists = () => {
+    if (!institute || Object.keys(institute).length === 0) {
+      toast.error("Please complete your Institute profile first.");
+      router.push("/dashboard/care_institutions-profile");
+      return;
+    }
+
+    setShowAddModal(true);
+  };
+
   return (
-    <div className="p-4 lg:p-8 max-w-7xl mx-auto bg-gray-50 min-h-screen">
+    <div className="lg:p-4 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Institution Nurse Management
+            Institution specialists Management
           </h1>
           <p className="text-sm text-gray-500">
-            View, update, and manage your nursing staff.
+            View, update, and manage your specialists.
           </p>
         </div>
 
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary shadow-sm w-full sm:w-auto">
-              <Plus className="mr-2" size={18} /> Add New Nurse
+            <Button
+              onClick={handleAddSpecialists}
+              className="bg-primary shadow-sm w-full sm:w-auto cursor-pointer"
+            >
+              <Plus className="mr-2" size={18} /> Add New Specialist
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Register New Nurse</DialogTitle>
+              <DialogTitle>Register New specialists</DialogTitle>
             </DialogHeader>
 
             <MedicalInstitutionNurse
@@ -124,7 +140,7 @@ const InstitutionNursePage = () => {
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold tracking-wider">
               <tr>
-                <th className="px-6 py-4">Nurse Details</th>
+                <th className="px-6 py-4">specialists Details</th>
                 <th className="px-6 py-4">Role</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
@@ -197,7 +213,7 @@ const InstitutionNursePage = () => {
                             <DialogHeader>
                               <DialogTitle className="flex items-center gap-2">
                                 <span className="text-primary">
-                                  Nurse Profile:
+                                  specialists Profile:
                                 </span>
                                 {nurse.fullName}
                               </DialogTitle>
@@ -379,7 +395,6 @@ const InstitutionNursePage = () => {
                             <SelectableCalendar
                               mode="multiple"
                               selectedDates={nurse.schedule?.[0]?.date || []}
-                              
                             />
                           </DialogContent>
                         </Dialog>

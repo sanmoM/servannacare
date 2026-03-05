@@ -56,7 +56,6 @@ export default function DashboardLayout({ children }) {
   } = useFetch("/notifications");
 
   const notifications = notificationData?.data?.data ?? [];
-  console.log("noti", notifications);
 
   const isProfileCompleted = Boolean(user?.is_profile_completed);
   const isProfileVerified = Boolean(user?.is_profile_verified);
@@ -243,7 +242,7 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/care_institutions-profile",
       icon: User,
     },
-    { name: "Nurses", href: "/dashboard/care-institution-nurses", icon: Cross },
+    { name: "Specialists", href: "/dashboard/care-institution-specialists", icon: Cross },
     // {
     //   name: "Schedule",
     //   href: "/dashboard/care-institution-schedule",

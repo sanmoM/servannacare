@@ -26,7 +26,6 @@ export default function Testimonials({ homeData }) {
   const [success, setSuccess] = useState("");
 
   const [homeFeedback, setHomeFeedback] = useState(null);
-  console.log("dfdf", homeFeedback);
   const { data, isLoading } = useFetch("/home-feedback");
   useEffect(() => {
     if (data) {
