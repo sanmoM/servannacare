@@ -771,7 +771,7 @@ export const serviceCategory = [
   {
     mainCategory: "House Manager / Nanny",
     value: "house-manager",
-    subCategory: ["Live In", "Dayburg"],
+    subCategory: ["Nanny", "Housekeeper"],
   },
   {
     mainCategory: "Nurse",

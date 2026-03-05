@@ -43,7 +43,6 @@ export default function ProfilePage() {
   const [specialistDatas, setSpecialistDatas] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const { user } = useAuth();
-
   const { data, isLoading, error } = useFetch("/profile");
 
   useEffect(() => {

@@ -197,8 +197,8 @@ const SearchContent = () => {
 
       const matchesServices =
         selectedServices.length === 0 ||
-        (Array.isArray(item.preferred) &&
-          selectedServices.every((s) => item.preferred.includes(s)));
+        (Array.isArray(item.preferredRole) &&
+          selectedServices.every((s) => item.preferredRole.includes(s)));
 
       const matchesLanguages =
         selectedLanguages.length === 0 ||
