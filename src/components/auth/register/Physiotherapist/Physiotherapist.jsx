@@ -191,7 +191,7 @@ const Physiotherapist = () => {
 
                   <Button
                     onClick={handleSkip}
-                    className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium"
+                    className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 text-base font-medium cursor-pointer"
                   >
                     Skip
                   </Button>
