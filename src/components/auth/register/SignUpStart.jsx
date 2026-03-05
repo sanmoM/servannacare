@@ -20,9 +20,10 @@ import { useAuth } from "@/hooks/useAuth";
 
 const SignUpStart = ({ onSuccess }) => {
   const router = useRouter();
-  const { user, setUser, setRole } = useAuth();
   const searchParams = useSearchParams();
   const inComingRole = searchParams.get("role");
+  const redirect = searchParams.get("redirect");
+
   const SPECIALIST_SUBROLE = [
     "house-manager",
     "nurse",
@@ -40,7 +41,6 @@ const SignUpStart = ({ onSuccess }) => {
   const [temUser, setTemUser] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [country, setCountry] = useState("KE");
-  // const [phoneTouched, setPhoneTouched] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,6 +88,9 @@ const SignUpStart = ({ onSuccess }) => {
 
         if (emailVerified === null) {
           toast.success(`OTP sent to ${email}!`);
+          if (redirect) {
+            sessionStorage.setItem("redirectUrl", redirect);
+          }
           sessionStorage.setItem("verifyEmail", email);
           router.push("/verify-otp");
         } else {
@@ -102,7 +105,6 @@ const SignUpStart = ({ onSuccess }) => {
   const handleShowPassword = () => {
     setShowPass(!showPass);
   };
-
 
   return (
     <div className="w-full flex justify-center items-center min-h-screen px-2">

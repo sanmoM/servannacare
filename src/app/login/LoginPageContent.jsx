@@ -26,7 +26,7 @@ const LoginPageContent = () => {
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, setUser, setRole, loading } = useAuth();
+  const { user, setUser, setRole, loading, refreshUser } = useAuth();
 
   const redirect = searchParams.get("redirect");
 
@@ -66,21 +66,27 @@ const LoginPageContent = () => {
 
     try {
       const res = await postApi("/login", userInfo);
-
       const { token } = res.data.data;
       localStorage.setItem("token", token);
 
-      const profile = await getApi("/profile");
-      setUser(profile?.data?.data);
-      setRole(profile?.data?.data?.role);
-
-      if (redirect && redirect.startsWith("/")) {
+      const userData = await refreshUser();
+      toast.success("Login Successful");
+      if (redirect) {
         router.replace(redirect);
-      } else if (profile?.data?.data?.role === "user") {
-        router.replace("/dashboard");
-      } else {
-        router.replace("/dashboard");
+        return;
       }
+
+      if (userData.role === "user") {
+        router.replace("/dashboard");
+        return;
+      }
+
+      if (userData.role === "specialist" && !userData.is_profile_completed) {
+        router.replace(`/register?role=${userData.subRole}`);
+        return;
+      }
+
+      router.replace(`/dashboard/${userData.role}-profile`);
     } catch (error) {
       if (error?.response?.data?.email_verified === null) {
         sessionStorage.setItem("verifyEmail", email);

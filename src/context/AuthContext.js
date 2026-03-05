@@ -12,7 +12,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
- 
   const fetchCurrentUser = useCallback(async (showLoader = true) => {
     try {
       if (showLoader) setLoading(true);
@@ -23,7 +22,7 @@ export const AuthProvider = ({ children }) => {
         const userData = res.data.data;
         setUser(userData);
         setRole(userData.role);
-         return userData
+        return userData;
       } else {
         logout();
       }
@@ -36,7 +35,6 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (token) {
       fetchCurrentUser();
     } else {
@@ -58,7 +56,7 @@ export const AuthProvider = ({ children }) => {
         role,
         loading,
         logout,
-        refreshUser: () => fetchCurrentUser(false), 
+        refreshUser: (showLoader = false) => fetchCurrentUser(showLoader),
       }}
     >
       {children}

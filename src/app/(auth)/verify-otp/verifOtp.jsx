@@ -11,7 +11,7 @@ import OTPInputs from "@/components/auth/OtpInput";
 
 const VerifyOtpPage = () => {
   const router = useRouter();
-  const { setUser, setRole, user } = useAuth();
+  const { setUser, setRole, refreshUser } = useAuth();
   const [otp, setOtp] = useState("");
   const [email, setEmail] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -36,36 +36,44 @@ const VerifyOtpPage = () => {
   }, [router]);
 
   const handleVerify = async () => {
+    setLoading(true);
     try {
       const res = await postApi("/verify", { email, otp });
       const { token } = res.data.data;
       localStorage.setItem("token", token);
+      toast.success("OTP verified successfully!");
 
-      const profile = await getApi("/profile");
-      setUser(profile?.data?.data);
-      setRole(profile?.data?.data?.role);
+      const userData = await refreshUser();
+    
 
       sessionStorage.removeItem("verifyEmail");
       sessionStorage.removeItem("redirectUrl");
 
-      toast.success("Account verified successfully!");
-
-      // if (!profile?.data?.data?.is_profile_completed) {
-      //   router.replace(`/register?role=${profile?.data?.data?.subRole}`);
-      //   return;
-      // }
-
-      // router.replace(`/dashboard/${profile?.data?.data?.subRole}-profile`);
-
-      if (redirectUrl && redirectUrl.startsWith("/")) {
+      if (redirectUrl) {
         router.replace(redirectUrl);
-      } else if (profile?.data?.data?.role === "user") {
-        router.replace("/dashboard");
-      } else {
-        router.back();
+        return;
       }
+
+      if (userData?.role === "user") {
+        router.replace("/dashboard");
+        return;
+      }
+
+      if (userData?.role === "specialist" && !userData?.is_profile_completed) {
+        router.replace(`/register?role=${userData.subRole}`);
+        return;
+      }
+
+      if (userData?.role) {
+        router.replace(`/dashboard/${userData.role}-profile`);
+        return;
+      }
+
+      router.replace("/");
     } catch (error) {
       toast.error(error?.response?.data?.message || "Invalid OTP");
+    } finally {
+      setLoading(false);
     }
   };
 

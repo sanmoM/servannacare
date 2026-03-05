@@ -72,7 +72,6 @@ const ProfilePageContent = () => {
   if (error || !matchedData)
     return <div className="py-20 text-center">Data not found</div>;
 
-  // Helper to extract nested role data (nurse, physiotherapist, or house_manager)
   const roleSpecificInfo =
     matchedData.house_manager ||
     matchedData.nurse ||
@@ -85,7 +84,6 @@ const ProfilePageContent = () => {
         image="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/cf136a11386527.560f6e447cc13.jpg"
       />
       <Container className="py-16 grid md:grid-cols-6 gap-8">
-        {/* Left Sidebar */}
         <div className="md:col-span-2 space-y-6">
           <div className="p-4 rounded-md items-center border-t-primary border flex flex-col border-t-4 shadow-sm">
             <img

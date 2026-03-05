@@ -47,7 +47,6 @@ export default function DashboardLayout({ children }) {
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { logout, user, loading } = useAuth();
-  // console.log(user)
 
   const {
     data: notificationData,
