@@ -1,31 +1,40 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import React, { useEffect } from "react";
+import LoadingSpinner from "./LoadingSpin";
 
 const PublicRoute = ({ children }) => {
   const { role, loading, user } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (loading) return;
 
     const token = localStorage.getItem("token");
 
-    // If user is logged in, send to dashboard
     if (token && user) {
-      router.replace("/dashboard");
+      if (user?.role === "specialist" && !user?.is_profile_completed) {
+        if (pathname !== "/register") {
+          router.replace(`/register?role=${user?.subRole || ""}`);
+        }
+      } else if (
+        user?.role === "agency" ||
+        (user?.role === "care_institutions" && !user?.is_profile_completed)
+      ) {
+        if (pathname !== "/register") {
+          router.replace(`/register?role=${user?.role}`);
+        }
+      } else {
+        router.replace("/dashboard");
+      }
     }
-  }, [loading, router]);
+  }, [loading, router, user, pathname]);
 
-  // Wait until auth finishes checking
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return <>{children}</>;

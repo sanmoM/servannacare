@@ -44,7 +44,6 @@ const VerifyOtpPage = () => {
       toast.success("OTP verified successfully!");
 
       const userData = await refreshUser();
-    
 
       sessionStorage.removeItem("verifyEmail");
       sessionStorage.removeItem("redirectUrl");
@@ -59,8 +58,16 @@ const VerifyOtpPage = () => {
         return;
       }
 
-      if (userData?.role === "specialist" && !userData?.is_profile_completed) {
-        router.replace(`/register?role=${userData.subRole}`);
+      if (userData?.role === "specialist") {
+        router.replace(`/register?role=${userData?.subRole}`);
+        return;
+      }
+
+      if (
+        userData?.role === "agency" ||
+        userData?.role === "care_institutions"
+      ) {
+        router.replace(`/register?role=${userData?.role}`);
         return;
       }
 

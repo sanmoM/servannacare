@@ -48,7 +48,6 @@ const Agency = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 3;
-  // const [user, setUser] = useState({});
   const [employees, setEmployees] = useState([1]);
   const router = useRouter();
 
