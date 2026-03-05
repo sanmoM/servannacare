@@ -150,7 +150,6 @@ const MedicalInstitutionNurse = ({
 
  
 
-  // Handlers
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
@@ -266,7 +265,7 @@ const MedicalInstitutionNurse = ({
         toast.success("Nurse added successfully!", { id: loadingToast });
       }
 
-      router.push("/dashboard/care-institution-nurses");
+      router.push("/dashboard/care-institution-specialists");
 
       onSuccess?.();
     } catch (error) {
@@ -298,7 +297,6 @@ const MedicalInstitutionNurse = ({
             name="age"
             label="Age"
             value={data.age}
-            // onKeyDown={blockInvalidKeys}
             onChange={(e) => {
               handleChange({
                 target: {

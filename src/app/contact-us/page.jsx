@@ -5,8 +5,10 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 import PageBanner from "@/components/shared/PageBanner";
 import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
+import { postApi } from "@/lib/apiHandler";
 import { Mail, MapPin, Phone } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const page = () => {
   const [contacts, setcontacts] = useState(null);
@@ -62,12 +64,21 @@ const page = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
-    // console.log("Form Data:", formData);
+    try {
+      const res = await postApi("/contact-data", formData);
+      console.log(res);
+      if (!res.status) {
+        throw new Error();
+      }
+      toast.success("Thanks for Contacting with us!");
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
 
     setFormData({
       name: "",
@@ -194,9 +205,13 @@ const page = () => {
                 )}
               </div>
               <div className="flex justify-end">
-               <Button type="submit" className="mt-4 w-full sm:w-auto cursor-pointer" size="lg">
-  Submit
-</Button>
+                <Button
+                  type="submit"
+                  className="mt-4 w-full sm:w-auto cursor-pointer"
+                  size="lg"
+                >
+                  Submit
+                </Button>
               </div>
             </form>
           </div>

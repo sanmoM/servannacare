@@ -1,39 +1,11 @@
 "use client";
-
-import AgencyBasicInfo from "@/components/auth/register/Agency/AgencyBasicInfo";
 import CreateBasicInfo from "@/components/auth/register/Agency/Create/CreateBasicInfo";
 import UpdateBasicInfo from "@/components/auth/register/Agency/Update/UpdateBasicInfo";
-import UpdateEmployeeDetails from "@/components/auth/register/Agency/Update/UpdateEmployee";
-import Input from "@/components/shared/Input";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import AgencyUpdate from "@/components/updateProfile/Agency/AgencyUpdate";
 import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
-import {
-  Calendar,
-  Camera,
-  FileText,
-  ImageIcon,
-  Info,
-  Mail,
-  MapPin,
-  Phone,
-  User,
-} from "lucide-react";
+import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 export default function AgencyProfile() {
   const { user } = useAuth();

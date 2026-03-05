@@ -20,7 +20,7 @@ import { useAuth } from "@/hooks/useAuth";
 const UpdateBasicInfo = ({ agencyData }) => {
   const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const { user} = useAuth();
+  const { user,refreshUser} = useAuth();
   const [data, setData] = useState({
     companyName: agencyData?.companyName || "",
     kraPin: agencyData?.kraPin || "",
@@ -158,6 +158,7 @@ const UpdateBasicInfo = ({ agencyData }) => {
       const res = await postApi("/update-profile", fd);
 
       if (res?.status === 200) {
+         await refreshUser();
         toast.success("agency data Updated Successfully!");
         router.push("/dashboard");
       } else {

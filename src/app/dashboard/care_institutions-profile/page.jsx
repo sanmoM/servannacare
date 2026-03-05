@@ -2,22 +2,8 @@
 
 import CreateBasicInfo from "@/components/auth/register/MedicalInstitution/Create/CreateBasicInfo";
 import UpdateBasicInfo from "@/components/auth/register/MedicalInstitution/Update/UpdateBasicInfo";
-import UpdateNurseDetails from "@/components/auth/register/MedicalInstitution/Update/UpdateNurseDetails";
-import UpdateReview from "@/components/auth/register/MedicalInstitution/Update/UpdateReview";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import MedicalInstitution from "@/components/updateProfile/MedicalInstitution/MedicalInstitution";
+import { Dialog } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
 import {
@@ -37,11 +23,9 @@ export default function MedicalInstitutionProfile() {
   const { user } = useAuth();
 
   const [instituteData, setInstituteData] = useState(null);
-  
 
-  
   const { data, isLoading, error } = useFetch("/profile");
-  
+
   useEffect(() => {
     if (data) {
       setInstituteData(data?.data ?? data);

@@ -55,7 +55,6 @@ const InstitutionNursePage = () => {
   const [selectedSpecialistType, setSelectedSpecialistType] = useState(null);
 
   const { data, isLoading, refetch } = useFetch("/profile");
-
   useEffect(() => {
     if (data) {
       setNurses(data?.data?.institutionNurses || data?.institutionNurses || []);
@@ -97,7 +96,7 @@ const InstitutionNursePage = () => {
       router.push("/dashboard/care_institutions-profile");
       return;
     }
-    setSelectedSpecialistType(null); // Reset selection when opening modal
+    setSelectedSpecialistType(null);
     setIsAddOpen(true);
   };
 
@@ -111,13 +110,15 @@ const InstitutionNursePage = () => {
     switch (selectedSpecialistType) {
       case "Nurse":
         return <MedicalInstitutionNurse onSuccess={handleSuccess} />;
-      case "Nurse Aide / Assistant":
+      case "Nurse Aide or Assistant":
       case "Nurse Aide":
         return <MedicalInstitutionNurseAide onSuccess={handleSuccess} />;
       case "Physiotherapist":
         return <MedicalInstitutionPhysiotherapist onSuccess={handleSuccess} />;
       case "Special Need Caregiver":
-        return <MedicalInstitutionSpecialNeedCaregiver onSuccess={handleSuccess} />;
+        return (
+          <MedicalInstitutionSpecialNeedCaregiver onSuccess={handleSuccess} />
+        );
       default:
         return null;
     }
@@ -129,19 +130,43 @@ const InstitutionNursePage = () => {
       setIsEditOpen(null);
     };
 
-    const role = nurse?.preferredRole || "Nurse"; // fallback to Nurse
+    const role = nurse?.preferredRole || "Nurse";
 
     switch (role) {
-      case "Nurse Aide / Assistant":
+      case "Nurse Aide or Assistant":
       case "Nurse Aide":
-        return <MedicalInstitutionNurseAide initialData={nurse} isUpdate onSuccess={handleSuccess} />;
+        return (
+          <MedicalInstitutionNurseAide
+            initialData={nurse}
+            isUpdate
+            onSuccess={handleSuccess}
+          />
+        );
       case "Physiotherapist":
-        return <MedicalInstitutionPhysiotherapist initialData={nurse} isUpdate onSuccess={handleSuccess} />;
+        return (
+          <MedicalInstitutionPhysiotherapist
+            initialData={nurse}
+            isUpdate
+            onSuccess={handleSuccess}
+          />
+        );
       case "Special Need Caregiver":
-        return <MedicalInstitutionSpecialNeedCaregiver initialData={nurse} isUpdate onSuccess={handleSuccess} />;
+        return (
+          <MedicalInstitutionSpecialNeedCaregiver
+            initialData={nurse}
+            isUpdate
+            onSuccess={handleSuccess}
+          />
+        );
       case "Nurse":
       default:
-        return <MedicalInstitutionNurse initialData={nurse} isUpdate onSuccess={handleSuccess} />;
+        return (
+          <MedicalInstitutionNurse
+            initialData={nurse}
+            isUpdate
+            onSuccess={handleSuccess}
+          />
+        );
     }
   };
 
@@ -170,17 +195,23 @@ const InstitutionNursePage = () => {
             <DialogHeader>
               <DialogTitle>
                 {!selectedSpecialistType && "Select Specialist Type"}
-                {selectedSpecialistType && `Register New ${selectedSpecialistType}`}
+                {selectedSpecialistType &&
+                  `Register New ${selectedSpecialistType}`}
               </DialogTitle>
             </DialogHeader>
 
             {!selectedSpecialistType ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
-                {["Nurse", "Nurse Aide / Assistant", "Physiotherapist", "Special Need Caregiver"].map((type) => (
+                {[
+                  "Nurse",
+                  "Nurse Aide or Assistant",
+                  "Physiotherapist",
+                  "Special Need Caregiver",
+                ].map((type) => (
                   <Button
                     key={type}
                     variant="outline"
-                    className="h-24 text-lg font-medium border-2 hover:border-primary hover:bg-primary/5 transition-all"
+                    className="h-24 text-lg font-medium border-2 hover:border-primary hover:bg-primary/10 transition-all cursor-pointer"
                     onClick={() => setSelectedSpecialistType(type)}
                   >
                     {type}
@@ -193,14 +224,13 @@ const InstitutionNursePage = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => setSelectedSpecialistType(null)}
-                  className="mb-2"
+                  className="mb-2 cursor-pointer"
                 >
                   ← Back to Selection
                 </Button>
                 {renderSpecialistForm()}
               </div>
             )}
-
           </DialogContent>
         </Dialog>
       </div>
