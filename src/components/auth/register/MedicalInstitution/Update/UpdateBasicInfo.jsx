@@ -11,30 +11,51 @@ import { postApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
-const UpdateBasicInfo = ({ instituteData }) => {
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+import { Label } from "@/components/ui/label";
+
+const UpdateBasicInfo = ({ instituteData = {} }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const [data, setData] = useState({
-    companyName: "",
-    kraPin: "",
-    companyRegistrationNumber: "",
-    businessLocation: "",
-    phone: "",
+    companyName: instituteData?.companyName || "",
+    kraPin: instituteData?.kraPin || "",
+    companyRegistrationNumber: instituteData?.companyRegistrationNumber || "",
+    businessLocation: instituteData?.businessLocation || "",
+    phone: instituteData?.number || "",
     registrationDocument: null,
   });
 
+  // useEffect(() => {
+  //   if (instituteData) {
+  //     setData({
+  //       companyName: instituteData?.companyName || "",
+  //       kraPin: instituteData?.kraPin || "",
+  //       companyRegistrationNumber:
+  //         instituteData?.companyRegistrationNumber || "",
+  //       businessLocation: instituteData?.businessLocation || "",
+  //       phone: instituteData?.number || "",
+  //       registrationDocument: null,
+  //     });
+  //   }
+  // }, [instituteData]);
+
   useEffect(() => {
-    if (instituteData) {
-      setData({
-        companyName: instituteData.companyName || "",
-        kraPin: instituteData.kraPin || "",
-        companyRegistrationNumber:
-          instituteData.companyRegistrationNumber || "",
-        businessLocation: instituteData.businessLocation || "",
-        phone: instituteData.number || "",
+    if (instituteData?.number) {
+      setData((prev) => ({
+        ...prev,
+        phone: instituteData?.number,
+        companyName: instituteData?.companyName,
+        kraPin: instituteData?.kraPin,
+        companyRegistrationNumber: instituteData?.companyRegistrationNumber,
+        businessLocation: instituteData?.businessLocation,
         registrationDocument: null,
-      });
+      }));
     }
   }, [instituteData]);
 
@@ -82,8 +103,13 @@ const UpdateBasicInfo = ({ instituteData }) => {
       }
     }
 
-    if (data.phone.length !== 11) {
-      toast.error("Phone number must be exactly 11 digits");
+    if (!data?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(data?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
       return;
     }
 
@@ -111,6 +137,7 @@ const UpdateBasicInfo = ({ instituteData }) => {
       const res = await postApi("/update-profile", fd);
 
       if (res?.status === 200) {
+        await refreshUser();
         toast.success("Institute Data Updated Successfully!");
         router.push("/dashboard");
       } else {
@@ -118,8 +145,6 @@ const UpdateBasicInfo = ({ instituteData }) => {
       }
     } catch (error) {
       toast.error("Error updating profile", error);
-
-   
     }
   };
 
@@ -147,31 +172,51 @@ const UpdateBasicInfo = ({ instituteData }) => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-6">
-        <Input
-          label="Company Registration Number"
-          name="companyRegistrationNumber"
-          placeholder="Company registration number"
-          value={data.companyRegistrationNumber}
-          onChange={handleChange}
-        />
+        <div>
+          <Input
+            label="Company Registration Number"
+            name="companyRegistrationNumber"
+            placeholder="Company registration number"
+            value={data.companyRegistrationNumber}
+            onChange={handleChange}
+          />
+        </div>
 
-        <Input
-          label="Mobile Number"
-          name="phone"
-          type="tel"
-          placeholder="+254xxxxxxx"
-          value={data.phone || "+254"}
-          maxLength={11}
-          onFocus={() => {
-            if (!data.phone) {
-              setData((prev) => ({
-                ...prev,
-                phone: "+254",
-              }));
-            }
-          }}
-          onChange={handlePhoneChange}
-        />
+        <div className="flex-1">
+          <Label>Phone Number</Label>
+
+          <div className="w-full mt-2">
+            <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
+              international
+              defaultCountry={country}
+              value={data?.phone}
+              onChange={(value) => {
+                setData((prev) => ({ ...prev, phone: value || "" }));
+              }}
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+                const exampleNumber = countryCode
+                  ? getExampleNumber(countryCode)
+                  : null;
+                if (exampleNumber) {
+                  setData((prev) => ({
+                    ...prev,
+                    phone: `+${exampleNumber.countryCallingCode}`,
+                  }));
+                } else {
+                  setData((prev) => ({ ...prev, phone: "" }));
+                }
+              }}
+            />
+          </div>
+
+          {data?.phone && !isValidPhoneNumber(data?.phone) && (
+            <p className="text-red-500 text-sm mt-1">
+              Invalid phone number for selected country
+            </p>
+          )}
+        </div>
       </div>
 
       <Input
@@ -240,7 +285,11 @@ const UpdateBasicInfo = ({ instituteData }) => {
       {/* Submit button */}
       <div className="flex justify-end">
         {user?.is_profile_completed && (
-          <Button className="w-full sm:w-auto" size="lg" type="submit">
+          <Button
+            className="w-full sm:w-auto cursor-pointer"
+            size="lg"
+            type="submit"
+          >
             Update
           </Button>
         )}

@@ -12,6 +12,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import MedicalInstitutionNurse from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionNurse";
+import MedicalInstitutionNurseAide from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionNurseAide";
+import MedicalInstitutionPhysiotherapist from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionPhysiotherapist";
+import MedicalInstitutionSpecialNeedCaregiver from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionSpecialNeedCaregiver";
 import { useFetch } from "@/hooks/useFetch";
 import {
   Eye,
@@ -49,6 +52,7 @@ const InstitutionNursePage = () => {
   const [isEditOpen, setIsEditOpen] = useState(null);
   const router = useRouter();
   const [scheduleViewId, setScheduleViewId] = useState(null);
+  const [selectedSpecialistType, setSelectedSpecialistType] = useState(null);
 
   const { data, isLoading, refetch } = useFetch("/profile");
 
@@ -93,7 +97,52 @@ const InstitutionNursePage = () => {
       router.push("/dashboard/care_institutions-profile");
       return;
     }
-    setShowAddModal(true);
+    setSelectedSpecialistType(null); // Reset selection when opening modal
+    setIsAddOpen(true);
+  };
+
+  const renderSpecialistForm = () => {
+    const handleSuccess = () => {
+      refetch();
+      setIsAddOpen(false);
+      setSelectedSpecialistType(null);
+    };
+
+    switch (selectedSpecialistType) {
+      case "Nurse":
+        return <MedicalInstitutionNurse onSuccess={handleSuccess} />;
+      case "Nurse Aide / Assistant":
+      case "Nurse Aide":
+        return <MedicalInstitutionNurseAide onSuccess={handleSuccess} />;
+      case "Physiotherapist":
+        return <MedicalInstitutionPhysiotherapist onSuccess={handleSuccess} />;
+      case "Special Need Caregiver":
+        return <MedicalInstitutionSpecialNeedCaregiver onSuccess={handleSuccess} />;
+      default:
+        return null;
+    }
+  };
+
+  const renderEditForm = (nurse) => {
+    const handleSuccess = () => {
+      refetch();
+      setIsEditOpen(null);
+    };
+
+    const role = nurse?.preferredRole || "Nurse"; // fallback to Nurse
+
+    switch (role) {
+      case "Nurse Aide / Assistant":
+      case "Nurse Aide":
+        return <MedicalInstitutionNurseAide initialData={nurse} isUpdate onSuccess={handleSuccess} />;
+      case "Physiotherapist":
+        return <MedicalInstitutionPhysiotherapist initialData={nurse} isUpdate onSuccess={handleSuccess} />;
+      case "Special Need Caregiver":
+        return <MedicalInstitutionSpecialNeedCaregiver initialData={nurse} isUpdate onSuccess={handleSuccess} />;
+      case "Nurse":
+      default:
+        return <MedicalInstitutionNurse initialData={nurse} isUpdate onSuccess={handleSuccess} />;
+    }
   };
 
   return (
@@ -101,7 +150,7 @@ const InstitutionNursePage = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Institution specialists Management
+            Institution Specialists Management
           </h1>
           <p className="text-sm text-gray-500">
             View, update, and manage your specialists.
@@ -119,15 +168,39 @@ const InstitutionNursePage = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Register New specialists</DialogTitle>
+              <DialogTitle>
+                {!selectedSpecialistType && "Select Specialist Type"}
+                {selectedSpecialistType && `Register New ${selectedSpecialistType}`}
+              </DialogTitle>
             </DialogHeader>
 
-            <MedicalInstitutionNurse
-              onSuccess={() => {
-                refetch();
-                setIsAddOpen(false);
-              }}
-            />
+            {!selectedSpecialistType ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
+                {["Nurse", "Nurse Aide / Assistant", "Physiotherapist", "Special Need Caregiver"].map((type) => (
+                  <Button
+                    key={type}
+                    variant="outline"
+                    className="h-24 text-lg font-medium border-2 hover:border-primary hover:bg-primary/5 transition-all"
+                    onClick={() => setSelectedSpecialistType(type)}
+                  >
+                    {type}
+                  </Button>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedSpecialistType(null)}
+                  className="mb-2"
+                >
+                  ← Back to Selection
+                </Button>
+                {renderSpecialistForm()}
+              </div>
+            )}
+
           </DialogContent>
         </Dialog>
       </div>
@@ -414,17 +487,10 @@ const InstitutionNursePage = () => {
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
                             <DialogHeader>
-                              <DialogTitle>Update Nurse</DialogTitle>
+                              <DialogTitle>Update Specialist</DialogTitle>
                             </DialogHeader>
 
-                            <MedicalInstitutionNurse
-                              initialData={nurse}
-                              isUpdate
-                              onSuccess={() => {
-                                refetch();
-                                setIsEditOpen(null);
-                              }}
-                            />
+                            {renderEditForm(nurse)}
                           </DialogContent>
                         </Dialog>
 
@@ -473,7 +539,7 @@ const InstitutionNursePage = () => {
                     colSpan="4"
                     className="px-6 py-10 text-center text-gray-500"
                   >
-                    No nurses found. Add your first nurse.
+                    No specialists found. Add your first specialist.
                   </td>
                 </tr>
               )}

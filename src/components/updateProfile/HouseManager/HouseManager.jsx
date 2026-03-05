@@ -149,12 +149,6 @@ const HouseManager = ({ data = {} }) => {
     });
   };
 
-  // const handleFileSelect = (id, file) => {
-  //   setFormData((p) => ({
-  //     ...p,
-  //     documents: { ...p.documents, [id]: file },
-  //   }));
-  // };
   const handleFileSelect = (id, file) => {
     setFormData((prev) => ({
       ...prev,
@@ -259,15 +253,6 @@ const HouseManager = ({ data = {} }) => {
 
         toast.success("Profile Updated Successfully!");
         router.push("/dashboard");
-
-        // localStorage.setItem(
-        //   "user",
-        //   JSON.stringify({
-        //     ...user,
-        //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
-        //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
-        //   }),
-        // );
       } else {
         toast.error(res?.data?.message || "Something went wrong.");
       }

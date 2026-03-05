@@ -11,7 +11,14 @@ import { postApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+import { Label } from "@/components/ui/label";
+
 const CreateBasicInfo = ({ instituteData }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user } = useAuth();
 
@@ -83,8 +90,13 @@ const CreateBasicInfo = ({ instituteData }) => {
       }
     }
 
-    if (data.phone.length !== 11) {
-      toast.error("Phone number must be exactly 11 digits");
+    if (!data?.phone) {
+      toast.error("Phone number is required!");
+      return;
+    }
+
+    if (!isValidPhoneNumber(data?.phone)) {
+      toast.error("Phone number is invalid or incomplete!");
       return;
     }
 
@@ -100,45 +112,44 @@ const CreateBasicInfo = ({ instituteData }) => {
       fd.append("registrationDocument", data.registrationDocument);
     }
 
-try {
-        const res = await postApi("/create-profile", fd, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+    try {
+      const res = await postApi("/create-profile", fd, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        if (res?.status === 200) {
-          
-          toast.success("Institutions Registered Successfully!");
-          router.push(`/dashboard/${user?.role}-profile`);
-          //todo this localStorage
+      if (res?.status === 200) {
+        toast.success("Institutions Registered Successfully!");
+        router.push(`/dashboard/${user?.role}-profile`);
+        //todo this localStorage
 
-          // localStorage.setItem(
-          //   "user",
-          //   JSON.stringify({
-          //     ...user,
-          //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
-          //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
-          //   }),
-          // );
-        } else {
-          toast.error(
-            res?.data?.message || "Something went wrong. Please try again.",
-          );
-        }
-      } catch (error) {
-         toast.error("Error creating profile",error)
-        
-        if (error.response) {
-          toast.error(
-            error.response.data?.message || `Error: ${error.response.status}`,
-          );
-        } else if (error.request) {
-          toast.error("No response from server. Please check your connection.");
-        } else {
-          toast.error("An unexpected error occurred.");
-        }
+        // localStorage.setItem(
+        //   "user",
+        //   JSON.stringify({
+        //     ...user,
+        //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
+        //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
+        //   }),
+        // );
+      } else {
+        toast.error(
+          res?.data?.message || "Something went wrong. Please try again.",
+        );
       }
+    } catch (error) {
+      toast.error("Error creating profile", error);
+
+      if (error.response) {
+        toast.error(
+          error.response.data?.message || `Error: ${error.response.status}`,
+        );
+      } else if (error.request) {
+        toast.error("No response from server. Please check your connection.");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    }
   };
 
   return (
@@ -165,31 +176,51 @@ try {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-6">
-        <Input
-          label="Company Registration Number"
-          name="companyRegistrationNumber"
-          placeholder="Company registration number"
-          value={data.companyRegistrationNumber}
-          onChange={handleChange}
-        />
+        <div>
+          <Input
+            label="Company Registration Number"
+            name="companyRegistrationNumber"
+            placeholder="Company registration number"
+            value={data.companyRegistrationNumber}
+            onChange={handleChange}
+          />
+        </div>
 
-        <Input
-          label="Mobile Number"
-          name="phone"
-          type="tel"
-          placeholder="+254xxxxxxx"
-          value={data.phone || "+254"}
-          maxLength={11}
-          onFocus={() => {
-            if (!data.phone) {
-              setData((prev) => ({
-                ...prev,
-                phone: "+254",
-              }));
-            }
-          }}
-          onChange={handlePhoneChange}
-        />
+        <div className="flex-1">
+          <Label>Phone Number</Label>
+
+          <div className="w-full mt-2">
+            <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
+              international
+              defaultCountry={country}
+              value={data?.phone}
+              onChange={(value) => {
+                setData((prev) => ({ ...prev, phone: value || "" }));
+              }}
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+                const exampleNumber = countryCode
+                  ? getExampleNumber(countryCode)
+                  : null;
+                if (exampleNumber) {
+                  setData((prev) => ({
+                    ...prev,
+                    phone: `+${exampleNumber.countryCallingCode}`,
+                  }));
+                } else {
+                  setData((prev) => ({ ...prev, phone: "" }));
+                }
+              }}
+            />
+          </div>
+
+          {data?.phone && !isValidPhoneNumber(data?.phone) && (
+            <p className="text-red-500 text-sm mt-1">
+              Invalid phone number for selected country
+            </p>
+          )}
+        </div>
       </div>
 
       <Input
@@ -258,7 +289,11 @@ try {
       {/* Submit button */}
       <div className="flex justify-end">
         {!user?.is_profile_completed && (
-          <Button className="w-full sm:w-auto" size="lg" type="submit">
+          <Button
+            className="w-full sm:w-auto cursor-pointer"
+            size="lg"
+            type="submit"
+          >
             Create
           </Button>
         )}

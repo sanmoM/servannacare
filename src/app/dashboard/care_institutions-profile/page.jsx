@@ -37,11 +37,14 @@ export default function MedicalInstitutionProfile() {
   const { user } = useAuth();
 
   const [instituteData, setInstituteData] = useState(null);
+  
 
+  
   const { data, isLoading, error } = useFetch("/profile");
+  
   useEffect(() => {
     if (data) {
-      setInstituteData(data?.data?.data ?? data);
+      setInstituteData(data?.data ?? data);
     }
   }, [data]);
 
@@ -78,7 +81,7 @@ export default function MedicalInstitutionProfile() {
         </div>
       )}
       {user?.is_profile_completed ? (
-        <UpdateBasicInfo instituteData={instituteData?.data?.careInstitution} />
+        <UpdateBasicInfo instituteData={instituteData?.careInstitution} />
       ) : (
         <>
           <CreateBasicInfo />
