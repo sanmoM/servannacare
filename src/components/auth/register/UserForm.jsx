@@ -97,30 +97,6 @@ const UserForm = () => {
     }
   };
 
-  // const handleVerifyOTP = async (otp) => {
-  //   try {
-  //     const res = await postApi("/verify", {
-  //       email: temUser.email,
-  //       otp,
-  //     });
-  //     const { token, role, is_profile_completed } = res?.data?.data;
-
-  //     localStorage.setItem("token", token);
-  //     const data = await getApi("/profile");
-  //     setUser(data?.data?.data);
-  //     setRole(data?.data?.data?.role);
-  //     setOpenOTP(false);
-  //     if (redirectUrl && redirectUrl.startsWith("/")) {
-  //       router.replace(redirectUrl);
-  //     } else {
-  //       router.replace("/dashboard");
-  //       toast.success("Account verified successfully!");
-  //     }
-  //   } catch (error) {
-  //     toast.error(error?.response?.data?.message || "Invalid OtP");
-  //   }
-  // };
-
   const handleShowPassword = () => {
     setShowPass(!showPass);
   };

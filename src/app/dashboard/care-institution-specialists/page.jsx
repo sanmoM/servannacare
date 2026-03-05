@@ -93,13 +93,11 @@ const InstitutionNursePage = () => {
       router.push("/dashboard/care_institutions-profile");
       return;
     }
-
     setShowAddModal(true);
   };
 
   return (
     <div className="lg:p-4 bg-gray-50 min-h-screen">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">

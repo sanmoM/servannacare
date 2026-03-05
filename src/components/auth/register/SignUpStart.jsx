@@ -103,27 +103,6 @@ const SignUpStart = ({ onSuccess }) => {
     setShowPass(!showPass);
   };
 
-  // const handleVerifyOTP = async (otp) => {
-  //   try {
-  //     const res = await postApi("/verify", {
-  //       email: temUser?.email,
-  //       otp,
-  //     });
-  //     if (res?.data?.status) {
-  //       const { token, role, is_profile_completed } = res?.data?.data;
-  //       localStorage.setItem("token", token);
-
-  //       const data = await getApi("/profile");
-  //       setUser(data?.data?.data);
-  //       setRole(data?.data?.data?.role);
-  //       toast.success("Account verified successfully!");
-  //       setOpenOTP(false);
-  //       onSuccess({ role, subRole, is_profile_completed });
-  //     }
-  //   } catch (error) {
-  //     toast.error(error?.response?.data?.message || "Invalid Otp");
-  //   }
-  // };
 
   return (
     <div className="w-full flex justify-center items-center min-h-screen px-2">
