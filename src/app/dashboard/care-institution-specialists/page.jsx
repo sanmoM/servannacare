@@ -44,8 +44,10 @@ import toast from "react-hot-toast";
 import { deleteApi } from "@/lib/apiHandler";
 import SelectableCalendar from "@/components/SelectableCalendar";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const InstitutionNursePage = () => {
+  const { user } = useAuth();
   const [nurses, setNurses] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [institute, setInstitute] = useState([]);
@@ -93,6 +95,12 @@ const InstitutionNursePage = () => {
   const handleAddSpecialists = () => {
     if (!institute || Object.keys(institute).length === 0) {
       toast.error("Please complete your Institute profile first.");
+      router.push("/dashboard/care_institutions-profile");
+      return;
+    }
+
+    if (!user?.is_profile_verified) {
+      toast.error("Your profile must be verified before adding employees.");
       router.push("/dashboard/care_institutions-profile");
       return;
     }

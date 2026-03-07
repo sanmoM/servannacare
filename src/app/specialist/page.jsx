@@ -34,7 +34,7 @@ const SearchContent = () => {
   const router = useRouter();
 
   const [selectedCategory, setSelectedCategory] = useState("house-manager");
-  const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedService, setSelectedService] = useState("");
   const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,7 +74,7 @@ const SearchContent = () => {
     };
 
     setSelectedCategory(searchParams.get("category") || "");
-    setSelectedServices(getArray("services"));
+    setSelectedService(searchParams.get("service") || "");
     setSelectedLocation(searchParams.get("location") || "");
     setSelectedKidAge(searchParams.get("kidAge") || "");
     setSelectedLanguages(getArray("languages"));
@@ -127,7 +127,7 @@ const SearchContent = () => {
   const handleCategoryChange = (value) => {
     updateQueryParams({
       category: value || undefined,
-      services: [],
+      service: "",
       location: "",
       kidAge: "",
       languages: [],
@@ -138,13 +138,11 @@ const SearchContent = () => {
     });
   };
 
-  const handleServiceToggle = (service, checked) => {
-    let updated = checked
-      ? [...selectedServices, service]
-      : selectedServices.filter((s) => s !== service);
+  const handleServiceToggle = (service) => {
+    const newService = selectedService === service ? "" : service;
 
     updateQueryParams({
-      services: updated,
+      service: newService || undefined,
       page: 1,
     });
   };
@@ -196,9 +194,7 @@ const SearchContent = () => {
         item.location?.toLowerCase().includes(selectedLocation.toLowerCase());
 
       const matchesServices =
-        selectedServices.length === 0 ||
-        (Array.isArray(item.preferredRole) &&
-          selectedServices.every((s) => item.preferredRole.includes(s)));
+        !selectedService || item.preferredRole?.includes(selectedService);
 
       const matchesLanguages =
         selectedLanguages.length === 0 ||
@@ -270,7 +266,7 @@ const SearchContent = () => {
     data,
     selectedCategory,
     selectedLocation,
-    selectedServices,
+    selectedService,
     selectedKidAge,
     salaryRange,
     selectedLanguages,
@@ -518,7 +514,7 @@ const SearchContent = () => {
                       ]}
                       min={1000}
                       max={100000}
-                      step={1000} 
+                      step={1000}
                       onValueChange={([min, max]) => {
                         updateQueryParams({
                           minSalary: min,
@@ -556,7 +552,6 @@ const SearchContent = () => {
                   </div>
                 </div>
 
-                {/* Languages - Checkbox Grid */}
                 <div className="space-y-4">
                   <label className="text-sm font-semibold text-slate-700 ml-1">
                     Language Fluency
@@ -881,10 +876,10 @@ const SearchContent = () => {
                 <div className="bg-slate-50/80 rounded-2xl p-4 space-y-3 border border-slate-100/50">
                   {selectedCategoryObj.subCategory.map((service, i) => (
                     <div key={i} className="flex items-center gap-3 py-1 group">
-                      <Checkbox
+                      {/* <Checkbox
                         id={`desktop-${service}`}
-                        className="border-slate-300 rounded-[4px]"
-                        checked={selectedServices.includes(service)}
+                        className="border-slate-300 rounded-sm cursor-pointer"
+                        checked={selectedService === service}
                         onCheckedChange={(checked) =>
                           handleServiceToggle(service, checked === true)
                         }
@@ -894,7 +889,17 @@ const SearchContent = () => {
                         className="text-sm font-medium text-slate-600 group-hover:text-slate-900 leading-none cursor-pointer transition-colors"
                       >
                         {service}
-                      </Label>
+                      </Label> */}
+                      <button
+                        onClick={() => handleServiceToggle(service)}
+                        className={`px-3 py-1 rounded-lg border cursor-pointer ${
+                          selectedService === service
+                            ? "bg-primary text-white"
+                            : ""
+                        }`}
+                      >
+                        {service}
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -1506,15 +1511,25 @@ const SearchContent = () => {
                     <div className="space-y-3">
                       {selectedCategoryObj.subCategory.map((service, i) => (
                         <div key={i} className="flex items-center gap-2">
-                          <Checkbox
+                          {/* <Checkbox
                             id={`mobile-${service}`}
-                            checked={selectedServices.includes(service)}
+                            checked={selectedService === service}
                             onCheckedChange={(checked) =>
                               handleServiceToggle(service, checked === true)
                             }
                           />
 
-                          <Label htmlFor={`mobile-${service}`}>{service}</Label>
+                          <Label htmlFor={`mobile-${service}`}>{service}</Label> */}
+                          <button
+                            onClick={() => handleServiceToggle(service)}
+                            className={`px-3 py-1 rounded-lg border cursor-pointer ${
+                              selectedService === service
+                                ? "bg-primary text-white"
+                                : ""
+                            }`}
+                          >
+                            {service}
+                          </button>
                         </div>
                       ))}
                     </div>

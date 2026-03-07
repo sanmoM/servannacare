@@ -278,8 +278,8 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
         try {
             const payload = buildPayload();
 
-            // We are appending specialistType to help backend differentiate if needed
-            payload.append("specialistType", "Special Need Caregiver");
+           
+            payload.append("type", "institution_special_need");
 
             if (isUpdate) {
                 await postApi(`/institution-nurse/${initialData.id}`, payload);
@@ -643,7 +643,7 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
 
                 <div className="pt-8">
                     <Button
-                        className={"w-full sm:w-auto"}
+                        className={"w-full sm:w-auto cursor-pointer"}
                         size={"lg"}
                         type="submit"
                     >

@@ -29,21 +29,24 @@ import {
   Calendar,
   Star,
 } from "lucide-react";
-import axios from "axios";
+
 import toast from "react-hot-toast";
 import { deleteApi } from "@/lib/apiHandler";
 import SelectableCalendar from "@/components/SelectableCalendar";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const EmployeePage = () => {
   const router = useRouter();
   const [employees, setEmployees] = useState([]);
   const [agencyExist, setAgencyExist] = useState([]);
+  const { user } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
 
   const [editModalId, setEditModalId] = useState(null);
 
   const { data, isLoading, refetch } = useFetch("/profile");
+  // console.log("data", data?.data?.data);
 
   const [scheduleViewId, setScheduleViewId] = useState(null);
 
@@ -87,6 +90,12 @@ const EmployeePage = () => {
   const handleAddEmployeeClick = () => {
     if (!agencyExist || Object.keys(agencyExist).length === 0) {
       toast.error("Please complete your agency profile first.");
+      router.push("/dashboard/agency-profile");
+      return;
+    }
+
+    if (!user?.is_profile_verified) {
+      toast.error("Your profile must be verified before adding employees.");
       router.push("/dashboard/agency-profile");
       return;
     }
@@ -476,7 +485,6 @@ const EmployeePage = () => {
   );
 };
 
-// Reusable component for the View Profile Grid
 const InfoTile = ({ label, value, icon }) => (
   <div className="bg-white p-3 rounded-lg border border-gray-100 shadow-sm flex flex-col justify-center">
     <div className="flex items-center gap-2 text-purple-500 mb-1">

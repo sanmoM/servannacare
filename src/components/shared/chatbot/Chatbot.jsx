@@ -7,12 +7,11 @@ import Image from "next/image";
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
-  const [filePreview, setFilePreview] = useState(null); // { type: "image" | "pdf", url, name }
+  const [filePreview, setFilePreview] = useState(null);
   const [messages, setMessages] = useState([
     { sender: "bot", text: "Hello! How can I assist you today?" },
   ]);
 
-  // Handle File Upload
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -47,7 +46,6 @@ const ChatBot = () => {
     setInput("");
     setFilePreview(null);
 
-    // Bot Auto Reply
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
@@ -58,18 +56,18 @@ const ChatBot = () => {
 
   return (
     <>
-      {/* Floating Chat Icon */}
+     
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-primary text-white p-4 rounded-full shadow-lg hover:bg-primary/80 transition z-50"
+        className="fixed bottom-6 right-6 bg-primary text-white p-4 cursor-pointer rounded-full shadow-lg hover:bg-primary/80 transition z-50"
       >
         <MessageCircle size={26} />
       </button>
 
-      {/* Chat Window */}
+     
       {isOpen && (
         <div className="fixed bottom-6 right-6 w-88 bg-white rounded-xl shadow-2xl border  flex flex-col">
-          {/* Header */}
+    
           <div className="px-4 py-3 bg-primary text-white flex items-center justify-between rounded-t-xl">
             <div className="flex gap-2 items-center">
               <Image
@@ -80,9 +78,9 @@ const ChatBot = () => {
                 alt="logo"
                 className="rounded-full"
               />
-              <h3 className="font-semibold text-sm">Admin</h3>
+              {/* <h3 className="font-semibold text-sm">Admin</h3> */}
             </div>
-            <button onClick={() => setIsOpen(false)}>
+            <button className="cursor-pointer" onClick={() => setIsOpen(false)}>
               <X size={20} />
             </button>
           </div>
@@ -100,13 +98,13 @@ const ChatBot = () => {
                 {msg.sender === "bot" && (
                   <div className="h-10 w-10">
                     <Image
-                    src="/logo1.png"
-                    width={50}
-                    height={50}
-                    quality={100}
-                    alt="avatar"
-                    className="rounded-full p-2 h-full w-full border"
-                  />
+                      src="/logo1.png"
+                      width={50}
+                      height={50}
+                      quality={100}
+                      alt="avatar"
+                      className="rounded-full p-2 h-full w-full border"
+                    />
                   </div>
                 )}
 

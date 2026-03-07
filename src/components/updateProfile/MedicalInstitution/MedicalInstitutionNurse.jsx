@@ -148,8 +148,6 @@ const MedicalInstitutionNurse = ({
     }
   }, [initialData, isUpdate]);
 
- 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
@@ -256,6 +254,7 @@ const MedicalInstitutionNurse = ({
     );
     try {
       const payload = buildPayload();
+      payload.append("type", "institution_nurse");
       if (isUpdate) {
         await postApi(`/institution-nurse/${initialData.id}`, payload);
         toast.success("Nurse updated successfully!", { id: loadingToast });
@@ -269,7 +268,6 @@ const MedicalInstitutionNurse = ({
 
       onSuccess?.();
     } catch (error) {
-     
       toast.error(error.message || "Failed to submit nurse data", {
         id: loadingToast,
       });
@@ -356,14 +354,26 @@ const MedicalInstitutionNurse = ({
               onValueChange={(val) => setData((p) => ({ ...p, gender: val }))}
               className="flex gap-4"
             >
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="Male" id="g1" />
-                <Label htmlFor="g1">Male</Label>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="Male"
+                  id="g1"
+                />
+                <Label className="cursor-pointer" htmlFor="g1">
+                  Male
+                </Label>
               </div>
 
-              <div className="flex items-center gap-3">
-                <RadioGroupItem value="Female" id="g2" />
-                <Label htmlFor="g2">Female</Label>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="Female"
+                  id="g2"
+                />
+                <Label className="cursor-pointer" htmlFor="g2">
+                  Female
+                </Label>
               </div>
             </RadioGroup>
           </div>
@@ -378,13 +388,29 @@ const MedicalInstitutionNurse = ({
               onValueChange={(val) =>
                 setData((p) => ({ ...p, canDrive: val === "true" }))
               }
-              className="flex gap-4"
+              className="flex gap-3"
             >
-              <RadioGroupItem value="true" id="d1" />
-              <Label htmlFor="d1">Yes</Label>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="true"
+                  id="d1"
+                />
+                <Label className="cursor-pointer" htmlFor="d1">
+                  Yes
+                </Label>
+              </div>
 
-              <RadioGroupItem value="false" id="d2" />
-              <Label htmlFor="d2">No</Label>
+              <div className="flex item-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="false"
+                  id="d2"
+                />
+                <Label className="cursor-pointer" htmlFor="d2">
+                  No
+                </Label>
+              </div>
             </RadioGroup>
           </div>
 
@@ -396,13 +422,29 @@ const MedicalInstitutionNurse = ({
               onValueChange={(val) =>
                 setData((p) => ({ ...p, preferredRole: val }))
               }
-              className="flex gap-4"
+              className="flex gap-3"
             >
-              <RadioGroupItem value="Medical Nurse" id="r3" />
-              <Label htmlFor="r3">Medical Nurse</Label>
+              <div className="flex item-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="Medical Nurse"
+                  id="r3"
+                />
+                <Label className="cursor-pointer" htmlFor="r3">
+                  Medical Nurse
+                </Label>
+              </div>
 
-              <RadioGroupItem value="Nurse Aide" id="r4" />
-              <Label htmlFor="r4">Nurse Aide</Label>
+              <div className="flex item-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="Nurse Aide"
+                  id="r4"
+                />
+                <Label className="cursor-pointer" htmlFor="r4">
+                  Nurse Aide
+                </Label>
+              </div>
             </RadioGroup>
           </div>
         </div>
@@ -413,33 +455,57 @@ const MedicalInstitutionNurse = ({
           <RadioGroup
             value={data.education}
             onValueChange={(val) => setData((p) => ({ ...p, education: val }))}
-            className="flex flex-wrap gap-4"
+            className="flex flex-wrap gap-3"
           >
-            <RadioGroupItem value="Diploma In Nursing" id="edu1" />
-            <Label htmlFor="edu1">Diploma In Nursing</Label>
-
-            <RadioGroupItem value="Degree In Nursing" id="edu2" />
-            <Label htmlFor="edu2">Degree In Nursing</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="Diploma In Nursing"
+                id="edu1"
+              />
+              <Label className="cursor-pointer" htmlFor="edu1">
+                Diploma In Nursing
+              </Label>
+            </div>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="Degree In Nursing"
+                id="edu2"
+              />
+              <Label className="cursor-pointer" htmlFor="edu2">
+                Degree In Nursing
+              </Label>
+            </div>
           </RadioGroup>
         </div>
 
         {/* Languages */}
         <div className="pb-8">
           <Label className={"mb-3"}>Languages</Label>
+
           <div className="flex flex-wrap gap-4">
-            {languages.map((lan, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <Checkbox
-                  checked={data.languages.includes(lan.value)}
-                  onCheckedChange={() => toggleArray("languages", lan.value)}
-                />
-                <Label>{lan.text}</Label>
-              </div>
-            ))}
+            {languages.map((lan, idx) => {
+              const id = `language-${idx}`;
+
+              return (
+                <div key={idx} className="flex items-center gap-2">
+                  <Checkbox
+                    id={id}
+                    className="cursor-pointer"
+                    checked={data.languages.includes(lan.value)}
+                    onCheckedChange={() => toggleArray("languages", lan.value)}
+                  />
+
+                  <Label htmlFor={id} className="cursor-pointer">
+                    {lan.text}
+                  </Label>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        {/* Education Certificate Upload */}
         <FileUpload
           title="Education Certificate (Compulsory)"
           accept="application/pdf,image/*"
@@ -451,13 +517,12 @@ const MedicalInstitutionNurse = ({
           }
         />
 
-        {/* Nursing Council */}
         <div className="py-4">
           <Label className="mb-3 block">
             Are you registered with the Nursing Council of Kenya?
           </Label>
           <RadioGroup
-            className="flex gap-4 mt-2"
+            className="flex gap-3 mt-2"
             value={
               data.isNursingInKenya === null
                 ? ""
@@ -474,12 +539,24 @@ const MedicalInstitutionNurse = ({
             }}
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="true" id="kenya1" />
-              <Label htmlFor="kenya1">Yes</Label>
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="true"
+                id="kenya1"
+              />
+              <Label className="cursor-pointer" htmlFor="kenya1">
+                Yes
+              </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="false" id="kenya2" />
-              <Label htmlFor="kenya2">No</Label>
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="kenya2"
+              />
+              <Label className="cursor-pointer" htmlFor="kenya2">
+                No
+              </Label>
             </div>
           </RadioGroup>
 
@@ -528,13 +605,29 @@ const MedicalInstitutionNurse = ({
                 hospitalBasedCare: val === "true",
               }))
             }
-            className="flex gap-4"
+            className="flex gap-3"
           >
-            <RadioGroupItem value="true" id="hb1" />
-            <Label htmlFor="hb1">Yes</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="true"
+                id="hb1"
+              />
+              <Label className="cursor-pointer" htmlFor="hb1">
+                Yes
+              </Label>
+            </div>
 
-            <RadioGroupItem value="false" id="hb2" />
-            <Label htmlFor="hb2">No</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="hb2"
+              />
+              <Label className="cursor-pointer" htmlFor="hb2">
+                No
+              </Label>
+            </div>
           </RadioGroup>
 
           {data.hospitalBasedCare && (
@@ -573,13 +666,29 @@ const MedicalInstitutionNurse = ({
             onValueChange={(val) =>
               setData((prev) => ({ ...prev, homeBasedCare: val === "true" }))
             }
-            className="flex gap-4"
+            className="flex gap-3"
           >
-            <RadioGroupItem value="true" id="hb3" />
-            <Label htmlFor="hb3">Yes</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="true"
+                id="hb3"
+              />
+              <Label className="cursor-pointer" htmlFor="hb3">
+                Yes
+              </Label>
+            </div>
 
-            <RadioGroupItem value="false" id="hb4" />
-            <Label htmlFor="hb4">No</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="hb4"
+              />
+              <Label className="cursor-pointer" htmlFor="hb4">
+                No
+              </Label>
+            </div>
           </RadioGroup>
 
           {data.homeBasedCare && (
@@ -613,15 +722,22 @@ const MedicalInstitutionNurse = ({
         <div>
           <Label className="mb-2 mt-4 block">Do you have experience in:</Label>
           <div className="flex flex-col gap-3">
-            {servicesList.map((skill, idx) => (
-              <div key={idx} className="flex gap-2">
-                <Checkbox
-                  checked={data.services.includes(skill)}
-                  onCheckedChange={() => toggleArray("services", skill)}
-                />
-                <Label>{skill}</Label>
-              </div>
-            ))}
+            {servicesList.map((skill, idx) => {
+              const id = `service-${idx}`;
+              return (
+                <div key={idx} className="flex gap-2">
+                  <Checkbox
+                    className="cursor-pointer"
+                    id={id}
+                    checked={data.services.includes(skill)}
+                    onCheckedChange={() => toggleArray("services", skill)}
+                  />
+                  <Label className="cursor-pointer" htmlFor={id}>
+                    {skill}
+                  </Label>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -772,7 +888,9 @@ const MedicalInstitutionNurse = ({
         </div>
         <div className="pt-4">
           <Button
-            className={"w-full sm:absolute sm:b-0 sm:mt-4 sm:w-auto"}
+            className={
+              "w-full sm:absolute sm:b-0 sm:mt-4 sm:w-auto cursor-pointer"
+            }
             size={"lg"}
             type="submit"
           >

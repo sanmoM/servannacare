@@ -44,6 +44,7 @@ const VerifyOtpPage = () => {
       toast.success("OTP verified successfully!");
 
       const userData = await refreshUser();
+      console.log("userdata", userData);
 
       sessionStorage.removeItem("verifyEmail");
       sessionStorage.removeItem("redirectUrl");
@@ -124,13 +125,13 @@ const VerifyOtpPage = () => {
 
           <Button
             size="lg"
-            className="w-full h-14 rounded-2xl bg-primary cursor-pointer text-white font-semibold transition-all duration-200 shadow-lg shadow-gray-200 active:scale-[0.98] disabled:opacity-70"
+            className="w-full h-14 rounded-lg bg-primary cursor-pointer text-white font-semibold transition-all duration-200 shadow-lg shadow-gray-200 active:scale-[0.98] disabled:opacity-70"
             onClick={handleVerify}
             disabled={loading}
           >
             {loading ? (
               <div className="flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-lg animate-spin" />
                 Verifying...
               </div>
             ) : (

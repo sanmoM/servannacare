@@ -18,16 +18,15 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function EmployerBookingFormClient() {
   const searchParams = useSearchParams();
@@ -104,7 +103,7 @@ export default function EmployerBookingFormClient() {
       selectedMonths: [],
       selectedDates: [],
       kids: "",
-      ageBracket: "",
+      ageBracket: [],
       homeType: "",
       homeSize: "",
     },
@@ -121,7 +120,7 @@ export default function EmployerBookingFormClient() {
   const isDaily = lookingFor === "daily";
 
   useEffect(() => {
-    if (kids !== "yes") setValue("ageBracket", "");
+    if (kids !== "yes") setValue("ageBracket", []);
   }, [kids, setValue]);
 
   useEffect(() => {
@@ -160,7 +159,9 @@ export default function EmployerBookingFormClient() {
     if (!homeType || !homeSize || !kids)
       return toast.error("Please complete all fields");
 
-    // setPhoneNumber(user?.number || "");
+    if (kids === "yes" && !watch("ageBracket")?.length) {
+      return toast.error("Please select at least one age bracket");
+    }
     setIsPayModalOpen(true);
   };
 
@@ -210,13 +211,12 @@ export default function EmployerBookingFormClient() {
       subRole: category,
       booking_type: isMonthly ? "monthly" : "daily",
       has_kids: formData.kids === "yes" ? 1 : 0,
-      age_bracket: formData.kids === "yes" ? formData.ageBracket : null,
+      age_bracket: formData.kids === "yes" ? formData.ageBracket : [],
       home_type: formData.homeType,
       home_size: formData.homeSize,
       selected_dates_or_months: formattedSelections,
       booking_amount: bookingAmount,
     };
-    
 
     try {
       const paymentRes = await postApi("/checkout", {
@@ -307,31 +307,50 @@ export default function EmployerBookingFormClient() {
                   </RadioGroup>
 
                   {kids === "yes" && (
-                    <div className="mt-6 space-y-3">
-                      <Label className="font-medium">choose age bracket</Label>
-                      <RadioGroup
-                        value={watch("ageBracket")}
-                        onValueChange={(val) => setValue("ageBracket", val)}
-                        className="space-y-2"
-                      >
-                        {["0-3", "4-10", "11+"].map((range) => (
-                          <div key={range} className="flex items-center gap-2">
-                            <RadioGroupItem
-                              className={"cursor-pointer"}
-                              value={range}
-                              id={`age-${range}`}
-                            />
-                            <Label
-                              className={"cursor-pointer"}
-                              htmlFor={`age-${range}`}
+                    <div className="mt-6 space-y-4">
+                      <Label className="font-medium">Choose age brackets</Label>
+
+                      <div className="space-y-3">
+                        {["0-3", "4-10", "11+"].map((range) => {
+                          const selected = watch("ageBracket") || [];
+                          const checked = selected.includes(range);
+
+                          return (
+                            <div
+                              key={range}
+                              className="flex items-center space-x-2"
                             >
-                              {range === "11+"
-                                ? "11 yrs and Above"
-                                : `${range} yrs`}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
+                              <Checkbox
+                               className="h-4 w-4 rounded-sm border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
+                                id={`age-${range}`}
+                                checked={checked}
+                                onCheckedChange={(value) => {
+                                  let updated = [...selected];
+
+                                  if (value) {
+                                    updated.push(range);
+                                  } else {
+                                    updated = updated.filter(
+                                      (r) => r !== range,
+                                    );
+                                  }
+
+                                  setValue("ageBracket", updated);
+                                }}
+                              />
+
+                              <Label
+                                htmlFor={`age-${range}`}
+                                className="cursor-pointer"
+                              >
+                                {range === "11+"
+                                  ? "11 yrs and Above"
+                                  : `${range} yrs`}
+                              </Label>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>

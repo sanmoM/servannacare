@@ -6,6 +6,7 @@ import {
   Linkedin,
   ChevronRight,
 } from "lucide-react";
+import { PiTiktokLogo } from "react-icons/pi";
 import Container from "../Container";
 import Image from "next/image";
 import Link from "next/link";
@@ -106,30 +107,26 @@ const Footer = () => {
           </p>
           <div className="flex items-center space-x-5 mt-4 sm:mt-0">
             <a
-              href="#"
-              aria-label="Facebook"
-              className="text-white transition-colors duration-200"
+              target="_blank"
+              href="https://www.tiktok.com/@cervanna.care?_r=1&_t=ZS-94SWjmHqWzU"
+              aria-label="Tiktok"
+              className="text-gray-200 hover:text-white transition-colors duration-200"
             >
-              <Facebook size={20} />
+              <PiTiktokLogo size={20} />
             </a>
             <a
-              href="#"
-              aria-label="Twitter"
-              className="text-white transition-colors duration-200"
-            >
-              <Twitter size={20} />
-            </a>
-            <a
-              href="#"
+              target="_blank"
+              href="https://www.instagram.com/cervannacare?igsh=MXV2NmN2a3Nra2g3OA=="
               aria-label="Instagram"
-              className="text-white transition-colors duration-200"
+              className="text-gray-200 hover:text-white transition-colors duration-200"
             >
               <Instagram size={20} />
             </a>
             <a
-              href="#"
+              target="_blank"
+              href="https://www.linkedin.com/company/cervanna-care/"
               aria-label="LinkedIn"
-              className="text-white transition-colors duration-200"
+              className="text-gray-200 hover:text-white transition-colors duration-200"
             >
               <Linkedin size={20} />
             </a>

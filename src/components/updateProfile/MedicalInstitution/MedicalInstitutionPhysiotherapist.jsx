@@ -304,8 +304,8 @@ const MedicalInstitutionPhysiotherapist = ({
         try {
             const payload = buildPayload();
 
-            // We are appending specialistType to help backend differentiate if needed
-            payload.append("specialistType", "Physiotherapist");
+           
+            payload.append("type", "institution_physiotherapist");
 
             if (isUpdate) {
                 await postApi(`/institution-nurse/${initialData.id}`, payload);
@@ -724,7 +724,7 @@ const MedicalInstitutionPhysiotherapist = ({
 
                 <div className="pt-8">
                     <Button
-                        className={"w-full sm:w-auto"}
+                        className={"w-full sm:w-auto cursor-pointer"}
                         size={"lg"}
                         type="submit"
                     >
