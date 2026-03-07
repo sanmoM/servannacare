@@ -100,21 +100,25 @@ const SkillServices = ({ defaultValues = {}, onNext, onBack, skills }) => {
       <div className="py-6">
         <Label className="mb-2  block">Do you have experience in : </Label>
         <div className="flex  flex-col gap-3">
-          {skills.map((area, idx) => (
-            <div key={idx} className="flex gap-2">
-              <Checkbox
-                id={area.id}
-                checked={data.skills.includes(area.name)}
-                onCheckedChange={() => toggleSkill(area.name)}
-              />
-              <Label
-                htmlFor={area.name}
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                {area.name}
-              </Label>
-            </div>
-          ))}
+          {skills.map((area, idx) => {
+            const id = `service-${idx}`;
+            return (
+              <div key={idx} className="flex gap-2">
+                <Checkbox
+                  className="cursor-pointer"
+                  id={id}
+                  checked={data.skills.includes(area.name)}
+                  onCheckedChange={() => toggleSkill(area.name)}
+                />
+                <Label
+                  htmlFor={id}
+                  className="text-gray-700 font-normal cursor-pointer"
+                >
+                  {area.name}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       </div>
       {/* <div>

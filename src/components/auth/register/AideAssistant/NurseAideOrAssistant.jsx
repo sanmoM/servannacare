@@ -18,17 +18,16 @@ import { useAuth } from "@/hooks/useAuth";
 const NurseAideOrAssistant = ({ skills }) => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
-  // const [user, setUser] = useState({});
   const router = useRouter();
   const totalSteps = 6;
-const {user}=useAuth
+  const { user } = useAuth();
 
-    useEffect(() => {
-      if (user && !user?.is_profile_completed) {
-        setStarted(true);
-        setStep(1);
-      }
-    }, [user]);
+  useEffect(() => {
+    if (user && !user?.is_profile_completed) {
+      setStarted(true);
+      setStep(1);
+    }
+  }, [user]);
   const [formData, setFormData] = useState({
     basicInfo: {},
     education: {},
@@ -129,7 +128,7 @@ const {user}=useAuth
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
-    
+
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -138,7 +137,6 @@ const {user}=useAuth
         });
 
         if (res?.status === 200) {
-       
           toast.success("Registered Successfully!");
           // localStorage.setItem(
           //   "user",
@@ -149,15 +147,14 @@ const {user}=useAuth
           //   }),
           // );
           router.push(`/dashboard/${user?.role}-profile`);
-    
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",
           );
         }
       } catch (error) {
-        toast.error("Error creating profile",error)
-        
+        toast.error("Error creating profile", error);
+
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,

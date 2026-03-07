@@ -26,12 +26,17 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
 
 const MedicalInstitutionPhysiotherapist = ({
   initialData = null,
   isUpdate = false,
   onSuccess,
 }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const [existingFiles, setExistingFiles] = useState({
     eduCertificate: null,
@@ -90,8 +95,9 @@ const MedicalInstitutionPhysiotherapist = ({
   ];
 
   const [data, setData] = useState({
-    fullName: "",
+    name: "",
     age: "",
+    number_two: "",
     location: "",
     gender: "",
     canDrive: null,
@@ -134,8 +140,9 @@ const MedicalInstitutionPhysiotherapist = ({
   useEffect(() => {
     if (initialData && isUpdate) {
       setData({
-        fullName: initialData.fullName || "",
+        name: initialData.name || "",
         age: initialData.age || "",
+        number_two: initialData?.number_two || "",
         location: initialData.location || "",
         gender: initialData.gender || "",
         canDrive: initialData.canDrive === 1,
@@ -299,11 +306,11 @@ const MedicalInstitutionPhysiotherapist = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic Validation
-    if (!data.fullName) return toast.error("Full Name is required");
+    if (!data.name) return toast.error("Full Name is required");
     if (!data.age) return toast.error("Age is required");
     if (Number(data.age) < 25)
       return toast.error("Must be at least 25 years old");
+    if (!data.number_two) return toast.error("Phone Number is required");
     if (!data.location) return toast.error("Location is required");
     if (!data.gender) return toast.error("Gender is required");
     if (data.languages.length === 0)
@@ -360,7 +367,7 @@ const MedicalInstitutionPhysiotherapist = ({
     try {
       const payload = buildPayload();
 
-      payload.append("type", "institution_physiotherapist");
+      payload.append("type", "institution-physiotherapist");
 
       if (isUpdate) {
         await postApi(`/institution-nurse/${initialData.id}`, payload);
@@ -398,9 +405,9 @@ const MedicalInstitutionPhysiotherapist = ({
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
             placeholder="Name"
-            name="fullName"
+            name="name"
             label="Full Name (as per ID)"
-            value={data.fullName}
+            value={data.name}
             onChange={handleChange}
           />
 
@@ -421,8 +428,43 @@ const MedicalInstitutionPhysiotherapist = ({
           />
         </div>
 
-        {/* Location + Gender */}
         <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
+          <div className="flex-1">
+            <Label>Phone Number</Label>
+            <div className="mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={data?.number_two}
+                onChange={(value) => {
+                  setData((prev) => ({ ...prev, number_two: value || "" }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setData((prev) => ({
+                      ...prev,
+                      number_two: `+${exampleNumber.countryCallingCode}`,
+                    }));
+                  } else {
+                    setData((prev) => ({ ...prev, number_two: "" }));
+                  }
+                }}
+              />
+            </div>
+
+            <div className="h-5 mt-1">
+              {data?.number_two && !isValidPhoneNumber(data?.number_two) && (
+                <p className="text-red-500 text-sm">
+                  Invalid phone number for selected country
+                </p>
+              )}
+            </div>
+          </div>
           <div className="flex-1">
             <Input
               label="Location"
@@ -432,9 +474,12 @@ const MedicalInstitutionPhysiotherapist = ({
               onChange={handleChange}
             />
           </div>
+        </div>
 
+        {/* Location + Gender */}
+        <div className="flex flex-col sm:flex-row gap-6 mt-5 sm:gap-4">
           <div className="flex-1">
-            <Label className={"mb-2"}>Gender?</Label>
+            <Label>Gender?</Label>
             <RadioGroup
               value={data.gender}
               onValueChange={(val) => setData((p) => ({ ...p, gender: val }))}
@@ -459,6 +504,39 @@ const MedicalInstitutionPhysiotherapist = ({
                 />
                 <Label className="cursor-pointer" htmlFor="g2">
                   Female
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="flex-1">
+            <Label>Can you drive?</Label>
+            <RadioGroup
+              value={data.canDrive === null ? "" : String(data.canDrive)}
+              onValueChange={(val) =>
+                setData((p) => ({ ...p, canDrive: val === "true" }))
+              }
+              className="flex gap-4 mt-2"
+            >
+              <div className="flex item-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="true"
+                  id="d1"
+                />
+                <Label className="cursor-pointer" htmlFor="d1">
+                  Yes
+                </Label>
+              </div>
+
+              <div className="flex item-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="false"
+                  id="d2"
+                />
+                <Label className="cursor-pointer" htmlFor="d2">
+                  No
                 </Label>
               </div>
             </RadioGroup>
@@ -489,39 +567,6 @@ const MedicalInstitutionPhysiotherapist = ({
                 );
               })}
             </div>
-          </div>
-
-          <div className="flex-1">
-            <Label className={"mb-2"}>Can you drive?</Label>
-            <RadioGroup
-              value={data.canDrive === null ? "" : String(data.canDrive)}
-              onValueChange={(val) =>
-                setData((p) => ({ ...p, canDrive: val === "true" }))
-              }
-              className="flex gap-4 mt-2"
-            >
-              <div className="flex item-center gap-2">
-                <RadioGroupItem
-                  className="cursor-pointer"
-                  value="true"
-                  id="d1"
-                />
-                <Label className="cursor-pointer" htmlFor="d1">
-                  Yes
-                </Label>
-              </div>
-
-              <div className="flex item-center gap-2">
-                <RadioGroupItem
-                  className="cursor-pointer"
-                  value="false"
-                  id="d2"
-                />
-                <Label className="cursor-pointer" htmlFor="d2">
-                  No
-                </Label>
-              </div>
-            </RadioGroup>
           </div>
         </div>
 
@@ -786,12 +831,14 @@ const MedicalInstitutionPhysiotherapist = ({
             {preferredInterventions.map((pref, indx) => (
               <div key={indx} className="flex items-center gap-2">
                 <Checkbox
-                className="cursor-pointer"
+                  className="cursor-pointer"
                   id={pref}
                   checked={data.preferred.includes(pref)}
                   onCheckedChange={() => toggleArray("preferred", pref)}
                 />
-                <Label className="cursor-pointer" htmlFor={pref}>{pref}</Label>
+                <Label className="cursor-pointer" htmlFor={pref}>
+                  {pref}
+                </Label>
               </div>
             ))}
           </div>

@@ -27,11 +27,17 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const MedicalInstitutionNurseAide = ({
   initialData = null,
   isUpdate = false,
   onSuccess,
 }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const [existingFiles, setExistingFiles] = useState({
     educationCertificate: null,
@@ -97,6 +103,7 @@ const MedicalInstitutionNurseAide = ({
   const [data, setData] = useState({
     fullName: "",
     age: "",
+    phone: "",
     location: "",
     experience: "",
     gender: "",
@@ -115,8 +122,8 @@ const MedicalInstitutionNurseAide = ({
     homeBasedYearsOfExperience: "",
     homeBasedReferenceContact: "",
 
-    services: [], // corresponds to skills in non-institution flow
-    preferred: [], // preferred areas of intervention
+    services: [],
+    preferred: [],
 
     mobilityYears: "",
     bathingYears: "",
@@ -140,6 +147,7 @@ const MedicalInstitutionNurseAide = ({
       setData({
         fullName: initialData.fullName || "",
         age: initialData.age || "",
+        phone: initialData?.phone || "",
         location: initialData.location || "",
         experience: initialData?.experience || "",
         gender: initialData.gender || "",
@@ -214,7 +222,6 @@ const MedicalInstitutionNurseAide = ({
     }
   }, [initialData, isUpdate]);
 
-  // Handlers
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
@@ -288,11 +295,11 @@ const MedicalInstitutionNurseAide = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic Validation
     if (!data.fullName) return toast.error("Full Name is required");
     if (!data.age) return toast.error("Age is required");
     if (Number(data.age) < 25)
       return toast.error("Must be at least 25 years old");
+    if (!data.phone) return toast.error("Phone Number is required");
     if (!data.location) return toast.error("Location is required");
     if (!data.gender) return toast.error("Gender is required");
     if (data.languages.length === 0)
@@ -442,6 +449,42 @@ const MedicalInstitutionNurseAide = ({
           </div>
         </div>
 
+        <div className="mt-5">
+          <Label>Phone Number</Label>
+
+          <div className="w-full mt-2">
+            <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
+              international
+              defaultCountry={country}
+              value={data?.phone}
+              onChange={(value) => {
+                setData((prev) => ({ ...prev, phone: value || "" }));
+              }}
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+                const exampleNumber = countryCode
+                  ? getExampleNumber(countryCode)
+                  : null;
+                if (exampleNumber) {
+                  setData((prev) => ({
+                    ...prev,
+                    phone: `+${exampleNumber.countryCallingCode}`,
+                  }));
+                } else {
+                  setData((prev) => ({ ...prev, phone: "" }));
+                }
+              }}
+            />
+          </div>
+
+          {data?.phone && !isValidPhoneNumber(data?.phone) && (
+            <p className="text-red-500 text-sm mt-1">
+              Invalid phone number for selected country
+            </p>
+          )}
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
           <div className="flex-1 mt-4">
             <Label className={"mb-2"}>Gender?</Label>
@@ -509,7 +552,6 @@ const MedicalInstitutionNurseAide = ({
             </RadioGroup>
           </div>
 
-          {/* Role (Fixed for Nurse Aide) */}
           <div className="flex-1">
             <Label className={"mb-2"}>Your Role?</Label>
             <div className="text-gray-700 font-medium py-2">
@@ -526,11 +568,38 @@ const MedicalInstitutionNurseAide = ({
             onValueChange={(val) => setData((p) => ({ ...p, education: val }))}
             className="flex flex-wrap gap-4"
           >
-            <RadioGroupItem value="Diploma In Nursing" id="edu1" />
-            <Label htmlFor="edu1">Diploma In Nursing</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="Diploma In Nursing"
+                id="edu1"
+              />
+              <Label className={"cursor-pointer"} htmlFor="edu1">
+                Diploma In Nursing
+              </Label>
+            </div>
 
-            <RadioGroupItem value="Degree In Nursing" id="edu2" />
-            <Label htmlFor="edu2">Degree In Nursing</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="Degree In Nursing"
+                id="edu2"
+              />
+              <Label className={"cursor-pointer"} htmlFor="edu2">
+                Degree In Nursing
+              </Label>
+            </div>
+
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="other"
+                id="d4"
+              />
+              <Label htmlFor="d4" className="cursor-pointer">
+                Other
+              </Label>
+            </div>
           </RadioGroup>
         </div>
 
@@ -577,13 +646,28 @@ const MedicalInstitutionNurseAide = ({
                 hospitalBasedCare: val === "true",
               }))
             }
-            className="flex gap-4"
+            className="flex gap-3"
           >
-            <RadioGroupItem value="true" id="hb1" />
-            <Label htmlFor="hb1">Yes</Label>
-
-            <RadioGroupItem value="false" id="hb2" />
-            <Label htmlFor="hb2">No</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="true"
+                id="hb1"
+              />
+              <Label className="cursor-pointer" htmlFor="hb1">
+                Yes
+              </Label>
+            </div>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="hb2"
+              />
+              <Label className="cursor-pointer" htmlFor="hb2">
+                No
+              </Label>
+            </div>
           </RadioGroup>
 
           {data.hospitalBasedCare && (
@@ -623,13 +707,29 @@ const MedicalInstitutionNurseAide = ({
             onValueChange={(val) =>
               setData((prev) => ({ ...prev, homeBasedCare: val === "true" }))
             }
-            className="flex gap-4"
+            className="flex gap-3"
           >
-            <RadioGroupItem value="true" id="hb3" />
-            <Label htmlFor="hb3">Yes</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="true"
+                id="hb3"
+              />
+              <Label className="cursor-pointer" htmlFor="hb3">
+                Yes
+              </Label>
+            </div>
 
-            <RadioGroupItem value="false" id="hb4" />
-            <Label htmlFor="hb4">No</Label>
+            <div className="flex item-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="hb4"
+              />
+              <Label className="cursor-pointer" htmlFor="hb4">
+                No
+              </Label>
+            </div>
           </RadioGroup>
 
           {data.homeBasedCare && (
@@ -668,11 +768,14 @@ const MedicalInstitutionNurseAide = ({
             {preferredInterventions.map((pref, indx) => (
               <div key={indx} className="flex items-center gap-2">
                 <Checkbox
+                  className="cursor-pointer"
                   id={pref}
                   checked={data.preferred.includes(pref)}
                   onCheckedChange={() => toggleArray("preferred", pref)}
                 />
-                <Label htmlFor={pref}>{pref}</Label>
+                <Label className="cursor-pointer" htmlFor={pref}>
+                  {pref}
+                </Label>
               </div>
             ))}
           </div>
@@ -682,15 +785,22 @@ const MedicalInstitutionNurseAide = ({
         <div className="mt-6">
           <Label className="mb-2 block">Do you have experience in:</Label>
           <div className="flex flex-col gap-3">
-            {servicesList.map((skill, idx) => (
-              <div key={idx} className="flex gap-2">
-                <Checkbox
-                  checked={data.services.includes(skill)}
-                  onCheckedChange={() => toggleArray("services", skill)}
-                />
-                <Label>{skill}</Label>
-              </div>
-            ))}
+            {servicesList.map((skill, idx) => {
+              const id = `service-${idx}`;
+              return (
+                <div key={idx} className="flex gap-2">
+                  <Checkbox
+                  id={id}
+                    className="cursor-pointer"
+                    checked={data.services.includes(skill)}
+                    onCheckedChange={() => toggleArray("services", skill)}
+                  />
+                  <Label className="cursor-pointer" htmlFor={id}>
+                    {skill}
+                  </Label>
+                </div>
+              );
+            })}
           </div>
         </div>
 

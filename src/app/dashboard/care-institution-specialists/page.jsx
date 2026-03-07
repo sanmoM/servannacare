@@ -49,6 +49,7 @@ import { useAuth } from "@/hooks/useAuth";
 const InstitutionNursePage = () => {
   const { user } = useAuth();
   const [nurses, setNurses] = useState([]);
+  const [physiotherapist, setPhysiotherapist] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [institute, setInstitute] = useState([]);
   const [isEditOpen, setIsEditOpen] = useState(null);
@@ -59,6 +60,11 @@ const InstitutionNursePage = () => {
   const { data, isLoading, refetch } = useFetch("/profile");
   useEffect(() => {
     if (data) {
+      setPhysiotherapist(
+        data?.data?.institutionPhysiotherapists ||
+          data?.institutionPhysiotherapists ||
+          [],
+      );
       setNurses(data?.data?.institutionNurses || data?.institutionNurses || []);
       setInstitute(data?.data?.careInstitution || data?.careInstitution || []);
     }

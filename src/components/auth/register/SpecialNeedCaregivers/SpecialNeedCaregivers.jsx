@@ -18,7 +18,6 @@ import { useAuth } from "@/hooks/useAuth";
 const SpecialNeedCaregivers = () => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
-  // const [user, setUser] = useState({});
   const router = useRouter();
   const totalSteps = 5;
   const { user } = useAuth();
@@ -39,7 +38,6 @@ const SpecialNeedCaregivers = () => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    // setUser(accountData);
   };
 
   const handleNext = async (dataForStep) => {

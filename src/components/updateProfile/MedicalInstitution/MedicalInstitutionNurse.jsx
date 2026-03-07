@@ -254,7 +254,7 @@ const MedicalInstitutionNurse = ({
     );
     try {
       const payload = buildPayload();
-      payload.append("type", "institution_nurse");
+      payload.append("type", "institution-nurse");
       if (isUpdate) {
         await postApi(`/institution-nurse/${initialData.id}`, payload);
         toast.success("Nurse updated successfully!", { id: loadingToast });
