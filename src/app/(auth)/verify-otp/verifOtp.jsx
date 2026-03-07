@@ -44,7 +44,6 @@ const VerifyOtpPage = () => {
       toast.success("OTP verified successfully!");
 
       const userData = await refreshUser();
-      console.log("userdata", userData);
 
       sessionStorage.removeItem("verifyEmail");
       sessionStorage.removeItem("redirectUrl");

@@ -21,14 +21,14 @@ const SpecialNeedCaregivers = () => {
   // const [user, setUser] = useState({});
   const router = useRouter();
   const totalSteps = 5;
-  const {user}=useAuth();
+  const { user } = useAuth();
 
-    useEffect(() => {
-      if (user && !user?.is_profile_completed) {
-        setStarted(true);
-        setStep(1);
-      }
-    }, [user]);
+  useEffect(() => {
+    if (user && !user?.is_profile_completed) {
+      setStarted(true);
+      setStep(1);
+    }
+  }, [user]);
 
   const [formData, setFormData] = useState({
     basicInfo: {},
@@ -122,7 +122,6 @@ const SpecialNeedCaregivers = () => {
       if (DOCUMENTS?.referenceLetter) {
         fd.append("referenceLetter", DOCUMENTS.referenceLetter);
       }
- 
 
       try {
         const res = await postApi("/create-profile", fd, {
@@ -132,7 +131,6 @@ const SpecialNeedCaregivers = () => {
         });
 
         if (res?.status === 200) {
- 
           toast.success("Registered Successfully!");
           // localStorage.setItem(
           //   "user",
@@ -143,15 +141,13 @@ const SpecialNeedCaregivers = () => {
           //   }),
           // );
           router.push(`/dashboard/${user?.role}-profile`);
-    
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",
           );
         }
       } catch (error) {
-        
-         toast.error("Error creating profile",error)
+        toast.error("Error creating profile", error);
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,
