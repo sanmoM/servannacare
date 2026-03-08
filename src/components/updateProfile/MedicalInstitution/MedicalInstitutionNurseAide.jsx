@@ -364,8 +364,8 @@ const MedicalInstitutionNurseAide = ({
         await postApi("/institution-nurse", payload);
         toast.success("Nurse Aide added successfully!", { id: loadingToast });
       }
-
-      onSuccess?.();
+      router.push("/dashboard/care-institution-specialists");
+      onSuccess?.(isUpdate);
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
@@ -383,6 +383,7 @@ const MedicalInstitutionNurseAide = ({
   return (
     <div>
       <form className="relative pb-16" onSubmit={handleSubmit}>
+        <h1>nurse aid</h1>
         {/* Name + Age */}
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
@@ -607,15 +608,20 @@ const MedicalInstitutionNurseAide = ({
         <div className="pb-8">
           <Label className={"mb-3"}>Languages</Label>
           <div className="flex flex-wrap gap-4">
-            {languages.map((lan, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <Checkbox
-                  checked={data.languages.includes(lan.value)}
-                  onCheckedChange={() => toggleArray("languages", lan.value)}
-                />
-                <Label>{lan.text}</Label>
-              </div>
-            ))}
+            {languages.map((lan, idx) => {
+              const id = `language-${idx}`;
+              return (
+                <div key={idx} className="flex items-center gap-2">
+                  <Checkbox
+                  className="cursor-pointer"
+                    id={id}
+                    checked={data.languages.includes(lan.value)}
+                    onCheckedChange={() => toggleArray("languages", lan.value)}
+                  />
+                  <Label className="cursor-pointer" htmlFor={id}>{lan.text}</Label>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -624,7 +630,8 @@ const MedicalInstitutionNurseAide = ({
           title="Education Certificate (Compulsory)"
           accept="application/pdf,image/*"
           icon={<FileText size={32} />}
-          file={data.educationCertificate}
+          
+          file={data?.educationCertificate || existingFiles?.educationCertificate}
           existingFile={existingFiles.educationCertificate}
           onFileSelect={(file) =>
             setData((p) => ({ ...p, educationCertificate: file }))
@@ -790,7 +797,7 @@ const MedicalInstitutionNurseAide = ({
               return (
                 <div key={idx} className="flex gap-2">
                   <Checkbox
-                  id={id}
+                    id={id}
                     className="cursor-pointer"
                     checked={data.skills.includes(skill)}
                     onCheckedChange={() => toggleArray("skills", skill)}
@@ -900,11 +907,11 @@ const MedicalInstitutionNurseAide = ({
                   }))
                 }
                 disabled={(date) => {
-                  if (!data.date?.length) return false;
-                  const firstSelected = new Date(data.date[0]);
-                  firstSelected.setHours(0, 0, 0, 0);
-                  date.setHours(0, 0, 0, 0);
-                  return date < firstSelected;
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const d = new Date(date);
+                  d.setHours(0, 0, 0, 0);
+                  return d < today;
                 }}
               />
             </div>

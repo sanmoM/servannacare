@@ -353,12 +353,12 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
         toast.success("Caregiver added successfully!", { id: loadingToast });
       }
 
-      onSuccess?.();
+      onSuccess?.(isUpdate);
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-          error.message ||
-          "Failed to submit data",
+        error.message ||
+        "Failed to submit data",
         {
           id: loadingToast,
         },
@@ -372,7 +372,7 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
     <div>
       <form className="relative pb-16" onSubmit={handleSubmit}>
         <h2 className="formHeading">Basic Information</h2>
-
+<h1>specialsit need caregiver</h1>
         {/* Name + Age */}
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
@@ -598,7 +598,7 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
           title="Education Certificate (Compulsory)"
           accept="application/pdf,image/*"
           icon={<FileText size={32} />}
-          file={data.educationCertificate}
+          file={data.educationCertificate || existingFiles.educationCertificate}
           existingFile={existingFiles.educationCertificate}
           onFileSelect={(file) =>
             setData((p) => ({ ...p, educationCertificate: file }))
@@ -814,11 +814,11 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
                   }))
                 }
                 disabled={(date) => {
-                  if (!data.date?.length) return false;
-                  const firstSelected = new Date(data.date[0]);
-                  firstSelected.setHours(0, 0, 0, 0);
-                  date.setHours(0, 0, 0, 0);
-                  return date < firstSelected;
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const d = new Date(date);
+                  d.setHours(0, 0, 0, 0);
+                  return d < today;
                 }}
               />
             </div>

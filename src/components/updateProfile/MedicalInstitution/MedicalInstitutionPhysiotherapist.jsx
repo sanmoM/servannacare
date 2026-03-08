@@ -197,8 +197,8 @@ const MedicalInstitutionPhysiotherapist = ({
 
       setExistingFiles({
         eduCertificate:
-          initialData.eduCertificate !== "null"
-            ? initialData.eduCertificate
+          initialData?.eduCertificate !== "null"
+            ? initialData?.eduCertificate
             : null,
         practiceLicense:
           initialData.practiceLicense !== "null"
@@ -384,7 +384,7 @@ const MedicalInstitutionPhysiotherapist = ({
         });
       }
 
-      onSuccess?.();
+      onSuccess?.(isUpdate);
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
@@ -398,12 +398,15 @@ const MedicalInstitutionPhysiotherapist = ({
   };
 
   if (!ready) return null;
+  console.log(initialData?.eduCertificate);
+  console.log(existingFiles?.eduCertificate);
+  console.log(data?.eduCertificate);
 
   return (
     <div>
       <form className="relative pb-16" onSubmit={handleSubmit}>
         <h2 className="formHeading">Basic Information</h2>
-
+        <h1>physiotherapist</h1>
         {/* Name + Age */}
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
@@ -640,7 +643,7 @@ const MedicalInstitutionPhysiotherapist = ({
           title="Education Certificate (Compulsory)"
           accept="application/pdf,image/*"
           icon={<FileText size={32} />}
-          file={data.eduCertificate}
+          file={data.eduCertificate || existingFiles.eduCertificate}
           existingFile={existingFiles.eduCertificate}
           onFileSelect={(file) =>
             setData((p) => ({ ...p, eduCertificate: file }))
@@ -709,7 +712,7 @@ const MedicalInstitutionPhysiotherapist = ({
                   title="Practising License"
                   accept="application/pdf,image/*"
                   icon={<FileText size={32} />}
-                  file={data?.practiceLicense}
+                  file={data?.practiceLicense || existingFiles?.practiceLicense}
                   existingFile={existingFiles.practiceLicense}
                   onFileSelect={(file) =>
                     setData((p) => ({ ...p, practiceLicense: file }))
@@ -930,11 +933,11 @@ const MedicalInstitutionPhysiotherapist = ({
                   }))
                 }
                 disabled={(date) => {
-                  if (!data.date?.length) return false;
-                  const firstSelected = new Date(data.date[0]);
-                  firstSelected.setHours(0, 0, 0, 0);
-                  date.setHours(0, 0, 0, 0);
-                  return date < firstSelected;
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const d = new Date(date);
+                  d.setHours(0, 0, 0, 0);
+                  return d < today;
                 }}
               />
             </div>

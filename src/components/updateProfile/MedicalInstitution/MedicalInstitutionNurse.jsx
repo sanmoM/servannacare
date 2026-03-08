@@ -21,11 +21,17 @@ import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const MedicalInstitutionNurse = ({
   initialData = null,
   isUpdate = false,
   onSuccess,
 }) => {
+  const [country, setCountry] = useState("KE");
   const router = useRouter();
   const [existingFiles, setExistingFiles] = useState({
     educationCertificate: null,
@@ -63,6 +69,7 @@ const MedicalInstitutionNurse = ({
     location: "",
     experience: "",
     gender: "",
+    number_two: "",
     canDrive: null,
     preferredRole: "",
     education: "",
@@ -96,6 +103,7 @@ const MedicalInstitutionNurse = ({
         age: initialData.age || "",
         location: initialData.location || "",
         experience: initialData?.experience || "",
+        number_two: initialData?.number_two || "",
         gender: initialData.gender || "",
         canDrive: initialData.canDrive === 1,
         preferredRole: initialData.preferredRole || "",
@@ -233,6 +241,58 @@ const MedicalInstitutionNurse = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!data.fullName) return toast.error("Full Name is required");
+    if (!data.age) return toast.error("Age is required");
+    if (Number(data.age) < 25)
+      return toast.error("Must be at least 25 years old");
+    if (!data.number_two) return toast.error("Phone Number is required");
+    if (!data.location) return toast.error("Location is required");
+    if (!data.gender) return toast.error("Gender is required");
+    if (!data.preferredRole) return toast.error("preferredRole is required");
+    if (data.languages.length === 0)
+      return toast.error("Select at least one language");
+    if (data.canDrive === null)
+      return toast.error("Please indicate if you can drive");
+    if (!data.education) return toast.error("Education level is required");
+
+    if (!data.educationCertificate && !existingFiles.educationCertificate) {
+      return toast.error("Education certificate is required");
+    }
+
+    if (data.hospitalBasedCare) {
+      if (!data.hospitalBasedYearsOfExperience)
+        return toast.error("Hospital experience years required");
+      if (!data.hospitalBasedReferenceContact)
+        return toast.error("Hospital reference contact required");
+    }
+
+    if (data.homeBasedCare) {
+      if (!data.homeBasedYearsOfExperience)
+        return toast.error("Home experience years required");
+      if (!data.homeBasedReferenceContact)
+        return toast.error("Home reference contact required");
+    }
+
+    if (data.services.length === 0)
+      return toast.error("Select at least one service/skill");
+
+    if (!data.mobilityYears)
+      return toast.error("Mobility assistance experience required");
+    if (!data.bathingYears)
+      return toast.error("Bathing assistance experience required");
+    if (!data.feedingYears)
+      return toast.error("Feeding assistance experience required");
+    if (!data.serviceFeeDay)
+      return toast.error("Service fee per day is required");
+    if (!data.serviceFeeMonth)
+      return toast.error("Service fee per month is required");
+
+    if (!isUpdate) {
+      if (!data.documents.idCopy) return toast.error("ID copy is required");
+      if (!data.documents.profilePhoto)
+        return toast.error("Profile photo is required");
+    }
+
     if (data?.isNursingInKenya) {
       if (!data.registrationNumber) {
         toast.error("Registration Number is Required");
@@ -266,7 +326,7 @@ const MedicalInstitutionNurse = ({
 
       router.push("/dashboard/care-institution-specialists");
 
-      onSuccess?.();
+      onSuccess?.(isUpdate);
     } catch (error) {
       toast.error(error.message || "Failed to submit nurse data", {
         id: loadingToast,
@@ -279,6 +339,7 @@ const MedicalInstitutionNurse = ({
   return (
     <div>
       <form className="relative pb-16" onSubmit={handleSubmit}>
+        <h1>nurse</h1>
         {/* Name + Age */}
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
@@ -344,6 +405,42 @@ const MedicalInstitutionNurse = ({
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        <div className="mt-5">
+          <Label>Phone Number</Label>
+
+          <div className="w-full mt-2">
+            <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
+              international
+              defaultCountry={country}
+              value={data?.number_two}
+              onChange={(value) => {
+                setData((prev) => ({ ...prev, number_two: value || "" }));
+              }}
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+                const exampleNumber = countryCode
+                  ? getExampleNumber(countryCode)
+                  : null;
+                if (exampleNumber) {
+                  setData((prev) => ({
+                    ...prev,
+                    number_two: `+${exampleNumber.countryCallingCode}`,
+                  }));
+                } else {
+                  setData((prev) => ({ ...prev, number_two: "" }));
+                }
+              }}
+            />
+          </div>
+
+          {data?.number_two && !isValidPhoneNumber(data?.number_two) && (
+            <p className="text-red-500 text-sm mt-1">
+              Invalid phone number for selected country
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 mt-4">
@@ -509,8 +606,8 @@ const MedicalInstitutionNurse = ({
           title="Education Certificate (Compulsory)"
           accept="application/pdf,image/*"
           icon={<FileText size={32} />}
-          file={data.educationCertificate}
-          existingFile={existingFiles.educationCertificate}
+          file={data.educationCertificate || existingFiles.educationCertificate}
+          existingFile={existingFiles?.educationCertificate}
           onFileSelect={(file) =>
             setData((p) => ({ ...p, educationCertificate: file }))
           }
@@ -579,7 +676,7 @@ const MedicalInstitutionNurse = ({
                   title="Practising License"
                   accept="application/pdf,image/*"
                   icon={<FileText size={32} />}
-                  file={data?.practiceLicense}
+                  file={data?.practiceLicense || existingFiles?.practiceLicense}
                   existingFile={existingFiles.practiceLicense}
                   onFileSelect={(file) =>
                     setData((p) => ({ ...p, practiceLicense: file }))
@@ -839,14 +936,11 @@ const MedicalInstitutionNurse = ({
                   }))
                 }
                 disabled={(date) => {
-                  if (!data.date?.length) return false;
-
-                  const firstSelected = new Date(data.date[0]);
-                  firstSelected.setHours(0, 0, 0, 0);
-
-                  date.setHours(0, 0, 0, 0);
-
-                  return date < firstSelected;
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const d = new Date(date);
+                  d.setHours(0, 0, 0, 0);
+                  return d < today;
                 }}
               />
             </div>

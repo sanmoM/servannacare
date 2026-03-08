@@ -48,50 +48,58 @@ import { useAuth } from "@/hooks/useAuth";
 
 const InstitutionNursePage = () => {
   const { user } = useAuth();
-  const [nurses, setNurses] = useState([]);
-  const [physiotherapist, setPhysiotherapist] = useState([]);
-  const [caregivers, setCaregivers] = useState([]);
-  const [NurseAidAssistant, setNurseAidAssistant] = useState([]);
+  const [allSpecialists, setAllSpecialists] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [institute, setInstitute] = useState([]);
   const [isEditOpen, setIsEditOpen] = useState(null);
   const router = useRouter();
   const [scheduleViewId, setScheduleViewId] = useState(null);
   const [selectedSpecialistType, setSelectedSpecialistType] = useState(null);
+  const [showPromoPopup, setShowPromoPopup] = useState(false);
 
 
 
   const { data, isLoading, refetch } = useFetch("/profile");
   useEffect(() => {
     if (data) {
-      setPhysiotherapist(
+      const physiotherapists =
         data?.data?.institutionPhysiotherapists ||
-          data?.institutionPhysiotherapists ||
-          [],
-      );
-      setCaregivers(
+        data?.institutionPhysiotherapists ||
+        [];
+      const specialNeeds =
         data?.data?.institutionSpecialNeeds ||
-          data?.institutionSpecialNeeds ||
-          [],
-      );
-      setNurseAidAssistant(
+        data?.institutionSpecialNeeds ||
+        [];
+      const nurseAssistants =
         data?.data?.institutionNurseAssistants ||
-          data?.institutionNurseAssistants ||
-          [],
-      );
-      setNurses(data?.data?.institutionNurses || data?.institutionNurses || []);
+        data?.institutionNurseAssistants ||
+        [];
+      const institutionNurses =
+        data?.data?.institutionNurses || data?.institutionNurses || [];
+
+      setAllSpecialists([
+        ...institutionNurses.map((n) => ({ ...n, type: "institution-nurse" })),
+        ...physiotherapists.map((p) => ({ ...p, type: "institution-physiotherapist" })),
+        ...specialNeeds.map((s) => ({ ...s, type: "institution-special-need" })),
+        ...nurseAssistants.map((na) => ({ ...na, type: "institution-nurse-assistant" })),
+      ]);
       setInstitute(data?.data?.careInstitution || data?.careInstitution || []);
     }
   }, [data]);
 
-  const handleDelete = async (id) => {
-    const loadingToast = toast.loading("Deleting nurse...");
+  const handleDelete = async (id, type) => {
+    const loadingToast = toast.loading("Deleting specialist...");
+    let endpoint = "/institution-nurse";
+    if (type === "institution-nurse-assistant") endpoint = "/institution-nurse-assistant";
+    if (type === "institution-physiotherapist") endpoint = "/institution-physiotherapist";
+    if (type === "institution-special-need") endpoint = "/institution-special-need";
+
     try {
-      await deleteApi(`/institution-nurse/${id}`);
-      toast.success("Nurse removed successfully", { id: loadingToast });
+      await deleteApi(`${endpoint}/${id}`);
+      toast.success("Specialist removed successfully", { id: loadingToast });
       refetch();
     } catch (err) {
-      toast.error("Failed to delete nurse.", { id: loadingToast });
+      toast.error("Failed to delete specialist.", { id: loadingToast });
     }
   };
 
@@ -129,23 +137,35 @@ const InstitutionNursePage = () => {
   };
 
   const renderSpecialistForm = () => {
-    const handleSuccess = () => {
+    const handleSuccess = (isUpdate = false) => {
       refetch();
       setIsAddOpen(false);
       setSelectedSpecialistType(null);
+      if (!isUpdate) {
+        setShowPromoPopup(true);
+      }
     };
 
     switch (selectedSpecialistType) {
-      case "Nurse":
-        return <MedicalInstitutionNurse onSuccess={handleSuccess} />;
-      case "Nurse Aide or Assistant":
-      case "Nurse Aide":
-        return <MedicalInstitutionNurseAide onSuccess={handleSuccess} />;
-      case "Physiotherapist":
-        return <MedicalInstitutionPhysiotherapist onSuccess={handleSuccess} />;
-      case "Special Need Caregiver":
+      case "institution-nurse":
         return (
-          <MedicalInstitutionSpecialNeedCaregiver onSuccess={handleSuccess} />
+          <MedicalInstitutionNurse onSuccess={() => handleSuccess(false)} />
+        );
+      case "institution-nurse-assistant":
+        return (
+          <MedicalInstitutionNurseAide onSuccess={() => handleSuccess(false)} />
+        );
+      case "institution-physiotherapist":
+        return (
+          <MedicalInstitutionPhysiotherapist
+            onSuccess={() => handleSuccess(false)}
+          />
+        );
+      case "institution-special-need":
+        return (
+          <MedicalInstitutionSpecialNeedCaregiver
+            onSuccess={() => handleSuccess(false)}
+          />
         );
       default:
         return null;
@@ -158,11 +178,10 @@ const InstitutionNursePage = () => {
       setIsEditOpen(null);
     };
 
-    const role = nurse?.preferredRole || "Nurse";
+    const type = nurse?.type || "institution-nurse";
 
-    switch (role) {
-      case "Nurse Aide or Assistant":
-      case "Nurse Aide":
+    switch (type) {
+      case "institution-nurse-assistant":
         return (
           <MedicalInstitutionNurseAide
             initialData={nurse}
@@ -170,7 +189,7 @@ const InstitutionNursePage = () => {
             onSuccess={handleSuccess}
           />
         );
-      case "Physiotherapist":
+      case "institution-physiotherapist":
         return (
           <MedicalInstitutionPhysiotherapist
             initialData={nurse}
@@ -178,7 +197,7 @@ const InstitutionNursePage = () => {
             onSuccess={handleSuccess}
           />
         );
-      case "Special Need Caregiver":
+      case "institution-special-need":
         return (
           <MedicalInstitutionSpecialNeedCaregiver
             initialData={nurse}
@@ -186,7 +205,7 @@ const InstitutionNursePage = () => {
             onSuccess={handleSuccess}
           />
         );
-      case "Nurse":
+      case "institution-nurse":
       default:
         return (
           <MedicalInstitutionNurse
@@ -231,18 +250,18 @@ const InstitutionNursePage = () => {
             {!selectedSpecialistType ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
                 {[
-                  "Nurse",
-                  "Nurse Aide or Assistant",
-                  "Physiotherapist",
-                  "Special Need Caregiver",
-                ].map((type) => (
+                  { label: "Nurse", value: "institution-nurse" },
+                  { label: "Nurse Aide or Assistant", value: "institution-nurse-assistant" },
+                  { label: "Physiotherapist", value: "institution-physiotherapist" },
+                  { label: "Special Need Caregiver", value: "institution-special-need" },
+                ].map((item) => (
                   <Button
-                    key={type}
+                    key={item.value}
+                    onClick={() => setSelectedSpecialistType(item.value)}
                     variant="outline"
-                    className="h-24 text-lg font-medium border-2 hover:border-primary hover:bg-primary/10 transition-all cursor-pointer"
-                    onClick={() => setSelectedSpecialistType(type)}
+                    className="h-24 text-lg font-medium border-2 hover:border-primary hover:bg-primary/10 transition-all cursor-pointer flex flex-col gap-2"
                   >
-                    {type}
+                    {item.label}
                   </Button>
                 ))}
               </div>
@@ -261,6 +280,27 @@ const InstitutionNursePage = () => {
             )}
           </DialogContent>
         </Dialog>
+
+        <Dialog open={showPromoPopup} onOpenChange={setShowPromoPopup}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-primary flex items-center gap-2">
+                <ShieldCheck className="text-emerald-500" />
+                Specialist Added Successfully!
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-gray-600">
+                You can now update the specialist's schedule anytime from the
+                <strong> Edit</strong> page. Keeping the schedule updated helps
+                in better management and visibility.
+              </p>
+            </div>
+            <DialogFooter>
+              <Button className="cursor-pointer" onClick={() => setShowPromoPopup(false)}>Got it!</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Table */}
@@ -277,8 +317,8 @@ const InstitutionNursePage = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {nurses.length > 0 ? (
-                nurses.map((nurse) => (
+              {allSpecialists.length > 0 ? (
+                allSpecialists.map((nurse) => (
                   <tr
                     key={nurse.id}
                     className="hover:bg-gray-50/50 transition-colors"
@@ -299,7 +339,7 @@ const InstitutionNursePage = () => {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900 leading-none">
-                            {nurse.fullName}
+                            {nurse.fullName || nurse.name}
                           </p>
                           <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
                             <MapPin size={12} /> {nurse.location}
@@ -312,7 +352,7 @@ const InstitutionNursePage = () => {
                     <td className="px-6 py-4">
                       <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
                         <Briefcase size={14} className="text-purple-500" />
-                        {nurse.preferredRole}
+                        {nurse.subRole}
                       </span>
                     </td>
 
@@ -342,9 +382,9 @@ const InstitutionNursePage = () => {
                             <DialogHeader>
                               <DialogTitle className="flex items-center gap-2">
                                 <span className="text-primary">
-                                  specialists Profile:
+                                  Specialists Profile:
                                 </span>
-                                {nurse.fullName}
+                                {nurse.fullName || nurse.name}
                               </DialogTitle>
                             </DialogHeader>
 
@@ -571,7 +611,7 @@ const InstitutionNursePage = () => {
                             </DialogHeader>
 
                             <p className="text-sm text-gray-600 py-4">
-                              Remove <strong>{nurse.name}</strong> permanently?
+                              Remove <strong>{nurse.fullName || nurse.name}</strong> permanently?
                             </p>
 
                             <DialogFooter>
@@ -580,7 +620,7 @@ const InstitutionNursePage = () => {
                               </DialogClose>
                               <Button
                                 variant="destructive"
-                                onClick={() => handleDelete(nurse.id)}
+                                onClick={() => handleDelete(nurse.id, nurse.type)}
                               >
                                 Confirm Delete
                               </Button>
