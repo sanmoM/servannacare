@@ -346,8 +346,8 @@ const MedicalInstitutionNurse = ({
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
-          <div className="flex-1 mt-4">
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 mt-4">
+          <div className="flex-1">
             <Label className={"mb-2"}>Gender?</Label>
             <RadioGroup
               value={data.gender}
@@ -377,10 +377,6 @@ const MedicalInstitutionNurse = ({
               </div>
             </RadioGroup>
           </div>
-        </div>
-
-        {/* Driving */}
-        <div className="flex flex-col mt-8 sm:flex-row gap-6 sm:gap-4">
           <div className="flex-1">
             <Label className={"mb-2"}>Can you drive?</Label>
             <RadioGroup
@@ -413,10 +409,42 @@ const MedicalInstitutionNurse = ({
               </div>
             </RadioGroup>
           </div>
+        </div>
 
-          {/* Role */}
+        <div className="flex flex-col mt-8 sm:flex-row gap-6 sm:gap-4 my-6">
           <div className="flex-1">
-            <Label className={"mb-2"}>Your Role?</Label>
+            <Label className="mb-3">Level of Education</Label>
+            <RadioGroup
+              value={data.education}
+              onValueChange={(val) =>
+                setData((p) => ({ ...p, education: val }))
+              }
+              className="flex flex-wrap gap-3"
+            >
+              <div className="flex item-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="Diploma In Nursing"
+                  id="edu1"
+                />
+                <Label className="cursor-pointer" htmlFor="edu1">
+                  Diploma In Nursing
+                </Label>
+              </div>
+              <div className="flex item-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="Degree In Nursing"
+                  id="edu2"
+                />
+                <Label className="cursor-pointer" htmlFor="edu2">
+                  Degree In Nursing
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+          <div className="flex-1">
+            <Label className={"mb-2"}>Preferred Role</Label>
             <RadioGroup
               value={data.preferredRole}
               onValueChange={(val) =>
@@ -450,35 +478,6 @@ const MedicalInstitutionNurse = ({
         </div>
 
         {/* Education Level */}
-        <div className="my-6">
-          <Label className="mb-3">Level of Education</Label>
-          <RadioGroup
-            value={data.education}
-            onValueChange={(val) => setData((p) => ({ ...p, education: val }))}
-            className="flex flex-wrap gap-3"
-          >
-            <div className="flex item-center gap-2">
-              <RadioGroupItem
-                className="cursor-pointer"
-                value="Diploma In Nursing"
-                id="edu1"
-              />
-              <Label className="cursor-pointer" htmlFor="edu1">
-                Diploma In Nursing
-              </Label>
-            </div>
-            <div className="flex item-center gap-2">
-              <RadioGroupItem
-                className="cursor-pointer"
-                value="Degree In Nursing"
-                id="edu2"
-              />
-              <Label className="cursor-pointer" htmlFor="edu2">
-                Degree In Nursing
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
 
         {/* Languages */}
         <div className="pb-8">
@@ -829,7 +828,7 @@ const MedicalInstitutionNurse = ({
         {/* Schedule - Only show if initialData exists */}
         {initialData && (
           <>
-            <Label className="mb-2">Schedule</Label>
+            <Label className="my-2">Schedule</Label>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
               <SelectableCalendar
                 selectedDates={data.date || []}

@@ -59,7 +59,6 @@ const InstitutionNursePage = () => {
   const [scheduleViewId, setScheduleViewId] = useState(null);
   const [selectedSpecialistType, setSelectedSpecialistType] = useState(null);
 
-  console.log("physio",physiotherapist)
 
 
   const { data, isLoading, refetch } = useFetch("/profile");
