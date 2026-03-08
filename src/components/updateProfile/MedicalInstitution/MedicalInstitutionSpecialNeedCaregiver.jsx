@@ -77,7 +77,7 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
     ];
 
     const [data, setData] = useState({
-        fullName: "",
+        name: "",
         age: "",
         location: "",
         gender: "",
@@ -85,11 +85,11 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
         preferredRole: "Special Need Caregiver",
         languages: [],
 
-        // Education
+  
         education: "",
         educationCertificate: null,
 
-        // Experience
+
         hospitalBasedCare: null,
         hospitalBasedYearsOfExperience: "",
         hospitalBasedReferenceContact: "",
@@ -98,11 +98,11 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
         homeBasedYearsOfExperience: "",
         homeBasedReferenceContact: "",
 
-        preferred: [], // preferred areas of intervention
+        preferred: [], 
         serviceFeeDay: "",
         serviceFeeMonth: "",
 
-        date: [], // schedule
+        date: [], 
 
         documents: {
             idCopy: null,
@@ -118,7 +118,7 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
     useEffect(() => {
         if (initialData && isUpdate) {
             setData({
-                fullName: initialData.fullName || "",
+                name: initialData.name || "",
                 age: initialData.age || "",
                 location: initialData.location || "",
                 gender: initialData.gender || "",
@@ -238,7 +238,7 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
         e.preventDefault();
 
         // Basic Validation
-        if (!data.fullName) return toast.error("Full Name is required");
+        if (!data.name) return toast.error("Full Name is required");
         if (!data.age) return toast.error("Age is required");
         if (Number(data.age) < 25) return toast.error("Must be at least 25 years old");
         if (!data.location) return toast.error("Location is required");
@@ -279,7 +279,7 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
             const payload = buildPayload();
 
            
-            payload.append("type", "institution_special_need");
+            payload.append("type", "institution-special-need");
 
             if (isUpdate) {
                 await postApi(`/institution-nurse/${initialData.id}`, payload);
@@ -308,9 +308,9 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
                 <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
                     <Input
                         placeholder="Name"
-                        name="fullName"
+                        name="name"
                         label="Full Name (as per ID)"
-                        value={data.fullName}
+                        value={data.name}
                         onChange={handleChange}
                     />
 

@@ -101,9 +101,9 @@ const MedicalInstitutionNurseAide = ({
   ];
 
   const [data, setData] = useState({
-    fullName: "",
+    name: "",
     age: "",
-    phone: "",
+    number_two: "",
     location: "",
     experience: "",
     gender: "",
@@ -122,7 +122,7 @@ const MedicalInstitutionNurseAide = ({
     homeBasedYearsOfExperience: "",
     homeBasedReferenceContact: "",
 
-    services: [],
+    skills: [],
     preferred: [],
 
     mobilityYears: "",
@@ -145,9 +145,9 @@ const MedicalInstitutionNurseAide = ({
   useEffect(() => {
     if (initialData && isUpdate) {
       setData({
-        fullName: initialData.fullName || "",
+        name: initialData.name || "",
         age: initialData.age || "",
-        phone: initialData?.phone || "",
+        number_two: initialData?.number_two || "",
         location: initialData.location || "",
         experience: initialData?.experience || "",
         gender: initialData.gender || "",
@@ -169,7 +169,7 @@ const MedicalInstitutionNurseAide = ({
           initialData.homeBasedYearsOfExperience || "",
         homeBasedReferenceContact: initialData.homeBasedReferenceContact || "",
 
-        services: initialData.services || [],
+        skills: initialData.skills || [],
         preferred: initialData.preferred || [],
 
         mobilityYears: initialData.mobilityYears || "",
@@ -295,11 +295,11 @@ const MedicalInstitutionNurseAide = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!data.fullName) return toast.error("Full Name is required");
+    if (!data.name) return toast.error("Full Name is required");
     if (!data.age) return toast.error("Age is required");
     if (Number(data.age) < 25)
       return toast.error("Must be at least 25 years old");
-    if (!data.phone) return toast.error("Phone Number is required");
+    if (!data.number_two) return toast.error("Phone Number is required");
     if (!data.location) return toast.error("Location is required");
     if (!data.gender) return toast.error("Gender is required");
     if (data.languages.length === 0)
@@ -326,7 +326,7 @@ const MedicalInstitutionNurseAide = ({
         return toast.error("Home reference contact required");
     }
 
-    if (data.services.length === 0)
+    if (data.skills.length === 0)
       return toast.error("Select at least one service/skill");
     if (data.preferred.length === 0)
       return toast.error("Select at least one preferred area of intervention");
@@ -355,7 +355,7 @@ const MedicalInstitutionNurseAide = ({
     );
     try {
       const payload = buildPayload();
-      payload.append("type", "institution_nurse_assistant");
+      payload.append("type", "institution-nurse-assistant");
 
       if (isUpdate) {
         await postApi(`/institution-nurse/${initialData.id}`, payload);
@@ -387,9 +387,9 @@ const MedicalInstitutionNurseAide = ({
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
             placeholder="Name"
-            name="fullName"
+            name="name"
             label="Full Name (as per ID)"
-            value={data.fullName}
+            value={data.name}
             onChange={handleChange}
           />
 
@@ -457,9 +457,9 @@ const MedicalInstitutionNurseAide = ({
               className="w-full border rounded-md px-3 py-2"
               international
               defaultCountry={country}
-              value={data?.phone}
+              value={data?.number_two}
               onChange={(value) => {
-                setData((prev) => ({ ...prev, phone: value || "" }));
+                setData((prev) => ({ ...prev, number_two: value || "" }));
               }}
               onCountryChange={(countryCode) => {
                 setCountry(countryCode);
@@ -469,16 +469,16 @@ const MedicalInstitutionNurseAide = ({
                 if (exampleNumber) {
                   setData((prev) => ({
                     ...prev,
-                    phone: `+${exampleNumber.countryCallingCode}`,
+                    number_two: `+${exampleNumber.countryCallingCode}`,
                   }));
                 } else {
-                  setData((prev) => ({ ...prev, phone: "" }));
+                  setData((prev) => ({ ...prev, number_two: "" }));
                 }
               }}
             />
           </div>
 
-          {data?.phone && !isValidPhoneNumber(data?.phone) && (
+          {data?.number_two && !isValidPhoneNumber(data?.number_two) && (
             <p className="text-red-500 text-sm mt-1">
               Invalid phone number for selected country
             </p>
@@ -792,8 +792,8 @@ const MedicalInstitutionNurseAide = ({
                   <Checkbox
                   id={id}
                     className="cursor-pointer"
-                    checked={data.services.includes(skill)}
-                    onCheckedChange={() => toggleArray("services", skill)}
+                    checked={data.skills.includes(skill)}
+                    onCheckedChange={() => toggleArray("skills", skill)}
                   />
                   <Label className="cursor-pointer" htmlFor={id}>
                     {skill}
