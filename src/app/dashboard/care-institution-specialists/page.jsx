@@ -15,6 +15,14 @@ import MedicalInstitutionNurse from "@/components/updateProfile/MedicalInstituti
 import MedicalInstitutionNurseAide from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionNurseAide";
 import MedicalInstitutionPhysiotherapist from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionPhysiotherapist";
 import MedicalInstitutionSpecialNeedCaregiver from "@/components/updateProfile/MedicalInstitution/MedicalInstitutionSpecialNeedCaregiver";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useFetch } from "@/hooks/useFetch";
 import {
   Eye,
@@ -56,6 +64,8 @@ const InstitutionNursePage = () => {
   const [scheduleViewId, setScheduleViewId] = useState(null);
   const [selectedSpecialistType, setSelectedSpecialistType] = useState(null);
   const [showPromoPopup, setShowPromoPopup] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
 
 
@@ -318,319 +328,324 @@ const InstitutionNursePage = () => {
 
             <tbody className="divide-y divide-gray-100">
               {allSpecialists.length > 0 ? (
-                allSpecialists.map((nurse) => (
-                  <tr
-                    key={nurse.id}
-                    className="hover:bg-gray-50/50 transition-colors"
-                  >
-                    {/* Nurse Info */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-purple-100 border overflow-hidden">
-                          <img
-                            src={
-                              nurse?.profilePhoto
-                                ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${nurse.profilePhoto}`
-                                : `https://ui-avatars.com/api/?name=${nurse.name}`
-                            }
-                            alt={nurse.name}
-                            className="h-full w-full object-cover"
-                          />
+                allSpecialists
+                  .slice(
+                    (currentPage - 1) * itemsPerPage,
+                    currentPage * itemsPerPage,
+                  )
+                  .map((nurse) => (
+                    <tr
+                      key={nurse.id}
+                      className="hover:bg-gray-50/50 transition-colors"
+                    >
+                      {/* Nurse Info */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-purple-100 border overflow-hidden">
+                            <img
+                              src={
+                                nurse?.profilePhoto
+                                  ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${nurse.profilePhoto}`
+                                  : `https://ui-avatars.com/api/?name=${nurse.name}`
+                              }
+                              alt={nurse.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900 leading-none">
+                              {nurse.fullName || nurse.name}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                              <MapPin size={12} /> {nurse.location}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-gray-900 leading-none">
-                            {nurse.fullName || nurse.name}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                            <MapPin size={12} /> {nurse.location}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Role */}
-                    <td className="px-6 py-4">
-                      <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                        <Briefcase size={14} className="text-purple-500" />
-                        {nurse.subRole}
-                      </span>
-                    </td>
+                      {/* Role */}
+                      <td className="px-6 py-4">
+                        <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                          <Briefcase size={14} className="text-purple-500" />
+                          {nurse.subRole}
+                        </span>
+                      </td>
 
-                    {/* Status */}
-                    <td className="px-6 py-4">
-                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">
-                        {nurse.status || "Available"}
-                      </span>
-                    </td>
+                      {/* Status */}
+                      <td className="px-6 py-4">
+                        <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                          {nurse.status || "Available"}
+                        </span>
+                      </td>
 
-                    {/* Actions */}
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-1 mt-9">
-                        {/* View */}
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-blue-600 hover:bg-blue-50"
-                            >
-                              <Eye size={18} />
-                            </Button>
-                          </DialogTrigger>
+                      {/* Actions */}
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-1 mt-9">
+                          {/* View */}
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-blue-600 hover:bg-blue-50"
+                              >
+                                <Eye size={18} />
+                              </Button>
+                            </DialogTrigger>
 
-                          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle className="flex items-center gap-2">
-                                <span className="text-primary">
-                                  Specialists Profile:
-                                </span>
-                                {nurse.fullName || nurse.name}
-                              </DialogTitle>
-                            </DialogHeader>
+                            <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle className="flex items-center gap-2">
+                                  <span className="text-primary">
+                                    Specialists Profile:
+                                  </span>
+                                  {nurse.fullName || nurse.name}
+                                </DialogTitle>
+                              </DialogHeader>
 
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                              <InfoTile
-                                icon={<User size={16} />}
-                                label="Gender"
-                                value={nurse.gender}
-                              />
-                              <InfoTile
-                                icon={<Calendar size={16} />}
-                                label="Age"
-                                value={`${nurse.age} years`}
-                              />
-                              <InfoTile
-                                icon={<MapPin size={16} />}
-                                label="Location"
-                                value={nurse.location}
-                              />
-                              <InfoTile
-                                icon={<Stethoscope size={16} />}
-                                label="Role"
-                                value={nurse.preferredRole}
-                              />
-                              <InfoTile
-                                icon={<Briefcase size={16} />}
-                                label="Experience"
-                                value={`${nurse.experience} years`}
-                              />
-                              <InfoTile
-                                icon={<Car size={16} />}
-                                label="Can Drive"
-                                value={nurse.canDrive ? "Yes" : "No"}
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                              <InfoTile
-                                icon={<GraduationCap size={16} />}
-                                label="Education"
-                                value={nurse.education}
-                              />
-                              <InfoTile
-                                icon={<Languages size={16} />}
-                                label="Languages"
-                                value={nurse.languages?.join(", ")}
-                              />
-                              <InfoTile
-                                icon={<Flag size={16} />}
-                                label="Nursing in Kenya"
-                                value={nurse.isNursingInKenya ? "Yes" : "No"}
-                              />
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                              <InfoTile
-                                icon={<Hospital size={16} />}
-                                label="Hospital Based Care"
-                                value={nurse.hospitalBasedCare ? "Yes" : "No"}
-                              />
-                              <InfoTile
-                                icon={<Home size={16} />}
-                                label="Home Based Care"
-                                value={nurse.homeBasedCare ? "Yes" : "No"}
-                              />
-                              {nurse.hospitalBasedYearsOfExperience && (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                                <InfoTile
+                                  icon={<User size={16} />}
+                                  label="Gender"
+                                  value={nurse.gender}
+                                />
+                                <InfoTile
+                                  icon={<Calendar size={16} />}
+                                  label="Age"
+                                  value={`${nurse.age} years`}
+                                />
+                                <InfoTile
+                                  icon={<MapPin size={16} />}
+                                  label="Location"
+                                  value={nurse.location}
+                                />
+                                <InfoTile
+                                  icon={<Stethoscope size={16} />}
+                                  label="Role"
+                                  value={nurse.preferredRole}
+                                />
                                 <InfoTile
                                   icon={<Briefcase size={16} />}
-                                  label="Hospital Experience"
-                                  value={`${nurse.hospitalBasedYearsOfExperience} years`}
+                                  label="Experience"
+                                  value={`${nurse.experience} years`}
                                 />
-                              )}
-                            </div>
-
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                              <InfoTile
-                                icon={<Move size={16} />}
-                                label="Mobility Care"
-                                value={`${nurse.mobilityYears} years`}
-                              />
-                              <InfoTile
-                                icon={<Bath size={16} />}
-                                label="Bathing Care"
-                                value={`${nurse.bathingYears} years`}
-                              />
-                              <InfoTile
-                                icon={<Utensils size={16} />}
-                                label="Feeding Care"
-                                value={`${nurse.feedingYears} years`}
-                              />
-                            </div>
-
-                            {/* SERVICES */}
-                            {nurse.services?.length > 0 && (
-                              <div className="mt-6">
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">
-                                  Services Provided
-                                </h4>
-                                <div className="flex flex-wrap gap-2">
-                                  {nurse.services.map((service, idx) => (
-                                    <span
-                                      key={idx}
-                                      className="px-3 py-1 text-xs rounded-full bg-purple-100 text-primary"
-                                    >
-                                      {service}
-                                    </span>
-                                  ))}
-                                </div>
+                                <InfoTile
+                                  icon={<Car size={16} />}
+                                  label="Can Drive"
+                                  value={nurse.canDrive ? "Yes" : "No"}
+                                />
                               </div>
-                            )}
 
-                            {/* SCHEDULE SECTION */}
-                            {nurse.schedule?.length > 0 &&
-                              nurse.schedule[0]?.date?.length > 0 && (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                                <InfoTile
+                                  icon={<GraduationCap size={16} />}
+                                  label="Education"
+                                  value={nurse.education}
+                                />
+                                <InfoTile
+                                  icon={<Languages size={16} />}
+                                  label="Languages"
+                                  value={nurse.languages?.join(", ")}
+                                />
+                                <InfoTile
+                                  icon={<Flag size={16} />}
+                                  label="Nursing in Kenya"
+                                  value={nurse.isNursingInKenya ? "Yes" : "No"}
+                                />
+                              </div>
+
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                                <InfoTile
+                                  icon={<Hospital size={16} />}
+                                  label="Hospital Based Care"
+                                  value={nurse.hospitalBasedCare ? "Yes" : "No"}
+                                />
+                                <InfoTile
+                                  icon={<Home size={16} />}
+                                  label="Home Based Care"
+                                  value={nurse.homeBasedCare ? "Yes" : "No"}
+                                />
+                                {nurse.hospitalBasedYearsOfExperience && (
+                                  <InfoTile
+                                    icon={<Briefcase size={16} />}
+                                    label="Hospital Experience"
+                                    value={`${nurse.hospitalBasedYearsOfExperience} years`}
+                                  />
+                                )}
+                              </div>
+
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                                <InfoTile
+                                  icon={<Move size={16} />}
+                                  label="Mobility Care"
+                                  value={`${nurse.mobilityYears} years`}
+                                />
+                                <InfoTile
+                                  icon={<Bath size={16} />}
+                                  label="Bathing Care"
+                                  value={`${nurse.bathingYears} years`}
+                                />
+                                <InfoTile
+                                  icon={<Utensils size={16} />}
+                                  label="Feeding Care"
+                                  value={`${nurse.feedingYears} years`}
+                                />
+                              </div>
+
+                              {/* SERVICES */}
+                              {nurse.services?.length > 0 && (
                                 <div className="mt-6">
-                                  <div className="flex items-center justify-between">
-                                    <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                      <Calendar
-                                        size={16}
-                                        className="text-primary"
-                                      />
-                                      Schedule
-                                    </h4>
-
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() =>
-                                        setScheduleViewId(nurse.id)
-                                      }
-                                    >
-                                      View
-                                    </Button>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                                    Services Provided
+                                  </h4>
+                                  <div className="flex flex-wrap gap-2">
+                                    {nurse.services.map((service, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="px-3 py-1 text-xs rounded-full bg-purple-100 text-primary"
+                                      >
+                                        {service}
+                                      </span>
+                                    ))}
                                   </div>
                                 </div>
                               )}
 
-                            {/* DOCUMENTS */}
-                            <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
-                              {nurse.idCopy && (
-                                <Button
-                                  variant="outline"
-                                  className="text-xs h-8"
-                                  onClick={() => openFile(nurse.idCopy)}
-                                >
-                                  View ID Copy
-                                </Button>
-                              )}
+                              {/* SCHEDULE SECTION */}
+                              {nurse.schedule?.length > 0 &&
+                                nurse.schedule[0]?.date?.length > 0 && (
+                                  <div className="mt-6">
+                                    <div className="flex items-center justify-between">
+                                      <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                        <Calendar
+                                          size={16}
+                                          className="text-primary"
+                                        />
+                                        Schedule
+                                      </h4>
 
-                              {nurse.educationCertificate && (
-                                <Button
-                                  variant="outline"
-                                  className="text-xs h-8"
-                                  onClick={() =>
-                                    openFile(nurse.educationCertificate)
-                                  }
-                                >
-                                  Education Certificate
-                                </Button>
-                              )}
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() =>
+                                          setScheduleViewId(nurse.id)
+                                        }
+                                      >
+                                        View
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
 
-                        {/* SCHEDULE CALENDAR MODAL */}
-                        <Dialog
-                          open={scheduleViewId === nurse.id}
-                          onOpenChange={(open) =>
-                            !open && setScheduleViewId(null)
-                          }
-                        >
-                          <DialogContent className="sm:max-w-md">
-                            <DialogHeader>
-                              <DialogTitle>Selected Schedule</DialogTitle>
-                            </DialogHeader>
+                              {/* DOCUMENTS */}
+                              <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
+                                {nurse.idCopy && (
+                                  <Button
+                                    variant="outline"
+                                    className="text-xs h-8"
+                                    onClick={() => openFile(nurse.idCopy)}
+                                  >
+                                    View ID Copy
+                                  </Button>
+                                )}
 
-                            <SelectableCalendar
-                              mode="multiple"
-                              selectedDates={nurse.schedule?.[0]?.date || []}
-                            />
-                          </DialogContent>
-                        </Dialog>
+                                {nurse.educationCertificate && (
+                                  <Button
+                                    variant="outline"
+                                    className="text-xs h-8"
+                                    onClick={() =>
+                                      openFile(nurse.educationCertificate)
+                                    }
+                                  >
+                                    Education Certificate
+                                  </Button>
+                                )}
+                              </div>
+                            </DialogContent>
+                          </Dialog>
 
-                        <Dialog
-                          open={isEditOpen === nurse.id}
-                          onOpenChange={(open) =>
-                            setIsEditOpen(open ? nurse.id : null)
-                          }
-                        >
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-emerald-600 hover:bg-emerald-50"
-                            >
-                              <Edit size={18} />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-                            <DialogHeader>
-                              <DialogTitle>Update Specialist</DialogTitle>
-                            </DialogHeader>
+                          {/* SCHEDULE CALENDAR MODAL */}
+                          <Dialog
+                            open={scheduleViewId === nurse.id}
+                            onOpenChange={(open) =>
+                              !open && setScheduleViewId(null)
+                            }
+                          >
+                            <DialogContent className="sm:max-w-md">
+                              <DialogHeader>
+                                <DialogTitle>Selected Schedule</DialogTitle>
+                              </DialogHeader>
 
-                            {renderEditForm(nurse)}
-                          </DialogContent>
-                        </Dialog>
+                              <SelectableCalendar
+                                mode="multiple"
+                                selectedDates={nurse.schedule?.[0]?.date || []}
+                              />
+                            </DialogContent>
+                          </Dialog>
 
-                        {/* Delete */}
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-red-500 hover:bg-red-50"
-                            >
-                              <Trash size={18} />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-md">
-                            <DialogHeader>
-                              <DialogTitle className="text-red-600">
-                                Permanently Delete?
-                              </DialogTitle>
-                            </DialogHeader>
-
-                            <p className="text-sm text-gray-600 py-4">
-                              Remove <strong>{nurse.fullName || nurse.name}</strong> permanently?
-                            </p>
-
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button variant="outline">Cancel</Button>
-                              </DialogClose>
+                          <Dialog
+                            open={isEditOpen === nurse.id}
+                            onOpenChange={(open) =>
+                              setIsEditOpen(open ? nurse.id : null)
+                            }
+                          >
+                            <DialogTrigger asChild>
                               <Button
-                                variant="destructive"
-                                onClick={() => handleDelete(nurse.id, nurse.type)}
+                                variant="ghost"
+                                size="icon"
+                                className="text-emerald-600 hover:bg-emerald-50"
                               >
-                                Confirm Delete
+                                <Edit size={18} />
                               </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+                              <DialogHeader>
+                                <DialogTitle>Update Specialist</DialogTitle>
+                              </DialogHeader>
+
+                              {renderEditForm(nurse)}
+                            </DialogContent>
+                          </Dialog>
+
+                          {/* Delete */}
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-500 hover:bg-red-50"
+                              >
+                                <Trash size={18} />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-md">
+                              <DialogHeader>
+                                <DialogTitle className="text-red-600">
+                                  Permanently Delete?
+                                </DialogTitle>
+                              </DialogHeader>
+
+                              <p className="text-sm text-gray-600 py-4">
+                                Remove <strong>{nurse.fullName || nurse.name}</strong> permanently?
+                              </p>
+
+                              <DialogFooter>
+                                <DialogClose asChild>
+                                  <Button variant="outline">Cancel</Button>
+                                </DialogClose>
+                                <Button
+                                  variant="destructive"
+                                  onClick={() => handleDelete(nurse.id, nurse.type)}
+                                >
+                                  Confirm Delete
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <tr>
                   <td
@@ -645,6 +660,56 @@ const InstitutionNursePage = () => {
           </table>
         </div>
       </div>
+
+      {allSpecialists.length > itemsPerPage && (
+        <div className="mt-6 flex justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                />
+              </PaginationItem>
+              {Array.from({
+                length: Math.ceil(allSpecialists.length / itemsPerPage),
+              }).map((_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    className="cursor-pointer"
+                    isActive={currentPage === i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  className={
+                    currentPage ===
+                      Math.ceil(allSpecialists.length / itemsPerPage)
+                      ? "pointer-events-none opacity-50 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }
+                  onClick={() =>
+                    setCurrentPage((prev) =>
+                      Math.min(
+                        prev + 1,
+                        Math.ceil(allSpecialists.length / itemsPerPage),
+                      ),
+                    )
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 };
