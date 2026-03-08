@@ -376,7 +376,7 @@ const EmployeePage = () => {
                           </DialogContent>
                         </Dialog>
 
-                        {/* SCHEDULE CALENDAR MODAL */}
+                 
                         <Dialog
                           open={scheduleViewId === emp.id}
                           onOpenChange={(open) =>
@@ -391,7 +391,7 @@ const EmployeePage = () => {
                             <SelectableCalendar
                               mode="multiple"
                               selectedDates={emp.schedule?.[0]?.date || []}
-                              onChange={() => {}} // disable change
+                              onChange={() => {}}
                             />
                           </DialogContent>
                         </Dialog>

@@ -644,7 +644,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
                 Schedule
               </Label>
 
-              <SelectableCalendar
+              {/* <SelectableCalendar
                 mode="multiple"
                 selectedDates={formData.date || []}
                 onChange={(dates) =>
@@ -662,6 +662,20 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
                   date.setHours(0, 0, 0, 0);
 
                   return date < firstSelected;
+                }}
+              /> */}
+
+                        <SelectableCalendar
+                selectedDates={formData.date || []}
+                onChange={(dates) =>
+                  setFormData((prev) => ({ ...prev, date: dates }))
+                }
+                disabled={(date) => {
+                  const today = new Date();
+                  today.setHours(0, 0, 0, 0);
+                  const d = new Date(date);
+                  d.setHours(0, 0, 0, 0);
+                  return d < today;
                 }}
               />
             </div>
