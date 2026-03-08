@@ -388,8 +388,8 @@ const MedicalInstitutionPhysiotherapist = ({
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-          error.message ||
-          "Failed to submit data",
+        error.message ||
+        "Failed to submit data",
         {
           id: loadingToast,
         },
@@ -406,7 +406,7 @@ const MedicalInstitutionPhysiotherapist = ({
     <div>
       <form className="relative pb-16" onSubmit={handleSubmit}>
         <h2 className="formHeading">Basic Information</h2>
-        <h1>physiotherapist</h1>
+    
         {/* Name + Age */}
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
@@ -876,7 +876,7 @@ const MedicalInstitutionPhysiotherapist = ({
           </div>
         </div>
 
-        <div className="flex gap-4 mt-6">
+        <div className="flex flex-col sm:flex-row gap-4 mt-6">
           <Input
             label="Daily Rate (KSh)"
             placeholder="Daily Service Fee"

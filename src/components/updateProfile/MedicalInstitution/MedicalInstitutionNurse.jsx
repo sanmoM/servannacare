@@ -337,7 +337,7 @@ const MedicalInstitutionNurse = ({
   return (
     <div>
       <form className="relative pb-16" onSubmit={handleSubmit}>
-        <h1>nurse</h1>
+    
         {/* Name + Age */}
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
@@ -889,7 +889,7 @@ const MedicalInstitutionNurse = ({
           </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 mt-6">
           <Input
             label="Daily Rate (KSh)"
             placeholder="Daily Service Fee"
@@ -924,7 +924,7 @@ const MedicalInstitutionNurse = ({
           <>
             <Label className="my-4">Schedule</Label>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            <SelectableCalendar
+              <SelectableCalendar
                 selectedDates={data.date || []}
                 onChange={(dates) =>
                   setData((prev) => ({ ...prev, date: dates }))
@@ -973,12 +973,10 @@ const MedicalInstitutionNurse = ({
             ))}
           </div>
         </div>
-        <div className="pt-4">
+        <div className="pt-6">
           <Button
-            className={
-              "w-full sm:absolute sm:b-0 sm:mt-4 sm:w-auto cursor-pointer"
-            }
-            size={"lg"}
+            className="w-full sm:w-auto cursor-pointer"
+            size="lg"
             type="submit"
           >
             {isUpdate ? "Save Changes" : "Add Nurse"}

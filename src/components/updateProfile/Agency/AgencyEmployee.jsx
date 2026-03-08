@@ -602,8 +602,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         </div>
 
         <h3 className="text-lg font-semibold text-primary/80 mb-2">
-            Service Fee (KSh)
-          </h3>
+          Service Fee (KSh)
+        </h3>
 
         <div className="flex sm:gap-4 gap-6 flex-col sm:flex-row mb-4">
           <div className="flex-1">
@@ -644,28 +644,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
                 Schedule
               </Label>
 
-              {/* <SelectableCalendar
-                mode="multiple"
-                selectedDates={formData.date || []}
-                onChange={(dates) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    date: dates,
-                  }))
-                }
-                disabled={(date) => {
-                  if (!formData.date?.length) return false;
-
-                  const firstSelected = new Date(formData.date[0]);
-                  firstSelected.setHours(0, 0, 0, 0);
-
-                  date.setHours(0, 0, 0, 0);
-
-                  return date < firstSelected;
-                }}
-              /> */}
-
-                        <SelectableCalendar
+              <SelectableCalendar
                 selectedDates={formData.date || []}
                 onChange={(dates) =>
                   setFormData((prev) => ({ ...prev, date: dates }))

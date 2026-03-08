@@ -413,7 +413,7 @@ const InstitutionNursePage = () => {
                                 </DialogTitle>
                               </DialogHeader>
 
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                                 <InfoTile
                                   icon={<User size={16} />}
                                   label="Gender"
@@ -446,7 +446,7 @@ const InstitutionNursePage = () => {
                                 />
                               </div>
 
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                                 <InfoTile
                                   icon={<GraduationCap size={16} />}
                                   label="Education"
@@ -464,7 +464,7 @@ const InstitutionNursePage = () => {
                                 />
                               </div>
 
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                                 <InfoTile
                                   icon={<Hospital size={16} />}
                                   label="Hospital Based Care"
@@ -484,7 +484,7 @@ const InstitutionNursePage = () => {
                                 )}
                               </div>
 
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
                                 <InfoTile
                                   icon={<Move size={16} />}
                                   label="Mobility Care"
