@@ -107,8 +107,6 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     }
   }, [initialData, isUpdate]);
 
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -205,8 +203,6 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     return payload;
   };
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const loadingToast = toast.loading(isUpdate ? "Updating..." : "Adding...");
@@ -227,7 +223,6 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
 
       onSuccess?.();
     } catch (error) {
-  
       toast.error(error.message || "Operation failed", { id: loadingToast });
     }
   };
@@ -365,12 +360,12 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                            <SelectItem value="1000-20000">1000 - 20000</SelectItem>
-                                <SelectItem value="21000-40000">21000 - 40000</SelectItem>
-                                <SelectItem value="41000-60000">41000 - 60000</SelectItem>
-                                <SelectItem value="61000-80000">61000 - 80000</SelectItem>
-                                <SelectItem value="81000-90000">81000 - 90000</SelectItem>
-                                <SelectItem value="100000+">More than 100000</SelectItem>
+                    <SelectItem value="1000-20000">1000 - 20000</SelectItem>
+                    <SelectItem value="21000-40000">21000 - 40000</SelectItem>
+                    <SelectItem value="41000-60000">41000 - 60000</SelectItem>
+                    <SelectItem value="61000-80000">61000 - 80000</SelectItem>
+                    <SelectItem value="81000-90000">81000 - 90000</SelectItem>
+                    <SelectItem value="100000+">More than 100000</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -396,12 +391,24 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
             >
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="true" id="mYes" />
-                  <Label htmlFor="mYes">Yes</Label>
+                  <RadioGroupItem
+                    className="cursor-pointer"
+                    value="true"
+                    id="mYes"
+                  />
+                  <Label className="cursor-pointer" htmlFor="mYes">
+                    Yes
+                  </Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="false" id="mNo" />
-                  <Label htmlFor="mNo">No</Label>
+                  <RadioGroupItem
+                    className="cursor-pointer"
+                    value="false"
+                    id="mNo"
+                  />
+                  <Label className="cursor-pointer" htmlFor="mNo">
+                    No
+                  </Label>
                 </div>
               </div>
             </RadioGroup>
@@ -415,11 +422,14 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
               {["0-3", "4-10", "11+"].map((age) => (
                 <div key={age} className="flex items-center gap-2">
                   <Checkbox
+                    className="cursor-pointer"
                     id={age}
                     checked={formData.kidAges.includes(age)}
                     onCheckedChange={() => toggleArray("kidAges", age)}
                   />
-                  <Label htmlFor={age}>{age} years</Label>
+                  <Label className="cursor-pointer" htmlFor={age}>
+                    {age} years
+                  </Label>
                 </div>
               ))}
             </div>
@@ -444,12 +454,24 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
             >
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="true" id="pYes" />
-                  <Label htmlFor="pYes">Yes</Label>
+                  <RadioGroupItem
+                    className="cursor-pointer"
+                    value="true"
+                    id="pYes"
+                  />
+                  <Label className="cursor-pointer" htmlFor="pYes">
+                    Yes
+                  </Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="false" id="pNo" />
-                  <Label htmlFor="pNo">No</Label>
+                  <RadioGroupItem
+                    className="cursor-pointer"
+                    value="false"
+                    id="pNo"
+                  />
+                  <Label className="cursor-pointer" htmlFor="pNo">
+                    No
+                  </Label>
                 </div>
               </div>
             </RadioGroup>
@@ -464,12 +486,24 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
             >
               <div className="flex gap-4">
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="Nanny" id="rNanny" />
-                  <Label htmlFor="rNanny">Nanny</Label>
+                  <RadioGroupItem
+                    className="cursor-pointer"
+                    value="Nanny"
+                    id="rNanny"
+                  />
+                  <Label className="cursor-pointer" htmlFor="rNanny">
+                    Nanny
+                  </Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <RadioGroupItem value="Housekeeper" id="rHK" />
-                  <Label htmlFor="rHK">Housekeeper</Label>
+                  <RadioGroupItem
+                    className="cursor-pointer"
+                    value="Housekeeper"
+                    id="rHK"
+                  />
+                  <Label className="cursor-pointer" htmlFor="rHK">
+                    Housekeeper
+                  </Label>
                 </div>
               </div>
             </RadioGroup>
@@ -485,11 +519,14 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
             {languages.map((lan) => (
               <div key={lan.value} className="flex items-center gap-2">
                 <Checkbox
+                  className="cursor-pointer"
                   id={lan.value}
                   checked={formData.languages.includes(lan.value)}
                   onCheckedChange={() => toggleArray("languages", lan.value)}
                 />
-                <Label htmlFor={lan.value}>{lan.text}</Label>
+                <Label className="cursor-pointer" htmlFor={lan.value}>
+                  {lan.text}
+                </Label>
               </div>
             ))}
           </div>
@@ -510,13 +547,19 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
                   value={formData[skill]}
                   onValueChange={(v) => handleSelectChange(skill, v)}
                 >
-                  <SelectTrigger className="py-5.5 shadow-none">
+                  <SelectTrigger className="py-5.5 shadow-none cursor-pointer">
                     <SelectValue placeholder="Proficiency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Strong">Strong</SelectItem>
-                    <SelectItem value="Average">Average</SelectItem>
-                    <SelectItem value="Weak">Weak</SelectItem>
+                    <SelectItem className="cursor-pointer" value="Strong">
+                      Strong
+                    </SelectItem>
+                    <SelectItem className="cursor-pointer" value="Average">
+                      Average
+                    </SelectItem>
+                    <SelectItem className="cursor-pointer" value="Weak">
+                      Weak
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -535,54 +578,64 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
           >
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="Live-In" id="lIn" />
-                <Label htmlFor="lIn">Live In</Label>
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="Live-In"
+                  id="lIn"
+                />
+                <Label className="cursor-pointer" htmlFor="lIn">
+                  Live In
+                </Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="Dayburg" id="lDay" />
-                <Label htmlFor="lDay">Dayburg</Label>
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="Dayburg"
+                  id="lDay"
+                />
+                <Label className="cursor-pointer" htmlFor="lDay">
+                  Dayburg
+                </Label>
               </div>
             </div>
           </RadioGroup>
         </div>
 
-        <div className="mt-6">
-          {/* Section Label */}
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+        <h3 className="text-lg font-semibold text-primary/80 mb-2">
             Service Fee (KSh)
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                label="Per Day"
-                type="number"
-                name="serviceFeeDay"
-                placeholder="e.g., 1500"
-                value={formData.serviceFeeDay}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-                  handleSelectChange("serviceFeeDay", val);
-                }}
-              />
-
-              <Input
-                label="Per Month"
-                type="number"
-                name="serviceFeeMonth"
-                placeholder="e.g., 35000"
-                value={formData.serviceFeeMonth}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "").slice(0, 6);
-                  handleSelectChange("serviceFeeMonth", val);
-                }}
-              />
-            </div>
+        <div className="flex sm:gap-4 gap-6 flex-col sm:flex-row mb-4">
+          <div className="flex-1">
+            <Input
+              label="Per Day"
+              type="number"
+              name="serviceFeeDay"
+              placeholder="e.g., 1500"
+              value={formData.serviceFeeDay}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+                handleSelectChange("serviceFeeDay", val);
+              }}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              label="Per Month"
+              type="number"
+              name="serviceFeeMonth"
+              placeholder="e.g., 35000"
+              value={formData.serviceFeeMonth}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                handleSelectChange("serviceFeeMonth", val);
+              }}
+            />
           </div>
         </div>
 
         {isUpdate && (
-          <div>
+          <div className="mb-5">
             <div className="gap-2">
               <Label
                 htmlFor="Schedule"
@@ -647,7 +700,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
 
         <div className="pt-8">
           <Button
-            className="w-full sm:w-48 bg-primary hover:bg-primary/90"
+            className="w-full cursor-pointer sm:w-48 bg-primary hover:bg-primary/90"
             size="lg"
             type="submit"
           >

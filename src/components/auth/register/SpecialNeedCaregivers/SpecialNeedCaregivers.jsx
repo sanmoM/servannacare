@@ -10,7 +10,6 @@ import DocumentUploads from "./DocumentUploads";
 import Review from "../Nurse/Review";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { generateToken } from "@/utilities/helperFunction";
 import { Button } from "@/components/ui/button";
 import { postApi } from "@/lib/apiHandler";
 import { useAuth } from "@/hooks/useAuth";

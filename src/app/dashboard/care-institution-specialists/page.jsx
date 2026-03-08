@@ -50,6 +50,8 @@ const InstitutionNursePage = () => {
   const { user } = useAuth();
   const [nurses, setNurses] = useState([]);
   const [physiotherapist, setPhysiotherapist] = useState([]);
+  const [caregivers, setCaregivers] = useState([]);
+  const [NurseAidAssistant, setNurseAidAssistant] = useState([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [institute, setInstitute] = useState([]);
   const [isEditOpen, setIsEditOpen] = useState(null);
@@ -57,12 +59,25 @@ const InstitutionNursePage = () => {
   const [scheduleViewId, setScheduleViewId] = useState(null);
   const [selectedSpecialistType, setSelectedSpecialistType] = useState(null);
 
+  console.log("physio",physiotherapist)
+
+
   const { data, isLoading, refetch } = useFetch("/profile");
   useEffect(() => {
     if (data) {
       setPhysiotherapist(
         data?.data?.institutionPhysiotherapists ||
           data?.institutionPhysiotherapists ||
+          [],
+      );
+      setCaregivers(
+        data?.data?.institutionSpecialNeeds ||
+          data?.institutionSpecialNeeds ||
+          [],
+      );
+      setNurseAidAssistant(
+        data?.data?.institutionNurseAssistants ||
+          data?.institutionNurseAssistants ||
           [],
       );
       setNurses(data?.data?.institutionNurses || data?.institutionNurses || []);

@@ -100,18 +100,17 @@ const MedicalInstitutionPhysiotherapist = ({
     number_two: "",
     location: "",
     gender: "",
+    experience: "",
     canDrive: null,
     preferredRole: "Physiotherapist",
     languages: [],
 
-    // Education & Registration
     education: "",
     eduCertificate: null,
     isRegisterPCK: null,
     registrationNumber: "",
     practiceLicense: null,
 
-    // Experience
     hospitalBasedCare: null,
     hospitalBasedYearsOfExperience: "",
     hospitalBasedReferenceContact: "",
@@ -120,11 +119,12 @@ const MedicalInstitutionPhysiotherapist = ({
     homeBasedYearsOfExperience: "",
     homeBasedReferenceContact: "",
 
-    preferred: [], // preferred areas of intervention
+    preferred: [],
     serviceFeeDay: "",
     serviceFeeMonth: "",
+    bio: "",
 
-    date: [], // schedule
+    date: [],
 
     documents: {
       idCopy: null,
@@ -145,6 +145,8 @@ const MedicalInstitutionPhysiotherapist = ({
         number_two: initialData?.number_two || "",
         location: initialData.location || "",
         gender: initialData.gender || "",
+        experience: initialData.experience || "",
+        bio: initialData.bio || "",
         canDrive: initialData.canDrive === 1,
         preferredRole: initialData.preferredRole || "Physiotherapist",
         languages: initialData.languages || [],
@@ -220,7 +222,6 @@ const MedicalInstitutionPhysiotherapist = ({
     }
   }, [initialData, isUpdate]);
 
-  // Handlers
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
@@ -312,6 +313,8 @@ const MedicalInstitutionPhysiotherapist = ({
       return toast.error("Must be at least 25 years old");
     if (!data.number_two) return toast.error("Phone Number is required");
     if (!data.location) return toast.error("Location is required");
+    if (!data.experience) return toast.error("Experience is required");
+    if (!data.bio) return toast.error("Bio is required");
     if (!data.gender) return toast.error("Gender is required");
     if (data.languages.length === 0)
       return toast.error("Select at least one language");
@@ -550,6 +553,7 @@ const MedicalInstitutionPhysiotherapist = ({
             <div className="flex flex-wrap gap-4 mt-2">
               {languages.map((lan, idx) => {
                 const id = `language-${idx}`;
+
                 return (
                   <div key={idx} className="flex items-center gap-2">
                     <Checkbox
@@ -567,6 +571,31 @@ const MedicalInstitutionPhysiotherapist = ({
                 );
               })}
             </div>
+          </div>
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Experience (Years)
+            </label>
+            <Select
+              value={data.experience}
+              onValueChange={(value) =>
+                setData((prev) => ({ ...prev, experience: value }))
+              }
+            >
+              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                <SelectValue placeholder="Select years of experience" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="1">1 year</SelectItem>
+                  <SelectItem value="2">2 years</SelectItem>
+                  <SelectItem value="3">3 years</SelectItem>
+                  <SelectItem value="4">4 years</SelectItem>
+                  <SelectItem value="5">5 years</SelectItem>
+                  <SelectItem value="more">More than 5 years</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -872,6 +901,18 @@ const MedicalInstitutionPhysiotherapist = ({
                 },
               });
             }}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="bio">Bio</label>
+          <textarea
+            value={data.bio}
+            name="bio"
+            placeholder="Write a brief bio about yourself and the services you offer.."
+            className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+            rows={6}
+            onChange={handleChange}
           />
         </div>
 

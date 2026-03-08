@@ -23,6 +23,14 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const SpecialNeedCaregiversCreate = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
@@ -34,6 +42,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       location: data?.location || "",
       age: data?.age || "",
       gender: data?.gender || "",
+      experience: data?.experience || "",
+      bio: data?.bio || "",
       phone: data?.phone || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive || "",
@@ -43,13 +53,14 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       educationCertificate: data?.special_need?.educationCertificate || null,
     },
     experience: {
-      hospitalBasedCare: data?.hospitalBasedCare || "",
+      hospitalBasedCare: data?.hospitalBasedCare ?? null,
       hospitalBasedYearsOfExperience:
         data?.hospitalBasedYearsOfExperience || "",
       hospitalBasedReferenceContact: data?.hospitalBasedReferenceContact || "",
-      homeBasedCare: data?.homeBasedCare || "",
+      homeBasedCare: data?.homeBasedCare ?? null,
       homeBasedYearsOfExperience: data?.homeBasedYearsOfExperience || "",
       homeBasedReferenceContact: data?.homeBasedReferenceContact || "",
+
       preferred: data?.preferred || [],
 
       serviceFeeDay: data?.special_need?.serviceFeeDay || "",
@@ -63,8 +74,6 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       referenceLetter: data?.referenceLetter || null,
     },
   });
-
-
 
   const documents = [
     {
@@ -125,7 +134,6 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     {
       title: "Blindness",
     },
-    ,
     {
       title: "Dementia & Alzheimer",
     },
@@ -185,6 +193,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     if (ageNumber < 25) return toast.error("You must be at least 25 years old");
 
     if (!basicInfo.gender) return toast.error("Gender is required");
+    if (!basicInfo.experience) return toast.error("Experience is required");
+    if (!basicInfo.bio) return toast.error("Bio is required");
 
     if (!basicInfo.languages.length)
       return toast.error("Please select at least one language");
@@ -197,8 +207,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
     if (!education.educationCertificate)
       return toast.error("Education certificate is required");
 
-    // if (experience?.hospitalBasedCare === "")
-    //   return toast.error("Please select hospital based care option");
+    if (experience?.hospitalBasedCare === "")
+      return toast.error("Please select hospital based care option");
 
     if (experience.hospitalBasedCare) {
       if (!experience.hospitalBasedYearsOfExperience)
@@ -208,8 +218,8 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
         return toast.error("Hospital reference contact required");
     }
 
-    // if (experience.homeBasedCare === "")
-    //   return toast.error("Please select home based care option");
+    if (experience.homeBasedCare === "")
+      return toast.error("Please select home based care option");
 
     if (experience.homeBasedCare) {
       if (!experience.homeBasedYearsOfExperience)
@@ -244,7 +254,6 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       const EXP = formData.experience;
       const DOC = formData.documents;
 
-      // ================= BASIC INFO =================
       fd.append("name", BASIC.name || "");
       fd.append("location", BASIC.location || "");
       fd.append("age", BASIC.age || "");
@@ -258,14 +267,15 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
 
       fd.append("canDrive", BASIC.canDrive ? 1 : 0);
 
-      // ================= EDUCATION =================
       fd.append("education", EDU.education || "");
+
+      fd.append("experience", BASIC.experience || "");
+      fd.append("bio", BASIC.bio || "");
 
       if (EDU.educationCertificate) {
         fd.append("educationCertificate", EDU.educationCertificate);
       }
 
-      // ================= EXPERIENCE =================
       fd.append("hospitalBasedCare", EXP.hospitalBasedCare ? 1 : 0);
       fd.append(
         "hospitalBasedYearsOfExperience",
@@ -293,7 +303,6 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       fd.append("serviceFeeDay", EXP.serviceFeeDay || "");
       fd.append("serviceFeeMonth", EXP.serviceFeeMonth || "");
 
-      // ================= DOCUMENTS =================
       if (DOC.idCopy) fd.append("idCopy", DOC.idCopy);
       if (DOC.profilePhoto) fd.append("profilePhoto", DOC.profilePhoto);
       if (DOC.goodConductCertificate)
@@ -302,30 +311,16 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
       if (DOC.referenceLetter)
         fd.append("referenceLetter", DOC.referenceLetter);
 
-      // ================= API CALL =================
       const res = await postApi("/create-profile", fd);
 
       if (res?.status === 200) {
         toast.success("Profile Created Successfully!");
-
-        // localStorage.setItem(
-        //   "user",
-        //   JSON.stringify({
-        //     ...user,
-        //     name: BASIC.name,
-        //     location: BASIC.location,
-        //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
-        //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
-        //   }),
-        // );
-
         router.push("/dashboard");
       } else {
         toast.error(res?.data?.message || "Something went wrong.");
       }
     } catch (error) {
-
- toast.error("Error ",error)
+      toast.error("Error ", error);
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,
@@ -408,84 +403,125 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
           </div>
         </div>
 
-        <div className="flex-1">
-          <Label className={"mb-2"}>Gender?</Label>
-          <RadioGroup
-            className={"flex gap-4"}
-            value={formData.basicInfo.gender}
-            onValueChange={(value) =>
-              handleChange("basicInfo", "gender", value)
-            }
-          >
-            <div className="flex items-center gap-3">
-              <RadioGroupItem value="Male" id="r1" />
-              <Label
-                className="text-gray-700 font-normal cursor-pointer"
-                htmlFor="r1"
-              >
-                Male
-              </Label>
-            </div>
-            <div className="flex items-center gap-3">
-              <RadioGroupItem value="Female" id="r2" />
-              <Label
-                className="text-gray-700 font-normal cursor-pointer"
-                htmlFor="r2"
-              >
-                Female
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
-
-        <div className="">
-          <Label className={"mb-3"}>Languages</Label>
-          <div className="flex flex-wrap gap-4 ">
-            {languages.map((lan, indx) => (
-              <div key={indx} className="flex items-center gap-2">
-                <Checkbox
-                  id={lan.value}
-                  checked={formData.basicInfo.languages.includes(lan.value)}
-                  onCheckedChange={() =>
-                    toggleArrayItem("basicInfo", "languages", lan.value)
-                  }
-                />
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 mt-4">
+          <div className="flex-1">
+            <Label className={"mb-2"}>Gender?</Label>
+            <RadioGroup
+              className={"flex gap-4"}
+              value={formData.basicInfo.gender}
+              onValueChange={(value) =>
+                handleChange("basicInfo", "gender", value)
+              }
+            >
+              <div className="flex items-center gap-3">
+                <RadioGroupItem value="Male" id="r1" />
                 <Label
-                  htmlFor={lan.value}
                   className="text-gray-700 font-normal cursor-pointer"
+                  htmlFor="r1"
                 >
-                  {lan.text}
+                  Male
                 </Label>
               </div>
-            ))}
+              <div className="flex items-center gap-3">
+                <RadioGroupItem value="Female" id="r2" />
+                <Label
+                  className="text-gray-700 font-normal cursor-pointer"
+                  htmlFor="r2"
+                >
+                  Female
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="flex-1">
+            <Label className="mb-3 block">Can you drive?</Label>
+            <RadioGroup
+              className="flex gap-4 cursor-pointer"
+              value={
+                formData.basicInfo?.canDrive === null ||
+                formData.basicInfo?.canDrive === undefined
+                  ? ""
+                  : String(formData.basicInfo.canDrive)
+              }
+              onValueChange={(value) =>
+                handleChange("basicInfo", "canDrive", value === "true")
+              }
+            >
+              <div className="flex items-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="true"
+                  id="d1"
+                />
+                <Label className="cursor-pointer" htmlFor="d1">
+                  Yes
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="false"
+                  id="d2"
+                />
+                <Label className="cursor-pointer" htmlFor="d2">
+                  No
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
         </div>
 
-        <div className="py-2">
-          <Label className="mb-3 block">Can you drive?</Label>
-          <RadioGroup
-            className="flex gap-4"
-            value={
-              formData.basicInfo?.canDrive === null ||
-              formData.basicInfo?.canDrive === undefined
-                ? ""
-                : String(formData.basicInfo.canDrive)
-            }
-            onValueChange={(value) =>
-              handleChange("basicInfo", "canDrive", value === "true")
-            }
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="true" id="d1" />
-              <Label htmlFor="d1">Yes</Label>
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4 mt-4">
+          <div className="flex-1">
+            <Label className={"mb-3"}>Languages</Label>
+            <div className="flex flex-wrap gap-4 ">
+              {languages.map((lan, indx) => (
+                <div key={indx} className="flex items-center gap-2">
+                  <Checkbox
+                    id={lan.value}
+                    checked={formData.basicInfo.languages.includes(lan.value)}
+                    onCheckedChange={() =>
+                      toggleArrayItem("basicInfo", "languages", lan.value)
+                    }
+                  />
+                  <Label
+                    htmlFor={lan.value}
+                    className="text-gray-700 font-normal cursor-pointer"
+                  >
+                    {lan.text}
+                  </Label>
+                </div>
+              ))}
             </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="false" id="d2" />
-              <Label htmlFor="d2">No</Label>
-            </div>
-          </RadioGroup>
-        </div>
+          </div>
 
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Experience (Years)
+            </label>
+            <Select
+              value={formData.basicInfo.experience}
+              onValueChange={(value) =>
+                handleChange("basicInfo", "experience", value)
+              }
+            >
+              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                <SelectValue placeholder="Select years of experience" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="1">1 year</SelectItem>
+                  <SelectItem value="2">2 years</SelectItem>
+                  <SelectItem value="3">3 years</SelectItem>
+                  <SelectItem value="4">4 years</SelectItem>
+                  <SelectItem value="5">5 years</SelectItem>
+                  <SelectItem value="more">More than 5 years</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         {/* education  */}
 
         <div className="py-2">
@@ -586,7 +622,7 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
           <RadioGroup
             className="flex gap-x-4 flex-wrap"
             value={
-              formData.experience?.hospitalBasedCare == null
+              formData.experience?.hospitalBasedCare === null
                 ? ""
                 : formData.experience.hospitalBasedCare
                   ? "Yes"
@@ -617,7 +653,6 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show these inputs only if hospitalBasedCare = true */}
         {formData.experience?.hospitalBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
@@ -659,7 +694,7 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
           <RadioGroup
             className="flex gap-x-4 flex-wrap"
             value={
-              formData.experience?.homeBasedCare == null
+              formData.experience?.homeBasedCare === null
                 ? ""
                 : formData.experience.homeBasedCare
                   ? "Yes"
@@ -774,6 +809,19 @@ const SpecialNeedCaregiversCreate = ({ data = {} }) => {
             }}
           />
         </div>
+
+        <div>
+          <label htmlFor="bio">Bio</label>
+          <textarea
+            value={formData.basicInfo.bio}
+            name="bio"
+            placeholder="Write a brief bio about yourself and the services you offer.."
+            className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+            rows={6}
+            onChange={(e) => handleChange("basicInfo", "bio", e.target.value)}
+          />
+        </div>
+
         <h2 className="formHeading">Document Uploads</h2>
         <div className="p-3 bg-primary/20 my-6 rounded-xl flex gap-2 items-center">
           <FileText />
