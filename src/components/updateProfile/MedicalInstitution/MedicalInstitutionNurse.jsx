@@ -324,8 +324,6 @@ const MedicalInstitutionNurse = ({
         toast.success("Nurse added successfully!", { id: loadingToast });
       }
 
-      router.push("/dashboard/care-institution-specialists");
-
       onSuccess?.(isUpdate);
     } catch (error) {
       toast.error(error.message || "Failed to submit nurse data", {
@@ -940,7 +938,13 @@ const MedicalInstitutionNurse = ({
                   today.setHours(0, 0, 0, 0);
                   const d = new Date(date);
                   d.setHours(0, 0, 0, 0);
-                  return d < today;
+
+                  // If it's a past date, only disable it if it's NOT already selected
+                  if (d < today) {
+                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                    return !data.date.includes(dateStr);
+                  }
+                  return false;
                 }}
               />
             </div>

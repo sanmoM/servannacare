@@ -372,7 +372,7 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
     <div>
       <form className="relative pb-16" onSubmit={handleSubmit}>
         <h2 className="formHeading">Basic Information</h2>
-<h1>specialsit need caregiver</h1>
+        <h1>specialsit need caregiver</h1>
         {/* Name + Age */}
         <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
           <Input
@@ -818,7 +818,13 @@ const MedicalInstitutionSpecialNeedCaregiver = ({
                   today.setHours(0, 0, 0, 0);
                   const d = new Date(date);
                   d.setHours(0, 0, 0, 0);
-                  return d < today;
+
+                  // If it's a past date, only disable it if it's NOT already selected
+                  if (d < today) {
+                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                    return !data.date.includes(dateStr);
+                  }
+                  return false;
                 }}
               />
             </div>

@@ -72,28 +72,38 @@ const InstitutionNursePage = () => {
   const { data, isLoading, refetch } = useFetch("/profile");
   useEffect(() => {
     if (data) {
-      const physiotherapists =
-        data?.data?.institutionPhysiotherapists ||
-        data?.institutionPhysiotherapists ||
-        [];
-      const specialNeeds =
-        data?.data?.institutionSpecialNeeds ||
-        data?.institutionSpecialNeeds ||
-        [];
-      const nurseAssistants =
-        data?.data?.institutionNurseAssistants ||
-        data?.institutionNurseAssistants ||
-        [];
-      const institutionNurses =
-        data?.data?.institutionNurses || data?.institutionNurses || [];
+      const resp = data?.data || data;
+      const physiotherapists = resp?.institutionPhysiotherapists || [];
+      const specialNeeds = resp?.institutionSpecialNeeds || [];
+      const nurseAssistants = resp?.institutionNurseAssistants || [];
+      const institutionNurses = resp?.institutionNurses || [];
 
-      setAllSpecialists([
+      const combined = [
         ...institutionNurses.map((n) => ({ ...n, type: "institution-nurse" })),
-        ...physiotherapists.map((p) => ({ ...p, type: "institution-physiotherapist" })),
-        ...specialNeeds.map((s) => ({ ...s, type: "institution-special-need" })),
-        ...nurseAssistants.map((na) => ({ ...na, type: "institution-nurse-assistant" })),
-      ]);
-      setInstitute(data?.data?.careInstitution || data?.careInstitution || []);
+        ...physiotherapists.map((p) => ({
+          ...p,
+          type: "institution-physiotherapist",
+        })),
+        ...specialNeeds.map((s) => ({
+          ...s,
+          type: "institution-special-need",
+        })),
+        ...nurseAssistants.map((na) => ({
+          ...na,
+          type: "institution-nurse-assistant",
+        })),
+      ];
+
+      // Remove duplicates by ID and filter out any invalid entries
+      const uniqueSpecialists = combined.reduce((acc, curr) => {
+        if (curr && curr.id && !acc.find((item) => item.id === curr.id)) {
+          acc.push(curr);
+        }
+        return acc;
+      }, []);
+
+      setAllSpecialists(uniqueSpecialists);
+      setInstitute(resp?.careInstitution || []);
     }
   }, [data]);
 
@@ -366,7 +376,7 @@ const InstitutionNursePage = () => {
                       {/* Role */}
                       <td className="px-6 py-4">
                         <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                          <Briefcase size={14} className="text-purple-500" />
+                          <Briefcase size={14} className="text-primary" />
                           {nurse.subRole}
                         </span>
                       </td>
@@ -379,8 +389,8 @@ const InstitutionNursePage = () => {
                       </td>
 
                       {/* Actions */}
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-1 mt-9">
+                      <td className="px-6 py-4 text-right align-middle">
+                        <div className="flex justify-end items-center gap-1">
                           {/* View */}
                           <Dialog>
                             <DialogTrigger asChild>

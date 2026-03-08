@@ -364,13 +364,12 @@ const MedicalInstitutionNurseAide = ({
         await postApi("/institution-nurse", payload);
         toast.success("Nurse Aide added successfully!", { id: loadingToast });
       }
-      router.push("/dashboard/care-institution-specialists");
       onSuccess?.(isUpdate);
     } catch (error) {
       toast.error(
         error?.response?.data?.message ||
-          error.message ||
-          "Failed to submit data",
+        error.message ||
+        "Failed to submit data",
         {
           id: loadingToast,
         },
@@ -613,7 +612,7 @@ const MedicalInstitutionNurseAide = ({
               return (
                 <div key={idx} className="flex items-center gap-2">
                   <Checkbox
-                  className="cursor-pointer"
+                    className="cursor-pointer"
                     id={id}
                     checked={data.languages.includes(lan.value)}
                     onCheckedChange={() => toggleArray("languages", lan.value)}
@@ -630,7 +629,7 @@ const MedicalInstitutionNurseAide = ({
           title="Education Certificate (Compulsory)"
           accept="application/pdf,image/*"
           icon={<FileText size={32} />}
-          
+
           file={data?.educationCertificate || existingFiles?.educationCertificate}
           existingFile={existingFiles.educationCertificate}
           onFileSelect={(file) =>
@@ -911,7 +910,13 @@ const MedicalInstitutionNurseAide = ({
                   today.setHours(0, 0, 0, 0);
                   const d = new Date(date);
                   d.setHours(0, 0, 0, 0);
-                  return d < today;
+
+                  // If it's a past date, only disable it if it's NOT already selected
+                  if (d < today) {
+                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+                    return !data.date.includes(dateStr);
+                  }
+                  return false;
                 }}
               />
             </div>

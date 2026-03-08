@@ -36,8 +36,13 @@ const SelectableCalendar = ({
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
-  const formatDate = (day) =>
-    new Date(year, month, day).toISOString().split("T")[0];
+  const formatDate = (day) => {
+    const d = new Date(year, month, day);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
   const handleSelect = (day) => {
     if (!day) return;
@@ -152,16 +157,15 @@ const SelectableCalendar = ({
                 h-10 flex items-center justify-center rounded-xl
                 transition-all duration-200
                 ${!day && "cursor-default"}
-                ${
-                  isBeforeSelected
-                    ? "bg-gray-300 text-gray-800 cursor-not-allowed opacity-60"
-                    : isDisabled
-                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      : isSelected
-                        ? "bg-primary text-white shadow-md scale-105"
-                        : day
-                          ? "hover:bg-primary/10 text-gray-700 cursor-pointer"
-                          : ""
+                ${isBeforeSelected
+                  ? "bg-gray-300 text-gray-800 cursor-not-allowed opacity-60"
+                  : isDisabled
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : isSelected
+                      ? "bg-primary text-white shadow-md scale-105"
+                      : day
+                        ? "hover:bg-primary/10 text-gray-700 cursor-pointer"
+                        : ""
                 }
               `}
             >
