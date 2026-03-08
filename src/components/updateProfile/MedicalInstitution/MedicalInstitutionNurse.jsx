@@ -920,31 +920,21 @@ const MedicalInstitutionNurse = ({
           />
         </div>
 
-        {/* Schedule - Only show if initialData exists */}
         {initialData && (
           <>
-            <Label className="my-2">Schedule</Label>
+            <Label className="my-4">Schedule</Label>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <SelectableCalendar
+            <SelectableCalendar
                 selectedDates={data.date || []}
                 onChange={(dates) =>
-                  setData((prev) => ({
-                    ...prev,
-                    date: dates,
-                  }))
+                  setData((prev) => ({ ...prev, date: dates }))
                 }
                 disabled={(date) => {
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
                   const d = new Date(date);
                   d.setHours(0, 0, 0, 0);
-
-                  // If it's a past date, only disable it if it's NOT already selected
-                  if (d < today) {
-                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-                    return !data.date.includes(dateStr);
-                  }
-                  return false;
+                  return d < today;
                 }}
               />
             </div>

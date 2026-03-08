@@ -90,13 +90,13 @@ const SelectableCalendar = ({
   for (let d = 1; d <= daysInMonth; d++) daysArray.push(d);
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-2xl p-5 border">
+    <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg p-5 border">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <button
           type="button"
           onClick={prevMonth}
-          className="p-2 rounded-full hover:bg-gray-100 transition"
+          className="p-2 rounded-lg hover:bg-gray-100 transition"
         >
           <ChevronLeft size={18} />
         </button>
@@ -108,7 +108,7 @@ const SelectableCalendar = ({
         <button
           type="button"
           onClick={nextMonth}
-          className="p-2 rounded-full hover:bg-gray-100 transition"
+          className="p-2 rounded-lg hover:bg-gray-100 transition"
         >
           <ChevronRight size={18} />
         </button>
@@ -130,16 +130,10 @@ const SelectableCalendar = ({
           const dateObj = day ? new Date(year, month, day) : null;
 
           let isDisabled = false;
-          let isBeforeSelected = false;
 
           if (day) {
             if (disabled && disabled(dateObj)) {
               isDisabled = true;
-            }
-
-            // ✅ selected এর আগের সব date detect
-            if (earliestSelectedDate && dateObj < earliestSelectedDate) {
-              isBeforeSelected = true;
             }
           }
 
@@ -147,27 +141,22 @@ const SelectableCalendar = ({
             <div
               key={i}
               onClick={() =>
-                day &&
-                !isDisabled &&
-                !isBeforeSelected &&
-                !readOnly &&
-                handleSelect(day)
+                day && !isDisabled && !readOnly && handleSelect(day)
               }
               className={`
-                h-10 flex items-center justify-center rounded-xl
-                transition-all duration-200
-                ${!day && "cursor-default"}
-                ${isBeforeSelected
-                  ? "bg-gray-300 text-gray-800 cursor-not-allowed opacity-60"
-                  : isDisabled
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : isSelected
-                      ? "bg-primary text-white shadow-md scale-105"
-                      : day
-                        ? "hover:bg-primary/10 text-gray-700 cursor-pointer"
-                        : ""
-                }
-              `}
+  h-10 flex items-center justify-center rounded-lg
+  transition-all duration-200
+  ${!day && "cursor-default"}
+  ${
+    isDisabled
+      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+      : isSelected
+        ? "bg-primary text-white shadow-md scale-105"
+        : day
+          ? "hover:bg-primary/10 text-gray-700 cursor-pointer"
+          : ""
+  }
+`}
             >
               {day}
             </div>
