@@ -66,12 +66,17 @@ export default function EmployerBookingFormClient() {
     [specialists, id],
   );
 
-  const monthlyRate = Number(
-    matchedSpecialist?.house_manager?.serviceFeeMonth || 0,
-  );
-  const dailyRate = Number(
-    matchedSpecialist?.house_manager?.serviceFeeDay || 0,
-  );
+const monthlyRate = Number(
+  matchedSpecialist?.house_manager?.serviceFeeMonth ??
+  matchedSpecialist?.serviceFeeMonth ??
+  0
+);
+
+const dailyRate = Number(
+  matchedSpecialist?.house_manager?.serviceFeeDay ??
+  matchedSpecialist?.serviceFeeDay ??
+  0
+);
 
   const availableDates = useMemo(() => {
     const today = new Date();
@@ -321,7 +326,7 @@ export default function EmployerBookingFormClient() {
                               className="flex items-center space-x-2"
                             >
                               <Checkbox
-                               className="h-4 w-4 rounded-sm border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
+                                className="h-4 w-4 rounded-sm border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
                                 id={`age-${range}`}
                                 checked={checked}
                                 onCheckedChange={(value) => {
@@ -597,8 +602,8 @@ export default function EmployerBookingFormClient() {
 
         {/* RIGHT SUMMARY */}
         <aside>
-          <Card className="border-none shadow-2xl rounded-[2.5rem] bg-white ring-1 ring-slate-100 sticky top-8">
-            <div className="bg-[#7A295A] p-10 text-white rounded-t-[2.5rem]">
+          <Card className="border-none shadow-2xl rounded-lg bg-white ring-1 ring-slate-100 sticky top-8">
+            <div className="bg-[#7A295A] p-10 text-white rounded-t-lg">
               <p className="text-xs uppercase opacity-70 font-bold">
                 Estimated Amount
               </p>
@@ -641,7 +646,7 @@ export default function EmployerBookingFormClient() {
 
       {/* 1. M-PESA PAYMENT MODAL */}
       <Dialog open={isPayModalOpen} onOpenChange={setIsPayModalOpen}>
-        <DialogContent className="sm:max-w-md rounded-[2.5rem] p-0 border-none bg-white overflow-hidden">
+        <DialogContent className="sm:max-w-md rounded-lg p-0 border-none bg-white overflow-hidden">
           <div className="bg-[#7A295A] p-8 text-white text-center">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <Smartphone size={32} />
@@ -686,7 +691,7 @@ export default function EmployerBookingFormClient() {
               )}
             </div>
 
-            <div className="bg-slate-50 p-6 rounded-3xl border flex justify-between items-center">
+            <div className="bg-slate-50 p-6 rounded-2xl border flex justify-between items-center">
               <span className="text-xs font-black text-slate-400">TOTAL:</span>
               <span className="text-2xl font-black text-[#7A295A]">
                 KES {totalAmount.toLocaleString()}

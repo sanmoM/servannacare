@@ -398,9 +398,6 @@ const MedicalInstitutionPhysiotherapist = ({
   };
 
   if (!ready) return null;
-  console.log(initialData?.eduCertificate);
-  console.log(existingFiles?.eduCertificate);
-  console.log(data?.eduCertificate);
 
   return (
     <div>

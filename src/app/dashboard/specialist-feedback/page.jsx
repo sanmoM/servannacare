@@ -1,12 +1,15 @@
 "use client";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
+import { useAuth } from "@/hooks/useAuth";
 import { useFetch } from "@/hooks/useFetch";
 import { postApi } from "@/lib/apiHandler";
 import { Star, Send, CheckCircle2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const SpecialistFeedbackPage = () => {
+  const { user } = useAuth();
+
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [message, setMessage] = useState("");
@@ -22,6 +25,12 @@ const SpecialistFeedbackPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user?.is_profile_completed) {
+      toast.error("Please complete your profile before submitting feedback.");
+      return;
+    }
+
     if (rating === 0) return toast.error("Please select a rating");
     if (!message.trim()) return toast.error("Please enter a message");
 
@@ -95,9 +104,9 @@ const SpecialistFeedbackPage = () => {
             </div>
 
             <button
-              disabled={isSubmitting}
+              disabled={isSubmitting || !user?.is_profile_completed}
               type="submit"
-              className="w-full bg-primary text-white font-semibold py-4 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:bg-gray-400 cursor-pointer"
+              className="w-full bg-primary text-white font-semibold py-4 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:bg-primary/40 cursor-pointer"
             >
               {isSubmitting ? (
                 "Submitting..."
@@ -108,6 +117,11 @@ const SpecialistFeedbackPage = () => {
               )}
             </button>
           </form>
+          {!user?.is_profile_completed && (
+            <p className="text-red-500 text-sm text-center mb-4">
+              Please complete your profile before submitting feedback.
+            </p>
+          )}
         </div>
       ) : (
         <div className="bg-primary/20 border border-primary/30 rounded-lg p-8 text-center animate-in fade-in zoom-in duration-300">

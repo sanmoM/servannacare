@@ -71,7 +71,6 @@ const page = () => {
 
     try {
       const res = await postApi("/contact-data", formData);
-      console.log(res);
       if (!res.status) {
         throw new Error();
       }
