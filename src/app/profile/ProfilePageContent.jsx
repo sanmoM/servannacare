@@ -129,14 +129,14 @@ const ProfilePageContent = () => {
                 </div>
               </div>
             </div>
-            <Button
+            {/* <Button
               // onClick={handleBookNow}
               // disabled={loading}
               variant="outline"
               className="w-full mt-6 cursor-pointer text-primary"
             >
               <MessageCircle className="w-4 h-4 mr-2" /> Message
-            </Button>
+            </Button> */}
             <Button
               onClick={handleBookNow}
               disabled={loading}

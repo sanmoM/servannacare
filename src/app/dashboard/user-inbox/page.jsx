@@ -19,66 +19,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useFetch } from "@/hooks/useFetch";
+import { postApi } from "@/lib/apiHandler";
+import toast from "react-hot-toast";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 const ChatInbox = () => {
-  const [specialists, setSpecialists] = useState([
-    {
-      id: 1,
-      name: "Dr. John Williams",
-      role: "Supervisor",
-      online: true,
-      lastMsg: "See you tomorrow!",
-      avatar: "JW",
-    },
-    {
-      id: 2,
-      name: "Sarah Ahmed",
-      role: "HR Specialist",
-      online: false,
-      lastMsg: "Documents received.",
-      avatar: "SA",
-    },
-    {
-      id: 3,
-      name: "Mahfuz Rahman",
-      role: "Technical Lead",
-      online: true,
-      lastMsg: "The server is up.",
-      avatar: "MR",
-    },
-  ]);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const initialSpecialistId = searchParams.get("specialistId");
 
-  const [chatHistories, setChatHistories] = useState({
-    1: [
-      {
-        id: 101,
-        sender: "specialist",
-        text: "Hello! How can I help?",
-        time: "10:00 AM",
-        isDeleted: false,
-      },
-      {
-        id: 102,
-        sender: "user",
-        text: "I need a morning shift.",
-        time: "10:05 AM",
-        isDeleted: false,
-      },
-    ],
-    2: [
-      {
-        id: 201,
-        sender: "specialist",
-        text: "Please upload your CV.",
-        time: "Yesterday",
-        isDeleted: false,
-      },
-    ],
-    3: [],
-  });
-
-  const [activeId, setActiveId] = useState(1);
-  const [view, setView] = useState("list");
+  const [activeId, setActiveId] = useState(initialSpecialistId ? Number(initialSpecialistId) : null);
+  const [view, setView] = useState(initialSpecialistId ? "chat" : "list");
   const [typedMessage, setTypedMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [stagedFile, setStagedFile] = useState(null);
@@ -91,6 +44,54 @@ const ChatInbox = () => {
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
 
+  // Fetch bookings to get allowed specialists
+  const { data: bookingData, isLoading: isLoadingBookings } = useFetch("/user-booking");
+
+  const specialists = React.useMemo(() => {
+    if (!bookingData?.data) return [];
+
+    // The data might be in bookingData.data or bookingData.data.data depending on the API wrapper
+    const rawData = bookingData?.data?.data || bookingData?.data || [];
+    const bookings = Array.isArray(rawData) ? rawData : [];
+
+    // Extract unique specialists
+    const uniqueSpecs = [];
+    const seenIds = new Set();
+
+    bookings.forEach(booking => {
+      if (booking.specialist && !seenIds.has(booking.specialist.id)) {
+        seenIds.add(booking.specialist.id);
+        uniqueSpecs.push({
+          id: booking.specialist.id,
+          name: booking.specialist.name,
+          avatar: booking.specialist.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
+          lastMsg: "",
+        });
+      }
+    });
+    return uniqueSpecs;
+  }, [bookingData]);
+
+  // Fetch messages for active specialist
+  const { data: messageData, isLoading: isLoadingMessages, refetch: refetchMessages } = useFetch(
+    "/messages",
+    { specialistId: activeId },
+    { enabled: !!activeId }
+  );
+
+  const messages = Array.isArray(messageData?.data) ? messageData.data : [];
+
+  // Auto-select specialist from query param if valid
+  useEffect(() => {
+    if (initialSpecialistId && specialists.length > 0) {
+      const exists = specialists.some(s => s.id === Number(initialSpecialistId));
+      if (exists) {
+        setActiveId(Number(initialSpecialistId));
+        setView("chat");
+      }
+    }
+  }, [initialSpecialistId, specialists]);
+
   // 1. AUTO-SCROLL LOGIC
   useEffect(() => {
     const scrollContainer = scrollRef.current?.querySelector(
@@ -102,79 +103,31 @@ const ChatInbox = () => {
         behavior: "smooth",
       });
     }
-  }, [chatHistories, activeId]);
+  }, [messages, activeId]);
 
-  const moveToTop = (id, lastText) => {
-    setSpecialists((prev) => {
-      const target = prev.find((s) => s.id === id);
-      const others = prev.filter((s) => s.id !== id);
-      return [{ ...target, lastMsg: lastText }, ...others];
-    });
-  };
-
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e?.preventDefault?.();
     if (!typedMessage.trim() && !stagedFile) return;
 
-    const currentChatId = activeId;
-    const newMessage = {
-      id: Date.now(),
-      sender: "user",
-      text: typedMessage,
-      file: stagedFile
-        ? {
-            url: stagedFile.previewUrl,
-            name: stagedFile.file.name,
-            type: stagedFile.type,
-          }
-        : null,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isDeleted: false,
-    };
+    try {
+      const formData = new FormData();
+      formData.append("specialistId", activeId);
+      formData.append("message", typedMessage);
+      if (stagedFile?.file) {
+        formData.append("file", stagedFile.file);
+      }
 
-    setChatHistories((prev) => ({
-      ...prev,
-      [currentChatId]: [...(prev[currentChatId] || []), newMessage],
-    }));
+      await postApi("/messages", formData);
 
-    moveToTop(
-      currentChatId,
-      stagedFile ? `Sent ${stagedFile.type}` : typedMessage,
-    );
-    setTypedMessage("");
-    setStagedFile(null);
+      setTypedMessage("");
+      setStagedFile(null);
+      if (textareaRef.current) textareaRef.current.style.height = "auto";
 
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
-
-    // Simulate Reply
-    setTimeout(() => {
-      const replyText = "I have received your message.";
-      const reply = {
-        id: Date.now() + 1,
-        sender: "specialist",
-        text: replyText,
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        isDeleted: false,
-      };
-
-      setChatHistories((prev) => ({
-        ...prev,
-        [currentChatId]: [...(prev[currentChatId] || []), reply],
-      }));
-
-      setSpecialists((prevList) => {
-        const target = prevList.find((s) => s.id === currentChatId);
-        const others = prevList.filter((s) => s.id !== currentChatId);
-        if (!target) return prevList;
-        return [{ ...target, lastMsg: replyText }, ...others];
-      });
-    }, 1000);
+      // Refetch messages to update the list
+      refetchMessages();
+    } catch (error) {
+      toast.error("Failed to send message");
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -194,29 +147,10 @@ const ChatInbox = () => {
   };
 
   const confirmDeleteForMe = () => {
-    setChatHistories((prev) => ({
-      ...prev,
-      [activeId]: prev[activeId].filter(
-        (msg) => msg.id !== deleteConfig.messageId,
-      ),
-    }));
     setDeleteConfig({ isOpen: false, messageId: null });
   };
 
   const confirmDeleteForEveryone = () => {
-    setChatHistories((prev) => ({
-      ...prev,
-      [activeId]: prev[activeId].map((msg) =>
-        msg.id === deleteConfig.messageId
-          ? {
-              ...msg,
-              text: "This message was deleted",
-              file: null,
-              isDeleted: true,
-            }
-          : msg,
-      ),
-    }));
     setDeleteConfig({ isOpen: false, messageId: null });
   };
 
@@ -224,6 +158,8 @@ const ChatInbox = () => {
   const filteredSpecialists = specialists.filter((s) =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  if (isLoadingBookings) return <LoadingSpinner />;
 
   return (
     <div className="flex h-[85vh] md:h-[85vh] md:border md:rounded-lg overflow-hidden bg-white md:shadow-2xl">
@@ -243,36 +179,43 @@ const ChatInbox = () => {
           </div>
         </div>
         <ScrollArea className="flex-1 p-2">
-          {filteredSpecialists.map((s) => (
-            <div
-              key={s.id}
-              onClick={() => {
-                setActiveId(s.id);
-                setView("chat");
-              }}
-              className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all mb-1 ${activeId === s.id ? "bg-primary text-primary-foreground shadow-lg" : "hover:bg-gray-200/50"}`}
-            >
-              <Avatar className="h-12 w-12 border-2 border-white">
-                <AvatarFallback
-                  className={
-                    activeId === s.id
-                      ? "text-primary"
-                      : "bg-primary/10 text-primary"
-                  }
-                >
-                  {s.avatar}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm truncate">{s.name}</p>
-                <p
-                  className={`text-xs truncate ${activeId === s.id ? "text-primary-foreground/80" : "text-gray-500"}`}
-                >
-                  {s.lastMsg}
-                </p>
-              </div>
+          {filteredSpecialists.length === 0 ? (
+            <div className="p-4 text-center text-gray-400 text-sm">
+              No specialists found. Book a specialist to start messaging.
             </div>
-          ))}
+          ) : (
+            filteredSpecialists.map((s) => (
+              <div
+                key={s.id}
+                onClick={() => {
+                  setActiveId(s.id);
+                  setView("chat");
+                  router.push(`/dashboard/user-inbox?specialistId=${s.id}`);
+                }}
+                className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all mb-1 ${activeId === s.id ? "bg-primary text-primary-foreground shadow-lg" : "hover:bg-gray-200/50"}`}
+              >
+                <Avatar className="h-12 w-12 border-2 border-white">
+                  <AvatarFallback
+                    className={
+                      activeId === s.id
+                        ? "text-primary"
+                        : "bg-primary/10 text-primary"
+                    }
+                  >
+                    {s.avatar}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm truncate">{s.name}</p>
+                  <p
+                    className={`text-xs truncate ${activeId === s.id ? "text-primary-foreground/80" : "text-gray-500"}`}
+                  >
+                    {s.lastMsg}
+                  </p>
+                </div>
+              </div>
+            ))
+          )}
         </ScrollArea>
       </div>
 
@@ -299,73 +242,67 @@ const ChatInbox = () => {
                 </Avatar>
                 <div>
                   <h2 className="font-bold text-sm">{activeSpecialist.name}</h2>
-                  <p className="text-[10px] text-green-500">Online</p>
+                  <p className="text-[10px] text-green-500">Available</p>
                 </div>
               </div>
             </div>
 
             <div className="flex-1 min-h-0 overflow-hidden bg-slate-50/50">
-              <ScrollArea ref={scrollRef} className="h-full">
-                <div className="p-4 space-y-4">
-                  {chatHistories[activeId]?.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex group animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      {msg.sender === "user" && !msg.isDeleted && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
-                            setDeleteConfig({ isOpen: true, messageId: msg.id })
-                          }
-                          className="h-7 w-7 rounded-lg opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all mr-1 self-center cursor-pointer"
+              {isLoadingMessages ? (
+                <div className="h-full flex items-center justify-center">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                <ScrollArea ref={scrollRef} className="h-full">
+                  <div className="p-4 space-y-4">
+                    {messages.length === 0 ? (
+                      <div className="text-center text-gray-400 py-10 text-sm">
+                        No messages yet. Say hello!
+                      </div>
+                    ) : (
+                      messages.map((msg, index) => (
+                        <div
+                          key={msg.id || index}
+                          className={`flex group animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                         >
-                          <Trash2 size={16} />
-                        </Button>
-                      )}
-                      <div
-                        className={`max-w-[80%] rounded-lg shadow-sm overflow-hidden ${
-                          msg.isDeleted
-                            ? "bg-gray-100 italic text-gray-400 border"
-                            : msg.sender === "user"
-                              ? "bg-primary text-primary-foreground rounded-tr-none"
-                              : "bg-white border rounded-tl-none text-gray-800"
-                        }`}
-                      >
-                        {msg.file && (
-                          <div className="p-1">
-                            {msg.file.type === "image" ? (
-                              <img
-                                src={msg.file.url}
-                                alt="sent"
-                                className="rounded-lg max-h-60 w-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex items-center gap-2 p-3 bg-black/5 rounded-lg text-gray-800">
-                                <FileText size={18} />
-                                <span className="text-xs truncate underline">
-                                  {msg.file.name}
-                                </span>
+                          <div
+                            className={`max-w-[80%] rounded-lg shadow-sm overflow-hidden ${msg.sender === "user"
+                                ? "bg-primary text-primary-foreground rounded-tr-none"
+                                : "bg-white border rounded-tl-none text-gray-800"
+                              }`}
+                          >
+                            {msg.file && (
+                              <div className="p-1">
+                                {msg.file.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) ? (
+                                  <img
+                                    src={msg.file}
+                                    alt="sent"
+                                    className="rounded-lg max-h-60 w-full object-cover"
+                                  />
+                                ) : (
+                                  <a href={msg.file} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-black/5 rounded-lg text-gray-800 hover:bg-black/10 transition-colors">
+                                    <FileText size={18} />
+                                    <span className="text-xs truncate underline">
+                                      {msg.file.split('/').pop()}
+                                    </span>
+                                  </a>
+                                )}
                               </div>
                             )}
+                            <p className="px-4 py-2.5 leading-relaxed break-words whitespace-pre-wrap text-sm">
+                              {msg.message}
+                            </p>
+                            <span className="text-[9px] px-4 pb-2 block text-right opacity-60 font-bold uppercase">
+                              {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                            </span>
                           </div>
-                        )}
-                        {/* THE BIG MESSAGE WRAP FIX IS HERE */}
-                        <p className="px-4 py-2.5 leading-relaxed break-words whitespace-pre-wrap text-sm">
-                          {msg.text}
-                        </p>
-                        {!msg.isDeleted && (
-                          <span className="text-[9px] px-4 pb-2 block text-right opacity-60 font-bold uppercase">
-                            {msg.time}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  <div className="h-2" />
-                </div>
-              </ScrollArea>
+                        </div>
+                      ))
+                    )}
+                    <div className="h-2" />
+                  </div>
+                </ScrollArea>
+              )}
             </div>
 
             {/* INPUT AREA */}
@@ -442,13 +379,17 @@ const ChatInbox = () => {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-400">
-            Select a conversation
+          <div className="flex-1 flex flex-col items-center justify-center text-gray-400 bg-slate-50/30">
+            <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+              <Send size={32} className="text-gray-300" />
+            </div>
+            <p className="text-sm font-medium">Select a specialist to start chatting</p>
+            <p className="text-xs mt-1">Only specialists you have booked will appear in your list.</p>
           </div>
         )}
       </div>
 
-      {/* DELETE DIALOG */}
+      {/* DELETE DIALOG (PLACEHOLDER) */}
       <Dialog
         open={deleteConfig.isOpen}
         onOpenChange={(open) =>

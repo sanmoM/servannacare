@@ -22,6 +22,7 @@ import {
   Stethoscope,
   FileText,
   Home,
+  MessageSquare,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useFetch } from "@/hooks/useFetch";
@@ -86,8 +87,8 @@ const BookingHistoryPage = () => {
   const filteredBookings =
     filterStatus !== "All"
       ? bookings.filter(
-          (b) => b.booking_status.toLowerCase() === filterStatus.toLowerCase(),
-        )
+        (b) => b.booking_status.toLowerCase() === filterStatus.toLowerCase(),
+      )
       : bookings;
 
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
@@ -268,6 +269,17 @@ const BookingHistoryPage = () => {
                                 Leave Review
                               </Button>
                             ))}
+                          {row.specialist_id && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="cursor-pointer border-primary text-primary hover:bg-primary hover:text-white"
+                              onClick={() => router.push(`/dashboard/user-inbox?specialistId=${row.specialist_id}`)}
+                            >
+                              <MessageSquare size={14} className="mr-2" />
+                              Message
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>

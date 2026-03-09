@@ -61,6 +61,7 @@ export default function EmployerBookingFormClient() {
   }, [data]);
 
   const specialists = specData?.data?.data ?? [];
+
   const matchedSpecialist = useMemo(
     () => specialists.find((s) => s.id === Number(id)),
     [specialists, id],
