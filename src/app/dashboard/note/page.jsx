@@ -1,490 +1,536 @@
 "use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
-  Send,
-  Paperclip,
+  Plus,
   ChevronLeft,
   FileText,
   X,
   Trash2,
+  Edit2,
+  Download,
+  Paperclip,
+  Notebook,
+  Loader2,
+  ArrowRight,
+  UserCheck,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
+  DialogDescription,
 } from "@/components/ui/dialog";
+import { useFetch } from "@/hooks/useFetch";
+import { getApi, postApi, deleteApi } from "@/lib/apiHandler";
+import toast from "react-hot-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
+import { useAuth } from "@/hooks/useAuth";
 
-const Note = () => {
-  const [specialists, setSpecialists] = useState([
-    {
-      id: 1,
-      name: "Dr. John Williams",
-      role: "Supervisor",
-      online: true,
-      lastMsg: "See you tomorrow!",
-      avatar: "JW",
-    },
-    {
-      id: 2,
-      name: "Sarah Ahmed",
-      role: "HR Specialist",
-      online: false,
-      lastMsg: "Documents received.",
-      avatar: "SA",
-    },
-    {
-      id: 3,
-      name: "Mahfuz Rahman",
-      role: "Technical Lead",
-      online: true,
-      lastMsg: "The server is up.",
-      avatar: "MR",
-    },
-  ]);
-
-  const [chatHistories, setChatHistories] = useState({
-    1: [
-      {
-        id: 101,
-        sender: "specialist",
-        text: "Hello! How can I help?",
-        time: "10:00 AM",
-        isDeleted: false,
-      },
-      {
-        id: 102,
-        sender: "user",
-        text: "I need a morning shift.",
-        time: "10:05 AM",
-        isDeleted: false,
-      },
-    ],
-    2: [
-      {
-        id: 201,
-        sender: "specialist",
-        text: "Please upload your CV.",
-        time: "Yesterday",
-        isDeleted: false,
-      },
-    ],
-    3: [],
-  });
-
-  const [activeId, setActiveId] = useState(1);
-  const [view, setView] = useState("list");
-  const [typedMessage, setTypedMessage] = useState("");
+const NotesPage = () => {
+  const { user } = useAuth();
+  // console.log(user)
+  const [view, setView] = useState("specialists");
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  console.log(selectedBooking);
+  const [notes, setNotes] = useState([]);
+  const [isNotesLoading, setIsNotesLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [stagedFile, setStagedFile] = useState(null);
+
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+  const [editingNote, setEditingNote] = useState(null);
+  const [noteContent, setNoteContent] = useState("");
+  const [attachments, setAttachments] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [deleteConfig, setDeleteConfig] = useState({
     isOpen: false,
-    messageId: null,
+    noteId: null,
   });
 
-  const scrollRef = useRef(null);
   const fileInputRef = useRef(null);
-  const textareaRef = useRef(null);
 
-  // 1. AUTO-SCROLL LOGIC
+  const {
+    data: bookingData,
+    isLoading: isBookingsLoading,
+    error: bookingError,
+  } = useFetch("/user-booking");
+
+  const bookings = Array.isArray(bookingData?.data?.data)
+    ? bookingData?.data?.data
+    : [];
+
   useEffect(() => {
-    const scrollContainer = scrollRef.current?.querySelector(
-      "[data-radix-scroll-area-viewport]",
-    );
-    if (scrollContainer) {
-      scrollContainer.scrollTo({
-        top: scrollContainer.scrollHeight,
-        behavior: "smooth",
-      });
+    if (selectedBooking && view === "notes") {
+      fetchNotes(selectedBooking.id);
     }
-  }, [chatHistories, activeId]);
+  }, [selectedBooking, view]);
 
-  const moveToTop = (id, lastText) => {
-    setSpecialists((prev) => {
-      const target = prev.find((s) => s.id === id);
-      const others = prev.filter((s) => s.id !== id);
-      return [{ ...target, lastMsg: lastText }, ...others];
-    });
+  const fetchNotes = async () => {
+    setIsNotesLoading(true);
+    try {
+      const response = await getApi("/user-nodes");
+      setNotes(response?.data?.data || []);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+      setNotes([]);
+    } finally {
+      setIsNotesLoading(false);
+    }
   };
 
-  const handleSend = (e) => {
-    e?.preventDefault?.();
-    if (!typedMessage.trim() && !stagedFile) return;
-
-    const currentChatId = activeId;
-    const newMessage = {
-      id: Date.now(),
-      sender: "user",
-      text: typedMessage,
-      file: stagedFile
-        ? {
-            url: stagedFile.previewUrl,
-            name: stagedFile.file.name,
-            type: stagedFile.type,
-          }
-        : null,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-      isDeleted: false,
-    };
-
-    setChatHistories((prev) => ({
-      ...prev,
-      [currentChatId]: [...(prev[currentChatId] || []), newMessage],
-    }));
-
-    moveToTop(
-      currentChatId,
-      stagedFile ? `Sent ${stagedFile.type}` : typedMessage,
-    );
-    setTypedMessage("");
-    setStagedFile(null);
-
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
-
-    // Simulate Reply
-    setTimeout(() => {
-      const replyText = "I have received your message.";
-      const reply = {
-        id: Date.now() + 1,
-        sender: "specialist",
-        text: replyText,
-        time: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        isDeleted: false,
-      };
-
-      setChatHistories((prev) => ({
-        ...prev,
-        [currentChatId]: [...(prev[currentChatId] || []), reply],
-      }));
-
-      setSpecialists((prevList) => {
-        const target = prevList.find((s) => s.id === currentChatId);
-        const others = prevList.filter((s) => s.id !== currentChatId);
-        if (!target) return prevList;
-        return [{ ...target, lastMsg: replyText }, ...others];
-      });
-    }, 1000);
+  const handleOpenNotes = (booking) => {
+    setSelectedBooking(booking);
+    setView("notes");
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+  const handleBack = () => {
+    setView("specialists");
+    setSelectedBooking(null);
+    setNotes([]);
+  };
+
+  const handleAddNote = () => {
+    setEditingNote(null);
+  
+    setNoteContent("");
+    setAttachments([]);
+    setIsNoteModalOpen(true);
+  };
+
+  const handleEditNote = (note) => {
+    setEditingNote(note);
+    setNoteContent(note.note_content);
+    setAttachments(note.attachments || []);
+    setIsNoteModalOpen(true);
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const isImage = file.type.startsWith("image/");
-    const previewUrl = URL.createObjectURL(file);
-    setStagedFile({ file, previewUrl, type: isImage ? "image" : "file" });
+    const files = Array.from(e.target.files);
+    setAttachments((prev) => [...prev, ...files]);
     e.target.value = null;
   };
 
-  const confirmDeleteForMe = () => {
-    setChatHistories((prev) => ({
-      ...prev,
-      [activeId]: prev[activeId].filter(
-        (msg) => msg.id !== deleteConfig.messageId,
-      ),
-    }));
-    setDeleteConfig({ isOpen: false, messageId: null });
+  const removeAttachment = (index) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const confirmDeleteForEveryone = () => {
-    setChatHistories((prev) => ({
-      ...prev,
-      [activeId]: prev[activeId].map((msg) =>
-        msg.id === deleteConfig.messageId
-          ? {
-              ...msg,
-              text: "This message was deleted",
-              file: null,
-              isDeleted: true,
-            }
-          : msg,
-      ),
-    }));
-    setDeleteConfig({ isOpen: false, messageId: null });
+  const handleSubmitNote = async () => {
+    if (!noteContent.trim()) {
+      toast.error("Both title and content are required");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append("sender_id", user?.id);
+      formData.append("sender_type", user?.type);
+      formData.append("receiver_id", selectedBooking.specialist_id);
+      formData.append("receiver_type", selectedBooking.specialist_type);
+      formData.append("node_message", noteContent);
+
+      attachments.forEach((file) => {
+        if (file instanceof File) {
+          formData.append("node_image[]", file);
+        }
+      });
+
+      // for (let pair of formData.entries()) {
+      //   console.log("payload", pair[0], pair[1]);
+      // }
+
+      if (editingNote) {
+        await postApi(`/notes/${editingNote.id}`, formData);
+        toast.success("Note updated successfully");
+      } else {
+        await postApi("/node", formData);
+        toast.success("Note created successfully");
+      }
+
+      setIsNoteModalOpen(false);
+      fetchNotes(selectedBooking.id);
+    } catch (error) {
+      console.error("Error saving note:", error);
+      toast.error("Failed to save note");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const activeSpecialist = specialists.find((s) => s.id === activeId);
-  const filteredSpecialists = specialists.filter((s) =>
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  const confirmDeleteNote = async () => {
+    try {
+      await deleteApi(`/notes/${deleteConfig.noteId}`);
+      toast.success("Note deleted successfully");
+      setDeleteConfig({ isOpen: false, noteId: null });
+      fetchNotes(selectedBooking.id);
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      toast.error("Failed to delete note");
+    }
+  };
+
+  const filteredBookings = bookings.filter((b) =>
+    (b.specialist?.name || "")
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase()),
   );
 
+  if (isBookingsLoading) return <LoadingSpinner />;
+
   return (
-    <div className="flex h-[85vh] md:h-[85vh] md:border md:rounded-lg overflow-hidden bg-white md:shadow-2xl">
-      {/* SIDEBAR */}
-      <div
-        className={`${view === "chat" ? "hidden" : "flex"} w-full md:flex md:w-80 border-r flex-col bg-gray-50/50`}
-      >
-        <div className="p-6 bg-white border-b shrink-0">
-          <h1 className="text-2xl font-bold text-primary mb-4">Note</h1>
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+    <div className="space-y-6 animate-in fade-in duration-500">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <Notebook className="text-primary h-8 w-8" />
+            My Notes
+          </h1>
+          <p className="text-gray-500 mt-1">
+            {view === "specialists"
+              ? "Manage private notes for your consultations"
+              : `Notes for ${selectedBooking?.specialist?.name}`}
+          </p>
+        </div>
+        {view === "notes" && (
+          <Button
+            onClick={handleAddNote}
+            className="gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
+          >
+            <Plus size={18} />
+            Add New Note
+          </Button>
+        )}
+      </div>
+
+      {view === "specialists" ? (
+        <div className="space-y-6">
+          {/* Search bar */}
+          <div className="relative group max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
             <Input
-              placeholder="Search..."
-              className="pl-10 border-none bg-gray-100 focus-visible:ring-primary"
+              placeholder="Search specialists..."
+              className="pl-10 h-12 bg-white border-gray-200 focus-visible:ring-primary shadow-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-        </div>
-        <ScrollArea className="flex-1 p-2">
-          {filteredSpecialists.map((s) => (
-            <div
-              key={s.id}
-              onClick={() => {
-                setActiveId(s.id);
-                setView("chat");
-              }}
-              className={`flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all mb-1 ${activeId === s.id ? "bg-primary text-primary-foreground shadow-lg" : "hover:bg-gray-200/50"}`}
-            >
-              <Avatar className="h-12 w-12 border-2 border-white">
-                <AvatarFallback
-                  className={
-                    activeId === s.id
-                      ? "text-primary"
-                      : "bg-primary/10 text-primary"
-                  }
-                >
-                  {s.avatar}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm truncate">{s.name}</p>
-                <p
-                  className={`text-xs truncate ${activeId === s.id ? "text-primary-foreground/80" : "text-gray-500"}`}
-                >
-                  {s.lastMsg}
-                </p>
-              </div>
-            </div>
-          ))}
-        </ScrollArea>
-      </div>
 
-      {/* CHAT WINDOW */}
-      <div
-        className={`${view === "list" ? "hidden" : "flex"} flex-1 flex-col bg-white md:flex h-full min-h-0`}
-      >
-        {activeSpecialist ? (
-          <>
-            <div className="p-4 border-b flex justify-between items-center bg-white shrink-0">
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden -ml-2"
-                  onClick={() => setView("list")}
+          {filteredBookings.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredBookings.map((booking) => (
+                <Card
+                  key={booking.id}
+                  className="group hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-md bg-white border-gray-100 overflow-hidden -py-6 pb-6"
                 >
-                  <ChevronLeft size={24} />
-                </Button>
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-primary/10 text-primary font-bold">
-                    {activeSpecialist.avatar}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h2 className="font-bold text-sm">{activeSpecialist.name}</h2>
-                  <p className="text-[10px] text-green-500">Online</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-1 min-h-0 overflow-hidden bg-slate-50/50">
-              <ScrollArea ref={scrollRef} className="h-full">
-                <div className="p-4 space-y-4">
-                  {chatHistories[activeId]?.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex group animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      {msg.sender === "user" && !msg.isDeleted && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
-                            setDeleteConfig({ isOpen: true, messageId: msg.id })
-                          }
-                          className="h-7 w-7 rounded-lg opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all mr-1 self-center cursor-pointer"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      )}
-                      <div
-                        className={`max-w-[80%] rounded-lg shadow-sm overflow-hidden ${
-                          msg.isDeleted
-                            ? "bg-gray-100 italic text-gray-400 border"
-                            : msg.sender === "user"
-                              ? "bg-primary text-primary-foreground rounded-tr-none"
-                              : "bg-white border rounded-tl-none text-gray-800"
-                        }`}
+                  <div className="h-1 bg-gray-100 group-hover:bg-primary transition-colors" />
+                  <CardHeader className="flex flex-row items-center gap-4 pb-4">
+                    <Avatar className="h-14 w-14 border-2 border-gray-50 group-hover:border-primary/20 transition-all">
+                      <AvatarFallback className="bg-primary/5 text-primary text-xl font-bold">
+                        {booking.specialist?.name?.charAt(0) || "S"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">
+                        {booking.specialist?.name || "Specialist"}
+                      </CardTitle>
+                      <Badge
+                        variant="secondary"
+                        className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-none px-2 py-0"
                       >
-                        {msg.file && (
-                          <div className="p-1">
-                            {msg.file.type === "image" ? (
-                              <img
-                                src={msg.file.url}
-                                alt="sent"
-                                className="rounded-lg max-h-60 w-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex items-center gap-2 p-3 bg-black/5 rounded-lg text-gray-800">
-                                <FileText size={18} />
-                                <span className="text-xs truncate underline">
-                                  {msg.file.name}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                        {/* THE BIG MESSAGE WRAP FIX IS HERE */}
-                        <p className="px-4 py-2.5 leading-relaxed break-words whitespace-pre-wrap text-sm">
-                          {msg.text}
-                        </p>
-                        {!msg.isDeleted && (
-                          <span className="text-[9px] px-4 pb-2 block text-right opacity-60 font-bold uppercase">
-                            {msg.time}
-                          </span>
-                        )}
-                      </div>
+                        {booking.specialist_type || "N/A"}
+                      </Badge>
                     </div>
-                  ))}
-                  <div className="h-2" />
-                </div>
-              </ScrollArea>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <History size={16} className="text-gray-400" />
+                      <span>
+                        {booking.created_at
+                          ? new Date(booking.created_at).toLocaleDateString()
+                          : "Date N/A"}
+                      </span>
+                    </div>
+                    <Button
+                      className="w-full justify-between hover:gap-3 transition-all cursor-pointer"
+                      variant="outline"
+                      onClick={() => handleOpenNotes(booking)}
+                    >
+                      Open Notes
+                      <ArrowRight size={16} />
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+              <div className="bg-gray-50 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <UserCheck className="text-gray-300 h-8 w-8" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">
+                No bookings found
+              </h3>
+              <p className="text-gray-500 mt-1">
+                Book a specialist to start taking notes.
+              </p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <Button
+            variant="ghost"
+            onClick={handleBack}
+            className="flex items-center gap-2 -ml-2 text-gray-600 hover:text-primary transition-colors"
+          >
+            <ChevronLeft size={20} />
+            Back to Specialists
+          </Button>
 
-            {/* INPUT AREA */}
-            <div className="p-4 border-t bg-white shrink-0">
-              {stagedFile && (
-                <div className="mb-3 p-2 bg-gray-50 border rounded-lg flex items-center gap-3 relative">
-                  <div className="h-12 w-12 rounded-lg border bg-white flex items-center justify-center overflow-hidden shrink-0">
-                    {stagedFile.type === "image" ? (
-                      <img
-                        src={stagedFile.previewUrl}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <FileText className="text-primary" />
+          {isNotesLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+              <Loader2 className="h-10 w-10 text-primary animate-spin mb-4" />
+              <p className="text-gray-500">Loading your notes...</p>
+            </div>
+          ) : notes.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4">
+              {notes.map((note) => (
+                <Card
+                  key={note.id}
+                  className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-xl font-bold text-gray-900">
+                      {note.note_title}
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditNote(note)}
+                        className="h-8 w-8 text-gray-500 hover:text-primary"
+                      >
+                        <Edit2 size={16} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          setDeleteConfig({ isOpen: true, noteId: note.id })
+                        }
+                        className="h-8 w-8 text-gray-500 hover:text-red-500"
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
+                      {note.note_content}
+                    </p>
+
+                    {note.attachments && note.attachments.length > 0 && (
+                      <div className="pt-4 border-t border-gray-50 flex flex-wrap gap-2">
+                        {note.attachments.map((file, idx) => (
+                          <div
+                            key={file.file_id || idx}
+                            className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors cursor-pointer group"
+                            onClick={() => window.open(file.file_url, "_blank")}
+                          >
+                            <FileText size={16} className="text-primary" />
+                            <span className="text-xs font-medium text-gray-700 max-w-[150px] truncate">
+                              {file.file_name}
+                            </span>
+                            <Download
+                              size={14}
+                              className="text-gray-400 group-hover:text-primary"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     )}
-                  </div>
-                  <p className="text-xs font-bold truncate flex-1">
-                    {stagedFile.file.name}
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setStagedFile(null)}
-                  >
-                    <X size={16} />
-                  </Button>
-                </div>
-              )}
 
-              <form
-                onSubmit={handleSend}
-                className="flex items-end gap-2 bg-gray-100 p-2 rounded-lg border focus-within:border-primary transition-all"
-              >
-                <input
-                  type="file"
-                  className="hidden"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="image/*,.pdf,.doc,.docx"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="mb-1 cursor-pointer"
-                  onClick={() => fileInputRef.current.click()}
-                >
-                  <Paperclip size={20} />
-                </Button>
-
-                <textarea
-                  ref={textareaRef}
-                  rows={1}
-                  className="flex-1 bg-transparent border-none outline-none text-sm px-2 py-2 resize-none max-h-32 overflow-y-auto"
-                  placeholder="Type a message..."
-                  value={typedMessage}
-                  onChange={(e) => {
-                    setTypedMessage(e.target.value);
-                    e.target.style.height = "auto";
-                    e.target.style.height = e.target.scrollHeight + "px";
-                  }}
-                  onKeyDown={handleKeyDown}
-                />
-
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={!typedMessage.trim() && !stagedFile}
-                  className="bg-primary rounded-lg mb-1 shrink-0 cursor-pointer"
-                >
-                  <Send size={18} />
-                </Button>
-              </form>
+                    <div className="pt-2 text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+                      Created: {new Date(note.created_at).toLocaleString()}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-400">
-            Select a conversation
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
+              <div className="bg-primary/5 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="text-primary h-8 w-8" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">
+                No notes yet
+              </h3>
+              <p className="text-gray-500 mt-1">
+                Start by clicking "Add New Note" above.
+              </p>
+              <Button
+                onClick={handleAddNote}
+                className="mt-6 gap-2 cursor-pointer"
+              >
+                <Plus size={18} />
+                Create First Note
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* DELETE DIALOG */}
+      {/* Note Form Modal */}
+      <Dialog open={isNoteModalOpen} onOpenChange={setIsNoteModalOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-white rounded-2xl p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="p-6 bg-gray-50 border-b">
+            <DialogTitle className="text-2xl font-bold text-gray-900">
+              {editingNote ? "Edit Note" : "Create New Note"}
+            </DialogTitle>
+            <DialogDescription>
+              Keep track of important details for your booking. Only you can see
+              these notes.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="p-6 space-y-4">
+            {/* <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700">
+                Note Title
+              </label>
+              <Input
+                placeholder="Brief summary (e.g., Symptoms observed)"
+                value={noteTitle}
+                onChange={(e) => setNoteTitle(e.target.value)}
+                className="h-10 focus-visible:ring-primary mt-1"
+              />
+            </div> */}
+
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-gray-700">Message</label>
+              <textarea
+                placeholder="Write your detailed observations or notes here..."
+                value={noteContent}
+                onChange={(e) => setNoteContent(e.target.value)}
+                className="w-full min-h-[150px] p-3 mt-1 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none text-sm"
+              />
+            </div>
+
+            <div className="">
+              <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                <Paperclip size={16} />
+                Attachments
+              </label>
+
+              <div className="flex flex-wrap gap-2 mb-3">
+                {attachments.map((file, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 rounded-full text-xs font-semibold group animate-in zoom-in duration-200"
+                  >
+                    <FileText size={14} />
+                    <span className="max-w-[120px] truncate">
+                      {file instanceof File ? file.name : file.file_name}
+                    </span>
+                    <button
+                      onClick={() => removeAttachment(index)}
+                      className="hover:text-red-500 transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="w-full border-dashed text-gray-500 hover:text-primary hover:border-primary cursor-pointer"
+                onClick={() => fileInputRef.current.click()}
+              >
+                Upload Files
+              </Button>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*,.pdf,.doc,.docx"
+              />
+              <p className="text-[10px] text-gray-400">
+                Supported: Images, PDF, DOCX
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="p-6 bg-gray-50 border-t flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setIsNoteModalOpen(false)}
+              disabled={isSubmitting}
+              className="flex-1 cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmitNote}
+              disabled={isSubmitting}
+              className="flex-1 gap-2 shadow-md cursor-pointer"
+            >
+              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {editingNote ? "Update Note" : "Save Note"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
       <Dialog
         open={deleteConfig.isOpen}
         onOpenChange={(open) =>
-          !open && setDeleteConfig({ isOpen: false, messageId: null })
+          !open && setDeleteConfig({ isOpen: false, noteId: null })
         }
       >
-        <DialogContent className="sm:max-w-[400px] rounded-lg">
-          <DialogHeader>
-            <DialogTitle className="text-center font-bold">
-              Delete message?
+        <DialogContent className="sm:max-w-[400px] bg-white rounded-2xl border-none shadow-2xl">
+          <DialogHeader className="text-center space-y-3">
+            <div className="bg-red-50 h-16 w-16 rounded-full flex items-center justify-center mx-auto">
+              <Trash2 className="text-red-500 h-8 w-8" />
+            </div>
+            <DialogTitle className="text-2xl font-bold text-gray-900">
+              Delete note?
             </DialogTitle>
+            <DialogDescription className="text-gray-500">
+              This action cannot be undone. This note and its attachments will
+              be permanently removed.
+            </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col gap-2 pt-4">
+          <div className="flex gap-3 mt-4">
             <Button
               variant="outline"
-              className="rounded-lg text-red-500 border-red-100 hover:bg-red-50"
-              onClick={confirmDeleteForEveryone}
-            >
-              Delete for everyone
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-lg font-medium"
-              onClick={confirmDeleteForMe}
-            >
-              Delete for me
-            </Button>
-            <Button
-              variant="ghost"
-              className="rounded-lg text-gray-500"
-              onClick={() =>
-                setDeleteConfig({ isOpen: false, messageId: null })
-              }
+              className="flex-1 h-12 rounded-xl font-bold"
+              onClick={() => setDeleteConfig({ isOpen: false, noteId: null })}
             >
               Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              className="flex-1 h-12 rounded-xl font-bold shadow-lg shadow-red-200"
+              onClick={confirmDeleteNote}
+            >
+              Delete
             </Button>
           </div>
         </DialogContent>
@@ -493,4 +539,4 @@ const Note = () => {
   );
 };
 
-export default Note;
+export default NotesPage;

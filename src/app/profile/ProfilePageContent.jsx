@@ -95,7 +95,7 @@ const ProfilePageContent = () => {
               }}
             />
             <h2 className="text-2xl mt-4 text-gray-800 font-semibold text-center">
-              {matchedData?.name}
+              {matchedData?.name || matchedData?.fullName}
             </h2>
             <p className="text-sm mt-1 font-bold text-primary uppercase">
               {matchedData?.subRole?.replace("-", " ")}
@@ -111,7 +111,11 @@ const ProfilePageContent = () => {
                 <Phone className="w-4 h-4 text-primary" />
                 <div>
                   <Label className="text-xs text-gray-400">Phone</Label>
-                  <p className="text-sm font-medium">{matchedData?.number}</p>
+                  <p className="text-sm font-medium">
+                    {matchedData?.number
+                      ? matchedData?.number
+                      : matchedData?.number_two}
+                  </p>
                 </div>
               </div>
               <div className="flex gap-3 items-center">

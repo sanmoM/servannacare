@@ -81,6 +81,7 @@ export default function BookingFormClient() {
     () => specialists.find((s) => s.id === Number(id)),
     [specialists, id],
   );
+  console.log(matchedSpecialist)
   const pricingData = useMemo(() => {
     if (!matchedSpecialist) return null;
 
@@ -1303,7 +1304,7 @@ export default function BookingFormClient() {
         {/* SIDEBAR SUMMARY */}
         <aside className="lg:col-span-1">
           <div className="sticky top-8 space-y-4">
-            <Card className="border-none shadow-2xl rounded-[2.5rem] overflow-hidden bg-white ring-1 ring-slate-100">
+            <Card className="border-none shadow-2xl rounded-lg overflow-hidden bg-white ring-1 ring-slate-100">
               <div className="bg-primary p-10 text-white">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-2">
                   Estimated Amount
@@ -1367,7 +1368,7 @@ export default function BookingFormClient() {
                   </span>
                 </div>
                 <Separator />
-                <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border">
+                <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border">
                   <ShieldCheck size={20} className="text-primary mt-0.5" />
                   <p className="text-[10px] text-slate-500 font-bold leading-tight">
                     Secure Booking: Your medical data is strictly confidential
