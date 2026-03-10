@@ -65,9 +65,8 @@ const InstitutionNursePage = () => {
   const [selectedSpecialistType, setSelectedSpecialistType] = useState(null);
   const [showPromoPopup, setShowPromoPopup] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteId, setDeleteId] = useState(null);
   const itemsPerPage = 5;
-
-
 
   const { data, isLoading, refetch } = useFetch("/profile");
   useEffect(() => {
@@ -110,13 +109,19 @@ const InstitutionNursePage = () => {
   const handleDelete = async (id, type) => {
     const loadingToast = toast.loading("Deleting specialist...");
     let endpoint = "/institution-nurse";
-    if (type === "institution-nurse-assistant") endpoint = "/institution-nurse-assistant";
-    if (type === "institution-physiotherapist") endpoint = "/institution-physiotherapist";
-    if (type === "institution-special-need") endpoint = "/institution-special-need";
+    if (type === "institution-nurse") endpoint = "/institution-nurse";
+    if (type === "institution-nurse-assistant") endpoint = "/institution-nurse";
+    if (type === "institution-physiotherapist") endpoint = "/institution-nurse";
+    if (type === "institution-special-need") endpoint = "/institution-nurse";
+
+    const payload = {
+      type: type,
+    };
 
     try {
-      await deleteApi(`${endpoint}/${id}`);
+      await deleteApi(`${endpoint}/${id}`, payload);
       toast.success("Specialist removed successfully", { id: loadingToast });
+      setDeleteId(null);
       refetch();
     } catch (err) {
       toast.error("Failed to delete specialist.", { id: loadingToast });
@@ -271,9 +276,18 @@ const InstitutionNursePage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
                 {[
                   { label: "Nurse", value: "institution-nurse" },
-                  { label: "Nurse Aide or Assistant", value: "institution-nurse-assistant" },
-                  { label: "Physiotherapist", value: "institution-physiotherapist" },
-                  { label: "Special Need Caregiver", value: "institution-special-need" },
+                  {
+                    label: "Nurse Aide or Assistant",
+                    value: "institution-nurse-assistant",
+                  },
+                  {
+                    label: "Physiotherapist",
+                    value: "institution-physiotherapist",
+                  },
+                  {
+                    label: "Special Need Caregiver",
+                    value: "institution-special-need",
+                  },
                 ].map((item) => (
                   <Button
                     key={item.value}
@@ -317,7 +331,12 @@ const InstitutionNursePage = () => {
               </p>
             </div>
             <DialogFooter>
-              <Button className="cursor-pointer" onClick={() => setShowPromoPopup(false)}>Got it!</Button>
+              <Button
+                className="cursor-pointer"
+                onClick={() => setShowPromoPopup(false)}
+              >
+                Got it!
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -617,13 +636,18 @@ const InstitutionNursePage = () => {
                             </DialogContent>
                           </Dialog>
 
-                          {/* Delete */}
-                          <Dialog>
+                          <Dialog
+                            open={deleteId === nurse.id}
+                            onOpenChange={(open) =>
+                              setDeleteId(open ? nurse.id : null)
+                            }
+                          >
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"
                                 size="icon"
                                 className="text-red-500 hover:bg-red-50"
+                                onClick={() => setDeleteId(nurse.id)}
                               >
                                 <Trash size={18} />
                               </Button>
@@ -636,16 +660,21 @@ const InstitutionNursePage = () => {
                               </DialogHeader>
 
                               <p className="text-sm text-gray-600 py-4">
-                                Remove <strong>{nurse.fullName || nurse.name}</strong> permanently?
+                                Remove{" "}
+                                <strong>{nurse.fullName || nurse.name}</strong>{" "}
+                                permanently?
                               </p>
 
                               <DialogFooter>
                                 <DialogClose asChild>
-                                  <Button variant="outline">Cancel</Button>
+                                  <Button className="cursor-pointer" variant="outline">Cancel</Button>
                                 </DialogClose>
                                 <Button
+                                className="cursor-pointer"
                                   variant="destructive"
-                                  onClick={() => handleDelete(nurse.id, nurse.type)}
+                                  onClick={() =>
+                                    handleDelete(nurse.id, nurse.type)
+                                  }
                                 >
                                   Confirm Delete
                                 </Button>
@@ -682,7 +711,9 @@ const InstitutionNursePage = () => {
                       ? "pointer-events-none opacity-50 cursor-not-allowed"
                       : "cursor-pointer"
                   }
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
                 />
               </PaginationItem>
               {Array.from({
@@ -702,7 +733,7 @@ const InstitutionNursePage = () => {
                 <PaginationNext
                   className={
                     currentPage ===
-                      Math.ceil(allSpecialists.length / itemsPerPage)
+                    Math.ceil(allSpecialists.length / itemsPerPage)
                       ? "pointer-events-none opacity-50 cursor-not-allowed"
                       : "cursor-pointer"
                   }

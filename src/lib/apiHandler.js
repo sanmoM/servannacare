@@ -1,6 +1,5 @@
 import api from "@/utils/api";
 
-
 export const getApi = (url, params = {}) => {
   return api.get(url, { params });
 };
@@ -13,7 +12,6 @@ export const putApi = (url, data = {}) => {
   return api.put(url, data);
 };
 
-
-export const deleteApi = (url) => {
-  return api.delete(url);
+export const deleteApi = (url, data = {}) => {
+  return api.delete(url, {data});
 };
