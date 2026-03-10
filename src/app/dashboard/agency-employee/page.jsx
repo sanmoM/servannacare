@@ -185,7 +185,7 @@ const EmployeePage = () => {
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                          <Briefcase size={14} className="text-purple-500" />{" "}
+                          <Briefcase size={14} className="text-primary" />{" "}
                           {emp.preferredRole}
                         </span>
                         <span className="text-xs text-gray-500 ml-5">

@@ -330,8 +330,6 @@ const HouseManagerCreate = ({ data = {} }) => {
       }
     }
 
-
-
     const fd = new FormData();
 
     fd.append("name", formData.basicInfo.name);
@@ -416,8 +414,7 @@ const HouseManagerCreate = ({ data = {} }) => {
         );
       }
     } catch (error) {
-      
-       toast.error("Error creating profile",error)
+      toast.error("Error creating profile", error);
       if (error.response) {
         toast.error(
           error.response.data?.message || `Error: ${error.response.status}`,
@@ -508,8 +505,6 @@ const HouseManagerCreate = ({ data = {} }) => {
             </Select>
           </div>
 
-          {/* comment git */}
-
           <div className="flex-1">
             <label className="block mb-2 text-sm font-medium text-gray-700">
               Salary Range (KSh)
@@ -523,21 +518,18 @@ const HouseManagerCreate = ({ data = {} }) => {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                        <SelectItem value="1000-20000">1000 - 20000</SelectItem>
-                            <SelectItem value="21000-40000">21000 - 40000</SelectItem>
-                            <SelectItem value="41000-60000">41000 - 60000</SelectItem>
-                            <SelectItem value="61000-80000">61000 - 80000</SelectItem>
-                            <SelectItem value="81000-90000">81000 - 90000</SelectItem>
-                            <SelectItem value="100000+">More than 100000</SelectItem>
+                  <SelectItem value="1000-20000">1000 - 20000</SelectItem>
+                  <SelectItem value="21000-40000">21000 - 40000</SelectItem>
+                  <SelectItem value="41000-60000">41000 - 60000</SelectItem>
+                  <SelectItem value="61000-80000">61000 - 80000</SelectItem>
+                  <SelectItem value="81000-90000">81000 - 90000</SelectItem>
+                  <SelectItem value="100000+">More than 100000</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        <div className="flex flex-col sm:flex-row gap-6">
           <div className="flex-1">
-            {/* Location */}
             <Input
               label="Your Location"
               name="location"
@@ -546,31 +538,9 @@ const HouseManagerCreate = ({ data = {} }) => {
               onChange={handleChange}
             />
           </div>
+        </div>
 
-          <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Service Offered
-            </label>
-            <div className="flex flex-wrap flex-col gap-2 ">
-              {preferred.map((lan, indx) => (
-                <div key={indx} className="flex items-center gap-2">
-                  <Checkbox
-                    id={lan.title}
-                    checked={formData.basicInfo.preferred.includes(lan.title)}
-                    onCheckedChange={() => togglepreferred(lan.title)}
-                  />
-
-                  <Label
-                    htmlFor={lan.title}
-                    className="text-gray-700 font-normal cursor-pointer"
-                  >
-                    {lan.title}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        <div className="flex flex-col sm:flex-row gap-6">
           <div className="flex-1">
             <Label>Phone Number</Label>
 
@@ -622,27 +592,51 @@ const HouseManagerCreate = ({ data = {} }) => {
                 </p>
               )}
           </div>
-        </div>
 
-        {/* Languages */}
-        <div>
-          <Label className="font-medium text-gray-700">Languages</Label>
-          <div className="flex flex-wrap gap-4 mt-3">
-            {languages.map((lan) => (
-              <div key={lan.id} className="flex items-center gap-2">
-                <Checkbox
-                  id={lan.value}
-                  checked={formData.basicInfo.languages.includes(lan.value)}
-                  onCheckedChange={() => toggleLanguage(lan.value)}
-                />
-                <Label
-                  className="text-gray-700 font-normal cursor-pointer"
-                  htmlFor={lan.value}
-                >
-                  {lan.text}
-                </Label>
-              </div>
-            ))}
+          <div className="flex-1">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Service Offered
+            </label>
+            <div className="flex flex-wrap flex-col gap-2 ">
+              {preferred.map((lan, indx) => (
+                <div key={indx} className="flex items-center gap-2">
+                  <Checkbox
+                    id={lan.title}
+                    checked={formData.basicInfo.preferred.includes(lan.title)}
+                    onCheckedChange={() => togglepreferred(lan.title)}
+                  />
+
+                  <Label
+                    htmlFor={lan.title}
+                    className="text-gray-700 font-normal cursor-pointer"
+                  >
+                    {lan.title}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Languages */}
+          <div className="flex-1">
+            <Label className="font-medium text-gray-700">Languages</Label>
+            <div className="flex flex-wrap gap-4 mt-3">
+              {languages.map((lan) => (
+                <div key={lan.id} className="flex items-center gap-2">
+                  <Checkbox
+                    id={lan.value}
+                    checked={formData.basicInfo.languages.includes(lan.value)}
+                    onCheckedChange={() => toggleLanguage(lan.value)}
+                  />
+                  <Label
+                    className="text-gray-700 font-normal cursor-pointer"
+                    htmlFor={lan.value}
+                  >
+                    {lan.text}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

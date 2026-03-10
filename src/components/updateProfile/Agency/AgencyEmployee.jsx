@@ -28,14 +28,21 @@ import { postApi } from "@/lib/apiHandler";
 import { useRouter } from "next/navigation";
 import SelectableCalendar from "@/components/SelectableCalendar";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
   const [ready, setReady] = useState(!isUpdate);
-
+  const [country, setCountry] = useState("KE");
+  // console.log("dfdf",initialData)
   const [formData, setFormData] = useState({
     name: "",
     educationLevel: "",
     location: "",
     experience: "",
+    phone: "",
     salaryRange: "",
     isMother: null,
     kidAges: [],
@@ -66,6 +73,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         location: initialData.location || "",
         experience: initialData.experience || "",
         salaryRange: initialData.salaryRange || "",
+        phone: initialData.number_two || "",
         preferredRole: initialData.preferredRole || "",
         preferred: initialData.preferred || "",
         cooking: initialData.cooking || "",
@@ -319,57 +327,98 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
               onChange={handleChange}
             />
           </div>
-          <div className="flex-1 flex gap-2">
-            <div className="w-1/2">
-              <Label className="block mb-2 text-sm font-medium text-gray-700">
-                Experience
-              </Label>
-              <Select
-                value={formData.experience}
-                onValueChange={(v) => handleSelectChange("experience", v)}
-              >
-                <SelectTrigger className="py-5.5 shadow-none">
-                  <SelectValue placeholder="Select year" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[
-                    "1 year",
-                    "2 years",
-                    "3 years",
-                    "4 years",
-                    "5 years",
-                    "More than 5+ years",
-                  ].map((y) => (
-                    <SelectItem key={y} value={y}>
-                      {y}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+
+          <div className="flex-1">
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData?.phone}
+                onChange={(value) => {
+                  setData((prev) => ({ ...prev, phone: value || "" }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setData((prev) => ({
+                      ...prev,
+                      phone: `+${exampleNumber.countryCallingCode}`,
+                    }));
+                  } else {
+                    setData((prev) => ({ ...prev, phone: "" }));
+                  }
+                }}
+              />
             </div>
-            <div className="w-1/2">
-              <Label className="block mb-2 text-sm font-medium text-gray-700">
-                Salary (KSh)
-              </Label>
-              <Select
-                value={formData.salaryRange}
-                onValueChange={(v) => handleSelectChange("salaryRange", v)}
-              >
-                <SelectTrigger className="py-5.5 shadow-none">
-                  <SelectValue placeholder="Salary range" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="1000-20000">1000 - 20000</SelectItem>
-                    <SelectItem value="21000-40000">21000 - 40000</SelectItem>
-                    <SelectItem value="41000-60000">41000 - 60000</SelectItem>
-                    <SelectItem value="61000-80000">61000 - 80000</SelectItem>
-                    <SelectItem value="81000-90000">81000 - 90000</SelectItem>
-                    <SelectItem value="100000+">More than 100000</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+
+            {formData?.phone && !isValidPhoneNumber(formData?.phone) && (
+              <p className="text-red-500 text-sm mt-1">
+                Invalid phone number for selected country
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col pt-4 sm:flex-row gap-4 w-full">
+          <div className="w-full sm:w-1/2">
+            <Label className="block mb-2 text-sm font-medium text-gray-700">
+              Experience
+            </Label>
+
+            <Select
+              value={formData.experience}
+              onValueChange={(v) => handleSelectChange("experience", v)}
+            >
+              <SelectTrigger className="py-5.5 shadow-none w-full cursor-pointer">
+                <SelectValue placeholder="Select year" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {[
+                  "1 year",
+                  "2 years",
+                  "3 years",
+                  "4 years",
+                  "5 years",
+                  "More than 5+ years",
+                ].map((y) => (
+                  <SelectItem className={"cursor-pointer"} key={y} value={y}>
+                    {y}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="w-full sm:w-1/2">
+            <Label className="block mb-2 text-sm font-medium text-gray-700">
+              Salary (KSh)
+            </Label>
+
+            <Select
+              value={formData.salaryRange}
+              onValueChange={(v) => handleSelectChange("salaryRange", v)}
+            >
+              <SelectTrigger className="py-5.5 shadow-none w-full cursor-pointer">
+                <SelectValue placeholder="Salary range" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem className={"cursor-pointer"} value="1000-20000">1000 - 20000</SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="21000-40000">21000 - 40000</SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="41000-60000">41000 - 60000</SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="61000-80000">61000 - 80000</SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="81000-90000">81000 - 90000</SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="100000+">More than 100000</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
