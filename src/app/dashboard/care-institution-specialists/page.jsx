@@ -93,7 +93,6 @@ const InstitutionNursePage = () => {
         })),
       ];
 
-      // Remove duplicates by ID and filter out any invalid entries
       const uniqueSpecialists = combined.reduce((acc, curr) => {
         if (curr && curr.id && !acc.find((item) => item.id === curr.id)) {
           acc.push(curr);

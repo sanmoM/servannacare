@@ -12,6 +12,6 @@ export const putApi = (url, data = {}) => {
   return api.put(url, data);
 };
 
-export const deleteApi = (url, data = {}) => {
-  return api.delete(url, {data});
+export const deleteApi = (url, data) => {
+  return data ? api.delete(url, { data }) : api.delete(url);
 };
