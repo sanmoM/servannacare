@@ -37,7 +37,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
     <form onSubmit={handleSubmit}>
       <h2 className="formHeading">Education & Registration</h2>
       <div className="py-6">
-        <Label className="mb-3 block">Level of Education</Label>
+        <Label className="mb-3 block">Certificate in nursing assistant</Label>
         <RadioGroup
           className="flex gap-x-4 flex-wrap"
           value={data.education}
