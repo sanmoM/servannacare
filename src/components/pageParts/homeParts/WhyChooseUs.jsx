@@ -39,7 +39,7 @@ const WhyChooseUs = ({Data}) => {
             WHY CHOOSE US?
           </h2>
           <p className="text-center text-slate-600 mb-8 lg:mb-10 text-sm ">
-            Families choose Servanna because we go beyond providing help
+            families choose CERVANNA because we go beyond providing help
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

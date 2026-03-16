@@ -321,7 +321,7 @@ const SearchContent = () => {
             onClick={() => setMobileFilterSidebarOpen(true)}
             className="lg:hidden cursor-pointer flex gap-1 items-center"
           >
-            <Filter className="text-primary" size={20} /> <span>Filter</span>
+            <Filter className="text-primary" size={20} /> <span>Search</span>
           </div>
 
           <Select value={sortBy} onValueChange={setSortBy}>

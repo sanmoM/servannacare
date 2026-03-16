@@ -44,7 +44,7 @@ const Footer = () => {
             </div>
 
             <p className="mt-4 text-sm leading-relaxed">
-              care for your home & health
+              Care for your home & health
             </p>
           </div>
 
@@ -84,8 +84,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 4: Contact Info */}
-          <div>
+          {/* <div>
             <h3 className="text-lg font-semibold text-white">
               Head Office Address
             </h3>
@@ -96,6 +95,29 @@ const Footer = () => {
             </p>
             <h3 className="mt-8 text-lg font-semibold text-white">Days Open</h3>
             <p className="mt-4 text-sm">Monday - Friday 08 AM - 10 PM</p>
+          </div> */}
+
+          <div>
+            <h3 className="text-lg font-semibold text-white">
+              Contact details
+            </h3>
+            <p className="mt-4 text-sm leading-relaxed">
+              Email:{" "}
+              <a
+                href="mailto:customersupport@cervannacare.com"
+                className="text-white hover:underline"
+              >
+                customersupport@cervannacare.com
+              </a>
+              <br />
+              Phone:
+              <a
+                href="tel:+254700225533"
+                className="text-white hover:underline"
+              >
+                +254 700 225533
+              </a>
+            </p>
           </div>
         </div>
 

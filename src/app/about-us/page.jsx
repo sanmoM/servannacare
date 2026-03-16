@@ -20,7 +20,7 @@ const page = () => {
     }
   }, [data]);
 
-  if (isLoading) return <LoadingSpinner/>;
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <div>Error loading data</div>;
 
   const features = [
@@ -65,7 +65,8 @@ const page = () => {
                 </h2>
                 <p
                   data-aos="fade-up"
-                  className="text-sm text-justify text-gray-700"
+                  className="text-base md:text-lg text-justify text-gray-700"
+                  style={{ fontFamily: "Cambria, serif", lineHeight: "1.8" }}
                 >
                   {description
                     .split(new RegExp(`(${boldWords.join("|")})`, "g"))
@@ -83,7 +84,6 @@ const page = () => {
             )}
             <div className="sm:flex space-y-2 justify-evenly mt-6">
               {abouts?.about?.items.map((feature, index) => {
-                // const Icon = feature.icon;
                 return (
                   <div
                     data-aos="fade-up"
@@ -92,21 +92,14 @@ const page = () => {
                   >
                     <div className="flex-shrink-0">
                       <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-cyan-100">
-                        {/* <Icon
-                          className="h-6 w-6 text-cyan-600"
-                          aria-hidden="true"
-                        /> */}
-                          <span
-                        dangerouslySetInnerHTML={{ __html: feature.tag_icon }}
-                        className="w-6 h-6"
-                      />
+                        <span
+                          dangerouslySetInnerHTML={{ __html: feature.tag_icon }}
+                          className="w-6 h-6"
+                        />
                       </div>
                     </div>
                     <div className="flex-1">
                       <h3 className="subHeading mb-1">{feature?.tag}</h3>
-                      {/* <p className="text-sm text-slate-600 leading-relaxed">
-                        {feature.description}
-                      </p> */}
                     </div>
                   </div>
                 );
@@ -138,7 +131,7 @@ const page = () => {
           </div>
         </div>
 
-        <MissionVision data={abouts}/>
+        <MissionVision data={abouts} />
       </Container>
     </div>
   );
