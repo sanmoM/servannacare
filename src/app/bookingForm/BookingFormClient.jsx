@@ -81,7 +81,7 @@ export default function BookingFormClient() {
     () => specialists.find((s) => s.id === Number(id)),
     [specialists, id],
   );
-  console.log(matchedSpecialist)
+  console.log(matchedSpecialist);
   const pricingData = useMemo(() => {
     if (!matchedSpecialist) return null;
 
@@ -99,6 +99,7 @@ export default function BookingFormClient() {
 
   const monthlyRate = Number(pricingData?.serviceFeeMonth || 0);
   const dailyRate = Number(pricingData?.serviceFeeDay || 0);
+  console.log(monthlyRate);
 
   const availableDates = useMemo(() => {
     if (!matchedSpecialist?.schedule) return [];
@@ -452,8 +453,14 @@ export default function BookingFormClient() {
                     >
                       {["Male", "Female", "Other"].map((g) => (
                         <div key={g} className="flex items-center gap-1.5">
-                          <RadioGroupItem value={g} id={`g-${g}`} />
-                          <Label htmlFor={`g-${g}`}>{g}</Label>
+                          <RadioGroupItem
+                            className="cursor-pointer"
+                            value={g}
+                            id={`g-${g}`}
+                          />
+                          <Label className="cursor-pointer" htmlFor={`g-${g}`}>
+                            {g}
+                          </Label>
                         </div>
                       ))}
                     </RadioGroup>
@@ -514,6 +521,7 @@ export default function BookingFormClient() {
                           className="flex items-center gap-2 p-3 border rounded-xl"
                         >
                           <Checkbox
+                            className="cursor-pointer"
                             id={c}
                             checked={field.value.includes(c)}
                             onCheckedChange={() =>

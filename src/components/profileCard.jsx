@@ -86,8 +86,8 @@ const ProfileCard = ({ profile }) => {
         </div>
       </div>
 
-      <div className="flex flex-col justify-between w-full p-5">
-        <div>
+      <div className="flex flex-col h-full w-full p-5">
+        <div className="flex-1">
           <div className="flex items-start justify-between mb-3">
             <div>
               <h2 className="text-xl font-bold tracking-tight text-gray-900">
