@@ -6,9 +6,15 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
 import { postApi } from "@/lib/apiHandler";
-import { Calendar, Camera, Mail, Phone, User } from "lucide-react";
+import { Camera } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+import { Label } from "@/components/ui/label";
 
 export default function page() {
   const { data, isLoading, error } = useFetch("/profile");
@@ -20,9 +26,8 @@ export default function page() {
     gender: "",
     location: "",
   });
-  
-  
 
+  const [country, setCountry] = useState("KE");
   const [imagePreview, setImagePreview] = useState(null);
 
   useEffect(() => {
@@ -37,7 +42,6 @@ export default function page() {
         location: userInfo.location || "",
       });
 
-    
       if (userInfo.profilePhoto) {
         setImagePreview(userInfo.profilePhoto);
       }
@@ -56,9 +60,8 @@ export default function page() {
     if (file) {
       setForm((prev) => ({
         ...prev,
-        profilePhoto: file, 
+        profilePhoto: file,
       }));
-
 
       setImagePreview(URL.createObjectURL(file));
     }
@@ -66,8 +69,8 @@ export default function page() {
 
   const handleUpdate = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
-    if (!form.number || form.number.length !== 11)
-      return toast.error("Phone number must be 11 digits after +254");
+    if (!form.number || form.number.length !== 13)
+      return toast.error("Phone number must be 9 digits after +254");
 
     const formData = new FormData();
     formData.append("name", form.name);
@@ -77,7 +80,7 @@ export default function page() {
     formData.append("location", form.location);
 
     if (form.profilePhoto) {
-      formData.append("profilePhoto", form.profilePhoto); 
+      formData.append("profilePhoto", form.profilePhoto);
     }
 
     try {
@@ -97,14 +100,14 @@ export default function page() {
     }
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading || !data?.data?.data) return <LoadingSpinner />;
+
   if (error) return <div>Error loading profile data</div>;
 
   return (
     <div className="lg:p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="sectionHeading">My Profile</h1>
-       
       </div>
 
       <div className="border rounded-2xl p-6 flex flex-col md:flex-row gap-8 items-center md:items-start">
@@ -147,16 +150,55 @@ export default function page() {
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
-          <Input
-            label="Phone Number"
-            value={form.number}
-            onChange={handlePhoneChange}
-          />
+          <div className="flex-1">
+            <Label>Phone Number</Label>
+
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={form?.number}
+                onChange={(value) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    number: value || "",
+                  }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setForm((prev) => ({
+                      ...prev,
+                      number: `+${exampleNumber.countryCallingCode}`,
+                    }));
+                  } else {
+                    setForm((prev) => ({
+                      ...prev,
+                      number: "",
+                    }));
+                  }
+                }}
+              />
+            </div>
+
+            {form?.number && !isValidPhoneNumber(form?.number) && (
+              <p className="text-red-500 text-sm mt-1">
+                Invalid phone number for selected country
+              </p>
+            )}
+          </div>
           <div className="flex flex-col mt-2">
             <p className="text-sm mb-1 text-black">Gender</p>
             <div className="flex gap-4">
               {["Male", "Female", "Other"].map((g) => (
-                <label key={g} className="flex items-center gap-2">
+                <label
+                  key={g}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
                   <input
                     type="radio"
                     name="gender"
@@ -165,7 +207,7 @@ export default function page() {
                     onChange={(e) =>
                       setForm((prev) => ({ ...prev, gender: e.target.value }))
                     }
-                    className="accent-primary"
+                    className="accent-primary cursor-pointer"
                   />
                   {g}
                 </label>
@@ -182,8 +224,10 @@ export default function page() {
       </div>
 
       {/* Update Button */}
-      <div className="mt-6 flex justify-end">
-        <Button onClick={handleUpdate}>Update Profile</Button>
+      <div className="mt-6 flex justify-end cursor-pointer">
+        <Button className="cursor-pointer" onClick={handleUpdate}>
+          Update Profile
+        </Button>
       </div>
     </div>
   );

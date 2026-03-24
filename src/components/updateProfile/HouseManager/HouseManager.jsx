@@ -15,11 +15,7 @@ import {
 import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import {
-  Cross,
   FileText,
-  IdCard,
-  IdCardLanyard,
-  ImageIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -29,6 +25,7 @@ import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
+
 import { useAuth } from "@/hooks/useAuth";
 
 const HouseManager = ({ data = {} }) => {
