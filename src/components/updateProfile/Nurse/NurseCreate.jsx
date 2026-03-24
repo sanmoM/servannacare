@@ -431,7 +431,6 @@ const NurseCreate = ({ data = {} }) => {
 
   return (
     <div>
-      <h2>Create Profile Data</h2>
       <form onSubmit={handleCreate} className="space-y-6 relative">
         {/* basic info  */}
 
@@ -514,7 +513,7 @@ const NurseCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Male" id="r1" />
+              <RadioGroupItem className="cursor-pointer" value="Male" id="r1" />
               <Label
                 htmlFor="r1"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -523,7 +522,11 @@ const NurseCreate = ({ data = {} }) => {
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Female" id="r2" />
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="Female"
+                id="r2"
+              />
               <Label
                 htmlFor="r2"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -535,7 +538,7 @@ const NurseCreate = ({ data = {} }) => {
         </div>
         {/* Languages */}
         <div>
-          <Label className="font-medium mb-3 text-gray-700">Languages</Label>
+          <Label className="font-medium mb-3">Languages</Label>
           <div className="flex flex-wrap gap-4 mt-2">
             {languages.map((lan) => (
               <div key={lan.id} className="flex items-center gap-2">
@@ -543,6 +546,7 @@ const NurseCreate = ({ data = {} }) => {
                   id={lan.value}
                   checked={formData?.basicInfo?.languages?.includes(lan.value)}
                   onCheckedChange={() => toggleLanguage(lan.value)}
+                  className="cursor-pointer"
                 />
                 <Label
                   htmlFor={lan.value}
@@ -558,7 +562,7 @@ const NurseCreate = ({ data = {} }) => {
         <div>
           <Label className="mb-3 block">Can you drive?</Label>
           <RadioGroup
-            className="flex gap-4"
+            className="flex gap-4 cursor-pointer"
             value={
               formData.basicInfo.canDrive === true
                 ? "true"
@@ -571,12 +575,20 @@ const NurseCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="true" id="d1" />
-              <Label htmlFor="d1">Yes</Label>
+              <RadioGroupItem className="cursor-pointer" value="true" id="d1" />
+              <Label className="cursor-pointer text-gray-700" htmlFor="d1">
+                Yes
+              </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="false" id="d2" />
-              <Label htmlFor="d2">No</Label>
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="d2"
+              />
+              <Label className="cursor-pointer text-gray-700" htmlFor="d2">
+                No
+              </Label>
             </div>
           </RadioGroup>
         </div>
@@ -596,14 +608,22 @@ const NurseCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Diploma In Nursing" id="edu1" />
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="Diploma In Nursing"
+                id="edu1"
+              />
               <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
                 Diploma In Nursing
               </Label>
             </div>
 
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Degree In Nursing" id="edu2" />
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="Degree In Nursing"
+                id="edu2"
+              />
               <Label htmlFor="edu2" className="text-gray-700 cursor-pointer">
                 Degree In Nursing
               </Label>
@@ -646,17 +666,28 @@ const NurseCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="true" id="pckYes" />
-              <Label htmlFor="pckYes">Yes</Label>
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="true"
+                id="pckYes"
+              />
+              <Label className="cursor-pointer text-gray-700" htmlFor="pckYes">
+                Yes
+              </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="false" id="pckNo" />
-              <Label htmlFor="pckNo">No</Label>
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="pckNo"
+              />
+              <Label className="cursor-pointer text-gray-700" htmlFor="pckNo">
+                No
+              </Label>
             </div>
           </RadioGroup>
         </div>
 
-        {/* Show Registration Number & License only if PCK = Yes */}
         {formData.education.isNursingInKenya && (
           <div className="mt-6">
             <Input
@@ -686,11 +717,11 @@ const NurseCreate = ({ data = {} }) => {
         {/* experience */}
 
         <h2 className="formHeading">Experience</h2>
-        <div className="py-2">
+        <div className="">
           <Label className="mb-3 block">Hospital Based Care</Label>
 
           <RadioGroup
-            className="flex gap-x-4 flex-wrap"
+            className="flex flex-wrap"
             value={
               formData.experience?.hospitalBasedCare == null
                 ? ""
@@ -703,7 +734,11 @@ const NurseCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="true" id="hos1" />
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="true"
+                id="hos1"
+              />
               <Label
                 htmlFor="hos1"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -712,7 +747,11 @@ const NurseCreate = ({ data = {} }) => {
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="false" id="hos2" />
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="hos2"
+              />
               <Label
                 htmlFor="hos2"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -723,7 +762,6 @@ const NurseCreate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show these inputs only if hospitalBasedCare = true */}
         {formData.experience?.hospitalBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
@@ -760,7 +798,7 @@ const NurseCreate = ({ data = {} }) => {
         )}
 
         {/* Home Based Care */}
-        <div className="py-6">
+        <div className="">
           <Label className="mb-3 block">Home Based Care</Label>
 
           <RadioGroup
@@ -777,7 +815,7 @@ const NurseCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="true" id="d3" />
+              <RadioGroupItem className="cursor-pointer" value="true" id="d3" />
               <Label
                 className="text-gray-700 font-normal cursor-pointer"
                 htmlFor="d3"
@@ -846,6 +884,7 @@ const NurseCreate = ({ data = {} }) => {
                     id={lan.title}
                     checked={formData.experience.preferred.includes(lan.title)}
                     onCheckedChange={() => togglePreferred(lan.title)}
+                    className="cursor-pointer"
                   />
 
                   <Label
@@ -871,6 +910,7 @@ const NurseCreate = ({ data = {} }) => {
                     onCheckedChange={() =>
                       toggleArrayItem("skillsServices", "skills", area)
                     }
+                    className="cursor-pointer"
                   />
 
                   <Label
@@ -965,25 +1005,27 @@ const NurseCreate = ({ data = {} }) => {
           </span>
         </div>
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
-          {documents.map((item, indx) => (
-            <div key={indx} className="border rounded-xl p-4">
-              <FileUpload
-                title={item.title}
-                accept={item.accept}
-                icon={item.icon}
-                optional={item.optional || false}
-                file={formData.documents[item.id]}
-                onFileSelect={(file) =>
-                  handleFileSelect("documents", item.id, file)
-                }
-              />
+          {documents.map((item, indx) => {
+            const file = formData.documents[item.id];
+            return (
+              <div key={indx} className="border rounded-xl p-4">
+                <FileUpload
+                  title={item.title}
+                  accept={item.accept}
+                  icon={item.icon}
+                  optional={item.optional || false}
+                  file={file}
+                  onFileSelect={(file) =>
+                    handleFileSelect("documents", item.id, file)
+                  }
+                />
 
-              <FilePreview
-                file={formData.documents[item.id]}
-                alt={item.title}
-              />
-            </div>
-          ))}
+                {file && !file.type.startsWith("image/") && (
+                  <FilePreview file={file} alt={item.title} />
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* submit button  */}

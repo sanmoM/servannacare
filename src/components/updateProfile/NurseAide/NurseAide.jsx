@@ -906,25 +906,28 @@ const NurseAideUpdate = ({ data = {} }) => {
         </div>
 
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
-          {documents.map((item, indx) => (
-            <div key={indx} className="border rounded-xl p-4">
-              <FileUpload
-                title={item.title}
-                accept={item.accept}
-                icon={item.icon}
-                optional={item.optional || false}
-                file={formData.documents[item.id]}
-                onFileSelect={(file) =>
-                  handleFileSelect("documents", item.id, file)
-                }
-              />
+          {documents.map((item, indx) => {
+            const file = formData.documents[item.id];
 
-              {/* <FilePreview
-                file={formData.documents[item.id]}
-                alt={item.title}
-              /> */}
-            </div>
-          ))}
+            return (
+              <div key={indx} className="border rounded-xl p-4">
+                <FileUpload
+                  title={item.title}
+                  accept={item.accept}
+                  icon={item.icon}
+                  optional={item.optional || false}
+                  file={file}
+                  onFileSelect={(file) =>
+                    handleFileSelect("documents", item.id, file)
+                  }
+                />
+
+                {file && !file.type.startsWith("image/") && (
+                  <FilePreview file={file} alt={doc.title} />
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* submit button  */}

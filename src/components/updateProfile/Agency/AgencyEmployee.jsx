@@ -32,6 +32,7 @@ import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
+import FilePreview from "@/components/auth/register/FilePreview";
 
 const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
   const [ready, setReady] = useState(!isUpdate);
@@ -410,12 +411,24 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
 
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem className={"cursor-pointer"} value="1000-20000">1000 - 20000</SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="21000-40000">21000 - 40000</SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="41000-60000">41000 - 60000</SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="61000-80000">61000 - 80000</SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="81000-90000">81000 - 90000</SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="100000+">More than 100000</SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="1000-20000">
+                    1000 - 20000
+                  </SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="21000-40000">
+                    21000 - 40000
+                  </SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="41000-60000">
+                    41000 - 60000
+                  </SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="61000-80000">
+                    61000 - 80000
+                  </SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="81000-90000">
+                    81000 - 90000
+                  </SelectItem>
+                  <SelectItem className={"cursor-pointer"} value="100000+">
+                    More than 100000
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -719,25 +732,27 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         </div>
 
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
-          {documents.map((item, indx) => (
-            <div key={indx} className="border rounded-xl p-4">
-              <FileUpload
-                title={item.title}
-                accept={item.accept}
-                icon={item.icon}
-                optional={item.optional || false}
-                file={formData.documents[item.id]}
-                onFileSelect={(file) =>
-                  handleFileSelect("documents", item.id, file)
-                }
-              />
+          {documents.map((item, indx) => {
+            const file = formData.documents[item.id];
+            return (
+              <div key={indx} className="border rounded-xl p-4">
+                <FileUpload
+                  title={item.title}
+                  accept={item.accept}
+                  icon={item.icon}
+                  optional={item.optional || false}
+                  file={file}
+                  onFileSelect={(file) =>
+                    handleFileSelect("documents", item.id, file)
+                  }
+                />
 
-              {/* <FilePreview
-        file={formData.documents[item.id]}  
-        alt={item.title}
-      /> */}
-            </div>
-          ))}
+                {file && !file.type.startsWith("image/") && (
+                  <FilePreview file={file} alt={item.title} />
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <div className="pt-8">

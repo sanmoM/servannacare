@@ -14,9 +14,7 @@ import {
 } from "@/components/ui/select";
 import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
-import {
-  FileText,
-} from "lucide-react";
+import { FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -27,6 +25,7 @@ import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 
 import { useAuth } from "@/hooks/useAuth";
+import FilePreview from "@/components/auth/register/FilePreview";
 
 const HouseManager = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
@@ -750,23 +749,24 @@ const HouseManager = ({ data = {} }) => {
         </div>
 
         <div className="mt-6">
-          {/* File Preview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            {documentConfig.map((doc) => (
-              <div key={doc.id} className="border rounded-xl p-4">
-                <FileUpload
-                  title={doc.title}
-                  accept="application/pdf,image/*"
-                  file={formData.documents[doc.id]}
-                  onFileSelect={(file) => handleFileSelect(doc.id, file)}
-                />
+            {documentConfig.map((doc) => {
+              const file = formData?.documents[doc.id];
+              return (
+                <div key={doc.id} className="border rounded-xl p-4">
+                  <FileUpload
+                    title={doc.title}
+                    accept="application/pdf,image/*"
+                    file={formData.documents[doc.id]}
+                    onFileSelect={(file) => handleFileSelect(doc.id, file)}
+                  />
 
-                {/* <FilePreview
-                  file={formData.documents[doc.id]}
-                  alt={doc.title}
-                /> */}
-              </div>
-            ))}
+                  {file && !file.type.startsWith("image/") && (
+                    <FilePreview file={file} alt={doc.title} />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
         <div className="flex justify-end mt-4 b-0">
