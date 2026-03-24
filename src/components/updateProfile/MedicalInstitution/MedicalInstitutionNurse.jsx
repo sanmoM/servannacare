@@ -245,7 +245,7 @@ const MedicalInstitutionNurse = ({
     if (!data.age) return toast.error("Age is required");
     if (Number(data.age) < 25)
       return toast.error("Must be at least 25 years old");
-    if (!data.number_two) return toast.error("Phone Number is required");
+    if (!data?.number_two) return toast.error("Phone Number is required");
     if (!data.location) return toast.error("Location is required");
     if (!data.gender) return toast.error("Gender is required");
     if (!data.preferredRole) return toast.error("preferredRole is required");

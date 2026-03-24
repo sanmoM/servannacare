@@ -415,7 +415,7 @@ const InstitutionNursePage = () => {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="text-blue-600 hover:bg-blue-50"
+                                className="text-blue-600 hover:bg-blue-50 cursor-pointer"
                               >
                                 <Eye size={18} />
                               </Button>
@@ -621,7 +621,7 @@ const InstitutionNursePage = () => {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="text-emerald-600 hover:bg-emerald-50"
+                                className="text-emerald-600 hover:bg-emerald-50 cursor-pointer"
                               >
                                 <Edit size={18} />
                               </Button>
@@ -645,7 +645,7 @@ const InstitutionNursePage = () => {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="text-red-500 hover:bg-red-50"
+                                className="text-red-500 hover:bg-red-50 cursor-pointer"
                                 onClick={() => setDeleteId(nurse.id)}
                               >
                                 <Trash size={18} />

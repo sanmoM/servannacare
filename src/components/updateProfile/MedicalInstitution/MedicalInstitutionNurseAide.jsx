@@ -516,11 +516,7 @@ const MedicalInstitutionNurseAide = ({
               </div>
             </RadioGroup>
           </div>
-        </div>
-
-        {/* Driving */}
-        <div className="flex flex-col mt-8 sm:flex-row gap-6 sm:gap-4">
-          <div className="flex-1">
+          <div className="flex-1 mt-4">
             <Label className={"mb-2"}>Can you drive?</Label>
             <RadioGroup
               value={data.canDrive === null ? "" : String(data.canDrive)}
@@ -551,14 +547,9 @@ const MedicalInstitutionNurseAide = ({
               </div>
             </RadioGroup>
           </div>
-
-          <div className="flex-1">
-            <Label className={"mb-2"}>Your Role?</Label>
-            <div className="text-gray-700 font-medium py-2">
-              Nurse Aide / Assistant
-            </div>
-          </div>
         </div>
+
+    
 
         {/* Education Level */}
         <div className="my-6">

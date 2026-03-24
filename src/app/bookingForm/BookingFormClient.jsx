@@ -81,7 +81,8 @@ export default function BookingFormClient() {
     () => specialists.find((s) => s.id === Number(id)),
     [specialists, id],
   );
-  console.log(matchedSpecialist);
+  
+
   const pricingData = useMemo(() => {
     if (!matchedSpecialist) return null;
 
@@ -94,12 +95,24 @@ export default function BookingFormClient() {
     };
 
     const key = roleKeyMap[matchedSpecialist.subRole];
-    return key ? matchedSpecialist[key] : null;
+
+    const nestedData = key ? matchedSpecialist[key] : null;
+
+    if (
+      nestedData &&
+      (nestedData.serviceFeeDay || nestedData.serviceFeeMonth)
+    ) {
+      return nestedData;
+    }
+
+    return {
+      serviceFeeDay: matchedSpecialist.serviceFeeDay,
+      serviceFeeMonth: matchedSpecialist.serviceFeeMonth,
+    };
   }, [matchedSpecialist]);
 
   const monthlyRate = Number(pricingData?.serviceFeeMonth || 0);
   const dailyRate = Number(pricingData?.serviceFeeDay || 0);
-  console.log(monthlyRate);
 
   const availableDates = useMemo(() => {
     if (!matchedSpecialist?.schedule) return [];
