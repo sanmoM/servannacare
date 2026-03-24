@@ -81,7 +81,6 @@ export default function BookingFormClient() {
     () => specialists.find((s) => s.id === Number(id)),
     [specialists, id],
   );
-  
 
   const pricingData = useMemo(() => {
     if (!matchedSpecialist) return null;
@@ -1218,13 +1217,34 @@ export default function BookingFormClient() {
                 </div>
                 <div className="space-y-2">
                   <Label>Emergency Contact Phone *</Label>
-                  <Input
-                    type="tel"
-                    {...register("emergency_contact_number", {
-                      required: "Emergency Contant phone is required",
-                    })}
-                    placeholder="Phone Number"
+                  <Controller
+                    name="emergency_contact_number"
+                    control={control}
+                    rules={{
+                      required: "Emergency contact phone is required",
+                      validate: (value) =>
+                        isValidPhoneNumber(value || "") ||
+                        "Invalid phone number",
+                    }}
+                    render={({ field }) => (
+                      <PhoneInputWithCountrySelect
+                        international
+                        defaultCountry="KE"
+                        // defaultCountry={country}
+                        // onCountryChange={(c) => setCountry(c)}
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="w-full border rounded-md px-3 py-2"
+                      />
+                    )}
                   />
+
+                  {watch("emergency_contact_number") &&
+                    !isValidPhoneNumber(watch("emergency_contact_number")) && (
+                      <p className="text-red-500 text-xs font-bold">
+                        Invalid phone number
+                      </p>
+                    )}
                 </div>
                 <div className="space-y-2">
                   <Label>Primary Doctor Name *</Label>
@@ -1237,13 +1257,33 @@ export default function BookingFormClient() {
                 </div>
                 <div className="space-y-2">
                   <Label>Primary Doctor Contact *</Label>
-                  <Input
-                    type="tel"
-                    {...register("primary_doctor_number", {
-                      required: "Primary Doctor phone is required",
-                    })}
-                    placeholder="Doctor's Phone"
+                  <Controller
+                    name="primary_doctor_number"
+                    control={control}
+                    rules={{
+                      required: "Primary doctor phone is required",
+                      validate: (value) =>
+                        isValidPhoneNumber(value || "") ||
+                        "Invalid phone number",
+                    }}
+                    render={({ field }) => (
+                      <PhoneInputWithCountrySelect
+                        international
+                        defaultCountry={country}
+                        onCountryChange={(c) => setCountry(c)}
+                        value={field.value}
+                        onChange={field.onChange}
+                        className="w-full border rounded-md px-3 py-2"
+                      />
+                    )}
                   />
+
+                  {watch("primary_doctor_number") &&
+                    !isValidPhoneNumber(watch("primary_doctor_number")) && (
+                      <p className="text-red-500 text-xs font-bold">
+                        Invalid phone number for {country}
+                      </p>
+                    )}
                 </div>
                 {/* <div className="space-y-2">
                   <Label>Phone Number</Label>
@@ -1298,11 +1338,15 @@ export default function BookingFormClient() {
                 render={({ field }) => (
                   <div className="flex items-start gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
                     <Checkbox
+                      id="confirm"
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       className="mt-1"
                     />
-                    <Label className="text-xs text-emerald-800 font-medium leading-relaxed cursor-pointer">
+                    <Label
+                      htmlFor="confirm"
+                      className="text-xs text-emerald-800 font-medium leading-relaxed cursor-pointer"
+                    >
                       I confirm that the information provided is accurate and
                       consent to Cervanna using this information solely for care
                       matching and service delivery.
