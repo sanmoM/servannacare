@@ -182,18 +182,23 @@ const LoginPageContent = () => {
                     </DialogTitle>
                   </DialogHeader>
 
-                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 items-stretch">
                     {userRole.map((role, indx) => (
                       <DialogClose asChild key={indx}>
-                        <Link href={`/register?role=${role.role}`}>
-                          <div className="h-full flex flex-col items-center p-3 rounded-lg border hover:border-primary">
-                            <Image
-                              src={role.icon}
-                              alt="role"
-                              width={40}
-                              height={40}
-                            />
-                            <h3 className="text-sm text-center font-semibold mt-2">
+                        <Link
+                          className="h-full"
+                          href={`/register?role=${role.role}`}
+                        >
+                          <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border  hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
+                            <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full hover:text-primary bg-cyan-100 mb-2 sm:mb-4">
+                              <Image
+                                src={role.icon}
+                                alt="role"
+                                quality={100}
+                                className="h-full w-full"
+                              />
+                            </div>
+                            <h3 className="text-[9px] sm:text-sm text-center font-semibold text-gray-700">
                               {role.text}
                             </h3>
                           </div>

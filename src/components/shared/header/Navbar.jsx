@@ -173,7 +173,7 @@ const Navbar = () => {
                                   className="h-full w-full"
                                 />
                               </div>
-                              <h3 className="text-[9px] sm:text-sm text-center font-semibold text-gray-700">
+                              <h3 className="text-[9px] sm:text-sm text-center font-semibold text-gray-700 hover:text-primary">
                                 {role.text}
                               </h3>
                             </div>

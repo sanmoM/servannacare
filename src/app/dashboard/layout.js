@@ -345,12 +345,12 @@ export default function DashboardLayout({ children }) {
               ))}
             </nav>
 
-            <Button
-              onClick={handleLogout}
-              className="bg-secondary mx-3 mb-4 cursor-pointer"
-            >
-              Log Out
-            </Button>
+          <Button
+  onClick={handleLogout}
+  className="bg-secondary hover:bg-secondary/90 mx-3 mb-4 cursor-pointer"
+>
+  Log Out
+</Button>
           </div>
         </aside>
 
