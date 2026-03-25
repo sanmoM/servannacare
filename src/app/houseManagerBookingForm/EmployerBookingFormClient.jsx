@@ -742,7 +742,7 @@ const dailyRate = Number(
                   selected={availableDates
                     .filter((d) => d.startsWith(previewMonth))
                     .map((d) => new Date(d + "T00:00:00"))}
-                  className="rounded-md border pointer-events-none"
+                  className="rounded-md border pointer-events-none cursor-progress w-full h-full"
                 />
               </div>
               <Button

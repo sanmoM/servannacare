@@ -34,6 +34,7 @@ const Page = () => {
   const [country, setCountry] = useState("KE");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { data, isLoading } = useFetch("/subscription-plan");
   const { user } = useAuth();
@@ -78,6 +79,27 @@ const Page = () => {
       }
     }
   }, []);
+
+  const handleCheckoutClick = () => {
+    if (!user?.is_profile_completed) {
+      toast.error("Please complete your profile first");
+      return;
+    }
+
+    if (!user?.is_profile_verified) {
+      toast.error("Please verify your profile first");
+      return;
+    }
+    setIsSubmitting(true);
+    setIsDialogOpen(true);
+
+    // setIsSubmitting(true);
+
+    // setTimeout(() => {
+    //   setIsDialogOpen(true);
+    //   setIsSubmitting(false);
+    // }, 400);
+  };
 
   const handlePayment = async () => {
     if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
@@ -175,12 +197,38 @@ const Page = () => {
               {/* DIALOG FOR PAYMENT */}
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <button className="w-full bg-primary hover:opacity-90 text-white font-black py-5 rounded-lg shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97] cursor-pointer">
+                  <button
+                    onClick={handleCheckoutClick}
+                    disabled={
+                      !user?.is_profile_completed ||
+                      !user?.is_profile_verified ||
+                      isSubmitting
+                    }
+                    className={`w-full bg-primary  text-white font-black py-5 rounded-lg shadow-2xl transition-all duration-300 flex items-center justify-center space-x-3 active:scale-[0.97] ${!user?.is_profile_completed || !user?.is_profile_verified || isSubmitting ? "opacity-50 cursor-not-allowed" : "cursor-90 cursor-pointer"}`}
+                  >
                     <span className="text-xl tracking-tight uppercase ">
-                      Go To Checkout
+                      {isSubmitting ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Processing...
+                        </div>
+                      ) : (
+                        "Go To Checkout"
+                      )}
                     </span>
                   </button>
                 </DialogTrigger>
+                {!user?.is_profile_completed && (
+                  <p className="text-red-500 text-sm text-center">
+                    Please complete your profile before active membership.
+                  </p>
+                )}
+                {!user?.is_profile_verified && user?.is_profile_completed && (
+                  <p className="text-red-500 text-sm text-center">
+                    Please verify your profile before active membership.
+                  </p>
+                )}
+
                 <DialogContent className="sm:max-w-md rounded-lg p-8 border-none bg-white">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-black text-center mb-4 text-slate-900">
