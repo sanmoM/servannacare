@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/dialog";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useFetch } from "@/hooks/useFetch";
+import { useAuth } from "@/hooks/useAuth";
+import { useNotificationListener } from "@/hooks/useNotificationListener";
 import { postApi } from "@/lib/apiHandler";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
@@ -37,6 +39,7 @@ const ChatInbox = () => {
   const [typedMessage, setTypedMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [stagedFile, setStagedFile] = useState(null);
+  const { user } = useAuth();
   const [deleteConfig, setDeleteConfig] = useState({
     isOpen: false,
     messageId: null,
@@ -61,6 +64,7 @@ const ChatInbox = () => {
         seenIds.add(booking.specialist.id);
         uniqueSpecs.push({
           id: booking.specialist.id,
+          type: booking.specialist.type,
           name: booking.specialist.name,
           avatar: booking.specialist.name
             .split(" ")
@@ -79,13 +83,25 @@ const ChatInbox = () => {
     data: messageData,
     isLoading: isLoadingMessages,
     refetch: refetchMessages,
-  } = useFetch(
-    "/messages",
-    { specialistId: activeId },
-    { enabled: !!activeId },
-  );
+  } = useFetch(`/chat/${activeId}`, { enabled: !!activeId });
+  // console.log(messageData?.data?.messages);
+  const [localMessages, setLocalMessages] = useState([]);
+  useEffect(() => {
+    if (Array.isArray(messageData?.data?.messages)) {
+      setLocalMessages(messageData.data?.messages);
+    } else {
+      setLocalMessages([]);
+    }
+  }, [messageData]);
 
-  const messages = Array.isArray(messageData?.data) ? messageData.data : [];
+  useNotificationListener(user?.id, (notification) => {
+    console.log("Real-time notification received in user-inbox:", notification);
+    if (notification?.message) {
+      setLocalMessages((prev) => [...prev, notification.message]);
+    }
+
+    refetchMessages();
+  });
 
   useEffect(() => {
     if (initialSpecialistId && specialists.length > 0) {
@@ -109,26 +125,35 @@ const ChatInbox = () => {
         behavior: "smooth",
       });
     }
-  }, [messages, activeId]);
+  }, [localMessages, activeId]);
 
   const handleSend = async (e) => {
     e?.preventDefault?.();
-    if (!typedMessage.trim() && !stagedFile) return;
+    if (!typedMessage.trim()) return;
 
     try {
-      const formData = new FormData();
-      formData.append("specialistId", activeId);
-      formData.append("message", typedMessage);
-      if (stagedFile?.file) {
-        formData.append("file", stagedFile.file);
-      }
+      const activeSpec = specialists.find((s) => s.id === activeId);
+      const receiverType = activeSpec?.type;
 
-      await postApi("/messages", formData);
+      const payload = {
+        sender_id: user?.id,
+        sender_type: "user",
+        receiver_id: activeId,
+        receiver_type: receiverType,
+        message: typedMessage,
+      };
+
+      const tempMsg = {
+        id: Date.now(),
+        ...payload,
+        created_at: new Date().toISOString(),
+      };
+      setLocalMessages((prev) => [...prev, tempMsg]);
 
       setTypedMessage("");
-      setStagedFile(null);
       if (textareaRef.current) textareaRef.current.style.height = "auto";
 
+      await postApi("/chat/send", payload);
       refetchMessages();
     } catch (error) {
       toast.error("Failed to send message");
@@ -260,23 +285,27 @@ const ChatInbox = () => {
               ) : (
                 <ScrollArea ref={scrollRef} className="h-full">
                   <div className="p-4 space-y-4">
-                    {messages.length === 0 ? (
+                    {localMessages.length === 0 ? (
                       <div className="text-center text-gray-400 py-10 text-sm">
                         No messages yet. Say hello!
                       </div>
                     ) : (
-                      messages.map((msg, index) => (
-                        <div
-                          key={msg.id || index}
-                          className={`flex group animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-                        >
+                      localMessages.map((msg, index) => {
+                        const isMine =
+                          Number(msg.sender_id) === Number(user?.id);
+                        return (
                           <div
-                            className={`max-w-[80%] rounded-lg shadow-sm overflow-hidden ${
-                              msg.sender === "user"
-                                ? "bg-primary text-primary-foreground rounded-tr-none"
-                                : "bg-white border rounded-tl-none text-gray-800"
-                            }`}
+                            key={msg.id || index}
+                            className={`flex group animate-in fade-in slide-in-from-bottom-2 duration-300 ${isMine ? "justify-end" : "justify-start"}`}
                           >
+                            <div
+                              className={`max-w-[80%] rounded-lg shadow-sm overflow-hidden ${
+                                isMine
+                                  ? "bg-primary text-primary-foreground rounded-tr-none"
+                                  : "bg-white border rounded-tl-none text-gray-800"
+                              }`}
+                            >
+                              {/* FILE ATTACHMENT DISABLED
                             {msg.file && (
                               <div className="p-1">
                                 {msg.file
@@ -301,21 +330,22 @@ const ChatInbox = () => {
                                   </a>
                                 )}
                               </div>
-                            )}
-                            <p className="px-4 py-2.5 leading-relaxed break-words whitespace-pre-wrap text-sm">
-                              {msg.message}
-                            </p>
-                            <span className="text-[9px] px-4 pb-2 block text-right opacity-60 font-bold uppercase">
-                              {msg.timestamp
-                                ? new Date(msg.timestamp).toLocaleTimeString(
-                                    [],
-                                    { hour: "2-digit", minute: "2-digit" },
-                                  )
-                                : ""}
-                            </span>
+                            )} */}
+                              <p className="px-4 py-2.5 leading-relaxed break-words whitespace-pre-wrap text-sm">
+                                {msg.message}
+                              </p>
+                              <span className="text-[9px] px-4 pb-2 block text-right opacity-60 font-bold uppercase">
+                                {msg.created_at
+                                  ? new Date(msg.created_at).toLocaleTimeString(
+                                      [],
+                                      { hour: "2-digit", minute: "2-digit" },
+                                    )
+                                  : ""}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                     <div className="h-2" />
                   </div>
@@ -325,6 +355,7 @@ const ChatInbox = () => {
 
             {/* INPUT AREA */}
             <div className="p-4 border-t bg-white shrink-0">
+              {/* FILE PREVIEW DISABLED
               {stagedFile && (
                 <div className="mb-3 p-2 bg-gray-50 border rounded-lg flex items-center gap-3 relative">
                   <div className="h-12 w-12 rounded-lg border bg-white flex items-center justify-center overflow-hidden shrink-0">
@@ -348,12 +379,13 @@ const ChatInbox = () => {
                     <X size={16} />
                   </Button>
                 </div>
-              )}
+              )} */}
 
               <form
                 onSubmit={handleSend}
                 className="flex items-end gap-2 bg-gray-100 p-2 rounded-lg border focus-within:border-primary transition-all"
               >
+                {/* 
                 <input
                   type="file"
                   className="hidden"
@@ -370,6 +402,7 @@ const ChatInbox = () => {
                 >
                   <Paperclip size={20} />
                 </Button>
+                */}
 
                 <textarea
                   ref={textareaRef}
@@ -388,7 +421,7 @@ const ChatInbox = () => {
                 <Button
                   type="submit"
                   size="icon"
-                  disabled={!typedMessage.trim() && !stagedFile}
+                  disabled={!typedMessage.trim()}
                   className="bg-primary rounded-lg mb-1 shrink-0 cursor-pointer"
                 >
                   <Send size={18} />
