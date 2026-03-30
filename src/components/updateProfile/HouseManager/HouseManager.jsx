@@ -750,7 +750,7 @@ const HouseManager = ({ data = {} }) => {
 
         <div className="mt-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            {documentConfig.map((doc) => {
+            {documentConfig?.map((doc) => {
               const file = formData?.documents[doc.id];
               return (
                 <div key={doc.id} className="border rounded-xl p-4">
@@ -761,9 +761,10 @@ const HouseManager = ({ data = {} }) => {
                     onFileSelect={(file) => handleFileSelect(doc.id, file)}
                   />
 
-                  {file && !file.type.startsWith("image/") && (
+                  <FilePreview file={file} alt={doc.title} />
+                  {/* {file && !file?.type?.startsWith("image/") && (
                     <FilePreview file={file} alt={doc.title} />
-                  )}
+                  )} */}
                 </div>
               );
             })}

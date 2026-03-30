@@ -224,8 +224,17 @@ export default function EmployerBookingFormClient() {
       booking_amount: bookingAmount,
     };
 
+    // console.log("Checkout Payload:", {
+    //   phone: phoneNumber,
+    //   plan_id: planId,
+    //   specialist_id: id,
+    //   specialist_type: category,
+    //   book_amount: bookingAmount,
+    // });
+
+    // console.log("Booking Payload:", bookingPayload);
+
     try {
-      // console.log(bookingPayload);
       const paymentRes = await postApi("/checkout", {
         phone: phoneNumber,
         plan_id: planId,
@@ -235,7 +244,7 @@ export default function EmployerBookingFormClient() {
       });
 
       const checkoutId = paymentRes?.data?.checkout_id;
-      
+
       if (!checkoutId) {
         throw new Error("Checkout failed");
       }
