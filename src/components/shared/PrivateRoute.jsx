@@ -7,8 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 export default function PrivateRoute({ children }) {
   const {user, role, loading } = useAuth();
   const router = useRouter();
-  (user)
-
+  
   useEffect(() => {
     if (loading) return;
 

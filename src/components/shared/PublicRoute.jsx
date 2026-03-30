@@ -6,7 +6,7 @@ import React, { useEffect } from "react";
 import LoadingSpinner from "./LoadingSpin";
 
 const PublicRoute = ({ children }) => {
-  const { role, loading, user } = useAuth();
+  const { loading, user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 

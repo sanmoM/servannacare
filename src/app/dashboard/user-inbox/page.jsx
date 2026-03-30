@@ -30,7 +30,9 @@ const ChatInbox = () => {
   const router = useRouter();
   const initialSpecialistId = searchParams.get("specialistId");
 
-  const [activeId, setActiveId] = useState(initialSpecialistId ? Number(initialSpecialistId) : null);
+  const [activeId, setActiveId] = useState(
+    initialSpecialistId ? Number(initialSpecialistId) : null,
+  );
   const [view, setView] = useState(initialSpecialistId ? "chat" : "list");
   const [typedMessage, setTypedMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,27 +46,28 @@ const ChatInbox = () => {
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // Fetch bookings to get allowed specialists
-  const { data: bookingData, isLoading: isLoadingBookings } = useFetch("/user-booking");
-
+  const { data: bookingData, isLoading: isLoadingBookings } =
+    useFetch("/user-booking");
   const specialists = React.useMemo(() => {
     if (!bookingData?.data) return [];
 
-    // The data might be in bookingData.data or bookingData.data.data depending on the API wrapper
     const rawData = bookingData?.data?.data || bookingData?.data || [];
     const bookings = Array.isArray(rawData) ? rawData : [];
-
-    // Extract unique specialists
     const uniqueSpecs = [];
     const seenIds = new Set();
 
-    bookings.forEach(booking => {
+    bookings.forEach((booking) => {
       if (booking.specialist && !seenIds.has(booking.specialist.id)) {
         seenIds.add(booking.specialist.id);
         uniqueSpecs.push({
           id: booking.specialist.id,
           name: booking.specialist.name,
-          avatar: booking.specialist.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
+          avatar: booking.specialist.name
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2),
           lastMsg: "",
         });
       }
@@ -72,19 +75,23 @@ const ChatInbox = () => {
     return uniqueSpecs;
   }, [bookingData]);
 
-  // Fetch messages for active specialist
-  const { data: messageData, isLoading: isLoadingMessages, refetch: refetchMessages } = useFetch(
+  const {
+    data: messageData,
+    isLoading: isLoadingMessages,
+    refetch: refetchMessages,
+  } = useFetch(
     "/messages",
     { specialistId: activeId },
-    { enabled: !!activeId }
+    { enabled: !!activeId },
   );
 
   const messages = Array.isArray(messageData?.data) ? messageData.data : [];
 
-  // Auto-select specialist from query param if valid
   useEffect(() => {
     if (initialSpecialistId && specialists.length > 0) {
-      const exists = specialists.some(s => s.id === Number(initialSpecialistId));
+      const exists = specialists.some(
+        (s) => s.id === Number(initialSpecialistId),
+      );
       if (exists) {
         setActiveId(Number(initialSpecialistId));
         setView("chat");
@@ -92,7 +99,6 @@ const ChatInbox = () => {
     }
   }, [initialSpecialistId, specialists]);
 
-  // 1. AUTO-SCROLL LOGIC
   useEffect(() => {
     const scrollContainer = scrollRef.current?.querySelector(
       "[data-radix-scroll-area-viewport]",
@@ -123,7 +129,6 @@ const ChatInbox = () => {
       setStagedFile(null);
       if (textareaRef.current) textareaRef.current.style.height = "auto";
 
-      // Refetch messages to update the list
       refetchMessages();
     } catch (error) {
       toast.error("Failed to send message");
@@ -266,24 +271,32 @@ const ChatInbox = () => {
                           className={`flex group animate-in fade-in slide-in-from-bottom-2 duration-300 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                         >
                           <div
-                            className={`max-w-[80%] rounded-lg shadow-sm overflow-hidden ${msg.sender === "user"
+                            className={`max-w-[80%] rounded-lg shadow-sm overflow-hidden ${
+                              msg.sender === "user"
                                 ? "bg-primary text-primary-foreground rounded-tr-none"
                                 : "bg-white border rounded-tl-none text-gray-800"
-                              }`}
+                            }`}
                           >
                             {msg.file && (
                               <div className="p-1">
-                                {msg.file.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) ? (
+                                {msg.file
+                                  .toLowerCase()
+                                  .match(/\.(jpg|jpeg|png|gif|webp)$/) ? (
                                   <img
                                     src={msg.file}
                                     alt="sent"
                                     className="rounded-lg max-h-60 w-full object-cover"
                                   />
                                 ) : (
-                                  <a href={msg.file} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-black/5 rounded-lg text-gray-800 hover:bg-black/10 transition-colors">
+                                  <a
+                                    href={msg.file}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 p-3 bg-black/5 rounded-lg text-gray-800 hover:bg-black/10 transition-colors"
+                                  >
                                     <FileText size={18} />
                                     <span className="text-xs truncate underline">
-                                      {msg.file.split('/').pop()}
+                                      {msg.file.split("/").pop()}
                                     </span>
                                   </a>
                                 )}
@@ -293,7 +306,12 @@ const ChatInbox = () => {
                               {msg.message}
                             </p>
                             <span className="text-[9px] px-4 pb-2 block text-right opacity-60 font-bold uppercase">
-                              {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                              {msg.timestamp
+                                ? new Date(msg.timestamp).toLocaleTimeString(
+                                    [],
+                                    { hour: "2-digit", minute: "2-digit" },
+                                  )
+                                : ""}
                             </span>
                           </div>
                         </div>
@@ -383,8 +401,12 @@ const ChatInbox = () => {
             <div className="h-20 w-20 rounded-full bg-gray-100 flex items-center justify-center mb-4">
               <Send size={32} className="text-gray-300" />
             </div>
-            <p className="text-sm font-medium">Select a specialist to start chatting</p>
-            <p className="text-xs mt-1">Only specialists you have booked will appear in your list.</p>
+            <p className="text-sm font-medium">
+              Select a specialist to start chatting
+            </p>
+            <p className="text-xs mt-1">
+              Only specialists you have booked will appear in your list.
+            </p>
           </div>
         )}
       </div>

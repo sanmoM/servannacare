@@ -67,17 +67,17 @@ export default function EmployerBookingFormClient() {
     [specialists, id],
   );
 
-const monthlyRate = Number(
-  matchedSpecialist?.house_manager?.serviceFeeMonth ??
-  matchedSpecialist?.serviceFeeMonth ??
-  0
-);
+  const monthlyRate = Number(
+    matchedSpecialist?.house_manager?.serviceFeeMonth ??
+      matchedSpecialist?.serviceFeeMonth ??
+      0,
+  );
 
-const dailyRate = Number(
-  matchedSpecialist?.house_manager?.serviceFeeDay ??
-  matchedSpecialist?.serviceFeeDay ??
-  0
-);
+  const dailyRate = Number(
+    matchedSpecialist?.house_manager?.serviceFeeDay ??
+      matchedSpecialist?.serviceFeeDay ??
+      0,
+  );
 
   const availableDates = useMemo(() => {
     const today = new Date();
@@ -225,6 +225,7 @@ const dailyRate = Number(
     };
 
     try {
+      // console.log(bookingPayload);
       const paymentRes = await postApi("/checkout", {
         phone: phoneNumber,
         plan_id: planId,
@@ -234,7 +235,7 @@ const dailyRate = Number(
       });
 
       const checkoutId = paymentRes?.data?.checkout_id;
-
+      
       if (!checkoutId) {
         throw new Error("Checkout failed");
       }
