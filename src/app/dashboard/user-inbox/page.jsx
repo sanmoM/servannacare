@@ -83,7 +83,7 @@ const ChatInbox = () => {
     data: messageData,
     isLoading: isLoadingMessages,
     refetch: refetchMessages,
-  } = useFetch(`/chat/${activeId}`, { enabled: !!activeId });
+  } = useFetch(`/chat/conversation/${activeId}`, { enabled: !!activeId });
   const [localMessages, setLocalMessages] = useState([]);
   useEffect(() => {
     if (Array.isArray(messageData?.data?.messages)) {
