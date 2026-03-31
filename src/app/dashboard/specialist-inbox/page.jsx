@@ -22,10 +22,10 @@ import {
 import { useSearchParams, useRouter } from "next/navigation";
 import { useFetch } from "@/hooks/useFetch";
 import { useAuth } from "@/hooks/useAuth";
-import { useNotificationListener } from "@/hooks/useNotificationListener";
 import { postApi } from "@/lib/apiHandler";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
+import useNotificationListener from "@/hooks/useNotificationListener";
 
 const ChatInbox = () => {
   const searchParams = useSearchParams();
@@ -45,7 +45,6 @@ const ChatInbox = () => {
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
 
-  // Fetch Specialist's bookings to get the list of clients/users
   const { data: bookingData, isLoading: isLoadingBookings } = useFetch(
     "/specialist-booking",
   );
@@ -78,7 +77,6 @@ const ChatInbox = () => {
     return uniqueUsers;
   }, [bookingData]);
 
-  // Messages fetching
   const {
     data: messageData,
     isLoading: isLoadingMessages,
@@ -95,7 +93,6 @@ const ChatInbox = () => {
     }
   }, [messageData]);
 
-  // Listen to incoming Echo messages real-time
   useNotificationListener(user?.id, (notification) => {
     console.log(
       "Real-time notification received in specialist-inbox:",
@@ -142,7 +139,6 @@ const ChatInbox = () => {
         message: typedMessage,
       };
 
-      // Optimistic upate
       const tempMsg = {
         id: Date.now(),
         ...payload,

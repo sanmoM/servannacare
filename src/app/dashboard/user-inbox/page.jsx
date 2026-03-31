@@ -22,10 +22,10 @@ import {
 import { useSearchParams, useRouter } from "next/navigation";
 import { useFetch } from "@/hooks/useFetch";
 import { useAuth } from "@/hooks/useAuth";
-import { useNotificationListener } from "@/hooks/useNotificationListener";
 import { postApi } from "@/lib/apiHandler";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
+import useNotificationListener from "@/hooks/useNotificationListener";
 
 const ChatInbox = () => {
   const searchParams = useSearchParams();
@@ -84,7 +84,6 @@ const ChatInbox = () => {
     isLoading: isLoadingMessages,
     refetch: refetchMessages,
   } = useFetch(`/chat/${activeId}`, { enabled: !!activeId });
-  // console.log(messageData?.data?.messages);
   const [localMessages, setLocalMessages] = useState([]);
   useEffect(() => {
     if (Array.isArray(messageData?.data?.messages)) {

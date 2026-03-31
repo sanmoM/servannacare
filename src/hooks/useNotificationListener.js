@@ -1,65 +1,58 @@
-import { useEffect, useRef } from "react";
-import { getEchoInstance } from "@/lib/echo";
+import echoInstance from "@/lib/echo";
+import { useEffect } from "react";
+import Pusher from "pusher-js";
 
-export const useNotificationListener = (authId, onMessage) => {
-  const echoRef = useRef(null);
-  const channelRef = useRef(null);
 
-  useEffect(() => {
-    if (!authId) return;
+export default function useNotificationListener(authId, onMessage) {
+    useEffect(() => {
+                window.Pusher = Pusher;
+        const echo = echoInstance()
 
-    const echo = getEchoInstance();
-    if (!echo) return;
+        const channel = echo.private(`App.Models.User.${authId}`)
+            .notification((notification) => {
+                console.log("Notification:", notification);
+                onMessage?.(notification);
+            });
 
-    echoRef.current = echo;
 
-    const channelName = `App.Models.User.${authId}`;
-    console.log(`Subscribing to private channel: ${channelName}`);
+        echo.connector.pusher.connection.bind("connected", () => {
+            console.log("✅ Connected to Reverb");
+        });
 
-    // Track connection state
-    echo.connector.pusher.connection.bind("connected", () => {
-      console.log("Echo Connected");
-    });
-    echo.connector.pusher.connection.bind("disconnected", () => {
-      console.log("Echo Disconnected");
-    });
-    echo.connector.pusher.connection.bind("error", (err) => {
-      console.error("Echo Error", err);
-    });
-    echo.connector.pusher.connection.bind("state_change", (states) => {
-      console.log(`Echo State: ${states.previous} -> ${states.current}`);
-    });
+        echo.connector.pusher.connection.bind("disconnected", () => {
+            console.log("❌ Disconnected from Reverb");
+        });
 
-    const channel = echo.private(channelName);
-    channelRef.current = channel;
+        echo.connector.pusher.connection.bind("error", (err) => {
+            console.log("⚠️ Connection error:", err);
+        });
+        echo.connector.pusher.connection.bind("state_change", (states) => {
+            // console.log("🔄 State change:", states);
+        });
 
-    channel.notification((notification) => {
-      console.log("Notification received:", notification);
-      if (onMessage) {
-        onMessage(notification);
-      }
-    });
+        echo.connector.pusher.connection.bind("connecting", () => {
+            // console.log("⏳ Connecting...");
+        });
 
-    // Cleanup on unmount
-    return () => {
-      if (channelRef.current) {
-        // Stop listening to notification events
-        channelRef.current.stopListening(".Illuminate\\\\Notifications\\\\Events\\\\BroadcastNotificationCreated");
-        if (echoRef.current) {
-          echoRef.current.leave(channelName);
-        }
-      }
-      if (echoRef.current) {
-        echoRef.current.disconnect();
-      }
-      
-      // Cleanup connection listeners
-      if (echoRef.current?.connector?.pusher?.connection) {
-        echoRef.current.connector.pusher.connection.unbind("connected");
-        echoRef.current.connector.pusher.connection.unbind("disconnected");
-        echoRef.current.connector.pusher.connection.unbind("error");
-        echoRef.current.connector.pusher.connection.unbind("state_change");
-      }
-    };
-  }, [authId, onMessage]);
-};
+        echo.connector.pusher.connection.bind("unavailable", () => {
+            // console.log("🚫 Connection unavailable");
+        });
+
+        echo.connector.pusher.connection.bind("failed", () => {
+            // console.log("❌ Connection failed");
+        });
+
+        channel
+            .subscribed(() => {
+                console.log("✅ Subscribed successfully to:", `App.Models.User.${authId}`);
+            })
+            .error((err) => {
+                // console.log("❌ Subscription error:", err);
+            });
+
+        return () => {
+            echo.leave(`App.Models.User.${authId}`);
+            echo.disconnect();
+        };
+    }, []);
+}
