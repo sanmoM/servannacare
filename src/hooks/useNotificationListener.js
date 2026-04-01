@@ -16,14 +16,14 @@ export default function useNotificationListener(authId, onMessage) {
       Math.min(user.id, authId) + "_" + Math.max(user.id, authId);
   
     const channel = echo
-      .private(`chat.${conversationId}`)
+      .private(`chat.${user?.id}`)
       .listen(".message.sent", (event) => {
         console.log("📩 Event received:", event);
         onMessage?.(event);
       });
 
     channel.subscribed(() => {
-      console.log("✅ Subscribed to:", `chat.${conversationId}`);
+      console.log("✅ Subscribed to:", `chat.${user?.id}`);
     });
 
     channel.error((err) => {
@@ -31,7 +31,7 @@ export default function useNotificationListener(authId, onMessage) {
     });
 
     return () => {
-      echo.leave(`chat.${conversationId}`);
+      echo.leave(`chat.${user?.id}`);
       echo.disconnect();
     };
   }, [user?.id, authId]);

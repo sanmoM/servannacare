@@ -93,7 +93,7 @@ const ChatInbox = () => {
     }
   }, [messageData]);
 
-  useNotificationListener(user?.id, (notification) => {
+  useNotificationListener(activeId, (notification) => {
     console.log(
       "Real-time notification received in specialist-inbox:",
       notification,
@@ -261,7 +261,7 @@ const ChatInbox = () => {
                 </Avatar>
                 <div>
                   <h2 className="font-bold text-sm">{activeClient.name}</h2>
-                  <p className="text-[10px] text-green-500">Client</p>
+                  <p className="text-[10px] text-green-500">Available</p>
                 </div>
               </div>
             </div>
@@ -372,7 +372,7 @@ const ChatInbox = () => {
 
               <form
                 onSubmit={handleSend}
-                className="flex items-end gap-2 bg-gray-100 p-2 rounded-lg border focus-within:border-primary transition-all"
+                className="flex gap-2 bg-gray-100 p-2 rounded-lg border focus-within:border-primary transition-all"
               >
                 {/* 
                 <input

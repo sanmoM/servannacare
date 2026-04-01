@@ -94,7 +94,7 @@ const ChatInbox = () => {
     }
   }, [messageData]);
 
-  useNotificationListener(user?.id, (notification) => {
+  useNotificationListener(activeId, (notification) => {
     console.log(
       "Real-time notification received in specialist-inbox:",
       notification,
@@ -386,7 +386,7 @@ const ChatInbox = () => {
 
               <form
                 onSubmit={handleSend}
-                className="flex items-end gap-2 bg-gray-100 p-2 rounded-lg border focus-within:border-primary transition-all"
+                className="flex gap-2 bg-gray-100 p-2 rounded-lg border focus-within:border-primary transition-all"
               >
                 {/* 
                 <input
