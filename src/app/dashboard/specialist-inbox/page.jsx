@@ -87,21 +87,33 @@ const ChatInbox = () => {
 
   useEffect(() => {
     if (Array.isArray(messageData?.data?.messages)) {
-      setLocalMessages(messageData.data?.messages);
-    } else {
-      setLocalMessages([]);
+      setLocalMessages((prev) => {
+        const newMessages = messageData.data.messages;
+
+        const merged = [...prev];
+
+        newMessages.forEach((msg) => {
+          if (!merged.find((m) => m.id === msg.id)) {
+            merged.push(msg);
+          }
+        });
+
+        return merged;
+      });
     }
   }, [messageData]);
 
-  useNotificationListener(user?.id, (notification) => {
-    console.log(
-      "Real-time notification received in specialist-inbox:",
-      notification,
-    );
+  useNotificationListener(activeId, (notification) => {
+    console.log("Realtime message:", notification.message);
+
     if (notification?.message) {
-      setLocalMessages((prev) => [...prev, notification.message]);
+      setLocalMessages((prev) => {
+        if (prev.find((m) => m.id === notification.message.id)) {
+          return prev;
+        }
+        return [...prev, notification.message];
+      });
     }
-    refetchMessages();
   });
 
   useEffect(() => {
@@ -148,9 +160,10 @@ const ChatInbox = () => {
 
       setTypedMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
+      
 
       await postApi("/chat/send", payload);
-      refetchMessages();
+      // refetchMessages();
     } catch (error) {
       toast.error("Failed to send message");
     }
@@ -180,7 +193,7 @@ const ChatInbox = () => {
   if (isLoadingBookings) return <LoadingSpinner />;
 
   return (
-    <div className="flex h-[85vh] md:h-[85vh] md:border md:rounded-lg overflow-hidden bg-white md:shadow-2xl">
+    <div className="flex h-[85vh] md:h-[85vh] md:border md:rounded-lg overflow-hidden bg-white">
       <div
         className={`${view === "chat" ? "hidden" : "flex"} w-full md:flex md:w-80 border-r flex-col bg-gray-50/50`}
       >
