@@ -88,33 +88,21 @@ const ChatInbox = () => {
   const [localMessages, setLocalMessages] = useState([]);
   useEffect(() => {
     if (Array.isArray(messageData?.data?.messages)) {
-      setLocalMessages((prev) => {
-        const newMessages = messageData.data.messages;
-
-        const merged = [...prev];
-
-        newMessages.forEach((msg) => {
-          if (!merged.find((m) => m.id === msg.id)) {
-            merged.push(msg);
-          }
-        });
-
-        return merged;
-      });
+      setLocalMessages(messageData.data?.messages);
+    } else {
+      setLocalMessages([]);
     }
   }, [messageData]);
 
-  useNotificationListener(activeId, (notification) => {
-    console.log("Realtime message:", notification.message);
-
+  useNotificationListener(user?.id, (notification) => {
+    console.log(
+      "Real-time notification received in specialist-inbox:",
+      notification,
+    );
     if (notification?.message) {
-      setLocalMessages((prev) => {
-        if (prev.find((m) => m.id === notification.message.id)) {
-          return prev;
-        }
-        return [...prev, notification.message];
-      });
+      setLocalMessages((prev) => [...prev, notification.message]);
     }
+    refetchMessages();
   });
 
   useEffect(() => {
@@ -166,10 +154,10 @@ const ChatInbox = () => {
 
       setTypedMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
-      // setTypedMessage("");
+      setTypedMessage("");
 
       await postApi("/chat/send", payload);
-      // refetchMessages();
+      refetchMessages();
     } catch (error) {
       toast.error("Failed to send message");
     }
