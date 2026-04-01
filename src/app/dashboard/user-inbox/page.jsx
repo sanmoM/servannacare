@@ -150,7 +150,7 @@ const ChatInbox = () => {
         ...payload,
         created_at: new Date().toISOString(),
       };
-      setLocalMessages((prev) => [...prev, tempMsg]);
+      // setLocalMessages((prev) => [...prev, tempMsg]);
 
       setTypedMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
