@@ -41,7 +41,6 @@ const NotesPage = () => {
   const [view, setView] = useState("specialists");
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [notes, setNotes] = useState([]);
-  console.log(notes);
   const [isNotesLoading, setIsNotesLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -68,6 +67,19 @@ const NotesPage = () => {
     ? bookingData?.data?.data
     : [];
 
+  const uniqueBookings = React.useMemo(() => {
+    const map = new Map();
+    bookings.forEach((b) => {
+      if (b.specialist) {
+        const key = `${b.specialist.id}-${b.specialist.type}`;
+        if (!map.has(key)) {
+          map.set(key, b);
+        }
+      }
+    });
+    return Array.from(map.values());
+  }, [bookings]);
+
   useEffect(() => {
     if (selectedBooking && view === "notes") {
       fetchNotes(selectedBooking.id);
@@ -78,7 +90,31 @@ const NotesPage = () => {
     setIsNotesLoading(true);
     try {
       const response = await getApi("/user-nodes");
-      setNotes(response?.data || []);
+      const data = response?.data || {};
+      const sentNodes = Array.isArray(data.sent_nodes) ? data.sent_nodes : [];
+      const receivedNodes = Array.isArray(data.received_nodes)
+        ? data.received_nodes
+        : [];
+
+      const allNotes = [...sentNodes, ...receivedNodes];
+
+      const filteredNotes = allNotes
+        .filter((note) => {
+          const isSentToSpecialist =
+            note.sender_id === user?.id &&
+            note.receiver_id === selectedBooking.specialist.id &&
+            note.receiver_type === selectedBooking.specialist.type;
+
+          const isReceivedFromSpecialist =
+            note.receiver_id === user?.id &&
+            note.sender_id === selectedBooking.specialist.id &&
+            note.sender_type === selectedBooking.specialist.type;
+
+          return isSentToSpecialist || isReceivedFromSpecialist;
+        })
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+      setNotes(filteredNotes);
     } catch (error) {
       console.error("Error fetching notes:", error);
       setNotes([]);
@@ -108,7 +144,7 @@ const NotesPage = () => {
 
   const handleEditNote = (note) => {
     setEditingNote(note);
-    setNoteContent(note.note_content);
+    setNoteContent(note.node_message || note.note_content || "");
     setAttachments(note.attachments || []);
     setIsNoteModalOpen(true);
   };
@@ -144,10 +180,6 @@ const NotesPage = () => {
         }
       });
 
-      // for (let pair of formData.entries()) {
-      //   console.log("payload", pair[0], pair[1]);
-      // }
-
       if (editingNote) {
         await postApi(`/notes/${editingNote.id}`, formData);
         toast.success("Note updated successfully");
@@ -178,7 +210,7 @@ const NotesPage = () => {
     }
   };
 
-  const filteredBookings = bookings.filter((b) =>
+  const filteredBookings = uniqueBookings.filter((b) =>
     (b.specialist?.name || "")
       .toLowerCase()
       .includes(searchQuery.toLowerCase()),
@@ -306,11 +338,13 @@ const NotesPage = () => {
               {notes.map((note) => (
                 <Card
                   key={note.id}
-                  className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                  className={`bg-white border text-left shadow-sm hover:shadow-md transition-shadow ${note.sender_id === user?.id ? "border-primary/20 bg-primary/5 ml-auto md:w-[80%]" : "border-gray-200 mr-auto md:w-[80%]"}`}
                 >
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-xl font-bold text-gray-900">
-                      {note.note_title}
+                      {note.sender_id === user?.id
+                        ? "My Note"
+                        : `Note from ${selectedBooking?.specialist?.name || "Specialist"}`}
                     </CardTitle>
                     <div className="flex items-center gap-2">
                       <Button
@@ -335,7 +369,7 @@ const NotesPage = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                      {note.note_content}
+                      {note.node_message || note.note_content}
                     </p>
 
                     {note.attachments && note.attachments.length > 0 && (

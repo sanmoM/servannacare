@@ -21,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import TopBar from "./TopBar";
+import CareChoiceModal from "./CareChoiceModal";
 import {
   Dialog,
   DialogClose,
@@ -142,55 +143,11 @@ const Navbar = () => {
                     LOGIN
                   </Button>
                 </Link>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="rounded-full text-xs cursor-pointer">
-                      GET IN TOUCH{" "}
-                    </Button>
-                  </DialogTrigger>
-
-                  <DialogContent className="sm:max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="text-center">
-                        Select Your Role
-                      </DialogTitle>
-                      <DialogDescription className="text-center" />
-                    </DialogHeader>
-
-                    <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 items-stretch">
-                      {userRole.map((role, indx) => (
-                        <DialogClose asChild key={indx}>
-                          <Link
-                            className="h-full"
-                            href={`/register?role=${role.role}`}
-                          >
-                            <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
-                              <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full bg-cyan-100 mb-2 sm:mb-4">
-                                <Image
-                                  src={role.icon}
-                                  alt="role"
-                                  quality={100}
-                                  className="h-full w-full"
-                                />
-                              </div>
-                              <h3 className="text-[9px] sm:text-sm text-center font-semibold text-gray-700 hover:text-primary">
-                                {role.text}
-                              </h3>
-                            </div>
-                          </Link>
-                        </DialogClose>
-                      ))}
-                    </div>
-
-                    {/* <DialogFooter className="sm:justify-start">
-                      <DialogClose asChild>
-                        <Button type="button" variant="secondary">
-                          Close
-                        </Button>
-                      </DialogClose>
-                    </DialogFooter> */}
-                  </DialogContent>
-                </Dialog>
+                <CareChoiceModal>
+                  <Button className="rounded-full text-xs cursor-pointer">
+                    GET IN TOUCH{" "}
+                  </Button>
+                </CareChoiceModal>
               </>
             )}
           </div>

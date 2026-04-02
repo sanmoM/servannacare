@@ -41,7 +41,6 @@ const SpecialistNotesPage = () => {
   const [view, setView] = useState("clients");
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [notes, setNotes] = useState([]);
-  console.log(notes)
   const [isNotesLoading, setIsNotesLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -70,6 +69,18 @@ const SpecialistNotesPage = () => {
       ? bookingData
       : [];
 
+  const uniqueBookings = React.useMemo(() => {
+    const map = new Map();
+    bookings.forEach((b) => {
+      if (b.user_id) {
+        if (!map.has(b.user_id)) {
+          map.set(b.user_id, b);
+        }
+      }
+    });
+    return Array.from(map.values());
+  }, [bookings]);
+
   useEffect(() => {
     if (selectedBooking && view === "notes") {
       fetchNotes();
@@ -80,10 +91,17 @@ const SpecialistNotesPage = () => {
     setIsNotesLoading(true);
     try {
       const response = await getApi(`/specialist-nodes/${user?.id}/${user?.type}`);
-      const allNotes = response?.data || [];
-      const filteredNotes = allNotes?.filter(
-        (note) => note.receiver_id === selectedBooking.user_id && note.sender_id === user?.id
-      );
+      const data = response?.data || {};
+      const sentNodes = Array.isArray(data.sent_nodes) ? data.sent_nodes : [];
+      const receivedNodes = Array.isArray(data.received_nodes) ? data.received_nodes : [];
+      const allNotes = [...sentNodes, ...receivedNodes];
+      const filteredNotes = allNotes.filter((note) => {
+        const isSentToPatient = note.sender_id === user?.id && note.receiver_id === selectedBooking.user_id;
+        const isReceivedFromPatient = note.receiver_id === user?.id && note.sender_id === selectedBooking.user_id;
+        
+        return isSentToPatient || isReceivedFromPatient;
+      }).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
       setNotes(filteredNotes);
     } catch (error) {
       console.error("Error fetching notes:", error);
@@ -179,7 +197,7 @@ const SpecialistNotesPage = () => {
     }
   };
 
-  const filteredBookings = bookings.filter((b) =>
+  const filteredBookings = uniqueBookings.filter((b) =>
     (b.patient_name || b.user?.name || "")
       .toLowerCase()
       .includes(searchQuery.toLowerCase()),
@@ -313,11 +331,11 @@ const SpecialistNotesPage = () => {
               {notes.map((note) => (
                 <Card
                   key={note.id}
-                  className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                  className={`bg-white border text-left shadow-sm hover:shadow-md transition-shadow ${note.sender_id === user?.id ? "border-primary/20 bg-primary/5 ml-auto md:w-[80%]" : "border-gray-200 mr-auto md:w-[80%]"}`}
                 >
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-xl font-bold text-gray-900">
-                      Progress Note
+                      {note.sender_id === user?.id ? "My Progress Note" : `Note from ${selectedBooking?.patient_name || selectedBooking?.user?.name || "Patient"}`}
                     </CardTitle>
                     <div className="flex items-center gap-2">
                       <Button
