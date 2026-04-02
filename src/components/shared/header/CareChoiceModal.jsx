@@ -28,7 +28,7 @@ const CareChoiceModal = ({ children }) => {
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-2xl overflow-hidden p-6 bg-white rounded-2xl">
+      <DialogContent overlayClassName="backdrop-blur-sm bg-black/60" className="sm:max-w-2xl overflow-hidden p-6 bg-white rounded-2xl border-none">
         {view === "choice" ? (
           <>
             <DialogHeader className="mb-2">
