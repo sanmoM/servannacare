@@ -387,7 +387,7 @@ const SearchContent = () => {
             {selectedCategory === "house-manager" && (
               <div className="space-y-8 animate-in fade-in duration-500">
                 {/* Age Range Slider */}
-                <div className="space-y-6">
+                <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-semibold text-slate-700 ml-1">
                       Age Range
@@ -398,7 +398,7 @@ const SearchContent = () => {
                     <Slider.Root
                       className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
                       value={[ageRange.min || 18, ageRange.max || 60]}
-                      max={100} // max age
+                      max={100} 
                       step={1}
                       onValueChange={([min, max]) => {
                         setAgeRange({ min, max });
@@ -495,7 +495,7 @@ const SearchContent = () => {
                   </select>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-3">
                   {/* Label */}
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-semibold text-slate-700 ml-1">
@@ -611,7 +611,7 @@ const SearchContent = () => {
             {selectedCategory !== "house-manager" &&
               showNonHouseManagerFilters.includes(selectedCategory) && (
                 <div className="space-y-8 animate-in fade-in duration-500">
-                  <div className="space-y-6">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-sm font-semibold text-slate-700 ml-1">
                         Age Range
@@ -704,7 +704,7 @@ const SearchContent = () => {
                   </div>
 
                   {/* experience year */}
-                  <div className="space-y-6">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-sm font-semibold text-slate-700 ml-1">
                         Years of Experience
@@ -757,7 +757,7 @@ const SearchContent = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-6">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-sm font-semibold text-slate-700 ml-1">
                         Salary Range

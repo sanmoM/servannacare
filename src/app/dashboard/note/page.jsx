@@ -38,11 +38,10 @@ import { useAuth } from "@/hooks/useAuth";
 
 const NotesPage = () => {
   const { user } = useAuth();
-  // console.log(user)
   const [view, setView] = useState("specialists");
   const [selectedBooking, setSelectedBooking] = useState(null);
-  console.log(selectedBooking);
   const [notes, setNotes] = useState([]);
+  console.log(notes);
   const [isNotesLoading, setIsNotesLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -79,7 +78,7 @@ const NotesPage = () => {
     setIsNotesLoading(true);
     try {
       const response = await getApi("/user-nodes");
-      setNotes(response?.data?.data || []);
+      setNotes(response?.data || []);
     } catch (error) {
       console.error("Error fetching notes:", error);
       setNotes([]);
@@ -101,7 +100,7 @@ const NotesPage = () => {
 
   const handleAddNote = () => {
     setEditingNote(null);
-  
+
     setNoteContent("");
     setAttachments([]);
     setIsNoteModalOpen(true);
@@ -134,9 +133,9 @@ const NotesPage = () => {
     try {
       const formData = new FormData();
       formData.append("sender_id", user?.id);
-      formData.append("sender_type", user?.type);
-      formData.append("receiver_id", selectedBooking.specialist_id);
-      formData.append("receiver_type", selectedBooking.specialist_type);
+      formData.append("sender_type", "user");
+      formData.append("receiver_id", selectedBooking.specialist.id);
+      formData.append("receiver_type", selectedBooking.specialist.type);
       formData.append("node_message", noteContent);
 
       attachments.forEach((file) => {
@@ -215,7 +214,6 @@ const NotesPage = () => {
 
       {view === "specialists" ? (
         <div className="space-y-6">
-          {/* Search bar */}
           <div className="relative group max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
             <Input
@@ -445,7 +443,7 @@ const NotesPage = () => {
                     </span>
                     <button
                       onClick={() => removeAttachment(index)}
-                      className="hover:text-red-500 transition-colors"
+                      className="hover:text-red-500 transition-colors cursor-pointer"
                     >
                       <X size={14} />
                     </button>

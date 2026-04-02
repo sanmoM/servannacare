@@ -41,6 +41,7 @@ const SpecialistNotesPage = () => {
   const [view, setView] = useState("clients");
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [notes, setNotes] = useState([]);
+  console.log(notes)
   const [isNotesLoading, setIsNotesLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -78,10 +79,9 @@ const SpecialistNotesPage = () => {
   const fetchNotes = async () => {
     setIsNotesLoading(true);
     try {
-      const response = await getApi("/user-nodes");
-      // Filter notes by the current client (receiver_id) if the API doesn't do it automatically
-      const allNotes = response?.data?.data || [];
-      const filteredNotes = allNotes.filter(
+      const response = await getApi(`/specialist-nodes/${user?.id}/${user?.type}`);
+      const allNotes = response?.data || [];
+      const filteredNotes = allNotes?.filter(
         (note) => note.receiver_id === selectedBooking.user_id && note.sender_id === user?.id
       );
       setNotes(filteredNotes);
@@ -231,7 +231,7 @@ const SpecialistNotesPage = () => {
               {filteredBookings.map((booking) => (
                 <Card
                   key={booking.id}
-                  className="group hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-md bg-white border-gray-100 overflow-hidden"
+                  className="group hover:border-primary/50 transition-all duration-300 shadow-sm hover:shadow-md bg-white border-gray-100 overflow-hidden -py-6 pb-6"
                 >
                   <div className="h-1 bg-gray-100 group-hover:bg-primary transition-colors" />
                   <CardHeader className="flex flex-row items-center gap-4 pb-4">

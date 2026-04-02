@@ -821,7 +821,7 @@ const Physiotherapist = ({ data = {} }) => {
           </span>
         </div>
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
-          {documents.map((item, indx) => {
+          {documents?.map((item, indx) => {
             const file = formData.documents[item.id];
 
             return (
@@ -837,8 +837,8 @@ const Physiotherapist = ({ data = {} }) => {
                   }
                 />
 
-                {file && !file.type.startsWith("image/") && (
-                  <FilePreview file={file} alt={doc.title} />
+                {file && !file?.type?.startsWith("image/") && (
+                  <FilePreview file={file} alt={item?.title} />
                 )}
               </div>
             );

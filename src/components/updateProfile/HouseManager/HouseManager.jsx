@@ -761,10 +761,9 @@ const HouseManager = ({ data = {} }) => {
                     onFileSelect={(file) => handleFileSelect(doc.id, file)}
                   />
 
-                  <FilePreview file={file} alt={doc.title} />
-                  {/* {file && !file?.type?.startsWith("image/") && (
-                    <FilePreview file={file} alt={doc.title} />
-                  )} */}
+                  {file && !file?.type?.startsWith("image/") && (
+                  <FilePreview file={file} alt={doc?.title} />
+                )}
                 </div>
               );
             })}

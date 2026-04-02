@@ -331,9 +331,9 @@ export default function BookingFormClient() {
       formData.append("prescription_file", data.prescriptionFile);
     }
 
-    // for (let pair of formData.entries()) {
-    //   console.log("payload", pair[0], pair[1]);
-    // }
+    for (let pair of formData.entries()) {
+      console.log("payload", pair[0], pair[1]);
+    }
 
     setBookingFormData(formData);
     setPhoneNumber("");
