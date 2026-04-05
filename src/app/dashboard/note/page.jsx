@@ -40,6 +40,7 @@ const NotesPage = () => {
   const { user } = useAuth();
   const [view, setView] = useState("specialists");
   const [selectedBooking, setSelectedBooking] = useState(null);
+
   const [notes, setNotes] = useState([]);
   const [isNotesLoading, setIsNotesLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -171,13 +172,13 @@ const NotesPage = () => {
       formData.append("sender_id", user?.id);
       formData.append("sender_type", "user");
       formData.append("receiver_id", selectedBooking.specialist.id);
-      formData.append("receiver_id", selectedBooking.specialist.id);
+      formData.append("receiver_auth_id", selectedBooking.specialist.id);
       formData.append("receiver_type", selectedBooking.specialist.type);
       formData.append("node_message", noteContent);
 
       attachments.forEach((file) => {
         if (file instanceof File) {
-          formData.append("node_image[]", file);
+          formData.append("node_image", file);
         }
       });
 
