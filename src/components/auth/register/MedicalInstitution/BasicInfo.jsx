@@ -25,7 +25,6 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
     registrationDocument: defaultValues.registrationDocument || null,
   });
 
-  // Handle Input Changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
@@ -51,16 +50,16 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
   useEffect(() => {
     if (defaultValues && Object.keys(defaultValues).length > 0) {
       setData((prev) => ({ ...prev, ...defaultValues }));
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      
     }
   }, [defaultValues]);
 
-  // Handle File Upload
+ 
   const handleFileSelect = (file) => {
     setData((prev) => ({ ...prev, registrationDocument: file }));
   };
 
-  // Validation + Submit
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -101,7 +100,7 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
       <div>
         <h2 className="formHeading">Institution Details</h2>
 
-        {/*  GRID: company name + KRA */}
+   
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6">
           <Input
             type="text"
@@ -121,7 +120,7 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
           />
         </div>
 
-        {/*  GRID: registration number + phone */}
+  
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-6">
           <Input
             label="Company Registration Number"
@@ -168,7 +167,7 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
           </div>
         </div>
 
-        {/*  Business location full width */}
+  
         <Input
           label="Business Location"
           name="businessLocation"
@@ -188,9 +187,9 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
         </div>
       </div>
 
-      {/* Submit */}
+
       <div className="flex justify-end mt-6">
-        <Button type="submit" size="lg">
+        <Button className="cursor-pointer" type="submit" size="lg">
           Next
         </Button>
       </div>

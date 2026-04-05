@@ -25,7 +25,6 @@ import {
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { postApi } from "@/lib/apiHandler";
-import { useRouter } from "next/navigation";
 import SelectableCalendar from "@/components/SelectableCalendar";
 
 import PhoneInputWithCountrySelect from "react-phone-number-input";
@@ -37,7 +36,6 @@ import FilePreview from "@/components/auth/register/FilePreview";
 const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
   const [ready, setReady] = useState(!isUpdate);
   const [country, setCountry] = useState("KE");
-  // console.log("dfdf",initialData)
   const [formData, setFormData] = useState({
     name: "",
     educationLevel: "",
@@ -115,6 +113,57 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
       setReady(true);
     }
   }, [initialData, isUpdate]);
+
+  const validateForm = (data) => {
+    const requiredFields = [
+      "name",
+      "educationLevel",
+      "location",
+      "experience",
+      "phone",
+      "salaryRange",
+      "preferredRole",
+      "preferred",
+      "cooking",
+      "housekeeping",
+      "childcare",
+      "serviceFeeDay",
+      "serviceFeeMonth",
+    ];
+
+    for (let field of requiredFields) {
+      if (!data[field] || data[field].toString().trim() === "") {
+        throw new Error(`${field} is required`);
+      }
+    }
+
+    if (data.isMother === null) throw new Error("Mother status is required");
+    if (data.handlePets === null) throw new Error("Pet handling is required");
+
+    if (!data.languages.length) throw new Error("Select at least one language");
+
+    if (!data.kidAges.length) throw new Error("Select at least one kid age");
+
+    if (!isValidPhoneNumber(data.phone))
+      throw new Error("Invalid phone number");
+
+    if (!isUpdate) {
+      const requiredDocs = [
+        "aidCertificate",
+        "goodConductCertificate",
+        "idCopy",
+        "profilePhoto",
+      ];
+
+      for (let doc of requiredDocs) {
+        if (!data.documents[doc]) {
+          throw new Error(`${doc} is required`);
+        }
+      }
+    }
+
+    return true;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -217,6 +266,8 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     const loadingToast = toast.loading(isUpdate ? "Updating..." : "Adding...");
 
     try {
+      validateForm(formData);
+
       const payload = isUpdate
         ? buildUpdatePayload(formData)
         : buildCreatePayload(formData);
@@ -339,7 +390,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
                 defaultCountry={country}
                 value={formData?.phone}
                 onChange={(value) => {
-                  setData((prev) => ({ ...prev, phone: value || "" }));
+                  setFormData((prev) => ({ ...prev, phone: value || "" }));
                 }}
                 onCountryChange={(countryCode) => {
                   setCountry(countryCode);
@@ -347,12 +398,12 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
                     ? getExampleNumber(countryCode)
                     : null;
                   if (exampleNumber) {
-                    setData((prev) => ({
+                    setFormData((prev) => ({
                       ...prev,
                       phone: `+${exampleNumber.countryCallingCode}`,
                     }));
                   } else {
-                    setData((prev) => ({ ...prev, phone: "" }));
+                    setFormData((prev) => ({ ...prev, phone: "" }));
                   }
                 }}
               />
@@ -732,7 +783,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
         </div>
 
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
-          {documents.map((item, indx) => {
+          {documents?.map((item, indx) => {
             const file = formData.documents[item.id];
             return (
               <div key={indx} className="border rounded-xl p-4">
@@ -747,7 +798,7 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
                   }
                 />
 
-                {file && !file.type.startsWith("image/") && (
+                {file && !file?.type?.startsWith("image/") && (
                   <FilePreview file={file} alt={item.title} />
                 )}
               </div>

@@ -33,6 +33,7 @@ const ServicesCard = ({ services }) => {
             </div>
             <h3 className="text-base lg:text-lg font-semibold text-gray-900  group-hover:text-white mb-2">
               {services?.title}
+              
             </h3>
             <p className="text-sm group-hover:text-white text-gray-700 leading-relaxed">
               “{services?.subtitle?.split(" ").slice(0, 10).join(" ")}

@@ -18,6 +18,7 @@ import "react-phone-number-input/style.css";
 import { Label } from "@/components/ui/label";
 
 const UpdateBasicInfo = ({ instituteData = {} }) => {
+  console.log("institute data", instituteData.number);
   const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user, refreshUser } = useAuth();
@@ -31,32 +32,17 @@ const UpdateBasicInfo = ({ instituteData = {} }) => {
     registrationDocument: null,
   });
 
-  // useEffect(() => {
-  //   if (instituteData) {
-  //     setData({
-  //       companyName: instituteData?.companyName || "",
-  //       kraPin: instituteData?.kraPin || "",
-  //       companyRegistrationNumber:
-  //         instituteData?.companyRegistrationNumber || "",
-  //       businessLocation: instituteData?.businessLocation || "",
-  //       phone: instituteData?.number || "",
-  //       registrationDocument: null,
-  //     });
-  //   }
-  // }, [instituteData]);
-
   useEffect(() => {
-    if (instituteData?.number) {
-      setData((prev) => ({
-        ...prev,
-        phone: instituteData?.number,
-        companyName: instituteData?.companyName,
-        kraPin: instituteData?.kraPin,
-        companyRegistrationNumber: instituteData?.companyRegistrationNumber,
-        businessLocation: instituteData?.businessLocation,
-        registrationDocument: null,
-      }));
-    }
+    if (!instituteData) return;
+
+    setData((prev) => ({
+      ...prev,
+      companyName: instituteData?.companyName || "",
+      kraPin: instituteData?.kraPin || "",
+      companyRegistrationNumber: instituteData?.companyRegistrationNumber || "",
+      businessLocation: instituteData?.businessLocation || "",
+      phone: instituteData?.number || "",
+    }));
   }, [instituteData]);
 
   const handleChange = (e) => {
@@ -196,17 +182,18 @@ const UpdateBasicInfo = ({ instituteData = {} }) => {
               }}
               onCountryChange={(countryCode) => {
                 setCountry(countryCode);
-                const exampleNumber = countryCode
-                  ? getExampleNumber(countryCode)
-                  : null;
-                if (exampleNumber) {
-                  setData((prev) => ({
+
+                setData((prev) => {
+                  if (prev.phone) return prev;
+
+                  const exampleNumber = getExampleNumber(countryCode);
+                  return {
                     ...prev,
-                    phone: `+${exampleNumber.countryCallingCode}`,
-                  }));
-                } else {
-                  setData((prev) => ({ ...prev, phone: "" }));
-                }
+                    phone: exampleNumber
+                      ? `+${exampleNumber.countryCallingCode}`
+                      : "",
+                  };
+                });
               }}
             />
           </div>

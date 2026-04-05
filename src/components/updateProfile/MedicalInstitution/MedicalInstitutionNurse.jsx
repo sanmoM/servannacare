@@ -97,6 +97,7 @@ const MedicalInstitutionNurse = ({
 
   const [ready, setReady] = useState(!isUpdate);
 
+
   useEffect(() => {
     if (initialData && isUpdate) {
       setData({
@@ -952,7 +953,7 @@ const MedicalInstitutionNurse = ({
           </div>
 
           <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
-            {documents.map((item, indx) => {
+            {documents?.map((item, indx) => {
               const file = data.documents[item.id];
 
               return (
@@ -968,8 +969,8 @@ const MedicalInstitutionNurse = ({
                     }
                   />
 
-                  {file && !file.type.startsWith("image/") && (
-                    <FilePreview file={file} alt={doc.title} />
+                  {file && !file?.type?.startsWith("image/") && (
+                    <FilePreview file={file} alt={item?.title} />
                   )}
                 </div>
               );

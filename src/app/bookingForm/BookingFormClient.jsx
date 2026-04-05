@@ -113,6 +113,7 @@ export default function BookingFormClient() {
   const monthlyRate = Number(pricingData?.serviceFeeMonth || 0);
   const dailyRate = Number(pricingData?.serviceFeeDay || 0);
 
+
   const availableDates = useMemo(() => {
     if (!matchedSpecialist?.schedule) return [];
 
@@ -244,6 +245,24 @@ export default function BookingFormClient() {
   const onSubmit = async (data) => {
     if (isSubmitting) return;
 
+      const formDataToObject = (formData) => {
+    const obj = {};
+
+    formData.forEach((value, key) => {
+      if (obj[key]) {
+        if (Array.isArray(obj[key])) {
+          obj[key].push(value);
+        } else {
+          obj[key] = [obj[key], value];
+        }
+      } else {
+        obj[key] = value;
+      }
+    });
+
+    return obj;
+  };
+
     if (!data.consent) {
       toast.error("You must accept the condition before booking.");
       return;
@@ -262,6 +281,8 @@ export default function BookingFormClient() {
     }
 
     const formData = new FormData();
+    const payloadObject = formDataToObject(formData);
+    console.log("Payload:", payloadObject);
 
     const scheduleItems = isDaily
       ? Object.values(
@@ -331,14 +352,16 @@ export default function BookingFormClient() {
       formData.append("prescription_file", data.prescriptionFile);
     }
 
-    for (let pair of formData.entries()) {
-      console.log("payload", pair[0], pair[1]);
-    }
+    // for (let pair of formData.entries()) {
+    //   console.log("payload", pair[0], pair[1]);
+    // }
 
     setBookingFormData(formData);
     setPhoneNumber("");
     setIsPayModalOpen(true);
   };
+
+
 
   const handlePayment = async () => {
     if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {

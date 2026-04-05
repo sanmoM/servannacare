@@ -90,17 +90,27 @@ const SpecialistNotesPage = () => {
   const fetchNotes = async () => {
     setIsNotesLoading(true);
     try {
-      const response = await getApi(`/specialist-nodes/${user?.id}/${user?.type}`);
+      const response = await getApi(
+        `/specialist-nodes/${user?.id}/${user?.type}`,
+      );
       const data = response?.data || {};
       const sentNodes = Array.isArray(data.sent_nodes) ? data.sent_nodes : [];
-      const receivedNodes = Array.isArray(data.received_nodes) ? data.received_nodes : [];
+      const receivedNodes = Array.isArray(data.received_nodes)
+        ? data.received_nodes
+        : [];
       const allNotes = [...sentNodes, ...receivedNodes];
-      const filteredNotes = allNotes.filter((note) => {
-        const isSentToPatient = note.sender_id === user?.id && note.receiver_id === selectedBooking.user_id;
-        const isReceivedFromPatient = note.receiver_id === user?.id && note.sender_id === selectedBooking.user_id;
-        
-        return isSentToPatient || isReceivedFromPatient;
-      }).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      const filteredNotes = allNotes
+        .filter((note) => {
+          const isSentToPatient =
+            note.sender_id === user?.id &&
+            note.receiver_id === selectedBooking.user_id;
+          const isReceivedFromPatient =
+            note.receiver_id === user?.id &&
+            note.sender_id === selectedBooking.user_id;
+
+          return isSentToPatient || isReceivedFromPatient;
+        })
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
       setNotes(filteredNotes);
     } catch (error) {
@@ -255,12 +265,18 @@ const SpecialistNotesPage = () => {
                   <CardHeader className="flex flex-row items-center gap-4 pb-4">
                     <Avatar className="h-14 w-14 border-2 border-gray-50 group-hover:border-primary/20 transition-all">
                       <AvatarFallback className="bg-primary/5 text-primary text-xl font-bold">
-                        {(booking.patient_name || booking.user?.name || "P").charAt(0)}
+                        {(
+                          booking.patient_name ||
+                          booking.user?.name ||
+                          "P"
+                        ).charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
                       <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">
-                        {booking.patient_name || booking.user?.name || "Patient"}
+                        {booking.patient_name ||
+                          booking.user?.name ||
+                          "Patient"}
                       </CardTitle>
                       <Badge
                         variant="secondary"
@@ -275,7 +291,8 @@ const SpecialistNotesPage = () => {
                       <div className="flex items-center gap-2 text-sm text-gray-600">
                         <History size={16} className="text-gray-400" />
                         <span>
-                          Booked: {booking.created_at
+                          Booked:{" "}
+                          {booking.created_at
                             ? new Date(booking.created_at).toLocaleDateString()
                             : "Date N/A"}
                         </span>
@@ -335,7 +352,9 @@ const SpecialistNotesPage = () => {
                 >
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-xl font-bold text-gray-900">
-                      {note.sender_id === user?.id ? "My Progress Note" : `Note from ${selectedBooking?.patient_name || selectedBooking?.user?.name || "Patient"}`}
+                      {note.sender_id === user?.id
+                        ? "My Progress Note"
+                        : `Note from ${selectedBooking?.patient_name || selectedBooking?.user?.name || "Patient"}`}
                     </CardTitle>
                     <div className="flex items-center gap-2">
                       <Button
@@ -422,13 +441,16 @@ const SpecialistNotesPage = () => {
               {editingNote ? "Edit Progress Note" : "Create New Note"}
             </DialogTitle>
             <DialogDescription>
-              Add clinical observations, treatment plans, or patient status. Only you can access these clinical records.
+              Add clinical observations, treatment plans, or patient status.
+              Only you can access these clinical records.
             </DialogDescription>
           </DialogHeader>
 
           <div className="p-6 space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-bold text-gray-700">Clinical Observations</label>
+              <label className="text-sm font-bold text-gray-700">
+                Clinical Observations
+              </label>
               <textarea
                 placeholder="Enter detailed clinical notes, symptoms, or observations..."
                 value={noteContent}
@@ -523,8 +545,8 @@ const SpecialistNotesPage = () => {
               Delete clinical note?
             </DialogTitle>
             <DialogDescription className="text-gray-500">
-              This action cannot be undone. This record and its clinical attachments will
-              be permanently removed.
+              This action cannot be undone. This record and its clinical
+              attachments will be permanently removed.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 mt-4">

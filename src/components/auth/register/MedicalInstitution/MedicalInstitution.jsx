@@ -103,7 +103,7 @@ const MedicalInstitution = ({ skills }) => {
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const [nurses, setNurses] = useState([1]);
-  // const [user, setUser] = useState({});
+  
   const router = useRouter();
   const totalSteps = 3;
   const { user } = useAuth();
@@ -124,7 +124,7 @@ const MedicalInstitution = ({ skills }) => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    // setUser(accountData);
+    
   };
 
   const handleNext = async () => {
@@ -379,7 +379,7 @@ const MedicalInstitution = ({ skills }) => {
                 />
               )}
 
-              {/* STEP 2 — Nurse Details */}
+
               {step === 2 && (
                 <div className="space-y-8">
                   {nurses.map((num, index) => (
@@ -412,7 +412,7 @@ const MedicalInstitution = ({ skills }) => {
               {/* FOOTER BUTTONS */}
               <div className="flex justify-between mt-6">
                 {step > 1 ? (
-                  <Button type="button" variant="outline" onClick={handleBack}>
+                  <Button className="cursor-pointer" type="button" variant="outline" onClick={handleBack}>
                     Back
                   </Button>
                 ) : (
@@ -422,6 +422,7 @@ const MedicalInstitution = ({ skills }) => {
                 {step === 2 && (
                   <div className="flex items-center gap-4">
                     <Button
+                    className="cursor-pointer"
                       type="button"
                       variant="outline"
                       onClick={handleAddNurse}
@@ -429,7 +430,7 @@ const MedicalInstitution = ({ skills }) => {
                       <Plus /> Add Nurse
                     </Button>
 
-                    <Button type="button" onClick={handleNext}>
+                    <Button className="cursor-pointer" type="button" onClick={handleNext}>
                       Next
                     </Button>
                   </div>

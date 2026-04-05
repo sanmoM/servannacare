@@ -171,6 +171,7 @@ const NotesPage = () => {
       formData.append("sender_id", user?.id);
       formData.append("sender_type", "user");
       formData.append("receiver_id", selectedBooking.specialist.id);
+      formData.append("receiver_id", selectedBooking.specialist.id);
       formData.append("receiver_type", selectedBooking.specialist.type);
       formData.append("node_message", noteContent);
 
@@ -209,7 +210,6 @@ const NotesPage = () => {
       toast.error("Failed to delete note");
     }
   };
-
   const filteredBookings = uniqueBookings.filter((b) =>
     (b.specialist?.name || "")
       .toLowerCase()

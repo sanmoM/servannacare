@@ -27,7 +27,6 @@ const NurseDetails = ({
   defaultValues = {},
   skills,
 }) => {
-  // Document Types
   const documents = [
     {
       id: "idCopy",
@@ -53,7 +52,6 @@ const NurseDetails = ({
   //   "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
   // ];
 
-  // Local state
   const [data, setData] = useState({
     name: "",
     age: "",
@@ -85,30 +83,19 @@ const NurseDetails = ({
     ...defaultValues,
   });
 
-  // Load initial data on mount
   useEffect(() => {
     setData((prev) => ({ ...prev, ...defaultValues }));
   }, []);
 
-  // Send up to change
   useEffect(() => {
     onDataChange && onDataChange(data);
   }, [data]);
 
-  useEffect(() => {
-    if (onDataChange) {
-      onDataChange(data);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(data)]);
-
-  // Generic handler for text inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Toggle array fields (skills, languages)
   const toggleArray = (name, value) => {
     setData((prev) => {
       const exists = prev[name].includes(value);
@@ -121,7 +108,11 @@ const NurseDetails = ({
     });
   };
 
-  // Handle file uploads
+  if (serviceFeeDay <= 0 || serviceFeeMonth <= 0) {
+    alert("Service fees must be greater than 0");
+    return;
+  }
+
   const handleFileSelect = (id, file) => {
     setData((prev) => ({
       ...prev,
@@ -136,7 +127,6 @@ const NurseDetails = ({
         Nurse #{nurseNumber}
       </h2>
 
-      {/* Name + Age */}
       <div className="flex flex-col pb-6 md:flex-row md:gap-4 gap-6">
         <Input
           placeholder="Name"
@@ -164,7 +154,6 @@ const NurseDetails = ({
         />
       </div>
 
-      {/* Location + Gender */}
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
         <div className="flex-1">
           <Input
@@ -211,19 +200,30 @@ const NurseDetails = ({
             onValueChange={(val) => setData((p) => ({ ...p, gender: val }))}
             className="flex gap-4"
           >
-            <div className="flex items-center gap-3">
-              <RadioGroupItem value="Male" id={`g1-${nurseNumber}`} />
-              <Label htmlFor={`g1-${nurseNumber}`}>Male</Label>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="Male"
+                id={`g1-${nurseNumber}`}
+              />
+              <Label className={"cursor-pointer"} htmlFor={`g1-${nurseNumber}`}>
+                Male
+              </Label>
             </div>
 
-            <div className="flex items-center gap-3">
-              <RadioGroupItem value="Female" id={`g2-${nurseNumber}`} />
-              <Label htmlFor={`g2-${nurseNumber}`}>Female</Label>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="Female"
+                id={`g2-${nurseNumber}`}
+              />
+              <Label className={"cursor-pointer"} htmlFor={`g2-${nurseNumber}`}>
+                Female
+              </Label>
             </div>
           </RadioGroup>
         </div>
 
-        {/* Education Level */}
         <div className="flex-1">
           <Label className="mb-3 block">Level of Education</Label>
 
@@ -236,6 +236,7 @@ const NurseDetails = ({
           >
             <div className="flex items-center gap-2">
               <RadioGroupItem
+                className={"cursor-pointer"}
                 value="Diploma In Nursing"
                 id={`edu1-${nurseNumber}`}
               />
@@ -249,6 +250,7 @@ const NurseDetails = ({
 
             <div className="flex items-center gap-2">
               <RadioGroupItem
+                className={"cursor-pointer"}
                 value="Degree In Nursing"
                 id={`edu2-${nurseNumber}`}
               />
@@ -262,7 +264,7 @@ const NurseDetails = ({
           </RadioGroup>
         </div>
       </div>
-      {/* Driving */}
+
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
         <div className="flex-1">
           <Label className={"mb-2"}>Can you drive?</Label>
@@ -273,15 +275,30 @@ const NurseDetails = ({
             }
             className="flex gap-4"
           >
-            <RadioGroupItem value="true" id={`d1-${nurseNumber}`} />
-            <Label htmlFor={`d1-${nurseNumber}`}>Yes</Label>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="true"
+                id={`d1-${nurseNumber}`}
+              />
+              <Label className={"cursor-pointer"} htmlFor={`d1-${nurseNumber}`}>
+                Yes
+              </Label>
+            </div>
 
-            <RadioGroupItem value="false" id={`d2-${nurseNumber}`} />
-            <Label htmlFor={`d2-${nurseNumber}`}>No</Label>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="false"
+                id={`d2-${nurseNumber}`}
+              />
+              <Label className={"cursor-pointer"} htmlFor={`d2-${nurseNumber}`}>
+                No
+              </Label>
+            </div>
           </RadioGroup>
         </div>
 
-        {/* preferredRole */}
         <div className="flex-1 ">
           <Label className={"mb-2"}>Preferred Role?</Label>
           <RadioGroup
@@ -291,32 +308,50 @@ const NurseDetails = ({
             }
             className="flex gap-4"
           >
-            <RadioGroupItem value="Medical Nurse" id={`r3-${nurseNumber}`} />
-            <Label htmlFor={`r3-${nurseNumber}`}>Medical Nurse</Label>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="Medical Nurse"
+                id={`r3-${nurseNumber}`}
+              />
+              <Label className={"cursor-pointer"} htmlFor={`r3-${nurseNumber}`}>
+                Medical Nurse
+              </Label>
+            </div>
 
-            <RadioGroupItem value="Nurse Aide" id={`r4-${nurseNumber}`} />
-            <Label htmlFor={`r4-${nurseNumber}`}>Nurse Aide</Label>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                className={"cursor-pointer"}
+                value="Nurse Aide"
+                id={`r4-${nurseNumber}`}
+              />
+              <Label className={"cursor-pointer"} htmlFor={`r4-${nurseNumber}`}>
+                Nurse Aide
+              </Label>
+            </div>
           </RadioGroup>
         </div>
       </div>
 
-      {/* Languages */}
       <div className="py-6">
         <Label className={"mb-3"}>Languages</Label>
         <div className="flex flex-wrap gap-4">
           {languages.map((lan, idx) => (
             <div key={idx} className="flex items-center gap-2">
               <Checkbox
+                className={"cursor-pointer"}
+                id={lan.value}
                 checked={data.languages.includes(lan.value)}
                 onCheckedChange={() => toggleArray("languages", lan.value)}
               />
-              <Label>{lan.text}</Label>
+              <Label htmlFor={lan.value} className={"cursor-pointer"}>
+                {lan.text}
+              </Label>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Education Certificate Upload */}
       <FileUpload
         title="Education Certificate (Compulsory)"
         accept="application/pdf,image/*"
@@ -327,7 +362,6 @@ const NurseDetails = ({
         }
       />
 
-      {/* Nursing Council */}
       <div className="my-6">
         <Label className={"mb-2"}>
           Are you registered with the Nursing Council of Kenya?
@@ -339,15 +373,30 @@ const NurseDetails = ({
           }
           className="flex gap-4"
         >
-          <RadioGroupItem value="true" id={`n1-${nurseNumber}`} />
-          <Label htmlFor={`n1-${nurseNumber}`}>Yes</Label>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem
+              className="cursor-pointer"
+              value="true"
+              id={`n1-${nurseNumber}`}
+            />
+            <Label className="cursor-pointer" htmlFor={`n1-${nurseNumber}`}>
+              Yes
+            </Label>
+          </div>
 
-          <RadioGroupItem value="false" id={`n2-${nurseNumber}`} />
-          <Label htmlFor={`n2-${nurseNumber}`}>No</Label>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem
+              className="cursor-pointer"
+              value="false"
+              id={`n2-${nurseNumber}`}
+            />
+            <Label className="cursor-pointer" htmlFor={`n2-${nurseNumber}`}>
+              No
+            </Label>
+          </div>
         </RadioGroup>
       </div>
 
-      {/* Show only when PCK = Yes */}
       {data.isNursingInKenya && (
         <div>
           <Input
@@ -380,7 +429,6 @@ const NurseDetails = ({
         </div>
       )}
 
-      {/* Hospital Based Care */}
       <div className="mb-6">
         <Label className={"mb-2"}>Hospital Based Care</Label>
         <RadioGroup
@@ -390,11 +438,27 @@ const NurseDetails = ({
           }
           className="flex gap-4"
         >
-          <RadioGroupItem value="true" id={`hb1-${nurseNumber}`} />
-          <Label htmlFor={`hb1-${nurseNumber}`}>Yes</Label>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem
+              className="cursor-pointer"
+              value="true"
+              id={`hb1-${nurseNumber}`}
+            />
+            <Label className="cursor-pointer" htmlFor={`hb1-${nurseNumber}`}>
+              Yes
+            </Label>
+          </div>
 
-          <RadioGroupItem value="false" id={`hb2-${nurseNumber}`} />
-          <Label htmlFor={`hb2-${nurseNumber}`}>No</Label>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem
+              className="cursor-pointer"
+              value="false"
+              id={`hb2-${nurseNumber}`}
+            />
+            <Label className="cursor-pointer" htmlFor={`hb2-${nurseNumber}`}>
+              No
+            </Label>
+          </div>
         </RadioGroup>
       </div>
 
@@ -427,7 +491,6 @@ const NurseDetails = ({
         </div>
       )}
 
-      {/* Home Based Care */}
       <div>
         <Label className={"mb-2"}>Home Based Care</Label>
         <RadioGroup
@@ -437,22 +500,38 @@ const NurseDetails = ({
           }
           className="flex gap-4"
         >
-          <RadioGroupItem value="true" id={`hb3-${nurseNumber}`} />
-          <Label htmlFor={`hb3-${nurseNumber}`}>Yes</Label>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem
+              className="cursor-pointer"
+              value="true"
+              id={`hb3-${nurseNumber}`}
+            />
+            <Label className="cursor-pointer" htmlFor={`hb3-${nurseNumber}`}>
+              Yes
+            </Label>
+          </div>
 
-          <RadioGroupItem value="false" id={`hb4-${nurseNumber}`} />
-          <Label htmlFor={`hb4-${nurseNumber}`}>No</Label>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem
+              className="cursor-pointer"
+              value="false"
+              id={`hb4-${nurseNumber}`}
+            />
+            <Label className="cursor-pointer" htmlFor={`hb4-${nurseNumber}`}>
+              No
+            </Label>
+          </div>
         </RadioGroup>
       </div>
 
-      {data.homeBasedCare === true && (
+      {data?.homeBasedCare === true && (
         <div className="flex flex-col mt-6 sm:flex-row gap-4">
           <Input
             type="number"
             label="Years of experience"
             name="homeBasedYearsOfExperience"
             placeholder="Home based experience"
-            value={data.homeBasedYearsOfExperience}
+            value={data?.homeBasedYearsOfExperience}
             onKeyDown={blockInvalidKeys}
             maxLength={2}
             onChange={(e) => {
@@ -474,23 +553,28 @@ const NurseDetails = ({
         </div>
       )}
 
-      {/* Skills */}
       <div>
         <Label className="mb-2 mt-4 block">Do you have experience in : </Label>
         <div className="flex flex-col gap-3">
-          {skills.map((skill, idx) => (
-            <div key={idx} className="flex gap-2">
-              <Checkbox
-                checked={data.skills.includes(skill.name)}
-                onCheckedChange={() => toggleArray("skills", skill.name)}
-              />
-              <Label>{skill?.name}</Label>
-            </div>
-          ))}
+          {skills.map((skill, idx) => {
+            const id = `service-${idx}`;
+            return (
+              <div key={idx} className="flex gap-2">
+                <Checkbox
+                  id={id}
+                  className="cursor-pointer"
+                  checked={data.skills.includes(skill.name)}
+                  onCheckedChange={() => toggleArray("skills", skill.name)}
+                />
+                <Label htmlFor={id} className="cursor-pointer">
+                  {skill?.name}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Years of Experience */}
       <div>
         <h2 className="formHeading mt-6">Years Experience</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 pb-6">
@@ -547,24 +631,6 @@ const NurseDetails = ({
         </div>
       </div>
 
-      {/* Salary Range */}
-      {/* <Input
-        label="Service Fee (KSh per day/month)"
-        type="text"
-        name="serviceFee"
-        placeholder="e.g., 1500 per day or 35000 per month"
-        value={data.serviceFee}
-        onKeyDown={blockInvalidKeys}
-        onChange={(e) => {
-          handleChange({
-            target: {
-              name: "serviceFee",
-              value: numericInputFilter(e.target.value, 5),
-            },
-          });
-        }}
-      /> */}
-
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="Service Fee (Per Day - KSh)"
@@ -572,27 +638,30 @@ const NurseDetails = ({
           name="serviceFeeDay"
           maxLength={5}
           placeholder="e.g., 1500"
+          onKeyDown={blockInvalidKeys} 
           value={data.serviceFeeDay}
           onChange={(e) => {
             const value = e.target.value;
             setData((prev) => ({
               ...prev,
-              serviceFeeDay: value === "" ? "" : Number(value),
+              serviceFeeDay: value === "" ? "" : Math.max(0, Number(value)), 
             }));
           }}
         />
+
         <Input
           label="Service Fee (Per Month - KSh)"
           type="number"
           name="serviceFeeMonth"
           maxLength={6}
           placeholder="e.g., 35000"
+          onKeyDown={blockInvalidKeys} 
           value={data.serviceFeeMonth}
           onChange={(e) => {
             const value = e.target.value;
             setData((prev) => ({
               ...prev,
-              serviceFeeMonth: value === "" ? "" : Number(value),
+              serviceFeeMonth: value === "" ? "" : Math.max(0, Number(value)), 
             }));
           }}
         />
@@ -610,7 +679,6 @@ const NurseDetails = ({
         />
       </div>
 
-      {/* Document Uploads */}
       <div>
         <h2 className="formHeading mt-6">Document Uploads</h2>
         <div className="p-3 bg-primary/20 my-6 rounded-xl flex gap-2 items-center">
