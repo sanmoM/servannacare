@@ -71,13 +71,13 @@ const NotesPage = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Header */}
+      
       {view === "specialists" && (
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
               <Notebook className="text-primary h-8 w-8" />
-              Messaging
+              Notes
             </h1>
             <p className="text-gray-500 mt-1">
               Communicate with your booked specialists

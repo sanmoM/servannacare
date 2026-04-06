@@ -67,13 +67,13 @@ const SpecialistNotesPage = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Header */}
+      
       {view === "clients" && (
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
               <Notebook className="text-primary h-8 w-8" />
-              Messaging
+              Notes
             </h1>
             <p className="text-gray-500 mt-1">
               Communicate with your patients

@@ -258,7 +258,7 @@ const ChatInbox = () => {
         </ScrollArea>
       </div>
 
-      {/* CHAT WINDOW */}
+      
       <div
         className={`${view === "list" ? "hidden" : "flex"} flex-1 flex-col bg-white md:flex h-full min-h-0`}
       >
@@ -314,7 +314,7 @@ const ChatInbox = () => {
                                   : "bg-white border rounded-tl-none text-gray-800"
                               }`}
                             >
-                              {/* FILE ATTACHMENT DISABLED
+                              {/* 
                             {msg.file && (
                               <div className="p-1">
                                 {msg.file
@@ -362,9 +362,9 @@ const ChatInbox = () => {
               )}
             </div>
 
-            {/* INPUT AREA */}
+          
             <div className="p-4 border-t bg-white shrink-0">
-              {/* FILE PREVIEW DISABLED
+              {/* 
               {stagedFile && (
                 <div className="mb-3 p-2 bg-gray-50 border rounded-lg flex items-center gap-3 relative">
                   <div className="h-12 w-12 rounded-lg border bg-white flex items-center justify-center overflow-hidden shrink-0">
@@ -453,7 +453,6 @@ const ChatInbox = () => {
         )}
       </div>
 
-      {/* DELETE DIALOG (PLACEHOLDER) */}
       <Dialog
         open={deleteConfig.isOpen}
         onOpenChange={(open) =>

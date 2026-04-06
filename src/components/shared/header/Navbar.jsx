@@ -61,7 +61,7 @@ const Navbar = () => {
       <TopBar />
       <div className="border-b bg-white z-50 relative">
         <Container className="flex justify-between items-center py-3 md:py-4">
-          {/* Logo */}
+       
           <div className="md:inline-block hidden">
             <Link href="/">
               <Image
@@ -96,7 +96,7 @@ const Navbar = () => {
             <div></div>
           </div>
 
-          {/* Desktop Nav Links */}
+      
           <div className="hidden md:flex">
             <ul className="flex md:gap-2 lg:gap-6 items-center">
               {navlinks.map((link, indx) => {
@@ -121,7 +121,7 @@ const Navbar = () => {
             </ul>
           </div>
 
-          {/* CTA Button */}
+          
           <div className="flex gap-2">
             {loading ? (
               <LoadingSpinnerSecond />
@@ -145,7 +145,7 @@ const Navbar = () => {
                 </Link>
                 <CareChoiceModal>
                   <Button className="rounded-full text-xs cursor-pointer">
-                    GET IN TOUCH{" "}
+                    SIGN UP
                   </Button>
                 </CareChoiceModal>
               </>
@@ -153,8 +153,7 @@ const Navbar = () => {
           </div>
         </Container>
 
-        {/* Sidebar (Mobile) */}
-        {/* Overlay */}
+    
         <div
           className={`fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300 ${
             sidebarOpen ? "opacity-100 visible" : "opacity-0 invisible"
@@ -162,7 +161,7 @@ const Navbar = () => {
           onClick={handleCloseSidebar}
         ></div>
 
-        {/* Sidebar Drawer */}
+   
         <div
           className={`fixed top-0 right-0 h-full w-3/4 sm:w-1/2 bg-white shadow-lg z-50 transform transition-transform duration-300 ${
             sidebarOpen ? "translate-x-0" : "translate-x-full"
