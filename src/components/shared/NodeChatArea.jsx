@@ -1,20 +1,30 @@
-"use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Send,
-  Image as ImageIcon,
-  Paperclip,
   FileText,
   Loader2,
   ArrowLeft,
-  Download,
-  X,
+  Plus,
+  Image as ImageIcon,
+  Paperclip,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  X
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { getApi, postApi } from "@/lib/apiHandler";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import LoadingSpinner from "./LoadingSpin";
 
 const getFileType = (url) => {
   if (!url) return null;
@@ -36,48 +46,13 @@ export default function NodeChatArea({
   chatSubtitle,
   chatAvatarText,
 }) {
-  const [messages, setMessages] = useState([]);
+  const [nodes, setNodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSending, setIsSending] = useState(false);
-  const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const mergeMessages = (oldMsgs, newMsgs) => {
-    const map = new Map();
-
-    // Keep temp messages
-    oldMsgs.forEach((msg) => {
-      if (String(msg.id).startsWith("temp-")) {
-        map.set(msg.id, msg);
-      }
-    });
-
-    // Add confirmed old messages
-    oldMsgs.forEach((msg) => {
-      if (!String(msg.id).startsWith("temp-")) {
-        map.set(msg.id, msg);
-      }
-    });
-
-    // Merge new messages from API
-    newMsgs.forEach((msg) => {
-      map.set(msg.id, msg);
-    });
-
-    return Array.from(map.values()).sort(
-      (a, b) => new Date(a.created_at) - new Date(b.created_at),
-    );
-  };
 
   const fetchNodes = async (isInitial = false) => {
     if (isInitial) setIsLoading(true);
@@ -121,9 +96,24 @@ export default function NodeChatArea({
         });
       }
 
-      setMessages((prev) => mergeMessages(prev, filteredNotes));
+      const formatted = filteredNotes.map(node => ({
+        ...node,
+        type: (node.sender_id === currentUser?.id || String(node.id).startsWith("temp-")) ? "Sent" : "Received"
+      }));
+
+      // Sort by date desc (newest first)
+      const sorted = formatted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      
+      setNodes(prev => {
+         // Keep temp messages that are currently sending
+         const oldTemp = prev.filter(p => String(p.id).startsWith("temp-"));
+         const newConfirmedIds = new Set(sorted.map(s => s.id));
+         const merged = [...oldTemp.filter(t => !newConfirmedIds.has(t.id)), ...sorted];
+         return merged.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      });
+
     } catch (error) {
-      console.error("Error fetching notes:", error);
+      console.error("Error fetching nodes:", error);
     } finally {
       if (isInitial) setIsLoading(false);
     }
@@ -131,11 +121,9 @@ export default function NodeChatArea({
 
   useEffect(() => {
     fetchNodes(true);
-
     const interval = setInterval(() => {
       fetchNodes(false);
-    }, 3000);
-
+    }, 5000);
     return () => clearInterval(interval);
   }, [fetchNodesEndpoint, receiverId, receiverAuthId, receiverType]);
 
@@ -145,27 +133,23 @@ export default function NodeChatArea({
     }
   };
 
-  const removeSelectedFile = () => {
-    setSelectedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  const handleSend = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim() && !selectedFile) return;
+  const handleSend = async () => {
+    if (!newMessage.trim() && !selectedFile) {
+        toast.error("Please enter a message or select a file.");
+        return;
+    }
 
     const tempId = `temp-${Date.now()}`;
     let filePreview = null;
-
     if (selectedFile) {
       if (selectedFile.type.startsWith("image/")) {
         filePreview = URL.createObjectURL(selectedFile);
       } else {
-        filePreview = `tempfile.${selectedFile.name.split(".").pop()}`;
+        filePreview = "tempfile." + selectedFile.name.split(".").pop();
       }
     }
 
-    const tempMessage = {
+    const tempNode = {
       id: tempId,
       node_message: newMessage.trim() || null,
       node_image: filePreview,
@@ -173,16 +157,20 @@ export default function NodeChatArea({
       sender_type: chatRole === "user" ? "user" : currentUser?.type,
       receiver_id: receiverId,
       receiver_auth_id: receiverAuthId,
-      receiver_type: receiverType,
+      receiver_type: receiverType, // Ensure dynamic specialist type is used here
       created_at: new Date().toISOString(),
       status: "sending",
+      type: "Sent",
       _isTempFile: !!selectedFile && !selectedFile.type.startsWith("image/"),
+      _fileName: selectedFile?.name
     };
 
-    setMessages((prev) => [...prev, tempMessage]);
-
+    setNodes((prev) => [tempNode, ...prev].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+    
     const messageToSend = newMessage;
     const fileToSend = selectedFile;
+    
+    setIsModalOpen(false);
     setNewMessage("");
     setSelectedFile(null);
     setIsSending(true);
@@ -196,7 +184,7 @@ export default function NodeChatArea({
       );
       formData.append("receiver_id", receiverId);
       formData.append("receiver_auth_id", receiverAuthId);
-      formData.append("receiver_type", receiverType);
+      if (receiverType) formData.append("receiver_type", receiverType);
 
       if (messageToSend) {
         formData.append("node_message", messageToSend);
@@ -210,32 +198,77 @@ export default function NodeChatArea({
       const returnedNode = res?.data?.data || res?.data;
 
       if (returnedNode && returnedNode.id) {
-        setMessages((prev) =>
+         returnedNode.type = "Sent";
+         setNodes((prev) =>
           prev.map((msg) => (msg.id === tempId ? returnedNode : msg)),
         );
       } else {
-        setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+        setNodes((prev) => prev.filter((msg) => msg.id !== tempId));
         fetchNodes(false);
       }
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Error sending node:", error);
       toast.error("Failed to send message. Please try again.");
-      setMessages((prev) => prev.filter((msg) => msg.id !== tempId));
+      setNodes((prev) => prev.filter((msg) => msg.id !== tempId));
     } finally {
       setIsSending(false);
     }
   };
 
-  const getMessageTime = (dateString) => {
+  const getFormatDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return date.toLocaleString([], {
+       month: "short",
+       day: "numeric",
+       hour: "2-digit",
+       minute: "2-digit"
+    });
+  };
+
+  const renderFileCell = (node) => {
+     if (!node.node_image) return <span className="text-gray-400">-</span>;
+     
+     const fType = getFileType(node.node_image);
+     const fileUrl = node.node_image.startsWith("http") || node.node_image.startsWith("blob:") ? node.node_image : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${node.node_image}`;
+     const isPending = node.status === "sending";
+
+     if (fType === "image") {
+        return (
+           <a 
+              href={isPending ? "#" : fileUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block w-12 h-12 rounded-md overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all bg-gray-50 flex-shrink-0 relative group"
+              onClick={(e) => isPending && e.preventDefault()}
+           >
+              <img src={fileUrl} alt="File" className="w-full h-full object-cover group-hover:opacity-75 transition-opacity" />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                 <ExternalLink size={16} className="text-white drop-shadow-md" />
+              </div>
+           </a>
+        );
+     }
+     
+     return (
+        <a 
+          href={isPending ? "#" : fileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-primary rounded-md hover:bg-primary/20 transition-colors text-sm font-medium whitespace-nowrap max-w-[200px] group"
+          onClick={(e) => isPending && e.preventDefault()}
+        >
+          <FileText size={16} className="flex-shrink-0" />
+          <span className="truncate">{node._fileName || "View Document"}</span>
+          <ExternalLink size={14} className="ml-0.5 opacity-70 group-hover:opacity-100 flex-shrink-0" />
+        </a>
+     );
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] md:h-[90vh] bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden">
+    <div className="flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-h-[90vh] h-full">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 flex items-center justify-between px-6 py-4">
+      <div className="bg-white border-b border-gray-100 flex items-center justify-between px-6 py-5">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -259,204 +292,164 @@ export default function NodeChatArea({
             </div>
           </div>
         </div>
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogTrigger asChild>
+                <Button className="flex items-center gap-2 rounded-lg px-4 bg-primary cursor-pointer text-white hover:bg-primary/90 transition-colors">
+                    <Plus size={18} />
+                    <span>Create Node</span>
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                    <DialogTitle>Create Communication Node</DialogTitle>
+                    <DialogDescription>
+                        Send a message or document to {chatTitle}.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                     <div className="space-y-2">
+                         <label className="text-sm font-medium text-gray-700">Message</label>
+                         <textarea 
+                             placeholder="Write your message..." 
+                             className="w-full min-h-[120px] resize-none border border-gray-200 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                             value={newMessage}
+                             onChange={(e) => setNewMessage(e.target.value)}
+                         />
+                     </div>
+                     <div className="space-y-2">
+                         <label className="text-sm font-medium text-gray-700">Attachment</label>
+                         <div className="flex items-center gap-3">
+                             <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                onChange={handleFileSelect}
+                                accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx"
+                             />
+                             <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => fileInputRef.current.click()}
+                                className="w-full justify-start text-gray-600 border-gray-300 hover:bg-gray-50 px-4 py-2 bg-white cursor-pointer"
+                             >
+                                 <Paperclip size={18} className="mr-2 opacity-70" />
+                                 <span className="truncate">
+                                     {selectedFile ? selectedFile.name : "Select Image or File"}
+                                 </span>
+                             </Button>
+                             {selectedFile && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => {
+                                    setSelectedFile(null);
+                                    if(fileInputRef.current) fileInputRef.current.value = "";
+                                  }}
+                                  className="text-red-500 hover:text-red-600 hover:bg-red-50 px-3 bg-red-50/50"
+                                >
+                                  <X size={16} />
+                                </Button>
+                             )}
+                         </div>
+                         <p className="text-[11px] text-gray-400">Accepted: Images (jpg, png, webp) and Docs (pdf, doc, xls)</p>
+                     </div>
+                </div>
+                <DialogFooter className="border-t border-gray-100 pt-4 mt-2">
+                    <Button className="cursor-pointer" variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+                    <Button onClick={handleSend} disabled={(!newMessage.trim() && !selectedFile) || isSending} className="bg-primary text-white cursor-pointer">
+                        {isSending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
+                        Submit Node
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
       </div>
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50 space-y-4">
-        {isLoading ? (
-          <div className="h-full flex flex-col items-center justify-center">
-            <Loader2 className="h-8 w-8 text-primary animate-spin mb-4" />
-            <p className="text-gray-500 text-sm">Loading messages...</p>
-          </div>
-        ) : messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center">
-            <div className="bg-white p-6 rounded-md border border-dashed border-gray-200 text-center mx-auto max-w-sm">
-              <div className="bg-primary/5 h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="text-primary h-8 w-8" />
+      {/* Table Area */}
+      <div className="flex-1 overflow-auto bg-white p-6">
+        {isLoading && nodes.length === 0 ? (
+        <LoadingSpinner/>
+        ) : nodes.length === 0 ? (
+          <div className="h-[300px] flex flex-col items-center justify-center">
+            <div className="bg-gray-50 p-8 rounded-xl border border-dashed border-gray-200 text-center mx-auto max-w-sm">
+              <div className="bg-white h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
+                <FileText className="text-primary/60 h-8 w-8" />
               </div>
               <h3 className="text-lg font-medium text-gray-900">
-                No messages yet
+                No communications yet
               </h3>
-              <p className="text-gray-500 mt-1 text-sm">
-                Send a message to start the conversation.
+              <p className="text-gray-500 mt-2 text-sm leading-relaxed">
+                Click "Create Node" to send a message or document.
               </p>
             </div>
           </div>
         ) : (
-          <div className="space-y-4 pb-2">
-            {messages.map((msg) => {
-              const isMine = msg.sender_id === currentUser?.id;
-
-              return (
-                <div
-                  key={msg.id}
-                  className={`flex flex-col ${isMine ? "items-end" : "items-start"}`}
-                >
-                  <div
-                    className={`relative max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 shadow-sm
-                       ${
-                         isMine
-                           ? "bg-primary text-white rounded-tr-sm"
-                           : "bg-white border border-gray-100 text-gray-800 rounded-tl-sm"
-                       }
-                     `}
-                  >
-                    {/* Image Handler */}
-                    {msg.node_image &&
-                      getFileType(msg.node_image) === "image" && (
-                        <div className="mb-2 w-full max-w-[240px] rounded-lg overflow-hidden bg-white/20">
-                          <img
-                            src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${msg?.node_image}`}
-                            alt="Attached"
-                            className="w-full object-cover"
-                            style={{ maxHeight: "200px" }}
-                          />
-                        </div>
-                      )}
-
-                    {/* Document/File Handler */}
-                    {msg.node_image &&
-                      (getFileType(msg.node_image) === "file" ||
-                        msg._isTempFile) && (
-                        <a
-                          href={msg.status === "sending" ? "#" : msg.node_image}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={`flex items-center gap-3 p-3 rounded-xl mb-2 transition-colors ${
-                            isMine
-                              ? "bg-white/10 hover:bg-white/20"
-                              : "bg-gray-50 hover:bg-gray-100"
-                          }`}
-                          onClick={(e) =>
-                            msg.status === "sending" && e.preventDefault()
-                          }
-                        >
-                          <div
-                            className={`p-2 rounded-lg ${isMine ? "bg-white/20" : "bg-white shadow-sm"}`}
-                          >
-                            <FileText
-                              size={20}
-                              className={isMine ? "text-white" : "text-primary"}
-                            />
-                          </div>
-                          <div className="overflow-hidden flex-1">
-                            <p className="text-sm font-semibold truncate">
-                              Attached Document
-                            </p>
-                            <p className="text-xs opacity-70">
-                              {msg.status === "sending"
-                                ? "Uploading..."
-                                : "Click to view"}
-                            </p>
-                          </div>
-                          {!msg.status && (
-                            <Download size={16} className="opacity-70" />
-                          )}
-                        </a>
-                      )}
-
-                    {/* Message Text */}
-                    {msg.node_message && (
-                      <p
-                        className={`whitespace-pre-wrap text-sm ${isMine ? "text-white/100" : "text-gray-700"}`}
-                      >
-                        {msg.node_message}
-                      </p>
-                    )}
-
-                    {/* Footer Metadata */}
-                    <div
-                      className={`flex items-center gap-1 mt-1 text-[10px] ${isMine ? "text-primary-foreground/70 justify-end" : "text-gray-400"}`}
-                    >
-                      <span>{getMessageTime(msg.created_at)}</span>
-                      {msg.status === "sending" && (
-                        <span className="ml-1 opacity-70">Sending...</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </div>
-        )}
-      </div>
-
-      {/* Input Area */}
-      <div className="bg-white p-4 border-t border-gray-100">
-        {selectedFile && (
-          <div className="mb-3 flex items-center p-2 bg-gray-50 rounded-xl border border-gray-200 w-fit max-w-[90%] md:max-w-[300px]">
-            {selectedFile.type.startsWith("image/") ? (
-              <ImageIcon
-                size={18}
-                className="text-primary mr-2 flex-shrink-0"
-              />
-            ) : (
-              <FileText size={18} className="text-primary mr-2 flex-shrink-0" />
-            )}
-            <span className="text-xs font-medium text-gray-700 truncate flex-1 mr-4">
-              {selectedFile.name}
-            </span>
-            <button
-              onClick={removeSelectedFile}
-              className="p-1 rounded-full hover:bg-gray-200 text-gray-500 transition-colors"
-            >
-              <X size={14} />
-            </button>
-          </div>
-        )}
-
-        <form onSubmit={handleSend} className="flex items-center gap-3">
-          <div className="flex-1 bg-gray-50 border border-gray-200 hover:border-primary/30 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all rounded-2xl flex min-h-[52px]">
-            <textarea
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type your message..."
-              className="flex-1 bg-transparent max-h-32 min-h-[52px] p-4 text-sm focus:outline-none resize-none"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend(e);
-                }
-              }}
-            />
-
-            <div className="flex items-center pb-2 pr-2 gap-1 flex-shrink-0">
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                onChange={handleFileSelect}
-                accept="image/*,.pdf,.doc,.docx"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-10 w-10 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-full"
-                onClick={() => fileInputRef.current.click()}
-              >
-                <Paperclip size={18} />
-              </Button>
+          <div className="rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                    <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
+                        <tr>
+                            <th className="px-5 py-4 w-24">Type</th>
+                            <th className="px-5 py-4 min-w-[250px] w-full">Notes</th>
+                            <th className="px-5 py-4 min-w-[120px]">File</th>
+                            <th className="px-5 py-4 min-w-[140px]">Sender</th>
+                            <th className="px-5 py-4 min-w-[140px]">Receiver</th>
+                            <th className="px-5 py-4 min-w-[160px]">Date</th>
+                            <th className="px-5 py-4 min-w-[100px]">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 text-gray-700 bg-white">
+                        {nodes.map(node => (
+                            <tr key={node.id} className={`hover:bg-gray-50/70 transition-colors ${node.status === "sending" ? "opacity-70 bg-gray-50/50" : ""}`}>
+                                <td className="px-5 py-4 align-top">
+                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                                        node.type === "Sent" ? "bg-primary/10 text-primary" : "bg-primary/40 text-primary"
+                                    }`}>
+                                        {node.type}
+                                    </span>
+                                </td>
+                                <td className="px-5 py-4 whitespace-normal break-words max-w-sm align-top">
+                                    {node.node_message ? (
+                                        <div className="text-gray-800 leading-relaxed font-medium">
+                                            {node.node_message}
+                                        </div>
+                                    ) : (
+                                        <span className="text-gray-400 italic font-medium">No message</span>
+                                    )}
+                                </td>
+                                <td className="px-5 py-4 align-top">
+                                    {renderFileCell(node)}
+                                </td>
+                                <td className="px-5 py-4 font-semibold text-gray-900 align-top">
+                                    {node.type === "Sent" ? "You" : chatTitle}
+                                </td>
+                                <td className="px-5 py-4 font-medium text-gray-600 align-top">
+                                    {node.type === "Sent" ? chatTitle : "You"}
+                                </td>
+                                <td className="px-5 py-4 text-gray-500 whitespace-nowrap align-top font-medium">
+                                    {getFormatDate(node.created_at)}
+                                </td>
+                                <td className="px-5 py-4 align-top">
+                                    {node.status === "sending" ? (
+                                        <div className="flex items-center text-orange-500 font-semibold gap-1.5 bg-orange-50 px-2 py-1 rounded-md w-fit">
+                                            <Clock size={14} />
+                                            <span className="text-xs">Sending</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center text-primary font-semibold gap-1.5 bg-primary/10 px-2 py-1 rounded-md w-fit">
+                                            <CheckCircle2 size={14} />
+                                            <span className="text-xs">Delivered</span>
+                                        </div>
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
           </div>
-
-          <Button
-            type="submit"
-            disabled={(!newMessage.trim() && !selectedFile) || isSending}
-            className={`h-[52px] w-[52px] rounded-2xl shrink-0 flex items-center justify-center shadow-md transition-all ${
-              !newMessage.trim() && !selectedFile
-                ? "bg-gray-200 text-gray-400 shadow-none border-0"
-                : "hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
-            }`}
-          >
-            {isSending ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Send size={20} className="ml-1" />
-            )}
-          </Button>
-        </form>
+        )}
       </div>
     </div>
   );

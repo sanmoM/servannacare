@@ -60,19 +60,25 @@ const ChatInbox = () => {
     const uniqueSpecs = [];
     const seenIds = new Set();
 
-    bookings.forEach((booking) => {
-      if (booking.specialist && !seenIds.has(booking.specialist.id)) {
+    bookings?.forEach((booking) => {
+      if (
+        booking?.specialist &&
+        booking.specialist.name &&
+        !seenIds.has(booking.specialist.id)
+      ) {
         seenIds.add(booking.specialist.id);
         uniqueSpecs.push({
           id: booking.specialist.id,
           type: booking.specialist.type,
-          name: booking.specialist.name,
-          avatar: booking.specialist.name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2),
+          name: booking?.specialist?.name,
+          avatar: booking?.specialist?.name
+            ? booking.specialist.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2)
+            : "NA",
           lastMsg: "",
         });
       }
@@ -150,7 +156,7 @@ const ChatInbox = () => {
         ...payload,
         created_at: new Date().toISOString(),
       };
-      // setLocalMessages((prev) => [...prev, tempMsg]);
+
 
       setTypedMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
