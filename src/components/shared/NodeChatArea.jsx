@@ -230,13 +230,13 @@ export default function NodeChatArea({
     if (!name) return "";
 
     const parts = name.split(".");
+    if (parts.length === 1) return name.length > 25 ? name.substring(0, 20) + "..." : name;
+    
     const ext = parts.pop();
     const baseName = parts.join(".");
 
-    const words = baseName.split(" ");
-
-    if (words.length > 6) {
-      return words.slice(0, 6).join(" ") + "... ." + ext;
+    if (baseName.length > 25) {
+      return `${baseName.substring(0, 12)}...${baseName.substring(baseName.length - 8)}.${ext}`;
     }
 
     return name;
@@ -350,23 +350,21 @@ export default function NodeChatArea({
                     type="button"
                     variant="outline"
                     onClick={() => fileInputRef.current.click()}
-                    className="w-full pr-10 overflow-hidden text-gray-600 border-gray-300 hover:bg-gray-50 px-4 py-2 bg-white"
+                    className="flex items-center justify-start w-full pr-10 overflow-hidden text-gray-600 border-gray-300 hover:bg-gray-50 px-4 py-2 bg-white"
                   >
-                    <div className="flex items-center w-full min-w-0">
-                      <Paperclip
-                        size={18}
-                        className="mr-2 opacity-70 flex-shrink-0"
-                      />
+                    <Paperclip
+                      size={18}
+                      className="mr-2 opacity-70 flex-shrink-0"
+                    />
 
-                      <span
-                        title={selectedFile?.name}
-                        className="flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-left"
-                      >
-                        {selectedFile
-                          ? formatFileName(selectedFile.name)
-                          : "Select Image or File"}
-                      </span>
-                    </div>
+                    <span
+                      title={selectedFile?.name}
+                      className="flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-left"
+                    >
+                      {selectedFile
+                        ? formatFileName(selectedFile.name)
+                        : "Select Image or File"}
+                    </span>
                   </Button>
                   
                   {selectedFile && (
