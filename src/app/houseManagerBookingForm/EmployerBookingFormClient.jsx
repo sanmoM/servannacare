@@ -67,7 +67,6 @@ export default function EmployerBookingFormClient() {
     [specialists, id],
   );
 
-
   const monthlyRate = Number(
     matchedSpecialist?.house_manager?.serviceFeeMonth ??
       matchedSpecialist?.serviceFeeMonth ??
@@ -211,11 +210,11 @@ export default function EmployerBookingFormClient() {
         dates: groupedByMonth[month],
       }));
     }
-    
+
     const bookingPayload = {
-      specialist_id: Number(id),
+      specialist_id: parseInt(matchedSpecialist?.id),
       specialist_type: matchedSpecialist.type,
-      subRole: category,
+      subRole: matchedSpecialist?.subRole,
       booking_type: isMonthly ? "monthly" : "daily",
       has_kids: formData.kids === "yes" ? 1 : 0,
       age_bracket: formData.kids === "yes" ? formData.ageBracket : [],
@@ -225,21 +224,11 @@ export default function EmployerBookingFormClient() {
       booking_amount: bookingAmount,
     };
 
-    // console.log("Checkout Payload:", {
-    //   phone: phoneNumber,
-    //   plan_id: planId,
-    //   specialist_id: id,
-    //   specialist_type: category,
-    //   book_amount: bookingAmount,
-    // });
-
-  
-
     try {
       const paymentRes = await postApi("/checkout", {
         phone: phoneNumber,
         plan_id: planId,
-        specialist_id: id,
+        specialist_id: parseInt(matchedSpecialist?.id),
         specialist_type: matchedSpecialist.type,
         book_amount: bookingAmount,
       });

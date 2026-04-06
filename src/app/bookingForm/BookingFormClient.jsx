@@ -309,7 +309,7 @@ export default function BookingFormClient() {
         }));
 
     if (matchedSpecialist) {
-      formData.append("specialist_id", id);
+      formData.append("specialist_id", parseInt(matchedSpecialist?.id));
       formData.append("specialist_type", matchedSpecialist?.type);
     }
 
@@ -374,7 +374,7 @@ export default function BookingFormClient() {
       const paymentRes = await postApi("/checkout", {
         phone: phoneNumber,
         plan_id: planId,
-        specialist_id: id,
+        specialist_id: parseInt(matchedSpecialist?.id),
         specialist_type: matchedSpecialist?.type,
         book_amount: bookingAmount,
       });

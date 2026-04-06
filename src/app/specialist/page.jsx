@@ -23,7 +23,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
-import { Label } from "@/components/ui/label";
 import { Filter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useFetch } from "@/hooks/useFetch";
