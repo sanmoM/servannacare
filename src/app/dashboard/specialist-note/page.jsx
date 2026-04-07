@@ -146,7 +146,7 @@ const SpecialistNotesPage = () => {
                       variant="outline"
                       onClick={() => handleOpenNotes(booking)}
                     >
-                      Message
+                      Notes
                       <ArrowRight size={16} />
                     </Button>
                   </CardContent>

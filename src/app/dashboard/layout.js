@@ -215,11 +215,6 @@ export default function DashboardLayout({ children }) {
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/agency-profile", icon: User },
     {
-      name: "Employee",
-      href: "/dashboard/agency-employee",
-      icon: BriefcaseBusiness,
-    },
-    {
       name: "Subscriptions",
       href: "/dashboard/agency-subscriptions",
       icon: Gem,
@@ -229,7 +224,17 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/agency-payment-history",
       icon: History,
     },
-    // { name: "Clients", href: "/dashboard/agency-clients", icon: Users2 },
+    {
+      name: "Employee",
+      href: "/dashboard/agency-employee",
+      icon: BriefcaseBusiness,
+    },
+    {
+      name: "Employee Note",
+      href: "/dashboard/agency-specialist-note",
+      icon: Notebook,
+    },
+
     { name: "Inbox", href: "/dashboard/agency-inbox", icon: Inbox },
     // { name: "Feedback", href: "/dashboard/feedback", icon: Smile },
   ];
@@ -241,7 +246,16 @@ export default function DashboardLayout({ children }) {
       href: "/dashboard/care_institutions-profile",
       icon: User,
     },
-    { name: "Specialists", href: "/dashboard/care-institution-specialists", icon: Cross },
+    {
+      name: "Specialists",
+      href: "/dashboard/care-institution-specialists",
+      icon: Cross,
+    },
+    {
+      name: "Specialist Note",
+      href: "/dashboard/care-institution-specialist-note",
+      icon: Notebook,
+    },
     // {
     //   name: "Schedule",
     //   href: "/dashboard/care-institution-schedule",
@@ -345,12 +359,12 @@ export default function DashboardLayout({ children }) {
               ))}
             </nav>
 
-          <Button
-  onClick={handleLogout}
-  className="bg-secondary hover:bg-secondary/90 mx-3 mb-4 cursor-pointer"
->
-  Log Out
-</Button>
+            <Button
+              onClick={handleLogout}
+              className="bg-secondary hover:bg-secondary/90 mx-3 mb-4 cursor-pointer"
+            >
+              Log Out
+            </Button>
           </div>
         </aside>
 

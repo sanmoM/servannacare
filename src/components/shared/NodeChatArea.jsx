@@ -58,6 +58,7 @@ export default function NodeChatArea({
     if (isInitial) setIsLoading(true);
     try {
       const response = await getApi(fetchNodesEndpoint);
+      console.log("res",response?.data)
       const data = response?.data || {};
       const sentNodes = Array.isArray(data.sent_nodes) ? data.sent_nodes : [];
       const receivedNodes = Array.isArray(data.received_nodes)
@@ -67,7 +68,7 @@ export default function NodeChatArea({
       const allNotes = [...sentNodes, ...receivedNodes];
 
       let filteredNotes = [];
-      if (chatRole === "user") {
+      if (chatRole === "user" || chatRole === "agency" || chatRole === "care_institutions") {
         filteredNotes = allNotes.filter((note) => {
           const isSentToSpecialist =
             note.sender_id === currentUser?.id &&

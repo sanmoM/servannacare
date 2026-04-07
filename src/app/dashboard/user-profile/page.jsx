@@ -25,6 +25,7 @@ export default function page() {
     profilePhoto: null,
     gender: "",
     location: "",
+    age: "",
   });
 
   const [country, setCountry] = useState("KE");
@@ -40,6 +41,7 @@ export default function page() {
         profilePhoto: userInfo.profilePhoto || null,
         gender: userInfo.gender || "",
         location: userInfo.location || "",
+        age: userInfo.age || "",
       });
 
       if (userInfo.profilePhoto) {
@@ -63,9 +65,18 @@ export default function page() {
         profilePhoto: file,
       }));
 
-      setImagePreview(URL.createObjectURL(file));
+      setImagePreview(file);
     }
   };
+
+
+  useEffect(() => {
+  return () => {
+    if (imagePreview instanceof File) {
+      URL.revokeObjectURL(imagePreview);
+    }
+  };
+}, [imagePreview]);
 
   const handleUpdate = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
@@ -111,26 +122,40 @@ export default function page() {
       </div>
 
       <div className="border rounded-2xl p-6 flex flex-col md:flex-row gap-8 items-center md:items-start">
-        {/* Profile Photo */}
         <div className="flex flex-col items-center">
-          <div className="relative h-36 w-36 lg:h-48 lg:w-48 rounded-full border-4 border-primary overflow-hidden shadow-lg">
-            {/* Display Profile Image */}
-            {imagePreview && (
+          <div className="relative h-36 w-36 lg:h-48 lg:w-48 rounded-full overflow-hidden border-4 border-primary shadow-lg group">
+           
+            {imagePreview ? (
               <img
-                src={imagePreview}
+                src={
+                  imagePreview instanceof File
+                    ? URL.createObjectURL(imagePreview)
+                    : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${imagePreview}`
+                }
                 alt="Profile"
-                className="absolute top-0 left-0 w-full h-full object-cover rounded-full"
+             
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                <Camera size={40} />
+              </div>
             )}
 
-            {/* FileUpload Component */}
-            <FileUpload
-              title="Profile Photo"
-              accept="image/*"
-              icon={<Camera size={32} />}
-              file={form.profilePhoto}
-              onFileSelect={handleProfilePic}
-            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+              <Camera size={28} className="text-white" />
+            </div>
+
+         
+            <div className="absolute inset-0 opacity-0 cursor-pointer">
+              <FileUpload
+                title="Profile Photo"
+                accept="image/*"
+                icon={<Camera size={32} />}
+                file={form.profilePhoto}
+                onFileSelect={handleProfilePic}
+              />
+            </div>
           </div>
 
           <h2 className="text-xl font-semibold mt-4 text-center break-words">
@@ -194,7 +219,7 @@ export default function page() {
           <div className="flex flex-col mt-2">
             <p className="text-sm mb-1 text-black">Gender</p>
             <div className="flex gap-4">
-              {["Male", "Female", "Other"].map((g) => (
+              {["male", "female", "Other"].map((g) => (
                 <label
                   key={g}
                   className="flex items-center gap-2 cursor-pointer"
@@ -219,6 +244,12 @@ export default function page() {
             value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
             placeholder="Enter your location"
+          />
+          <Input
+            label="Age"
+            value={form.age}
+            onChange={(e) => setForm({ ...form, age: e.target.value })}
+            placeholder="Enter your age"
           />
         </div>
       </div>
