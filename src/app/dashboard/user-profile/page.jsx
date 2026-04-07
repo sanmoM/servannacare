@@ -89,6 +89,7 @@ export default function page() {
     formData.append("number", form.number);
     formData.append("gender", form.gender);
     formData.append("location", form.location);
+    formData.append("age", form.age);
 
     if (form.profilePhoto) {
       formData.append("profilePhoto", form.profilePhoto);
