@@ -17,7 +17,7 @@ import "react-phone-number-input/style.css";
 import { Label } from "@/components/ui/label";
 
 export default function page() {
-  const { data, isLoading, error } = useFetch("/profile");
+  const { data, isLoading, error, refetch } = useFetch("/profile");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -69,14 +69,13 @@ export default function page() {
     }
   };
 
-
   useEffect(() => {
-  return () => {
-    if (imagePreview instanceof File) {
-      URL.revokeObjectURL(imagePreview);
-    }
-  };
-}, [imagePreview]);
+    return () => {
+      if (imagePreview instanceof File) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const handleUpdate = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
@@ -104,6 +103,7 @@ export default function page() {
 
       if (response.status === 200) {
         toast.success("Profile updated successfully!");
+        await refetch();
       } else {
         throw new Error("Failed to update profile");
       }
@@ -125,7 +125,6 @@ export default function page() {
       <div className="border rounded-2xl p-6 flex flex-col md:flex-row gap-8 items-center md:items-start">
         <div className="flex flex-col items-center">
           <div className="relative h-36 w-36 lg:h-48 lg:w-48 rounded-full overflow-hidden border-4 border-primary shadow-lg group">
-           
             {imagePreview ? (
               <img
                 src={
@@ -134,7 +133,6 @@ export default function page() {
                     : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${imagePreview}`
                 }
                 alt="Profile"
-             
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
@@ -147,7 +145,6 @@ export default function page() {
               <Camera size={28} className="text-white" />
             </div>
 
-         
             <div className="absolute inset-0 opacity-0 cursor-pointer">
               <FileUpload
                 title="Profile Photo"
