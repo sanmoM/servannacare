@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -39,6 +40,14 @@ const nextConfig = {
         hostname: "cervannacare.testorbis.com",
       },
       {
+        protocol: "https",
+        hostname: "backend.cervannacare.com",
+      },
+      {
+        protocol: "https",
+        hostname: "cervannacare.com",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
       },
@@ -46,7 +55,6 @@ const nextConfig = {
         protocol: "http",
         hostname: "192.168.68.25",
       },
-   
     ],
   },
 };
