@@ -230,6 +230,11 @@ export default function DashboardLayout({ children }) {
       icon: BriefcaseBusiness,
     },
     {
+      name: "Employee Bookings",
+      href: "/dashboard/agency-employee/bookings",
+      icon: ClipboardClock,
+    },
+    {
       name: "Employee Note",
       href: "/dashboard/agency-specialist-note",
       icon: Notebook,
