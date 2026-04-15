@@ -46,7 +46,7 @@ export default function NodeChatArea({
   chatSubtitle,
   chatAvatarText,
 }) {
-  // console.log("receiver id", receiverId);
+  // console.log("receiver id", receiverAuthId);
 
   const [nodes, setNodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -324,7 +324,7 @@ export default function NodeChatArea({
           <DialogTrigger asChild>
             <Button className="flex items-center gap-2 rounded-lg px-4 bg-primary cursor-pointer text-white hover:bg-primary/90 transition-colors">
               <Plus size={18} />
-              <span>Create Node</span>
+              <span>Create Note</span>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
@@ -438,7 +438,7 @@ export default function NodeChatArea({
                 No communications yet
               </h3>
               <p className="text-gray-500 mt-2 text-sm leading-relaxed">
-                Click "Create Node" to send a message or document.
+                Click "Create Note" to send a message or document.
               </p>
             </div>
           </div>

@@ -61,6 +61,8 @@ const BookingHistoryPage = () => {
 
   const { data, isLoading, error, mutate } = useFetch("/user-booking");
 
+  // console.log(data?.data?.data);
+
   useEffect(() => {
     if (data) {
       const fetchedBookings = Array.isArray(data?.data?.data)
@@ -87,8 +89,8 @@ const BookingHistoryPage = () => {
   const filteredBookings =
     filterStatus !== "All"
       ? bookings.filter(
-        (b) => b.booking_status.toLowerCase() === filterStatus.toLowerCase(),
-      )
+          (b) => b.booking_status.toLowerCase() === filterStatus.toLowerCase(),
+        )
       : bookings;
 
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
@@ -135,7 +137,7 @@ const BookingHistoryPage = () => {
         </div>
       </div>
 
-      {/* Table Section */}
+     
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[700px]">
@@ -209,7 +211,7 @@ const BookingHistoryPage = () => {
                         <div className="flex items-center gap-2">
                           <Stethoscope size={14} className="text-gray-400" />
                           <span className="text-sm text-gray-700">
-                            {row.specialist?.name || "Assigning..."}
+                            {row.specialist?.name || row.specialist?.fullName}
                           </span>
                         </div>
                       </td>
@@ -261,11 +263,18 @@ const BookingHistoryPage = () => {
                           </span>
                           {row.booking_status.toLowerCase() === "completed" &&
                             (isAlreadyReviewed ? (
-                              <Button className={"cursor-pointer"} variant="outline" disabled>
+                              <Button
+                                className={"cursor-pointer"}
+                                variant="outline"
+                                disabled
+                              >
                                 Reviewed
                               </Button>
                             ) : (
-                              <Button className={"cursor-pointer"} onClick={() => handleOpenReview(row)}>
+                              <Button
+                                className={"cursor-pointer"}
+                                onClick={() => handleOpenReview(row)}
+                              >
                                 Leave Review
                               </Button>
                             ))}
@@ -274,7 +283,11 @@ const BookingHistoryPage = () => {
                               variant="outline"
                               size="sm"
                               className="cursor-pointer border-primary text-primary hover:bg-primary hover:text-white"
-                              onClick={() => router.push(`/dashboard/user-inbox?specialistId=${row.specialist_id}`)}
+                              onClick={() =>
+                                router.push(
+                                  `/dashboard/user-inbox?specialistId=${row.specialist_id}`,
+                                )
+                              }
                             >
                               <MessageSquare size={14} className="mr-2" />
                               Message
@@ -290,7 +303,6 @@ const BookingHistoryPage = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-gray-500">

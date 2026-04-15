@@ -24,8 +24,6 @@ const AgencySpecialistNotesPage = () => {
     ? profileData?.data?.agencyEmployees
     : [];
 
-    
-
   const handleOpenNotes = (specialist) => {
     setSelectedSpecialist(specialist);
     setView("notes");
@@ -44,7 +42,6 @@ const AgencySpecialistNotesPage = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-
       {view === "specialists" && (
         <div className="flex justify-between items-center">
           <div>
@@ -134,7 +131,8 @@ const AgencySpecialistNotesPage = () => {
           chatRole="agency"
           onBack={handleBack}
           receiverId={selectedSpecialist.id}
-          receiverAuthId={selectedSpecialist.user_id || selectedSpecialist.id}
+          // receiverAuthId={selectedSpecialist.user_id || selectedSpecialist.id}
+          receiverAuthId={selectedSpecialist.user_id}
           receiverType={selectedSpecialist.type}
           fetchNodesEndpoint="/specialist-nodes"
           chatTitle={selectedSpecialist.name || "Employee"}

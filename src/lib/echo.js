@@ -9,9 +9,9 @@ const echoInstance = () => {
     key: process.env.NEXT_PUBLIC_REVERB_APP_KEY,
     wsHost: process.env.NEXT_PUBLIC_REVERB_HOST,
     wsPort: Number(process.env.NEXT_PUBLIC_REVERB_PORT),
-    forceTLS: false,
-    disableStats: true,
-    enabledTransports: ["ws"],
+    forceTLS: true,
+    // disableStats: true,
+    enabledTransports: ["ws", "wss"],
     authEndpoint: `${process.env.NEXT_PUBLIC_API_BASE_URL}/broadcasting/auth`,
     auth: {
       headers: {
