@@ -18,7 +18,6 @@ import "react-phone-number-input/style.css";
 import { Label } from "@/components/ui/label";
 
 const UpdateBasicInfo = ({ instituteData = {} }) => {
-  console.log("institute data", instituteData.number);
   const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user, refreshUser } = useAuth();

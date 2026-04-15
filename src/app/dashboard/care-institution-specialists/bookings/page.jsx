@@ -16,7 +16,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import { useFetch } from "@/hooks/useFetch";
 import { postApi } from "@/lib/apiHandler";
@@ -24,22 +23,22 @@ import {
   Eye,
   FileText,
   User,
-  Home,
   Briefcase,
   ChevronLeft,
   ChevronRight,
-  CalendarDays,
-  DollarSign,
-  MapPin,
   Phone,
   Mail,
+  MapPin,
+  Stethoscope,
+  Activity,
+  Heart,
+  Hospital,
+  AlertCircle,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import { useAuth } from "@/hooks/useAuth";
 
-const AgencyEmployeeBookingsPage = () => {
-  const { user } = useAuth();
+const InstitutionBookingsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -49,7 +48,7 @@ const AgencyEmployeeBookingsPage = () => {
 
   const [bookings, setBookings] = useState([]);
 
-  const { data, isLoading, error, refetch } = useFetch("/agency-booking");
+  const { data, isLoading, error, refetch } = useFetch("/institution-booking");
 
   useEffect(() => {
     if (data) {
@@ -113,16 +112,12 @@ const AgencyEmployeeBookingsPage = () => {
     setBookings((prev) =>
       prev.map((b) => (b.id === id ? { ...b, booking_status: newStatus } : b)),
     );
+    toast.success(`Status updated to ${newStatus}`);
     try {
       const response = await postApi(`/update-booking-status/${id}`, {
         booking_status: newStatus,
       });
       if (response.status !== 200) {
-        throw new Error("Failed");
-      }
-      if (response.status === 200) {
-        toast.success(`Status updated to ${newStatus}`);
-      } else {
         throw new Error("Failed");
       }
     } catch (err) {
@@ -174,16 +169,30 @@ const AgencyEmployeeBookingsPage = () => {
     return `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${path}`;
   };
 
+  const getSpecialistTypeLabel = (type) => {
+    switch (type) {
+      case "institution-nurse":
+        return "Nurse";
+      case "institution-nurse-assistant":
+        return "Nurse Aide";
+      case "institution-physiotherapist":
+        return "Physiotherapist";
+      case "institution-special-need":
+        return "Special Need Caregiver";
+      default:
+        return type?.replace(/-/g, " ") || "Specialist";
+    }
+  };
+
   return (
     <div className="w-full py-6 bg-gray-50 min-h-screen">
-
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">
-            Employee Bookings
+            Specialist Bookings
           </h1>
           <p className="text-gray-500 mt-1 text-sm">
-            Manage and control bookings for your agency employees.
+            Manage and control bookings for your institution's specialists.
           </p>
         </div>
         <div className="w-full sm:w-[220px]">
@@ -206,20 +215,19 @@ const AgencyEmployeeBookingsPage = () => {
         </div>
       </div>
 
-
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-[1000px] w-full text-left border-collapse">
+          <table className="min-w-[1100px] w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Employee
+                  Specialist
                 </th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Client
+                  Patient Info
                 </th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                  Service Details
+                  Client (Booker)
                 </th>
                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
                   Schedule
@@ -244,39 +252,251 @@ const AgencyEmployeeBookingsPage = () => {
                       key={row.id}
                       className="hover:bg-green-50/10 transition-colors group"
                     >
-                      
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-lg bg-purple-100 flex-shrink-0 border overflow-hidden">
                             <Image
                               src={
                                 buildImageUrl(specialist?.profilePhoto) ||
-                                `https://ui-avatars.com/api/?name=${specialist?.name || "E"}`
+                                `https://ui-avatars.com/api/?name=${specialist?.fullName || specialist?.name || "S"}`
                               }
-                              alt={specialist?.name || "Employee"}
+                              alt={
+                                specialist?.fullName ||
+                                specialist?.name ||
+                                "Specialist"
+                              }
                               width={40}
                               height={40}
                               className="h-full w-full object-cover"
                               onError={(e) => {
-                                e.currentTarget.srcset = `https://ui-avatars.com/api/?name=${specialist?.name || "E"}`;
+                                e.currentTarget.srcset = `https://ui-avatars.com/api/?name=${specialist?.fullName || specialist?.name || "S"}`;
                               }}
                             />
                           </div>
                           <div>
                             <p className="font-semibold text-gray-900 leading-none">
-                              {specialist?.name || "N/A"}
+                              {specialist?.fullName ||
+                                specialist?.name ||
+                                "N/A"}
                             </p>
                             <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                              <Briefcase size={11} className="text-gray-400" />
-                              {specialist?.subRole?.replace("-", " ") ||
-                                specialist?.preferredRole ||
-                                "Employee"}
+                              <Stethoscope
+                                size={11}
+                                className="text-gray-400"
+                              />
+                              {getSpecialistTypeLabel(
+                                specialist?.type || row.specialist_type,
+                              )}
                             </p>
+                            {specialist?.preferredRole && (
+                              <p className="text-[10px] text-primary font-medium mt-0.5">
+                                {specialist.preferredRole}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </td>
 
-          
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center font-bold text-sm border border-rose-100">
+                            {row.patient_name?.charAt(0) || "?"}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">
+                              {row.patient_name || "N/A"}
+                            </p>
+                            <div className="text-xs text-gray-500 space-y-0.5">
+                              <p>
+                                {row.patient_age && `${row.patient_age} yrs`}
+                                {row.patient_gender &&
+                                  ` • ${row.patient_gender}`}
+                              </p>
+                              {row.location_of_care && (
+                                <p className="flex items-center gap-1">
+                                  <Hospital
+                                    size={10}
+                                    className="text-gray-400"
+                                  />
+                                  {row.location_of_care}
+                                </p>
+                              )}
+                            </div>
+
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <button className="text-[10px] text-primary font-bold mt-1 cursor-pointer hover:underline">
+                                  View Details →
+                                </button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto">
+                                <DialogHeader>
+                                  <DialogTitle className="flex items-center gap-2">
+                                    <Heart
+                                      size={18}
+                                      className="text-rose-500"
+                                    />
+                                    Patient Details
+                                  </DialogTitle>
+                                </DialogHeader>
+                                <div className="space-y-4 mt-2">
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <DetailTile
+                                      label="Patient Name"
+                                      value={row.patient_name}
+                                    />
+                                    <DetailTile
+                                      label="Age"
+                                      value={
+                                        row.patient_age
+                                          ? `${row.patient_age} years`
+                                          : null
+                                      }
+                                    />
+                                    <DetailTile
+                                      label="Gender"
+                                      value={row.patient_gender}
+                                    />
+                                    <DetailTile
+                                      label="Relationship to booking person"
+                                      value={row.relationship_to_booking_person}
+                                    />
+                                  </div>
+
+                                  <div className="border-t pt-3">
+                                    <h4 className="text-xs font-bold uppercase text-gray-400 mb-2 flex items-center gap-1">
+                                      <Activity
+                                        size={12}
+                                        className="text-primary"
+                                      />{" "}
+                                      Medical Information
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <DetailTile
+                                        label="Conditions"
+                                        value={
+                                          row.patient_have_any_conditions?.join(
+                                            ", ",
+                                          ) || "None"
+                                        }
+                                      />
+                                      <DetailTile
+                                        label="Other Conditions"
+                                        value={
+                                          row.patient_have_any_others_conditions
+                                        }
+                                      />
+                                      <DetailTile
+                                        label="On Medication"
+                                        value={
+                                          row.patient_currently_on_medication
+                                            ? "Yes"
+                                            : "No"
+                                        }
+                                      />
+                                      {row.patient_currently_on_medication_data && (
+                                        <DetailTile
+                                          label="Medication Details"
+                                          value={
+                                            row.patient_currently_on_medication_data
+                                          }
+                                        />
+                                      )}
+                                      <DetailTile
+                                        label="Allergies"
+                                        value={
+                                          row.patient_have_any_known_allergies
+                                        }
+                                      />
+                                      {row.patient_have_any_known_allergies_details && (
+                                        <DetailTile
+                                          label="Allergy Details"
+                                          value={
+                                            row.patient_have_any_known_allergies_details
+                                          }
+                                        />
+                                      )}
+                                      <DetailTile
+                                        label="Mobility Status"
+                                        value={row.mobility_status_of_patient}
+                                      />
+                                      <DetailTile
+                                        label="Location of Care"
+                                        value={row.location_of_care}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  {(row.communication_type ||
+                                    row.communication_method) && (
+                                    <div className="border-t pt-3">
+                                      <h4 className="text-xs font-bold uppercase text-gray-400 mb-2">
+                                        Communication
+                                      </h4>
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <DetailTile
+                                          label="Type"
+                                          value={row.communication_type}
+                                        />
+                                        <DetailTile
+                                          label="Instruction Level"
+                                          value={row.instruction_level}
+                                        />
+                                        <DetailTile
+                                          label="Method"
+                                          value={row.communication_method}
+                                        />
+                                        <DetailTile
+                                          label="Responds to Name"
+                                          value={
+                                            row.responds_to_name ? "Yes" : "No"
+                                          }
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {(row.emergency_contact_name ||
+                                    row.primary_doctor_name) && (
+                                    <div className="border-t pt-3">
+                                      <h4 className="text-xs font-bold uppercase text-gray-400 mb-2 flex items-center gap-1">
+                                        <AlertCircle
+                                          size={12}
+                                          className="text-red-400"
+                                        />{" "}
+                                        Emergency & Doctor
+                                      </h4>
+                                      <div className="grid grid-cols-2 gap-3">
+                                        <DetailTile
+                                          label="Emergency Contact"
+                                          value={row.emergency_contact_name}
+                                        />
+                                        <DetailTile
+                                          label="Emergency Phone"
+                                          value={row.emergency_contact_number}
+                                        />
+                                        <DetailTile
+                                          label="Primary Doctor"
+                                          value={row.primary_doctor_name}
+                                        />
+                                        <DetailTile
+                                          label="Doctor Phone"
+                                          value={row.primary_doctor_number}
+                                        />
+                                        <DetailTile
+                                          label="Primary Hospital"
+                                          value={row.primary_hospital}
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                        </div>
+                      </td>
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-green-50 text-primary flex items-center justify-center font-bold text-sm border border-green-100">
@@ -304,34 +524,6 @@ const AgencyEmployeeBookingsPage = () => {
                         </div>
                       </td>
 
-        
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Home size={13} className="text-primary" />
-                            <span className="text-sm font-medium text-gray-700 capitalize">
-                              {row.home_type || "N/A"}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              • {row.home_size || ""}
-                            </span>
-                          </div>
-                          {row.has_kids && (
-                            <div className="flex flex-wrap gap-1">
-                              {row.age_bracket?.map((age, i) => (
-                                <span
-                                  key={i}
-                                  className="bg-blue-50 text-blue-600 text-[10px] font-bold px-1.5 py-0.5 rounded border border-blue-100"
-                                >
-                                  Kids: {age}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-
-                     
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div>
@@ -406,15 +598,18 @@ const AgencyEmployeeBookingsPage = () => {
                               <div className="bg-green-50 p-3 rounded-lg text-xs text-primary font-medium">
                                 Highlighting dates for{" "}
                                 <strong>{row.booking_type}</strong> plan •
-                                Employee:{" "}
-                                <strong>{specialist?.name || "N/A"}</strong>
+                                Specialist:{" "}
+                                <strong>
+                                  {specialist?.fullName ||
+                                    specialist?.name ||
+                                    "N/A"}
+                                </strong>
                               </div>
                             </DialogContent>
                           </Dialog>
                         </div>
                       </td>
 
-                     
                       <td className="px-6 py-4 text-right">
                         <span className="font-bold text-gray-900">
                           KSh {row.booking_amount}
@@ -462,7 +657,6 @@ const AgencyEmployeeBookingsPage = () => {
           </table>
         </div>
 
-   
         {filteredBookings.length > itemsPerPage && (
           <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-500">
@@ -518,4 +712,15 @@ const AgencyEmployeeBookingsPage = () => {
   );
 };
 
-export default AgencyEmployeeBookingsPage;
+const DetailTile = ({ label, value }) => (
+  <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+    <span className="text-[10px] uppercase font-bold text-gray-400 block mb-0.5">
+      {label}
+    </span>
+    <p className="text-sm font-semibold text-gray-800 break-words">
+      {value || "Not Specified"}
+    </p>
+  </div>
+);
+
+export default InstitutionBookingsPage;

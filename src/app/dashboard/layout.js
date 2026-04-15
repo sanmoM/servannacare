@@ -257,6 +257,11 @@ export default function DashboardLayout({ children }) {
       icon: Cross,
     },
     {
+      name: "Specialist Bookings",
+      href: "/dashboard/care-institution-specialists/bookings",
+      icon: ClipboardClock,
+    },
+    {
       name: "Specialist Note",
       href: "/dashboard/care-institution-specialist-note",
       icon: Notebook,

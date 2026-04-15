@@ -24,6 +24,8 @@ const AgencySpecialistNotesPage = () => {
     ? profileData?.data?.agencyEmployees
     : [];
 
+    
+
   const handleOpenNotes = (specialist) => {
     setSelectedSpecialist(specialist);
     setView("notes");
@@ -42,7 +44,7 @@ const AgencySpecialistNotesPage = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
-      {/* Header */}
+
       {view === "specialists" && (
         <div className="flex justify-between items-center">
           <div>
@@ -51,7 +53,7 @@ const AgencySpecialistNotesPage = () => {
               Specialist Notes
             </h1>
             <p className="text-gray-500 mt-1">
-              Communicate with your agency employees
+              Communicate with your agency employees clients
             </p>
           </div>
         </div>

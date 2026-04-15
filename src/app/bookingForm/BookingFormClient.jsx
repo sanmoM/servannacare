@@ -352,7 +352,7 @@ export default function BookingFormClient() {
     const payloadObject = formDataToObject(formData);
 
     
-    console.log("Payload:", payloadObject);
+    // console.log("Payload:", payloadObject);
 
     // for (let pair of formData.entries()) {
     //   console.log("payload", pair[0], pair[1]);

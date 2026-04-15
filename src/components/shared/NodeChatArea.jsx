@@ -38,14 +38,16 @@ export default function NodeChatArea({
   currentUser,
   chatRole,
   onBack,
-  receiverAuthId,
   receiverId,
+  receiverAuthId,
   receiverType,
   fetchNodesEndpoint,
   chatTitle,
   chatSubtitle,
   chatAvatarText,
 }) {
+  // console.log("receiver id", receiverId);
+
   const [nodes, setNodes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,17 +60,24 @@ export default function NodeChatArea({
     if (isInitial) setIsLoading(true);
     try {
       const response = await getApi(fetchNodesEndpoint);
-      console.log("res",response?.data)
       const data = response?.data || {};
-      const sentNodes = Array.isArray(data.sent_nodes) ? data.sent_nodes : [];
-      const receivedNodes = Array.isArray(data.received_nodes)
-        ? data.received_nodes
+      const sentNodes = Array.isArray(data?.sent_nodes) ? data?.sent_nodes : [];
+      const receivedNodes = Array.isArray(data?.received_nodes)
+        ? data?.received_nodes
         : [];
 
       const allNotes = [...sentNodes, ...receivedNodes];
 
+      // console.log("sent nodes", sentNodes);
+      // console.log("received nodes", receivedNodes);
+      // console.log("all nodes", allNotes);
+
       let filteredNotes = [];
-      if (chatRole === "user" || chatRole === "agency" || chatRole === "care_institutions") {
+      if (
+        chatRole === "user" ||
+        chatRole === "agency" ||
+        chatRole === "care_institutions"
+      ) {
         filteredNotes = allNotes.filter((note) => {
           const isSentToSpecialist =
             note.sender_id === currentUser?.id &&
@@ -95,6 +104,8 @@ export default function NodeChatArea({
           return isSentToPatient || isReceivedFromPatient;
         });
       }
+
+      // console.log("filter notes",filteredNotes)
 
       const formatted = filteredNotes.map((node) => ({
         ...node,
@@ -231,8 +242,9 @@ export default function NodeChatArea({
     if (!name) return "";
 
     const parts = name.split(".");
-    if (parts.length === 1) return name.length > 25 ? name.substring(0, 20) + "..." : name;
-    
+    if (parts.length === 1)
+      return name.length > 25 ? name.substring(0, 20) + "..." : name;
+
     const ext = parts.pop();
     const baseName = parts.join(".");
 
@@ -367,7 +379,7 @@ export default function NodeChatArea({
                         : "Select Image or File"}
                     </span>
                   </Button>
-                  
+
                   {selectedFile && (
                     <button
                       type="button"
