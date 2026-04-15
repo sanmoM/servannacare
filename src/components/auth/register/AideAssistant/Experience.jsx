@@ -27,6 +27,9 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
     {
       title: "Elderly care",
     },
+    {
+      title: "Palliative care",
+    },
   ];
 
   const handleChange = (e) => {
@@ -73,7 +76,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
     // }
 
     if (
-      data.hospitalBasedCare === "true" &&
+      data.hospitalBasedCare &&
       (!data.hospitalBasedYearsOfExperience ||
         !data.hospitalBasedReferenceContact)
     ) {
@@ -82,7 +85,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
     }
 
     if (
-      data.homeBasedCare === "true" &&
+      data.homeBasedCare&&
       (!data.homeBasedYearsOfExperience || !data.homeBasedReferenceContact)
     ) {
       toast.error("Please fill all Home Based Care fields!");
@@ -129,7 +132,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      {data.hospitalBasedCare === "true" && (
+      {data.hospitalBasedCare  && (
         <div className="flex gap-6 sm:flex-row my-6 flex-col sm:gap-4">
           <Input
             type="number"
@@ -184,7 +187,7 @@ const Experience = ({ defaultValues, onNext, onBack }) => {
           </div>
         </RadioGroup>
       </div>
-      {data.homeBasedCare === "true" && (
+      {data.homeBasedCare  && (
         <div className="flex gap-6 sm:flex-row flex-col my-6  sm:gap-4">
           <Input
             type="number"
