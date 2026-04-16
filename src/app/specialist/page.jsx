@@ -33,7 +33,7 @@ const SearchContent = () => {
   const router = useRouter();
 
   const [selectedCategory, setSelectedCategory] = useState("house-manager");
-  const [selectedService, setSelectedService] = useState("");
+  const [selectedService, setSelectedService] = useState([]);
   const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,7 +73,9 @@ const SearchContent = () => {
     };
 
     setSelectedCategory(searchParams.get("category") || "");
-    setSelectedService(searchParams.get("service") || "");
+    setSelectedService(
+      searchParams.get("service") ? searchParams.get("service").split(",") : [],
+    );
     setSelectedLocation(searchParams.get("location") || "");
     setSelectedKidAge(searchParams.get("kidAge") || "");
     setSelectedLanguages(getArray("languages"));
@@ -138,10 +140,14 @@ const SearchContent = () => {
   };
 
   const handleServiceToggle = (service) => {
-    const newService = selectedService === service ? "" : service;
+    const isSelected = selectedService.includes(service);
+    const updated = isSelected
+      ? selectedService.filter((s) => s !== service)
+      : [...selectedService, service];
+    setSelectedService(updated);
 
     updateQueryParams({
-      service: newService || undefined,
+      service: updated.length ? updated : undefined,
       page: 1,
     });
   };
@@ -177,6 +183,8 @@ const SearchContent = () => {
   ];
   const filteredSpecialists = useMemo(() => {
     const rawData = data?.data?.data || [];
+    console.log("raw data", rawData);
+
     if (!rawData.length) return [];
 
     return rawData.filter((item) => {
@@ -193,7 +201,10 @@ const SearchContent = () => {
         item.location?.toLowerCase().includes(selectedLocation.toLowerCase());
 
       const matchesServices =
-        !selectedService || item.preferredRole?.includes(selectedService);
+        selectedService.length === 0 ||
+        selectedService.every((service) =>
+          item.preferredRole?.includes(service),
+        );
 
       const matchesLanguages =
         selectedLanguages.length === 0 ||
@@ -201,9 +212,9 @@ const SearchContent = () => {
           item.languages?.some((l) => l.toLowerCase() === lang.toLowerCase()),
         );
 
-      const matchesRating =
-        !selectedRating ||
-        (item.rating && item.rating >= Number(selectedRating));
+      const rating = Number(item.review_avg_rating || 0);
+
+      const matchesRating = !selectedRating || rating >= Number(selectedRating);
 
       let matchesSalary = true;
       if (selectedCategory === "house-manager") {
@@ -278,7 +289,10 @@ const SearchContent = () => {
     let result = [...filteredSpecialists];
     switch (sortBy) {
       case "rating":
-        return result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+        return result.sort(
+          (a, b) =>
+            Number(b.review_avg_rating || 0) - Number(a.review_avg_rating || 0),
+        );
       case "experience":
         return result.sort(
           (a, b) =>
@@ -385,7 +399,6 @@ const SearchContent = () => {
 
             {selectedCategory === "house-manager" && (
               <div className="space-y-8 animate-in fade-in duration-500">
-                {/* Age Range Slider */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-semibold text-slate-700 ml-1">
@@ -397,7 +410,7 @@ const SearchContent = () => {
                     <Slider.Root
                       className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
                       value={[ageRange.min || 18, ageRange.max || 60]}
-                      max={100} 
+                      max={100}
                       step={1}
                       onValueChange={([min, max]) => {
                         setAgeRange({ min, max });
@@ -436,7 +449,6 @@ const SearchContent = () => {
                   </div>
                 </div>
 
-                {/* Location with Icon */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-slate-700 ml-1">
                     Preferred Location
@@ -475,7 +487,6 @@ const SearchContent = () => {
                   </div>
                 </div>
 
-                {/* Age Range - Pill Style Select */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-slate-700 ml-1">
                     Kid Age Range
@@ -587,7 +598,6 @@ const SearchContent = () => {
                   </div>
                 </div>
 
-                {/* Rating - Stars Representation */}
                 <div className="space-y-3">
                   <label className="text-sm font-semibold text-slate-700 ml-1">
                     Minimum Rating
@@ -660,7 +670,6 @@ const SearchContent = () => {
                     </div>
                   </div>
 
-                  {/* Location with Icon */}
                   <div className="space-y-3">
                     <label className="text-sm font-semibold text-slate-700 ml-1">
                       Preferred Location
@@ -702,7 +711,6 @@ const SearchContent = () => {
                     </div>
                   </div>
 
-                  {/* experience year */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-sm font-semibold text-slate-700 ml-1">
@@ -766,11 +774,16 @@ const SearchContent = () => {
                     <div className="px-2">
                       <Slider.Root
                         className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
-                        defaultValue={[0, 500]}
-                        value={[salaryRange.min || 0, salaryRange.max || 500]}
-                        max={1000}
-                        step={100}
+                        defaultValue={[10000, 30000]}
+                        value={[
+                          salaryRange.min || 10000,
+                          salaryRange.max || 30000,
+                        ]}
+                        min={10000}
+                        max={30000}
+                        step={1000}
                         onValueChange={([min, max]) => {
+                          setSalaryRange({ min, max });
                           updateQueryParams({
                             minSalary: min,
                             maxSalary: max,
@@ -792,7 +805,7 @@ const SearchContent = () => {
                           Min
                         </p>
                         <p className="text-sm font-semibold text-slate-700 ml-1">
-                          KSH {salaryRange.min || 0}
+                          KSH {salaryRange.min || 10000}
                         </p>
                       </div>
                       <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
@@ -800,7 +813,7 @@ const SearchContent = () => {
                           Max
                         </p>
                         <p className="text-sm font-semibold text-slate-700 ml-1">
-                          KSH {salaryRange.max || 500}+
+                          KSH {salaryRange.max || 30000}+
                         </p>
                       </div>
                     </div>
@@ -846,7 +859,6 @@ const SearchContent = () => {
                     </div>
                   </div>
 
-                  {/* Rating - Stars Representation */}
                   <div className="space-y-3">
                     <label className="text-sm font-semibold text-slate-700 ml-1">
                       Minimum Rating
@@ -892,7 +904,7 @@ const SearchContent = () => {
                       <button
                         onClick={() => handleServiceToggle(service)}
                         className={`px-3 py-1 rounded-lg border cursor-pointer ${
-                          selectedService === service
+                          selectedService.includes(service)
                             ? "bg-primary text-white"
                             : ""
                         }`}
@@ -981,7 +993,6 @@ const SearchContent = () => {
           </main>
         </div>
 
-        {/* Mobile Filter */}
         {mobileFilterSidebar && (
           <div className="fixed inset-0 z-50 bg-black/50 flex">
             <div className="w-72 bg-white h-full p-6 overflow-y-auto">
@@ -1012,7 +1023,6 @@ const SearchContent = () => {
 
                 {selectedCategory === "house-manager" && (
                   <div className="space-y-8 animate-in fade-in duration-500">
-                    {/* Age Range Slider */}
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <label className="text-sm font-semibold text-slate-700 ml-1">
@@ -1063,7 +1073,6 @@ const SearchContent = () => {
                       </div>
                     </div>
 
-                    {/* Location with Icon */}
                     <div className="space-y-3">
                       <label className="text-sm font-semibold text-slate-700 ml-1">
                         Preferred Location
@@ -1105,7 +1114,6 @@ const SearchContent = () => {
                       </div>
                     </div>
 
-                    {/* Age Range - Pill Style Select */}
                     <div className="space-y-3">
                       <label className="text-sm font-semibold text-slate-700 ml-1">
                         Kid Age Range
@@ -1174,7 +1182,6 @@ const SearchContent = () => {
                       </div>
                     </div>
 
-                    {/* Languages - Checkbox Grid */}
                     <div className="space-y-4">
                       <label className="text-sm font-semibold text-slate-700 ml-1">
                         Language Fluency
@@ -1214,7 +1221,6 @@ const SearchContent = () => {
                       </div>
                     </div>
 
-                    {/* Rating - Stars Representation */}
                     <div className="space-y-3">
                       <label className="text-sm font-semibold text-slate-700 ml-1">
                         Minimum Rating
@@ -1393,14 +1399,16 @@ const SearchContent = () => {
                         <div className="px-2">
                           <Slider.Root
                             className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer"
-                            defaultValue={[0, 500]}
+                            defaultValue={[10000, 30000]}
                             value={[
-                              salaryRange.min || 0,
-                              salaryRange.max || 500,
+                              salaryRange.min || 10000,
+                              salaryRange.max || 30000,
                             ]}
-                            max={1000}
-                            step={100}
+                            min={10000}
+                            max={30000}
+                            step={1000}
                             onValueChange={([min, max]) => {
+                              setSalaryRange({ min, max });
                               updateQueryParams({
                                 minSalary: min,
                                 maxSalary: max,
@@ -1422,7 +1430,7 @@ const SearchContent = () => {
                               Min
                             </p>
                             <p className="text-sm font-semibold text-slate-700 ml-1">
-                              KSH {salaryRange.min || 0}
+                              KSH {salaryRange.min || 10000}
                             </p>
                           </div>
                           <div className="bg-slate-50 p-2 rounded-xl border border-slate-100">
@@ -1430,13 +1438,12 @@ const SearchContent = () => {
                               Max
                             </p>
                             <p className="text-sm font-semibold text-slate-700 ml-1">
-                              KSH {salaryRange.max || 500}+
+                              KSH {salaryRange.max || 30000}+
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      {/* Languages - Checkbox Grid */}
                       <div className="space-y-4">
                         <label className="text-sm font-semibold text-slate-700 ml-1">
                           Language Fluency
@@ -1478,7 +1485,6 @@ const SearchContent = () => {
                         </div>
                       </div>
 
-                      {/* Rating - Stars Representation */}
                       <div className="space-y-3">
                         <label className="text-sm font-semibold text-slate-700 ml-1">
                           Minimum Rating
@@ -1522,7 +1528,7 @@ const SearchContent = () => {
                           <button
                             onClick={() => handleServiceToggle(service)}
                             className={`px-3 py-1 rounded-lg border cursor-pointer ${
-                              selectedService === service
+                              selectedService.includes(service)
                                 ? "bg-primary text-white"
                                 : ""
                             }`}
