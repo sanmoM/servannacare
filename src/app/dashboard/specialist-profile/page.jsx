@@ -207,7 +207,7 @@ export default function ProfilePage() {
 
           {specialistDatas?.subRole === "nurse" &&
             (specialistDatas?.is_profile_completed ? (
-              
+              // file or image condition done 
               <NurseUpdate data={specialistDatas} />
             ) : (
               <NurseCreate />

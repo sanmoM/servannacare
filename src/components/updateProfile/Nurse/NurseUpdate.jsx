@@ -576,7 +576,7 @@ const NurseUpdate = ({ data = {} }) => {
           )}
         </div>
 
-        {/* Nursing Council */}
+       
         <div className="">
           <Label className="mb-3 block">
             Are you registered with Physiotherapy Council of Kenya (PCK)?

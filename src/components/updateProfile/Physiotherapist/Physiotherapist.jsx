@@ -108,6 +108,31 @@ const Physiotherapist = ({ data = {} }) => {
     },
   ];
 
+  const isImageUrl = (url) => {
+    if (!url) return false;
+    return /\.(jpg|jpeg|png|webp|gif)$/i.test(url);
+  };
+
+  const isImageFile = (file) => {
+    if (!file) return false;
+
+    if (typeof file === "string") {
+      return /\.(jpg|jpeg|png|webp|gif)$/i.test(file);
+    }
+
+    if (file instanceof File) {
+      return file.type.startsWith("image/");
+    }
+
+    return false;
+  };
+
+  const eduFile = formData.documents.eduCertificate;
+  const eduIsImage = isImageFile(eduFile);
+
+  const licenseFile = formData.documents.practiceLicense;
+  const licenseIsImage = isImageFile(licenseFile);
+
   const documents = [
     {
       id: "idCopy",
@@ -518,17 +543,19 @@ const Physiotherapist = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Education Certificate */}
         <FileUpload
           title="Education Certificate (Compulsory)"
           accept="application/pdf,image/*"
           icon={<FileText size={32} />}
-          file={formData.documents.eduCertificate}
-          // onFileSelect={(file) => handleFileSelect("eduCertificate", file)}
+          file={eduIsImage ? eduFile : null}
           onFileSelect={(file) =>
             handleFileSelect("documents", "eduCertificate", file)
           }
         />
+
+        {eduFile && !eduIsImage && (
+          <FilePreview file={eduFile} alt="Education Certificate" />
+        )}
 
         {/* PCK Registration */}
         <div className="">
@@ -561,7 +588,6 @@ const Physiotherapist = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show Registration Number & License only if PCK = Yes */}
         {formData.education.isRegisterPCK && (
           <div className="mt-6">
             <Input
@@ -579,17 +605,21 @@ const Physiotherapist = ({ data = {} }) => {
                 title="Practising License"
                 accept="application/pdf,image/*"
                 icon={<FileText size={32} />}
-                file={formData.documents.practiceLicense}
+                file={licenseIsImage ? licenseFile : null}
                 onFileSelect={(file) =>
                   handleFileSelect("documents", "practiceLicense", file)
                 }
               />
+
+              {licenseFile && !licenseIsImage && (
+                <FilePreview file={licenseFile} alt="Practising License" />
+              )}
             </div>
           </div>
         )}
 
         <h2 className="formHeading">Experience</h2>
-        <div className="py-6">
+        <div>
           <Label className="mb-3 block">Hospital Based Care</Label>
 
           <RadioGroup
@@ -662,7 +692,7 @@ const Physiotherapist = ({ data = {} }) => {
           </div>
         )}
 
-        <div className="py-6">
+        <div className="">
           <Label className="mb-3 block">Home Based Care</Label>
 
           <RadioGroup
@@ -756,22 +786,6 @@ const Physiotherapist = ({ data = {} }) => {
           </div>
         </div>
 
-        {/* Service Fee */}
-        {/* <div className="">
-          <Input
-            label="Service Fee (KSh per day/month)"
-            type="number"
-            name="serviceFee"
-            maxLength={5}
-            placeholder="e.g., 1500 per day or 35000 per month"
-            value={formData.experience?.serviceFee}
-            onChange={(e) => {
-              const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-              handleChange("experience", "serviceFee", val);
-            }}
-          />
-        </div> */}
-
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Service Fee (Per Day - KSh)"
@@ -823,7 +837,7 @@ const Physiotherapist = ({ data = {} }) => {
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
           {documents?.map((item, indx) => {
             const file = formData.documents[item.id];
-
+            const isImage = typeof file === "string" && isImageUrl(file);
             return (
               <div key={indx} className="border rounded-xl p-4">
                 <FileUpload
@@ -831,13 +845,13 @@ const Physiotherapist = ({ data = {} }) => {
                   accept={item.accept}
                   icon={item.icon}
                   optional={item.optional || false}
-                  file={file}
+                  file={isImage ? file : null}
                   onFileSelect={(file) =>
                     handleFileSelect("documents", item.id, file)
                   }
                 />
 
-                {file && !file?.type?.startsWith("image/") && (
+                {file && !isImage && (
                   <FilePreview file={file} alt={item?.title} />
                 )}
               </div>
