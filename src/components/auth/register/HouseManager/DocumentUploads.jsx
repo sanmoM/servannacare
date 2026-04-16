@@ -3,26 +3,17 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { FileText,  Image as ImageIcon, IdCardLanyard, IdCard, Cross } from "lucide-react";
+import {
+  FileText,
+  Image as ImageIcon,
+  IdCardLanyard,
+  IdCard,
+  Cross,
+} from "lucide-react";
 import FileUpload from "../FileUpload";
-
 
 const DocumentUploads = ({ defaultValues, onNext, onBack }) => {
   const documents = [
-    {
-      id: "firstAidCertificate",
-      title: "First Aid Certificate",
-      accept: "application/pdf,image/*",
-      icon: <Cross size={32} />,
-      required: true,
-    },
-    {
-      id: "goodConductCertificate",
-      title: "Good Conduct Certificate",
-      accept: "application/pdf,image/*",
-      icon: <FileText size={32} />,
-      required: true,
-    },
     {
       id: "iDCopy",
       title: "ID Copy",
@@ -37,6 +28,23 @@ const DocumentUploads = ({ defaultValues, onNext, onBack }) => {
       icon: <ImageIcon size={32} />,
       required: true,
     },
+       {
+      id: "goodConductCertificate",
+      title: "Good Conduct Certificate",
+      accept: "application/pdf,image/*",
+      icon: <FileText size={32} />,
+      required: true,
+    },
+    {
+      id: "firstAidCertificate",
+      title: "First Aid Certificate",
+      accept: "application/pdf,image/*",
+      icon: <Cross size={32} />,
+      required: false,
+      optional: true,
+    },
+ 
+
     {
       id: "drivingLicense",
       title: "Driving License (Optional)",
@@ -60,7 +68,6 @@ const DocumentUploads = ({ defaultValues, onNext, onBack }) => {
   };
 
   const handleSubmit = () => {
-    // Validation
     for (const doc of documents) {
       if (doc.required && !files[doc.id]) {
         toast.error(`Please upload ${doc.title}`);
@@ -68,7 +75,7 @@ const DocumentUploads = ({ defaultValues, onNext, onBack }) => {
       }
     }
 
-    onNext(files); 
+    onNext(files);
   };
 
   return (

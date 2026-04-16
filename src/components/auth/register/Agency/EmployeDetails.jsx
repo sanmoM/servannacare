@@ -29,13 +29,14 @@ const EmployeDetails = ({
   onDataChange,
   defaultValues = {},
 }) => {
-  // document types
+  
   const documents = [
     {
       id: "aidCertificate",
       title: "First Aid Certificate",
       accept: "application/pdf,image/*",
       icon: <Cross size={32} />,
+      optional: true,
     },
     {
       id: "goodConductCertificate",

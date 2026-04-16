@@ -155,6 +155,11 @@ const HouseManager = ({ data = {} }) => {
     }));
   };
 
+  const isImageUrl = (url) => {
+    if (!url) return false;
+    return /\.(jpg|jpeg|png|webp|gif)$/i.test(url);
+  };
+
   const documentConfig = [
     {
       id: "firstAidCertificate",
@@ -752,18 +757,19 @@ const HouseManager = ({ data = {} }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
             {documentConfig?.map((doc) => {
               const file = formData?.documents[doc.id];
+              const isImage = typeof file === "string" && isImageUrl(file);
               return (
                 <div key={doc.id} className="border rounded-xl p-4">
                   <FileUpload
                     title={doc.title}
                     accept="application/pdf,image/*"
-                    file={formData.documents[doc.id]}
+                    file={isImage ? file : null}
                     onFileSelect={(file) => handleFileSelect(doc.id, file)}
                   />
 
-                  {file && !file?.type?.startsWith("image/") && (
-                  <FilePreview file={file} alt={doc?.title} />
-                )}
+                  {file && !isImage && (
+                    <FilePreview file={file} alt={doc?.title} />
+                  )}
                 </div>
               );
             })}

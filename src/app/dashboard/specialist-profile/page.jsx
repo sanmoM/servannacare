@@ -81,7 +81,6 @@ export default function ProfilePage() {
   const formatLabel = (key) =>
     key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
 
-  // Helper: format file size in KB/MB
   const formatFileSize = (size) => {
     if (!size) return "0 KB";
     const kb = size / 1024;
@@ -99,7 +98,7 @@ export default function ProfilePage() {
 
         <div className="space-y-2 grid gap-4 md:grid-cols-2">
           {Object.entries(sectionData).map(([key, value]) => {
-            //  If array → render each item
+            
             if (Array.isArray(value)) {
               return (
                 <div key={key} className="flex flex-wrap gap-2 items-center">
@@ -119,7 +118,7 @@ export default function ProfilePage() {
               );
             }
 
-            //  If file → show icon/image preview
+            
             else if (value instanceof File) {
               const isImage = value.type.startsWith("image/");
               return (
@@ -142,12 +141,12 @@ export default function ProfilePage() {
               );
             }
 
-            //  If nested object → recurse
+            
             else if (typeof value === "object" && value !== null) {
               return renderSection(key, value);
             }
 
-            //  Default simple text field
+            
             else {
               return (
                 <div key={key} className="flex items-center gap-2 flex-wrap">
@@ -196,10 +195,11 @@ export default function ProfilePage() {
         )}
 
       <div className="border flex  items-center md:items-start flex-col gap-8 md:flex-row lg:p-8 p-4 rounded-2xl">
-        {/* Info Fields */}
+        
         <div className="w-full">
           {specialistDatas?.subRole === "house-manager" &&
             (specialistDatas?.is_profile_completed ? (
+              // file or image condition done 
               <HouseManager data={specialistDatas} />
             ) : (
               <HouseManagerCreate />
@@ -207,6 +207,7 @@ export default function ProfilePage() {
 
           {specialistDatas?.subRole === "nurse" &&
             (specialistDatas?.is_profile_completed ? (
+              
               <NurseUpdate data={specialistDatas} />
             ) : (
               <NurseCreate />
@@ -235,14 +236,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* <div>
-     
-        {userDetails &&
-          typeof userDetails === "object" &&
-          Object.entries(userDetails).map(([sectionKey, sectionValue]) =>
-            renderSection(sectionKey, sectionValue),
-          )}
-      </div> */}
+
     </div>
   );
 }

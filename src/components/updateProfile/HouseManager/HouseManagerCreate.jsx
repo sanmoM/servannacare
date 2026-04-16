@@ -189,6 +189,13 @@ const HouseManagerCreate = ({ data = {} }) => {
     },
   ];
 
+    const isImageUrl = (url) => {
+    if (!url) return false;
+    return /\.(jpg|jpeg|png|webp|gif)$/i.test(url);
+  };
+
+
+
   const docs = [
     {
       id: "firstAidCertificate",

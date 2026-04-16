@@ -120,6 +120,11 @@ const NurseUpdate = ({ data = {} }) => {
     "Handiling Medical Quipment (e. g. fedding tubes, catheter, oxygen tanks)",
   ];
 
+  const isImageUrl = (url) => {
+    if (!url) return false;
+    return /\.(jpg|jpeg|png|webp|gif)$/i.test(url);
+  };
+
   const documents = [
     {
       id: "idCopy",
@@ -343,6 +348,9 @@ const NurseUpdate = ({ data = {} }) => {
     router.push("/dashboard");
   };
 
+  const eduFile = formData.education?.educationCertificate;
+  const isEduImage = typeof eduFile === "string" && isImageUrl(eduFile);
+
   return (
     <div>
       <form onSubmit={handleUpdate} className="space-y-6 relative">
@@ -552,18 +560,20 @@ const NurseUpdate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* File Upload */}
-        <div>
+        <div className="border rounded-xl p-4">
           <FileUpload
             title="Education Certificate (Compulsory)"
             accept="application/pdf,image/*"
             icon={<FileText size={32} />}
-            optional=""
-            file={formData.education?.educationCertificate}
+            file={isEduImage ? eduFile : null}
             onFileSelect={(file) =>
               handleFileSelect("education", "educationCertificate", file)
             }
           />
+
+          {eduFile && !isEduImage && (
+            <FilePreview file={eduFile} alt="Education Certificate" />
+          )}
         </div>
 
         {/* Nursing Council */}
@@ -738,7 +748,6 @@ const NurseUpdate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show inputs only if homeBasedCare = true */}
         {formData.experience?.homeBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
@@ -908,6 +917,7 @@ const NurseUpdate = ({ data = {} }) => {
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
           {documents?.map((item, indx) => {
             const file = formData.documents[item.id];
+            const isImage = typeof file === "string" && isImageUrl(file);
 
             return (
               <div key={indx} className="border rounded-xl p-4">
@@ -916,13 +926,13 @@ const NurseUpdate = ({ data = {} }) => {
                   accept={item.accept}
                   icon={item.icon}
                   optional={item.optional || false}
-                  file={file}
+                  file={isImage ? file : null}
                   onFileSelect={(file) =>
                     handleFileSelect("documents", item.id, file)
                   }
                 />
 
-                {file && !file?.type?.startsWith("image/") && (
+                {file && !isImage && (
                   <FilePreview file={file} alt={item?.title} />
                 )}
               </div>
