@@ -20,8 +20,7 @@ const NurseAideOrAssistant = ({ skills }) => {
   const [step, setStep] = useState(1);
   const router = useRouter();
   const totalSteps = 6;
-  const { user } = useAuth();
-
+  const { user, refreshUser } = useAuth();
   useEffect(() => {
     if (user && !user?.is_profile_completed) {
       setStarted(true);
@@ -138,7 +137,10 @@ const NurseAideOrAssistant = ({ skills }) => {
 
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
-          router.push(`/dashboard/${user?.role}-profile`);
+
+          const updatedUser = await refreshUser();
+        
+          router.push(`/dashboard/${updatedUser?.role || user?.role}-profile`);
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

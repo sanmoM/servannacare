@@ -51,7 +51,7 @@ const Agency = () => {
   const [employees, setEmployees] = useState([1]);
   const router = useRouter();
 
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   useEffect(() => {
     if (user && !user?.is_profile_completed) {
       setStarted(true);
@@ -155,15 +155,8 @@ const Agency = () => {
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
           
-          // localStorage.setItem(
-          //   "user",
-          //   JSON.stringify({
-          //     ...user,
-          //     is_profile_completed: Boolean(res?.data?.is_profile_completed),
-          //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
-          //   }),
-          // );
-          router.push(`/dashboard/${user?.role}-profile`);
+          const updatedUser = await refreshUser();
+          router.push(`/dashboard/${updatedUser?.role || user?.role}-profile`);
           //todo this localStorage
         } else {
           toast.error(

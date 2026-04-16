@@ -13,7 +13,7 @@ import { postApi } from "@/lib/apiHandler";
 import { useAuth } from "@/hooks/useAuth";
 
 const HouseManager = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 4;
@@ -98,7 +98,8 @@ const HouseManager = () => {
         });
         if (res?.status === 200) {
           toast.success("Profile Create Successfully!");
-          router.push(`/dashboard/${user?.role}-profile`);
+          const updatedUser = await refreshUser();
+          router.push(`/dashboard/${updatedUser?.role || user?.role}-profile`);
 
           // localStorage.setItem(
           //   "user",

@@ -19,7 +19,7 @@ const SpecialNeedCaregivers = () => {
   const [step, setStep] = useState(1);
   const router = useRouter();
   const totalSteps = 5;
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   useEffect(() => {
     if (user && !user?.is_profile_completed) {
@@ -137,7 +137,8 @@ const SpecialNeedCaregivers = () => {
           //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
           //   }),
           // );
-          router.push(`/dashboard/${user?.role}-profile`);
+          const updatedUser = await refreshUser();
+          router.push(`/dashboard/${updatedUser?.role || user?.role}-profile`);
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",

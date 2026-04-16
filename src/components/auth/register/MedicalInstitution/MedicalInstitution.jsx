@@ -106,7 +106,7 @@ const MedicalInstitution = ({ skills }) => {
   
   const router = useRouter();
   const totalSteps = 3;
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   useEffect(() => {
     if (user && !user?.is_profile_completed) {
@@ -264,7 +264,9 @@ const MedicalInstitution = ({ skills }) => {
         if (res?.status === 200) {
           
           toast.success("Registered Successfully!");
-          router.push(`/dashboard/${user?.role}-profile`);
+          const updatedUser = await refreshUser();
+          router.push(`/dashboard/${updatedUser?.role || user?.role}-profile`);
+          
           //todo this localStorage
 
           // localStorage.setItem(

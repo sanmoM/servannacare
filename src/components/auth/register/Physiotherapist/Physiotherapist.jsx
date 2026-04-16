@@ -21,7 +21,7 @@ const Physiotherapist = () => {
   const totalSteps = 5;
   // const [user, setUser] = useState({});
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   useEffect(() => {
     if (user && !user?.is_profile_completed) {
@@ -122,7 +122,6 @@ const Physiotherapist = () => {
         fd.append("practiceLicense", EDUCATION.practiceLicense);
       }
 
- 
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -132,7 +131,8 @@ const Physiotherapist = () => {
 
         if (res?.status === 200) {
           toast.success("Registered Successfully!");
-          router.push(`/dashboard/${user?.role}-profile`);
+          const updatedUser = await refreshUser();
+          router.push(`/dashboard/${updatedUser?.role || user?.role}-profile`);
 
           // localStorage.setItem(
           //   "user",
@@ -148,8 +148,7 @@ const Physiotherapist = () => {
           );
         }
       } catch (error) {
-        
-         toast.error("Error creating profile",error)
+        toast.error("Error creating profile", error);
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,
