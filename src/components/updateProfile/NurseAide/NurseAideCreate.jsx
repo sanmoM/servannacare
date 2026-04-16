@@ -542,21 +542,26 @@ const NurseAideCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="true" id="d1" />
-              <Label htmlFor="d1">Yes</Label>
+              <RadioGroupItem className="cursor-pointer" value="true" id="d1" />
+              <Label className="cursor-pointer" htmlFor="d1">
+                Yes
+              </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="false" id="d2" />
-              <Label htmlFor="d2">No</Label>
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="false"
+                id="d2"
+              />
+              <Label className="cursor-pointer" htmlFor="d2">
+                No
+              </Label>
             </div>
           </RadioGroup>
         </div>
 
-        {/* education  */}
-
         <h4 className="formHeading">Education & Registration</h4>
 
-        {/* Education Level */}
         <div>
           <Label className="mb-3 block">Level of Education</Label>
           <RadioGroup
@@ -567,14 +572,22 @@ const NurseAideCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Diploma In Nursing" id="edu1" />
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="Diploma In Nursing"
+                id="edu1"
+              />
               <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
                 Diploma In Nursing
               </Label>
             </div>
 
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Degree In Nursing" id="edu2" />
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="Degree In Nursing"
+                id="edu2"
+              />
               <Label htmlFor="edu2" className="text-gray-700 cursor-pointer">
                 Degree In Nursing
               </Label>
@@ -582,7 +595,6 @@ const NurseAideCreate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* File Upload */}
         <div>
           <FileUpload
             title="Education Certificate (Compulsory)"
@@ -627,8 +639,7 @@ const NurseAideCreate = ({ data = {} }) => {
 
         <h4 className="formHeading">Experience</h4>
 
-        {/* Hospital Based Care */}
-        <div className="py-2">
+        <div>
           <Label className="mb-3 block">Hospital Based Care</Label>
 
           <RadioGroup
@@ -645,7 +656,11 @@ const NurseAideCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="hos1" />
+              <RadioGroupItem
+                className="cursor-pointer"
+                value="Yes"
+                id="hos1"
+              />
               <Label
                 htmlFor="hos1"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -654,7 +669,7 @@ const NurseAideCreate = ({ data = {} }) => {
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="hos2" />
+              <RadioGroupItem className="cursor-pointer" value="No" id="hos2" />
               <Label
                 htmlFor="hos2"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -665,7 +680,6 @@ const NurseAideCreate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show these inputs only if hospitalBasedCare = true */}
         {formData.experience?.hospitalBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
@@ -701,8 +715,7 @@ const NurseAideCreate = ({ data = {} }) => {
           </div>
         )}
 
-        {/* Home Based Care */}
-        <div className="py-2">
+        <div>
           <Label className="mb-3 block">Home Based Care</Label>
 
           <RadioGroup
@@ -719,7 +732,7 @@ const NurseAideCreate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Yes" id="d3" />
+              <RadioGroupItem className="cursor-pointer" value="Yes" id="d3" />
               <Label
                 htmlFor="d3"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -728,7 +741,7 @@ const NurseAideCreate = ({ data = {} }) => {
               </Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="No" id="d4" />
+              <RadioGroupItem className="cursor-pointer" value="No" id="d4" />
               <Label
                 htmlFor="d4"
                 className="text-gray-700 font-normal cursor-pointer"
@@ -739,7 +752,7 @@ const NurseAideCreate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show inputs only if homeBasedCare = true */}
+        
         {formData.experience?.homeBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
@@ -779,6 +792,7 @@ const NurseAideCreate = ({ data = {} }) => {
             {preferred.map((lan, indx) => (
               <div key={indx} className="flex items-center gap-2">
                 <Checkbox
+                className="cursor-pointer"
                   id={lan.title}
                   checked={formData.experience.preferred.includes(lan.title)}
                   onCheckedChange={() =>
@@ -796,7 +810,7 @@ const NurseAideCreate = ({ data = {} }) => {
           </div>
         </div>
 
-        {/* skill and services  */}
+
 
         {/* Skills Section */}
         <div>
@@ -809,6 +823,7 @@ const NurseAideCreate = ({ data = {} }) => {
               {skills?.map((area, idx) => (
                 <div key={idx} className="flex gap-2">
                   <Checkbox
+                  className="cursor-pointer"
                     id={area}
                     checked={formData?.skillsServices?.skills.includes(area)}
                     onCheckedChange={() =>

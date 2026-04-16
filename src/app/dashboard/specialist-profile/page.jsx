@@ -215,6 +215,7 @@ export default function ProfilePage() {
 
           {specialistDatas?.subRole === "physiotherapist" &&
             (specialistDatas?.is_profile_completed ? (
+              // file or image condition done 
               <Physiotherapist data={specialistDatas} />
             ) : (
               <PhysiotherapistCreate />
@@ -224,6 +225,7 @@ export default function ProfilePage() {
             (specialistDatas?.is_profile_completed ? (
               <NurseAideUpdate data={specialistDatas} />
             ) : (
+              //todo : after create profile should be auto call new profile data, no need to refresh site.
               <NurseAideCreate />
             ))}
 

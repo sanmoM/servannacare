@@ -66,7 +66,6 @@ const NurseAideUpdate = ({ data = {} }) => {
     },
     skillsServices: {
       skills: data?.nurse_assistant?.skills || [],
-      // interested: data.skillsServices.interested || [],
       mobilityYears: data.nurse_assistant.mobilityYears || "",
       bathingYears: data.nurse_assistant.bathingYears || "",
       feedingYears: data.nurse_assistant.feedingYears || "",
@@ -106,6 +105,25 @@ const NurseAideUpdate = ({ data = {} }) => {
       title: "Elderly care",
     },
   ];
+
+  const isImageUrl = (url) => {
+    if (!url) return false;
+    return /\.(jpg|jpeg|png|webp|gif)$/i.test(url);
+  };
+
+  const isImageFile = (file) => {
+    if (!file) return false;
+
+    if (typeof file === "string") {
+      return /\.(jpg|jpeg|png|webp|gif)$/i.test(file);
+    }
+
+    if (file instanceof File) {
+      return file.type.startsWith("image/");
+    }
+
+    return false;
+  };
 
   const documents = [
     {
@@ -287,14 +305,14 @@ const NurseAideUpdate = ({ data = {} }) => {
     }
   };
 
+  const eduFile = formData.documents.educationCertificate;
+  const eduIsImage = isImageFile(eduFile);
+
   return (
     <div>
       <form onSubmit={handleUpdate} className="space-y-6 relative">
-        {/* basic info  */}
-
         <h4 className="formHeading">Basic Information</h4>
 
-        {/* Name + Location */}
         <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
           <div className="flex-1">
             <Input
@@ -573,11 +591,15 @@ const NurseAideUpdate = ({ data = {} }) => {
             accept="application/pdf,image/*"
             icon={<FileText size={32} />}
             optional=""
-            file={formData?.documents?.educationCertificate}
+            file={eduIsImage ? eduFile : null}
             onFileSelect={(file) =>
               handleFileSelect("documents", "educationCertificate", file)
             }
           />
+
+          {eduFile && !eduIsImage && (
+            <FilePreview file={eduFile} alt="Education Certificate" />
+          )}
         </div>
 
         {/* Nursing Council */}
@@ -610,9 +632,7 @@ const NurseAideUpdate = ({ data = {} }) => {
         {/* experience */}
 
         <h4 className="formHeading">Experience</h4>
-
-        {/* Hospital Based Care */}
-        <div className="py-2">
+        <div>
           <Label className="mb-3 block">Hospital Based Care</Label>
 
           <RadioGroup
@@ -649,7 +669,6 @@ const NurseAideUpdate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show these inputs only if hospitalBasedCare = true */}
         {formData.experience?.hospitalBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
@@ -685,8 +704,7 @@ const NurseAideUpdate = ({ data = {} }) => {
           </div>
         )}
 
-        {/* Home Based Care */}
-        <div className="py-2">
+        <div className="">
           <Label className="mb-3 block">Home Based Care</Label>
 
           <RadioGroup
@@ -723,7 +741,6 @@ const NurseAideUpdate = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show inputs only if homeBasedCare = true */}
         {formData.experience?.homeBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
@@ -780,9 +797,6 @@ const NurseAideUpdate = ({ data = {} }) => {
           </div>
         </div>
 
-        {/* skill and services  */}
-
-        {/* Skills Section */}
         <div>
           <h2 className="formHeading mb-4">Skills & Services</h2>
           <div>
@@ -811,7 +825,6 @@ const NurseAideUpdate = ({ data = {} }) => {
           </div>
         </div>
 
-        {/* Additional Experience */}
         <div>
           <h2 className="formHeading mb-4 mt-6">Years Experience</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -854,7 +867,6 @@ const NurseAideUpdate = ({ data = {} }) => {
           </div>
         </div>
 
-        {/* Service Fee */}
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Service Fee (Per Day - KSh)"
@@ -908,6 +920,7 @@ const NurseAideUpdate = ({ data = {} }) => {
         <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
           {documents?.map((item, indx) => {
             const file = formData.documents[item.id];
+            const isImage = typeof file === "string" && isImageUrl(file);
 
             return (
               <div key={indx} className="border rounded-xl p-4">
@@ -916,13 +929,13 @@ const NurseAideUpdate = ({ data = {} }) => {
                   accept={item.accept}
                   icon={item.icon}
                   optional={item.optional || false}
-                  file={file}
+                  file={isImage ? file : null}
                   onFileSelect={(file) =>
                     handleFileSelect("documents", item.id, file)
                   }
                 />
 
-                {file && !file?.type?.startsWith("image/") && (
+                {file && !isImage && (
                   <FilePreview file={file} alt={item?.title} />
                 )}
               </div>

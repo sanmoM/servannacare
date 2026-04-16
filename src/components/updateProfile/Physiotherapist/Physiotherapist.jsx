@@ -127,12 +127,6 @@ const Physiotherapist = ({ data = {} }) => {
     return false;
   };
 
-  const eduFile = formData.documents.eduCertificate;
-  const eduIsImage = isImageFile(eduFile);
-
-  const licenseFile = formData.documents.practiceLicense;
-  const licenseIsImage = isImageFile(licenseFile);
-
   const documents = [
     {
       id: "idCopy",
@@ -311,6 +305,12 @@ const Physiotherapist = ({ data = {} }) => {
       toast.error("Upload failed.", error);
     }
   };
+
+  const eduFile = formData.documents.eduCertificate;
+  const eduIsImage = isImageFile(eduFile);
+
+  const licenseFile = formData.documents.practiceLicense;
+  const licenseIsImage = isImageFile(licenseFile);
 
   return (
     <div>
@@ -518,11 +518,8 @@ const Physiotherapist = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* education  */}
 
         <h2 className="formHeading">Education & Registration</h2>
-
-        {/* Education Level */}
         <div className="">
           <Label className="mb-3 block">Level of Education</Label>
           <RadioGroup
@@ -557,7 +554,7 @@ const Physiotherapist = ({ data = {} }) => {
           <FilePreview file={eduFile} alt="Education Certificate" />
         )}
 
-        {/* PCK Registration */}
+
         <div className="">
           <Label className="mb-3 block">
             Are you registered with Physiotherapy Council of Kenya (PCK)?
@@ -656,7 +653,7 @@ const Physiotherapist = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show these inputs only if hospitalBasedCare = true */}
+    
         {formData.experience?.hospitalBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
@@ -729,7 +726,7 @@ const Physiotherapist = ({ data = {} }) => {
           </RadioGroup>
         </div>
 
-        {/* Show inputs only if homeBasedCare = true */}
+
         {formData.experience?.homeBasedCare && (
           <div className="flex gap-6 sm:flex-row flex-col sm:gap-4 mt-4">
             <Input
