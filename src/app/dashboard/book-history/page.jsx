@@ -61,7 +61,10 @@ const BookingHistoryPage = () => {
 
   const { data, isLoading, error, mutate } = useFetch("/user-booking");
 
-  // console.log(data?.data?.data);
+  const handleOpenReview = (booking) => {
+    setSelectedBooking(booking);
+    setIsReviewOpen(true);
+  };
 
   useEffect(() => {
     if (data) {
@@ -137,7 +140,6 @@ const BookingHistoryPage = () => {
         </div>
       </div>
 
-     
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[700px]">
