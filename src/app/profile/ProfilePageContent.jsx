@@ -103,7 +103,7 @@ const ProfilePageContent = () => {
           </div>
 
           <div className="p-4 rounded-md border bg-gray-50/50">
-            <h2 className="font-bold text-gray-700 mb-4 border-b pb-2">
+            {/* <h2 className="font-bold text-gray-700 mb-4 border-b pb-2">
               CONTACT INFO
             </h2>
             <div className="space-y-4">
@@ -132,15 +132,15 @@ const ProfilePageContent = () => {
                   <p className="text-sm font-medium">{matchedData?.location}</p>
                 </div>
               </div>
-            </div>
-            {/* <Button
+            </div> */}
+            <Button
               // onClick={handleBookNow}
               // disabled={loading}
               variant="outline"
               className="w-full mt-6 cursor-pointer text-primary"
             >
               <MessageCircle className="w-4 h-4 mr-2" /> Message
-            </Button> */}
+            </Button>
             <Button
               onClick={handleBookNow}
               disabled={loading}
@@ -151,9 +151,7 @@ const ProfilePageContent = () => {
           </div>
         </div>
 
-        {/* Right Content Area */}
         <div className="md:col-span-4 space-y-8">
-          {/* Bio Section */}
           <section>
             <h2 className="text-xl font-bold border-b-2 border-primary w-fit mb-4">
               BIO
@@ -163,7 +161,7 @@ const ProfilePageContent = () => {
             </p>
           </section>
 
-          {/* Key Details Grid */}
+          
           <section className="grid sm:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-lg">
             <div>
               <h3 className="font-bold text-sm text-gray-400 uppercase mb-3">
@@ -218,7 +216,7 @@ const ProfilePageContent = () => {
             </div>
           </section>
 
-          {/* VERY IMPORTANT: Available Schedule */}
+        
           <section>
             <h2 className="text-xl font-bold border-b-2 border-primary w-fit mb-4 uppercase">
               Available Schedule
@@ -247,7 +245,7 @@ const ProfilePageContent = () => {
             )}
           </section>
 
-          {/* Services Section (For Nurses/Specialists) */}
+          
           {matchedData.services && (
             <section>
               <h2 className="text-xl font-bold border-b-2 border-primary w-fit mb-4 uppercase">
