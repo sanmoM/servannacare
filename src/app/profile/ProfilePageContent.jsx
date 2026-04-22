@@ -68,6 +68,26 @@ const ProfilePageContent = () => {
     router.push(bookingUrl);
   };
 
+  const handleMessage = () => {
+    if (loading) return;
+
+    const messageUrl = `/dashboard/user-inbox?specialistId=${matchedData.id}&specialistName=${encodeURIComponent(matchedData.name)}&specialistType=${matchedData.type}`;
+
+    if (!user) {
+      router.push(
+        `/register?role=user&redirect=${encodeURIComponent(messageUrl)}`,
+      );
+      return;
+    }
+
+    if (user?.role !== "user") {
+      toast.error(`${user?.subRole} can't send Message`);
+      router.push(`/dashboard/${user?.role}-profile`);
+      return;
+    }
+    router.push(messageUrl);
+  };
+
   if (isLoading) return <LoadingSpinner />;
   if (error || !matchedData)
     return <div className="py-20 text-center">Data not found</div>;
@@ -134,8 +154,8 @@ const ProfilePageContent = () => {
               </div>
             </div> */}
             <Button
-              // onClick={handleBookNow}
-              // disabled={loading}
+              onClick={handleMessage}
+              disabled={loading}
               variant="outline"
               className="w-full mt-6 cursor-pointer text-primary"
             >

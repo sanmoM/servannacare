@@ -66,7 +66,7 @@ const ChatBot = () => {
 
      
       {isOpen && (
-        <div className="fixed bottom-6 right-6 w-88 bg-white rounded-xl shadow-2xl border  flex flex-col">
+        <div className="fixed bottom-6 right-6 w-88 bg-white rounded-xl shadow-2xl border z-999 flex flex-col">
     
           <div className="px-4 py-3 bg-primary text-white flex items-center justify-between rounded-t-xl">
             <div className="flex gap-2 items-center">
@@ -78,14 +78,14 @@ const ChatBot = () => {
                 alt="logo"
                 className="rounded-full"
               />
-              {/* <h3 className="font-semibold text-sm">Admin</h3> */}
+              
             </div>
             <button className="cursor-pointer" onClick={() => setIsOpen(false)}>
               <X size={20} />
             </button>
           </div>
 
-          {/* Messages */}
+          
           <div className="p-3 h-72 overflow-y-auto space-y-3 scrollbar-thin">
             {messages.map((msg, i) => (
               <div
@@ -94,7 +94,7 @@ const ChatBot = () => {
                   msg.sender === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                {/* Bot Avatar */}
+                
                 {msg.sender === "bot" && (
                   <div className="h-10 w-10">
                     <Image
@@ -117,7 +117,7 @@ const ChatBot = () => {
                 >
                   {msg.text}
 
-                  {/* Show file preview inside chat bubble */}
+                  
                   {msg.file && msg.file.type === "image" && (
                     <Image
                       src={msg.file.url}
@@ -138,9 +138,9 @@ const ChatBot = () => {
             ))}
           </div>
 
-          {/* Input Section */}
+          
           <div className="p-3 border-t flex flex-col gap-2">
-            {/* Preview inside input area */}
+            
             {filePreview && (
               <div className="flex items-center gap-2 bg-gray-100 p-2 rounded text-xs">
                 {filePreview.type === "image" ? (
@@ -165,7 +165,7 @@ const ChatBot = () => {
             )}
 
             <div className="flex items-center gap-2">
-              {/* File Upload */}
+              
               <label className="cursor-pointer">
                 <File size={22} className="text-gray-400" />
                 <input
