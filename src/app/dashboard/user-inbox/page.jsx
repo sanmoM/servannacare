@@ -50,12 +50,13 @@ const ChatInbox = () => {
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
 
-  const { data: bookingData, isLoading: isLoadingBookings } =
-    useFetch("/user-booking");
+  const { data: bookingData, isLoading: isLoadingBookings } = useFetch(
+    "/chat/user-chat-list",
+  );
   const specialists = React.useMemo(() => {
     if (!bookingData?.data) return [];
 
-    const rawData = bookingData?.data?.data || bookingData?.data || [];
+    const rawData = bookingData?.data?.data || bookingData?.data?.users || [];
     const bookings = Array.isArray(rawData) ? rawData : [];
     const uniqueSpecs = [];
     const seenIds = new Set();
@@ -157,7 +158,6 @@ const ChatInbox = () => {
         created_at: new Date().toISOString(),
       };
 
-
       setTypedMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
       setTypedMessage("");
@@ -258,7 +258,6 @@ const ChatInbox = () => {
         </ScrollArea>
       </div>
 
-      
       <div
         className={`${view === "list" ? "hidden" : "flex"} flex-1 flex-col bg-white md:flex h-full min-h-0`}
       >
@@ -362,7 +361,6 @@ const ChatInbox = () => {
               )}
             </div>
 
-          
             <div className="p-4 border-t bg-white shrink-0">
               {/* 
               {stagedFile && (
