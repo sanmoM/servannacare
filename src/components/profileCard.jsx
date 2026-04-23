@@ -189,7 +189,7 @@ const ProfileCard = ({ profile }) => {
             <Link
               href={`/profile?type=${profile.type?.toLowerCase()}&id=${profile.id}`}
             >
-              <Button className="w-full" variant="outline">
+              <Button className="w-full cursor-pointer" variant="outline">
                 View Profile
               </Button>
             </Link>
@@ -199,7 +199,7 @@ const ProfileCard = ({ profile }) => {
             <Button
               onClick={handleBookNow}
               disabled={loading}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               <CheckCircle className="w-4 h-4 mr-2" />
               Book Now

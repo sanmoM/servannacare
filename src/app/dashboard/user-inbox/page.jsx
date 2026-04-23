@@ -26,6 +26,7 @@ import { postApi } from "@/lib/apiHandler";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import useNotificationListener from "@/hooks/useNotificationListener";
+import { containsRestrictedInfo, getRestrictedInfoType } from "@/utils/messageValidation";
 
 const ChatInbox = () => {
   const searchParams = useSearchParams();
@@ -54,6 +55,8 @@ const ChatInbox = () => {
   const { data: bookingData, isLoading: isLoadingBookings } = useFetch(
     "/chat/user-chat-list",
   );
+
+  const { data: userBookings } = useFetch("/user-booking");
   const specialists = React.useMemo(() => {
     const rawData = bookingData?.data?.users || [];
     const uniqueSpecs = [];
@@ -152,6 +155,20 @@ const ChatInbox = () => {
     if (!typedMessage.trim()) return;
 
     try {
+      const bookingsArray = Array.isArray(userBookings?.data?.data) 
+        ? userBookings.data.data 
+        : (Array.isArray(userBookings?.data) ? userBookings.data : []);
+
+      const hasBooking = bookingsArray.some(
+        (b) => Number(b.specialist_id) === Number(activeId),
+      );
+
+      if (!hasBooking && containsRestrictedInfo(typedMessage)) {
+        const infoType = getRestrictedInfoType(typedMessage);
+        toast.error(`Sharing ${infoType} is not allowed before booking.`);
+        return;
+      }
+
       const activeSpec = specialists.find((s) => s.id === activeId);
       const receiverType = activeSpec?.type;
 
@@ -163,22 +180,17 @@ const ChatInbox = () => {
         message: typedMessage,
       };
 
-      const tempMsg = {
-        id: Date.now(),
-        ...payload,
-        created_at: new Date().toISOString(),
-      };
-
       setTypedMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
-      setTypedMessage("");
 
       await postApi("/chat/send", payload);
       refetchMessages();
     } catch (error) {
+      console.error("Chat send error:", error);
       toast.error("Failed to send message");
     }
   };
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
