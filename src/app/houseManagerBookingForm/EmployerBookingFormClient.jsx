@@ -136,7 +136,8 @@ export default function EmployerBookingFormClient() {
     setBookingAmount(amount);
   }, [selectedMonths, selectedDates, isMonthly, monthlyRate, dailyRate]);
 
-  const totalAmount = bookingAmount + serviceFee;
+  // const totalAmount = bookingAmount + serviceFee;
+  const totalAmount = serviceFee;
 
   const isDateDisabled = (date) => {
     const today = new Date();
@@ -221,7 +222,8 @@ export default function EmployerBookingFormClient() {
       home_type: formData.homeType,
       home_size: formData.homeSize,
       selected_dates_or_months: formattedSelections,
-      booking_amount: bookingAmount,
+      booking_amount: 0,
+      // booking_amount: bookingAmount,
     };
 
     try {
@@ -230,7 +232,8 @@ export default function EmployerBookingFormClient() {
         plan_id: planId,
         specialist_id: parseInt(matchedSpecialist?.id),
         specialist_type: matchedSpecialist.type,
-        book_amount: bookingAmount,
+        book_amount: 0,
+        // book_amount: bookingAmount,
       });
 
       const checkoutId = paymentRes?.data?.checkout_id;
@@ -467,12 +470,12 @@ export default function EmployerBookingFormClient() {
                     }}
                     className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${isMonthly ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100"}`}
                   >
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <p className="text-xs font-bold text-slate-800 uppercase tracking-widest">
                       Monthly Plan
                     </p>
-                    <p className="text-2xl font-bold mt-2">
+                    {/* <p className="text-2xl font-bold mt-2">
                       KES {monthlyRate.toLocaleString()}
-                    </p>
+                    </p> */}
                   </div>
 
                   <div
@@ -482,12 +485,12 @@ export default function EmployerBookingFormClient() {
                     }}
                     className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${isDaily ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100"}`}
                   >
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    <p className="text-xs font-bold text-slate-800 uppercase tracking-widest">
                       Daily Plan
                     </p>
-                    <p className="text-2xl font-bold mt-2">
+                    {/* <p className="text-2xl font-bold mt-2">
                       KES {dailyRate.toLocaleString()}
-                    </p>
+                    </p> */}
                   </div>
                 </div>
 
@@ -625,10 +628,10 @@ export default function EmployerBookingFormClient() {
                     : `${selectedDates.length} Days`}
                 </span>
               </div>
-              <div className="flex justify-between text-sm">
+              {/* <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Booking Amount</span>
                 <span>KES {bookingAmount.toLocaleString()}</span>
-              </div>
+              </div> */}
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Service Fee</span>
                 <span>KES {serviceFee.toLocaleString()}</span>
