@@ -26,12 +26,13 @@ import { postApi } from "@/lib/apiHandler";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import useNotificationListener from "@/hooks/useNotificationListener";
-import { m } from "framer-motion";
 
 const ChatInbox = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialSpecialistId = searchParams.get("specialistId");
+  const initialSpecialistName = searchParams.get("specialistName");
+  const initialSpecialistType = searchParams.get("specialistType");
 
   const [activeId, setActiveId] = useState(
     initialSpecialistId ? Number(initialSpecialistId) : null,
@@ -54,26 +55,19 @@ const ChatInbox = () => {
     "/chat/user-chat-list",
   );
   const specialists = React.useMemo(() => {
-    if (!bookingData?.data) return [];
-
-    const rawData = bookingData?.data?.data || bookingData?.data?.users || [];
-    const bookings = Array.isArray(rawData) ? rawData : [];
+    const rawData = bookingData?.data?.users || [];
     const uniqueSpecs = [];
     const seenIds = new Set();
 
-    bookings?.forEach((booking) => {
-      if (
-        booking?.specialist &&
-        booking.specialist.name &&
-        !seenIds.has(booking.specialist.id)
-      ) {
-        seenIds.add(booking.specialist.id);
+    rawData.forEach((item) => {
+      if (item && !seenIds.has(item.id)) {
+        seenIds.add(item.id);
         uniqueSpecs.push({
-          id: booking.specialist.id,
-          type: booking.specialist.type,
-          name: booking?.specialist?.name,
-          avatar: booking?.specialist?.name
-            ? booking.specialist.name
+          id: item.id,
+          type: item.type || item.role,
+          name: item.name,
+          avatar: item.name
+            ? item.name
                 .split(" ")
                 .map((n) => n[0])
                 .join("")
@@ -84,8 +78,25 @@ const ChatInbox = () => {
         });
       }
     });
+
+
+    if (initialSpecialistId && !seenIds.has(Number(initialSpecialistId)) && initialSpecialistName) {
+      uniqueSpecs.unshift({
+        id: Number(initialSpecialistId),
+        type: initialSpecialistType || "specialist",
+        name: initialSpecialistName,
+        avatar: initialSpecialistName
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2),
+        lastMsg: "New Conversation",
+      });
+    }
+
     return uniqueSpecs;
-  }, [bookingData]);
+  }, [bookingData, initialSpecialistId, initialSpecialistName, initialSpecialistType]);
 
   const {
     data: messageData,

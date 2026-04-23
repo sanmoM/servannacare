@@ -46,30 +46,29 @@ const ChatInbox = () => {
   const textareaRef = useRef(null);
 
   const { data: bookingData, isLoading: isLoadingBookings } = useFetch(
-    "/specialist-booking",
+    "/chat/specialist-chat-list",
   );
 
   const clients = React.useMemo(() => {
-    if (!bookingData?.data) return [];
-
-    const rawData = bookingData?.data?.data || bookingData?.data || [];
-    const bookings = Array.isArray(rawData) ? rawData : [];
+    const rawData = bookingData?.data?.users || [];
     const uniqueUsers = [];
     const seenIds = new Set();
 
-    bookings.forEach((booking) => {
-      if (booking.user && !seenIds.has(booking.user.id)) {
-        seenIds.add(booking.user.id);
+    rawData.forEach((item) => {
+      if (item && !seenIds.has(item.id)) {
+        seenIds.add(item.id);
         uniqueUsers.push({
-          id: booking.user.id,
+          id: item.id,
           type: "user",
-          name: booking.user.name,
-          avatar: booking.user.name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2),
+          name: item.name,
+          avatar: item.name
+            ? item.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2)
+            : "NA",
           lastMsg: "",
         });
       }
