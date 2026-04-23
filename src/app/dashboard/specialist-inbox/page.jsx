@@ -179,6 +179,8 @@ const ChatInbox = () => {
 
   if (isLoadingBookings) return <LoadingSpinner />;
 
+  const hasClientMessaged = localMessages.some((msg) => msg.sender_type === "user");
+
   return (
     <div className="flex h-[85vh] md:h-[85vh] md:border md:rounded-lg overflow-hidden bg-white">
       <div
@@ -396,8 +398,13 @@ const ChatInbox = () => {
                 <textarea
                   ref={textareaRef}
                   rows={1}
-                  className="flex-1 bg-transparent border-none outline-none text-sm px-2 py-2 resize-none max-h-32 overflow-y-auto"
-                  placeholder="Type a message..."
+                  disabled={!hasClientMessaged}
+                  className="flex-1 bg-transparent border-none outline-none text-sm px-2 py-2 resize-none max-h-32 overflow-y-auto disabled:opacity-50"
+                  placeholder={
+                    hasClientMessaged
+                      ? "Type a message..."
+                      : "Waiting for client to initiate..."
+                  }
                   value={typedMessage}
                   onChange={(e) => {
                     setTypedMessage(e.target.value);
@@ -410,12 +417,17 @@ const ChatInbox = () => {
                 <Button
                   type="submit"
                   size="icon"
-                  disabled={!typedMessage.trim()}
-                  className="bg-primary rounded-lg mb-1 shrink-0 cursor-pointer"
+                  disabled={!typedMessage.trim() || !hasClientMessaged}
+                  className="bg-primary rounded-lg mb-1 shrink-0 cursor-pointer disabled:opacity-50"
                 >
                   <Send size={18} />
                 </Button>
               </form>
+              {!hasClientMessaged && (
+                <p className="text-[10px] text-orange-500 mt-2 font-medium">
+                  You can only reply after receiving a message from the client.
+                </p>
+              )}
             </div>
           </>
         ) : (
