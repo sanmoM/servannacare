@@ -12,11 +12,10 @@ const ChatBot = () => {
   const [filePreview, setFilePreview] = useState(null);
   const [messages, setMessages] = useState([]);
   const [visitorId, setVisitorId] = useState(null);
-  // const [isTyping, setIsTyping] = useState(false);
-  // const [hasIsWelcomed, setHasIsWelcomed] = useState(false);
- 
-  const scrollRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [hasIsWelcomed, setHasIsWelcomed] = useState(false);
 
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const generateThreeDigitId = () => {
@@ -39,7 +38,8 @@ const ChatBot = () => {
           setMessages(response.data.messages);
         }
       } catch (error) {
-        console.error("Error fetching messages:", error);
+        console.error("Error messages");
+        // return;
       }
     };
 
@@ -53,7 +53,6 @@ const ChatBot = () => {
     const channel = echo
       .private(`chat.visitor.${visitorId}`)
       .listen(".admin.reply", (e) => {
-        console.log("Admin reply", e);
         setMessages((prev) => [
           ...prev,
           {
@@ -75,6 +74,26 @@ const ChatBot = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || hasIsWelcomed) return;
+
+    setIsTyping(true);
+
+    const timer = setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: "admin",
+          message: "Hi there, How can I assist you today?",
+          created_at: new Date().toISOString(),
+        },
+      ]);
+      setIsTyping(false);
+      setHasIsWelcomed(true);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [isOpen]);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -155,12 +174,12 @@ const ChatBot = () => {
             ref={scrollRef}
             className="p-3 h-72 overflow-y-auto space-y-3 scrollbar-thin"
           >
-            {messages.length === 0 && (
+            {/* {messages.length === 0 && (
               <div className="text-center text-gray-400 text-[10px] mt-10">
                 Start a conversation...
               </div>
-            )}
-            {messages.map((msg, i) => (
+            )} */}
+            {messages?.map((msg, i) => (
               <div
                 key={i}
                 className={`flex items-start gap-2 ${
@@ -207,6 +226,23 @@ const ChatBot = () => {
                 </div>
               </div>
             ))}
+            {isTyping && (
+              <div className="flex items-center gap-2">
+                <div className="h-10 w-10">
+                  <Image
+                    src="/logo1.png"
+                    width={50}
+                    height={50}
+                    alt="avatar"
+                    className="rounded-full p-2 h-full w-full border"
+                  />
+                </div>
+
+                <div className="bg-gray-200 px-3 py-2 rounded-lg text-xs text-gray-600">
+                  typing...
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="p-3 border-t flex flex-col gap-2">
