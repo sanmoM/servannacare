@@ -222,7 +222,7 @@ export default function EmployerBookingFormClient() {
       home_type: formData.homeType,
       home_size: formData.homeSize,
       selected_dates_or_months: formattedSelections,
-      booking_amount: 0,
+      booking_amount: 1,
       // booking_amount: bookingAmount,
     };
 
@@ -232,7 +232,7 @@ export default function EmployerBookingFormClient() {
         plan_id: planId,
         specialist_id: parseInt(matchedSpecialist?.id),
         specialist_type: matchedSpecialist.type,
-        book_amount: 0,
+        book_amount: 1,
         // book_amount: bookingAmount,
       });
 

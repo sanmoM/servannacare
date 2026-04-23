@@ -51,6 +51,7 @@ const BookingHistoryPage = () => {
   const filterStatus = searchParams.get("status") || "All";
 
   const [bookings, setBookings] = useState([]);
+  console.log(bookings);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
