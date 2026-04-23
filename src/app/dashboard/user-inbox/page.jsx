@@ -26,13 +26,12 @@ import { postApi } from "@/lib/apiHandler";
 import toast from "react-hot-toast";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import useNotificationListener from "@/hooks/useNotificationListener";
+import { m } from "framer-motion";
 
 const ChatInbox = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialSpecialistId = searchParams.get("specialistId");
-  const initialSpecialistName = searchParams.get("specialistName");
-  const initialSpecialistType = searchParams.get("specialistType");
 
   const [activeId, setActiveId] = useState(
     initialSpecialistId ? Number(initialSpecialistId) : null,
@@ -48,14 +47,14 @@ const ChatInbox = () => {
   });
 
   const scrollRef = useRef(null);
-  
   const fileInputRef = useRef(null);
-
   const textareaRef = useRef(null);
 
   const { data: bookingData, isLoading: isLoadingBookings } =
     useFetch("/user-booking");
   const specialists = React.useMemo(() => {
+    if (!bookingData?.data) return [];
+
     const rawData = bookingData?.data?.data || bookingData?.data || [];
     const bookings = Array.isArray(rawData) ? rawData : [];
     const uniqueSpecs = [];
@@ -71,46 +70,21 @@ const ChatInbox = () => {
         uniqueSpecs.push({
           id: booking.specialist.id,
           type: booking.specialist.type,
-          name: booking.specialist.name,
-          avatar: booking.specialist.name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2),
+          name: booking?.specialist?.name,
+          avatar: booking?.specialist?.name
+            ? booking.specialist.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2)
+            : "NA",
           lastMsg: "",
-          isBooked: true,
         });
       }
     });
-
-    if (
-      initialSpecialistId &&
-      !seenIds.has(Number(initialSpecialistId)) &&
-      initialSpecialistName
-    ) {
-      uniqueSpecs.push({
-        id: Number(initialSpecialistId),
-        type: initialSpecialistType || "specialist",
-        name: initialSpecialistName,
-        avatar: initialSpecialistName
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-          .slice(0, 2),
-        lastMsg: "",
-        isBooked: false,
-      });
-    }
-
     return uniqueSpecs;
-  }, [
-    bookingData,
-    initialSpecialistId,
-    initialSpecialistName,
-    initialSpecialistType,
-  ]);
+  }, [bookingData]);
 
   const {
     data: messageData,
@@ -125,7 +99,6 @@ const ChatInbox = () => {
       setLocalMessages([]);
     }
   }, [messageData]);
-  // console.log(localMessages);
 
   useNotificationListener(activeId, (notification) => {
     console.log(
@@ -162,26 +135,9 @@ const ChatInbox = () => {
     }
   }, [localMessages, activeId]);
 
-  const activeSpecialist = specialists.find((s) => s.id === activeId);
-
-  const containsRestrictedInfo = (text) => {
-    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/;
-    const phoneRegex = /(?:\+?\d{1,3}[- ]?)?\(?\d{3}\)?[- ]?\d{3}[- ]?\d{4,}/;
-
-    const addressRegex =
-      /\b(?:street|road|avenue|ave|house|flat|block|sector|lane|village|town|city|country|po box|p\.o\.\s*box)\b/i;
-
-    return (
-      emailRegex.test(text) || phoneRegex.test(text) || addressRegex.test(text)
-    );
-  };
-
-  const isRestricted = activeSpecialist && !activeSpecialist.isBooked;
-  const isMessageBlocked = isRestricted && containsRestrictedInfo(typedMessage);
-
   const handleSend = async (e) => {
     e?.preventDefault?.();
-    if (!typedMessage.trim() || isMessageBlocked) return;
+    if (!typedMessage.trim()) return;
 
     try {
       const activeSpec = specialists.find((s) => s.id === activeId);
@@ -200,6 +156,7 @@ const ChatInbox = () => {
         ...payload,
         created_at: new Date().toISOString(),
       };
+
 
       setTypedMessage("");
       if (textareaRef.current) textareaRef.current.style.height = "auto";
@@ -236,7 +193,7 @@ const ChatInbox = () => {
     setDeleteConfig({ isOpen: false, messageId: null });
   };
 
-  // const activeSpecialist = specialists.find((s) => s.id === activeId);
+  const activeSpecialist = specialists.find((s) => s.id === activeId);
   const filteredSpecialists = specialists.filter((s) =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
@@ -301,6 +258,7 @@ const ChatInbox = () => {
         </ScrollArea>
       </div>
 
+      
       <div
         className={`${view === "list" ? "hidden" : "flex"} flex-1 flex-col bg-white md:flex h-full min-h-0`}
       >
@@ -404,6 +362,7 @@ const ChatInbox = () => {
               )}
             </div>
 
+          
             <div className="p-4 border-t bg-white shrink-0">
               {/* 
               {stagedFile && (
@@ -471,17 +430,12 @@ const ChatInbox = () => {
                 <Button
                   type="submit"
                   size="icon"
-                  disabled={!typedMessage.trim() || isMessageBlocked}
-                  className="bg-primary rounded-lg mb-1 shrink-0 cursor-pointer disabled:opacity-50"
+                  disabled={!typedMessage.trim()}
+                  className="bg-primary rounded-lg mb-1 shrink-0 cursor-pointer"
                 >
                   <Send size={18} />
                 </Button>
               </form>
-              {isMessageBlocked && (
-                <p className="text-[10px] text-red-500 mt-2 font-medium">
-                  Sharing contact information is not allowed before booking.
-                </p>
-              )}
             </div>
           </>
         ) : (

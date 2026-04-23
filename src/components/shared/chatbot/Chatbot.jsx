@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { File, MessageCircle, Send, X } from "lucide-react";
 import Image from "next/image";
-import echoInstance from "@/lib/echo";
-import { postApi } from "@/lib/apiHandler";
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,40 +11,6 @@ const ChatBot = () => {
   const [messages, setMessages] = useState([
     { sender: "bot", text: "Hello! How can I assist you today?" },
   ]);
-
-  const getVisitorId = () => {
-    let id = localStorage.getItem("visitor_id");
-
-    if (!id) {
-      id = Math.floor(100 + Math.random() * 900).toString();
-      localStorage.setItem("visitor_id", id);
-    }
-
-    return id;
-  };
-  useEffect(() => {
-    const echo = echoInstance({ anonymous: true });
-
-    if (!echo) return;
-
-    const visitorId = getVisitorId();
-
-    echo.private(`chat.visitor.${visitorId}`).listen(".adminReply", (e) => {
-      console.log("event", e);
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: "admin",
-          text: e.message,
-        },
-      ]);
-    });
-
-    return () => {
-      echo.leave(`chat.visitor.${visitorId}`);
-    };
-  }, []);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -68,30 +32,31 @@ const ChatBot = () => {
     }
   };
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (!input.trim() && !filePreview) return;
 
-    const visitorId = getVisitorId();
+    let newMessage = { sender: "user", text: input };
 
-    const newMessage = {
-      sender: "user",
-      text: input,
-      file: filePreview || null,
-    };
+    if (filePreview) {
+      newMessage.file = filePreview;
+    }
 
     setMessages((prev) => [...prev, newMessage]);
 
-    await postApi("/visitor/send", {
-      visitor_id: visitorId,
-      message: input,
-    });
-
     setInput("");
     setFilePreview(null);
+
+    setTimeout(() => {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "Thanks! I will check that for you." },
+      ]);
+    }, 500);
   };
 
   return (
     <>
+     
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 bg-primary text-white p-4 cursor-pointer rounded-full shadow-lg hover:bg-primary/80 transition z-50"
@@ -99,8 +64,10 @@ const ChatBot = () => {
         <MessageCircle size={26} />
       </button>
 
+     
       {isOpen && (
         <div className="fixed bottom-6 right-6 w-88 bg-white rounded-xl shadow-2xl border z-999 flex flex-col">
+    
           <div className="px-4 py-3 bg-primary text-white flex items-center justify-between rounded-t-xl">
             <div className="flex gap-2 items-center">
               <Image
@@ -111,12 +78,14 @@ const ChatBot = () => {
                 alt="logo"
                 className="rounded-full"
               />
+              
             </div>
             <button className="cursor-pointer" onClick={() => setIsOpen(false)}>
               <X size={20} />
             </button>
           </div>
 
+          
           <div className="p-3 h-72 overflow-y-auto space-y-3 scrollbar-thin">
             {messages.map((msg, i) => (
               <div
@@ -125,6 +94,7 @@ const ChatBot = () => {
                   msg.sender === "user" ? "justify-end" : "justify-start"
                 }`}
               >
+                
                 {msg.sender === "bot" && (
                   <div className="h-10 w-10">
                     <Image
@@ -147,6 +117,7 @@ const ChatBot = () => {
                 >
                   {msg.text}
 
+                  
                   {msg.file && msg.file.type === "image" && (
                     <Image
                       src={msg.file.url}
@@ -167,7 +138,9 @@ const ChatBot = () => {
             ))}
           </div>
 
+          
           <div className="p-3 border-t flex flex-col gap-2">
+            
             {filePreview && (
               <div className="flex items-center gap-2 bg-gray-100 p-2 rounded text-xs">
                 {filePreview.type === "image" ? (
@@ -192,6 +165,7 @@ const ChatBot = () => {
             )}
 
             <div className="flex items-center gap-2">
+              
               <label className="cursor-pointer">
                 <File size={22} className="text-gray-400" />
                 <input
