@@ -165,14 +165,14 @@ export default function DashboardPage() {
         Hi <span className="text-primary">{user?.name || user?.email}!</span>
       </h1>
       <p className="mt-2 text-sm sm:text-base text-gray-600">
-        Welcome to Servannacare!
+        Welcome to Cervanna Care!
       </p>
 
       <div className="grid  sm:grid-cols-2 mt-10 gap-4 lg:gap-6 lg:grid-cols-4">
         {renderStats.map((stats) => (
           <div
             key={stats.id}
-            className={`bg-gradient-to-tl ${
+            className={`bg-linear-to-tl ${
               gradientColors[stats.color]
             } p-5 rounded-2xl shadow-lg text-white`}
           >

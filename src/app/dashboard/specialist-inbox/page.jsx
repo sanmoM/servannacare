@@ -48,6 +48,8 @@ const ChatInbox = () => {
 
   const { data: bookingData, isLoading: isLoadingBookings } = useFetch(
     "/chat/specialist-chat-list",
+    {},
+    { refetchInterval: 3000 }
   );
 
   const { data: specialistBookings } = useFetch("/specialist-booking");
@@ -83,7 +85,7 @@ const ChatInbox = () => {
     data: messageData,
     isLoading: isLoadingMessages,
     refetch: refetchMessages,
-  } = useFetch(`/chat/conversation/${activeId}`, { enabled: !!activeId });
+  } = useFetch(`/chat/conversation/${activeId}`, {}, { enabled: !!activeId, refetchInterval: 3000 });
 
   const [localMessages, setLocalMessages] = useState([]);
 

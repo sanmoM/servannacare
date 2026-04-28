@@ -54,6 +54,8 @@ const ChatInbox = () => {
 
   const { data: bookingData, isLoading: isLoadingBookings } = useFetch(
     "/chat/user-chat-list",
+    {},
+    { refetchInterval: 3000 }
   );
 
   const { data: userBookings } = useFetch("/user-booking");
@@ -105,7 +107,7 @@ const ChatInbox = () => {
     data: messageData,
     isLoading: isLoadingMessages,
     refetch: refetchMessages,
-  } = useFetch(`/chat/conversation/${activeId}`, { enabled: !!activeId });
+  } = useFetch(`/chat/conversation/${activeId}`, {}, { enabled: !!activeId, refetchInterval: 3000 });
   const [localMessages, setLocalMessages] = useState([]);
   useEffect(() => {
     if (Array.isArray(messageData?.data?.messages)) {

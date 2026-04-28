@@ -64,7 +64,6 @@ const ProfessionalSchedule = () => {
     return next;
   });
 
-  // allow click again after short delay
   setTimeout(() => {
     isDraggingRef.current = false;
   }, 50);
@@ -130,7 +129,7 @@ const handleDateClick = (info) => {
   return (
     <div className="min-h-screen bg-[#FDFCFD] font-sans text-slate-900">
       <div className="w-full py-4 space-y-6">
-        {/* Header */}
+    
         <div className="bg-white rounded-lg p-6 md:p-10 border border-slate-100 shadow-xl flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-6">
             <div
@@ -141,7 +140,7 @@ const handleDateClick = (info) => {
             </div>
             <div>
               <h1 className="text-2xl font-black tracking-tight text-slate-800">
-                Availability Specialist
+                Specialist availability
               </h1>
               <p className="text-sm text-slate-500 font-medium">
                 Select dates and publish to API
@@ -177,7 +176,7 @@ const handleDateClick = (info) => {
           </div>
         </div>
 
-        {/* Calendar */}
+      
         <div className="bg-white rounded-lg border border-slate-100 shadow-2xl p-6 md:p-12 relative overflow-hidden">
           <div className="flex justify-between mb-10">
             <div className="flex items-center gap-3 text-slate-400">
@@ -188,7 +187,7 @@ const handleDateClick = (info) => {
             </div>
             <button
               onClick={() => {
-                // Reset to server-saved dates
+            
                 if (data?.schedule?.length) {
                   const allDates = data.schedule.flatMap((s) => s.date);
                   setSelectedDates(new Set(allDates));
