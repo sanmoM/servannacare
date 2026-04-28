@@ -46,7 +46,7 @@ const ChatInbox = () => {
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
 
-  const { data: bookingData, isLoading: isLoadingBookings } = useFetch(
+  const { data: bookingData, isLoading: isLoadingBookings, refetch: refetchList } = useFetch(
     "/chat/specialist-chat-list",
     {},
     { refetchInterval: 3000 }
@@ -109,7 +109,11 @@ const ChatInbox = () => {
       }
     });
 
-    return uniqueUsers.sort((a, b) => new Date(b.lastMsgTime) - new Date(a.lastMsgTime));
+    return uniqueUsers.sort((a, b) => {
+      const timeA = new Date(a.lastMsgTime || 0).getTime();
+      const timeB = new Date(b.lastMsgTime || 0).getTime();
+      return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+    });
   }, [bookingData, specialistBookings]);
 
   const {
@@ -198,6 +202,7 @@ const ChatInbox = () => {
 
       await postApi("/chat/send", payload);
       refetchMessages();
+      refetchList();
     } catch (error) {
       console.error("Chat send error:", error);
       toast.error("Failed to send message");
