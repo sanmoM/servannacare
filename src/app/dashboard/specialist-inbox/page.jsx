@@ -78,8 +78,33 @@ const ChatInbox = () => {
         });
       }
     });
+
+    const bookingsArray = Array.isArray(specialistBookings?.data?.data) 
+      ? specialistBookings.data.data 
+      : (Array.isArray(specialistBookings?.data) ? specialistBookings.data : []);
+
+    bookingsArray.forEach((booking) => {
+      if (booking.user && !seenIds.has(booking.user.id)) {
+        seenIds.add(booking.user.id);
+        uniqueUsers.push({
+          id: booking.user.id,
+          type: "user",
+          name: booking.user.name,
+          avatar: booking.user.name
+            ? booking.user.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2)
+            : "NA",
+          lastMsg: "New Booked",
+        });
+      }
+    });
+
     return uniqueUsers;
-  }, [bookingData]);
+  }, [bookingData, specialistBookings]);
 
   const {
     data: messageData,
@@ -334,7 +359,7 @@ const ChatInbox = () => {
                                 )}
                               </div>
                             )} */}
-                              <p className="px-4 py-2.5 leading-relaxed break-words whitespace-pre-wrap text-sm">
+                              <p className="px-4 py-2.5 leading-relaxed wrap-break-word whitespace-pre-wrap text-sm">
                                 {msg.message}
                               </p>
                               <span className="text-[9px] px-4 pb-2 block text-right opacity-60 font-bold uppercase">

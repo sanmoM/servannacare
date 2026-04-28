@@ -84,6 +84,29 @@ const ChatInbox = () => {
       }
     });
 
+    const bookingsArray = Array.isArray(userBookings?.data?.data) 
+      ? userBookings.data.data 
+      : (Array.isArray(userBookings?.data) ? userBookings.data : []);
+
+    bookingsArray.forEach((booking) => {
+      if (booking.specialist && !seenIds.has(booking.specialist.id)) {
+        seenIds.add(booking.specialist.id);
+        uniqueSpecs.push({
+          id: booking.specialist.id,
+          type: booking.specialist.type || booking.specialist.role || booking.specialist_type || "specialist",
+          name: booking.specialist.name,
+          avatar: booking.specialist.name
+            ? booking.specialist.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2)
+            : "NA",
+          lastMsg: "New Booked",
+        });
+      }
+    });
 
     if (initialSpecialistId && !seenIds.has(Number(initialSpecialistId)) && initialSpecialistName) {
       uniqueSpecs.unshift({
@@ -101,7 +124,7 @@ const ChatInbox = () => {
     }
 
     return uniqueSpecs;
-  }, [bookingData, initialSpecialistId, initialSpecialistName, initialSpecialistType]);
+  }, [bookingData, initialSpecialistId, initialSpecialistName, initialSpecialistType, userBookings]);
 
   const {
     data: messageData,
