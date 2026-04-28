@@ -61,6 +61,12 @@ const ChatInbox = () => {
   const { data: userBookings } = useFetch("/user-booking");
   const specialists = React.useMemo(() => {
     const rawData = bookingData?.data?.users || [];
+    const bookingsArray = Array.isArray(userBookings?.data?.data) 
+      ? userBookings.data.data 
+      : (Array.isArray(userBookings?.data) ? userBookings.data : []);
+
+    const bookedIds = new Set(bookingsArray.map(b => Number(b.specialist_id)));
+    
     const uniqueSpecs = [];
     const seenIds = new Set();
 
@@ -79,15 +85,14 @@ const ChatInbox = () => {
                 .toUpperCase()
                 .slice(0, 2)
             : "NA",
-          lastMsg: "",
+          lastMsg: item.last_message?.message || item.last_message || "",
+          lastMsgTime: item.last_message?.created_at || item.updated_at,
+          isBooked: bookedIds.has(Number(item.id)),
         });
       }
     });
 
-    const bookingsArray = Array.isArray(userBookings?.data?.data) 
-      ? userBookings.data.data 
-      : (Array.isArray(userBookings?.data) ? userBookings.data : []);
-
+    // 2. Add booked specialists who haven't messaged yet
     bookingsArray.forEach((booking) => {
       if (booking.specialist && !seenIds.has(booking.specialist.id)) {
         seenIds.add(booking.specialist.id);
@@ -103,11 +108,14 @@ const ChatInbox = () => {
                 .toUpperCase()
                 .slice(0, 2)
             : "NA",
-          lastMsg: "New Booked",
+          lastMsg: "No messages yet",
+          lastMsgTime: booking.created_at,
+          isBooked: true,
         });
       }
     });
 
+    // 3. Handle initial specialist from search params
     if (initialSpecialistId && !seenIds.has(Number(initialSpecialistId)) && initialSpecialistName) {
       uniqueSpecs.unshift({
         id: Number(initialSpecialistId),
@@ -120,10 +128,13 @@ const ChatInbox = () => {
           .toUpperCase()
           .slice(0, 2),
         lastMsg: "New Conversation",
+        lastMsgTime: new Date().toISOString(),
+        isBooked: bookedIds.has(Number(initialSpecialistId)),
       });
     }
 
-    return uniqueSpecs;
+    // Sort by last message time (newest first)
+    return uniqueSpecs.sort((a, b) => new Date(b.lastMsgTime) - new Date(a.lastMsgTime));
   }, [bookingData, initialSpecialistId, initialSpecialistName, initialSpecialistType, userBookings]);
 
   const {
@@ -151,17 +162,20 @@ const ChatInbox = () => {
     refetchMessages();
   });
 
+  const [isInitialized, setIsInitialized] = useState(false);
+
   useEffect(() => {
-    if (initialSpecialistId && specialists.length > 0) {
+    if (initialSpecialistId && specialists.length > 0 && !isInitialized) {
       const exists = specialists.some(
         (s) => s.id === Number(initialSpecialistId),
       );
       if (exists) {
         setActiveId(Number(initialSpecialistId));
         setView("chat");
+        setIsInitialized(true);
       }
     }
-  }, [initialSpecialistId, specialists]);
+  }, [initialSpecialistId, specialists, isInitialized]);
 
   useEffect(() => {
     const scrollContainer = scrollRef.current?.querySelector(
@@ -293,7 +307,14 @@ const ChatInbox = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm truncate">{s.name}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-bold text-sm truncate">{s.name}</p>
+                    {s.isBooked ? (
+                      <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">Booked</span>
+                    ) : (
+                      <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">Not Booked</span>
+                    )}
+                  </div>
                   <p
                     className={`text-xs truncate ${activeId === s.id ? "text-primary-foreground/80" : "text-gray-500"}`}
                   >

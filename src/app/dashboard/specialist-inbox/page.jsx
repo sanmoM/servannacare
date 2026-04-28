@@ -56,6 +56,12 @@ const ChatInbox = () => {
 
   const clients = React.useMemo(() => {
     const rawData = bookingData?.data?.users || [];
+    const bookingsArray = Array.isArray(specialistBookings?.data?.data) 
+      ? specialistBookings.data.data 
+      : (Array.isArray(specialistBookings?.data) ? specialistBookings.data : []);
+
+    const bookedIds = new Set(bookingsArray.map(b => Number(b.booking_person_id)));
+
     const uniqueUsers = [];
     const seenIds = new Set();
 
@@ -74,14 +80,12 @@ const ChatInbox = () => {
                 .toUpperCase()
                 .slice(0, 2)
             : "NA",
-          lastMsg: "",
+          lastMsg: item.last_message?.message || item.last_message || "",
+          lastMsgTime: item.last_message?.created_at || item.updated_at,
+          isBooked: bookedIds.has(Number(item.id)),
         });
       }
     });
-
-    const bookingsArray = Array.isArray(specialistBookings?.data?.data) 
-      ? specialistBookings.data.data 
-      : (Array.isArray(specialistBookings?.data) ? specialistBookings.data : []);
 
     bookingsArray.forEach((booking) => {
       if (booking.user && !seenIds.has(booking.user.id)) {
@@ -98,12 +102,14 @@ const ChatInbox = () => {
                 .toUpperCase()
                 .slice(0, 2)
             : "NA",
-          lastMsg: "New Booked",
+          lastMsg: "No messages yet",
+          lastMsgTime: booking.created_at,
+          isBooked: true,
         });
       }
     });
 
-    return uniqueUsers;
+    return uniqueUsers.sort((a, b) => new Date(b.lastMsgTime) - new Date(a.lastMsgTime));
   }, [bookingData, specialistBookings]);
 
   const {
@@ -133,15 +139,18 @@ const ChatInbox = () => {
     refetchMessages();
   });
 
+  const [isInitialized, setIsInitialized] = useState(false);
+
   useEffect(() => {
-    if (initialUserId && clients.length > 0) {
+    if (initialUserId && clients.length > 0 && !isInitialized) {
       const exists = clients.some((c) => c.id === Number(initialUserId));
       if (exists) {
         setActiveId(Number(initialUserId));
         setView("chat");
+        setIsInitialized(true);
       }
     }
-  }, [initialUserId, clients]);
+  }, [initialUserId, clients, isInitialized]);
 
   useEffect(() => {
     const scrollContainer = scrollRef.current?.querySelector(
@@ -264,7 +273,14 @@ const ChatInbox = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm truncate">{s.name}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-bold text-sm truncate">{s.name}</p>
+                    {s.isBooked ? (
+                      <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">Booked</span>
+                    ) : (
+                      <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">Not Booked</span>
+                    )}
+                  </div>
                   <p
                     className={`text-xs truncate ${activeId === s.id ? "text-primary-foreground/80" : "text-gray-500"}`}
                   >
