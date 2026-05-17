@@ -93,10 +93,9 @@ const EmployeDetails = ({
 
   useEffect(() => {
     setData((prev) => ({ ...prev, ...defaultValues }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  
   }, []);
 
-  // send up on change
   useEffect(() => {
     onDataChange && onDataChange(data);
   }, [data]);
@@ -105,26 +104,25 @@ const EmployeDetails = ({
     if (onDataChange) {
       onDataChange(data);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [JSON.stringify(data)]);
 
-  // generic input handler
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // select change
   const handleSelect = (name, value) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // radio change
+
   const handleRadio = (name, value) => {
     setData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // checkbox toggle for arrays
+
   const toggleArray = (name, value) => {
     setData((prev) => {
       const exists = prev[name].includes(value);
@@ -137,7 +135,7 @@ const EmployeDetails = ({
     });
   };
 
-  // file upload
+
   const handleFileSelect = (id, file) => {
     setData((prev) => ({
       ...prev,
@@ -153,7 +151,7 @@ const EmployeDetails = ({
         Employee #{employeeNumber}
       </h2>
 
-      {/* Name & Education */}
+  
       <div className="flex sm:gap-4 gap-6 flex-col sm:flex-row">
         <div className="flex-1">
           <Input
@@ -189,7 +187,7 @@ const EmployeDetails = ({
         </div>
       </div>
 
-      {/* Location, Experience, Salary */}
+  
       <div className="flex gap-4 pt-6 flex-col sm:flex-row">
         <div className="flex-1">
           <Input
@@ -293,15 +291,15 @@ const EmployeDetails = ({
           >
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <RadioGroupItem
+                <RadioGroupItem className="cursor-pointer"
                   value="Yes"
                   id={`motherYes_${employeeNumber}`}
                 />
-                <Label htmlFor={`motherYes_${employeeNumber}`}>Yes</Label>
+                <Label className="cursor-pointer" htmlFor={`motherYes_${employeeNumber}`}>Yes</Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="No" id={`motherNo_${employeeNumber}`} />
-                <Label htmlFor={`motherNo_${employeeNumber}`}>No</Label>
+                <RadioGroupItem className="cursor-pointer" value="No" id={`motherNo_${employeeNumber}`} />
+                <Label className="cursor-pointer" htmlFor={`motherNo_${employeeNumber}`}>No</Label>
               </div>
             </div>
           </RadioGroup>
@@ -315,18 +313,19 @@ const EmployeDetails = ({
             {["0-3", "4-10", "11+"].map((age) => (
               <div key={age} className="flex items-center gap-2">
                 <Checkbox
+                className="cursor-pointer"
                   id={`${age}_${employeeNumber}`}
                   checked={data.kidAges.includes(age)}
                   onCheckedChange={() => toggleArray("kidAges", age)}
                 />
-                <Label htmlFor={`${age}_${employeeNumber}`}>{age} years</Label>
+                <Label className="cursor-pointer" htmlFor={`${age}_${employeeNumber}`}>{age} years</Label>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Pets & Role */}
+    
       <div className="flex flex-col sm:flex-row sm:gap-4 gap-8">
         <div className="flex-1">
           <Label className="mb-3">Are you okay handling pets?</Label>
@@ -337,12 +336,12 @@ const EmployeDetails = ({
           >
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="Yes" id={`petsYes_${employeeNumber}`} />
-                <Label htmlFor={`petsYes_${employeeNumber}`}>Yes</Label>
+                <RadioGroupItem className="cursor-pointer" value="Yes" id={`petsYes_${employeeNumber}`} />
+                <Label className="cursor-pointer" htmlFor={`petsYes_${employeeNumber}`}>Yes</Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem value="No" id={`petsNo_${employeeNumber}`} />
-                <Label htmlFor={`petsNo_${employeeNumber}`}>No</Label>
+                <RadioGroupItem className="cursor-pointer" value="No" id={`petsNo_${employeeNumber}`} />
+                <Label className="cursor-pointer" htmlFor={`petsNo_${employeeNumber}`}>No</Label>
               </div>
             </div>
           </RadioGroup>
@@ -356,18 +355,18 @@ const EmployeDetails = ({
           >
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <RadioGroupItem
+                <RadioGroupItem className="cursor-pointer"
                   value="Nanny"
                   id={`roleNanny_${employeeNumber}`}
                 />
-                <Label htmlFor={`roleNanny_${employeeNumber}`}>Nanny</Label>
+                <Label className="cursor-pointer" htmlFor={`roleNanny_${employeeNumber}`}>Nanny</Label>
               </div>
               <div className="flex items-center gap-2">
-                <RadioGroupItem
+                <RadioGroupItem className="cursor-pointer"
                   value="Housekeeper"
                   id={`roleHousekeeper_${employeeNumber}`}
                 />
-                <Label htmlFor={`roleHousekeeper_${employeeNumber}`}>
+                <Label className="cursor-pointer" htmlFor={`roleHousekeeper_${employeeNumber}`}>
                   Housekeeper
                 </Label>
               </div>
@@ -376,18 +375,19 @@ const EmployeDetails = ({
         </div>
       </div>
 
-      {/* Languages */}
+    
       <div className="pt-8">
         <Label className="mb-3">Languages Spoken</Label>
         <div className="flex flex-wrap gap-x-4 gap-y-2">
           {languages.map((lan, i) => (
             <div key={i} className="flex items-center gap-2">
               <Checkbox
+              className="cursor-pointer"
                 id={`${lan.value}_${employeeNumber}`}
                 checked={data.languages.includes(lan.value)}
                 onCheckedChange={() => toggleArray("languages", lan.value)}
               />
-              <Label htmlFor={`${lan.value}_${employeeNumber}`}>
+              <Label className="cursor-pointer" htmlFor={`${lan.value}_${employeeNumber}`}>
                 {lan.text}
               </Label>
             </div>
@@ -395,7 +395,7 @@ const EmployeDetails = ({
         </div>
       </div>
 
-      {/* Skills */}
+  
       <div className="pt-6">
         <Label className="mb-3">Skill Proficiency</Label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -422,7 +422,7 @@ const EmployeDetails = ({
         </div>
       </div>
 
-      {/* Live Type */}
+    
       <div className="py-6">
         <Label className="mb-3">Service Offered</Label>
 
@@ -432,21 +432,21 @@ const EmployeDetails = ({
         >
           <div className="flex gap-4">
             <div className="flex items-center gap-2">
-              <RadioGroupItem value="Live In" id={`liveIn_${employeeNumber}`} />
-              <Label htmlFor={`liveIn_${employeeNumber}`}>Live In</Label>
+              <RadioGroupItem className="cursor-pointer" value="Live In" id={`liveIn_${employeeNumber}`} />
+              <Label className="cursor-pointer" htmlFor={`liveIn_${employeeNumber}`}>Live In</Label>
             </div>
             <div className="flex items-center gap-2">
-              <RadioGroupItem
+              <RadioGroupItem className="cursor-pointer"
                 value="Dayburg"
                 id={`dayburg_${employeeNumber}`}
               />
-              <Label htmlFor={`dayburg_${employeeNumber}`}>Dayburg</Label>
+              <Label className="cursor-pointer" htmlFor={`dayburg_${employeeNumber}`}>Dayburg</Label>
             </div>
           </div>
         </RadioGroup>
       </div>
 
-      {/* bio  */}
+   
       <div className="mb-6">
         <label htmlFor="bio">Bio</label>
         <textarea
@@ -459,7 +459,7 @@ const EmployeDetails = ({
         />
       </div>
 
-      {/* Documents */}
+  
       <div className="p-3 bg-primary/20 rounded-xl flex gap-2 items-center">
         <ClipboardPlus />
         <span className="text-sm text-gray-700">

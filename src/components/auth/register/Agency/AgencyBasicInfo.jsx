@@ -219,7 +219,7 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
         </div>
       </div>
 
-      {/* Agency Services */}
+      
       <div>
         <h2 className="formHeading">Agency Services</h2>
 
@@ -229,6 +229,7 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
             {train.map((item, indx) => (
               <div key={indx} className="flex items-center gap-2">
                 <Checkbox
+                className="cursor-pointer"
                   id={`train-${indx}`}
                   checked={data.trainingAreas.includes(item)}
                   onCheckedChange={() => toggleTraining(item)}
@@ -276,9 +277,9 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
         </div>
       </div>
 
-      {/* Submit */}
-      <div className="flex justify-end mt-6">
-        <Button type="submit" size="lg">
+    
+      <div className=" flex justify-end mt-6">
+        <Button className="cursor-pointer" type="submit" size="lg">
           Next
         </Button>
       </div>

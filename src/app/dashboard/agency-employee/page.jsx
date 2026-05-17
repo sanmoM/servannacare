@@ -12,6 +12,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import AgencyEmployee from "@/components/updateProfile/Agency/AgencyEmployee";
+import DashboardAddEmployees from "@/components/updateProfile/Agency/DashboardAddEmployees";
+import PaymentModal from "@/components/updateProfile/Agency/PaymentModal";
 import { useFetch } from "@/hooks/useFetch";
 import {
   Eye,
@@ -42,11 +44,12 @@ const EmployeePage = () => {
   const [agencyExist, setAgencyExist] = useState([]);
   const { user } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [paymentEmployeeIds, setPaymentEmployeeIds] = useState([]);
 
   const [editModalId, setEditModalId] = useState(null);
 
   const { data, isLoading, refetch } = useFetch("/profile");
-  // console.log("data", data?.data?.data);
 
   const [scheduleViewId, setScheduleViewId] = useState(null);
 
@@ -105,7 +108,7 @@ const EmployeePage = () => {
 
   return (
     <div className=" mx-auto bg-gray-50 min-h-screen">
-      {/* Header Section */}
+  
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -126,17 +129,22 @@ const EmployeePage = () => {
             <DialogHeader>
               <DialogTitle>Register New Employee</DialogTitle>
             </DialogHeader>
-            <AgencyEmployee
+            <DashboardAddEmployees
               onSuccess={() => {
                 refetch();
                 setShowAddModal(false);
+              }}
+              onRequiresPayment={(ids) => {
+                refetch();
+                setShowAddModal(false);
+                setPaymentEmployeeIds(ids);
+                setPaymentModalOpen(true);
               }}
             />
           </DialogContent>
         </Dialog>
       </div>
 
-      {/* Main Table */}
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -155,7 +163,7 @@ const EmployeePage = () => {
                     key={emp.id}
                     className="hover:bg-gray-50/50 transition-colors"
                   >
-                    {/* Basic Info */}
+                  
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-purple-100 flex-shrink-0 border overflow-hidden">
@@ -181,7 +189,7 @@ const EmployeePage = () => {
                       </div>
                     </td>
 
-                    {/* Role/Experience */}
+                  
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
@@ -194,7 +202,6 @@ const EmployeePage = () => {
                       </div>
                     </td>
 
-                    {/* Salary/Expectation */}
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-emerald-600 flex items-center gap-1">
@@ -206,16 +213,29 @@ const EmployeePage = () => {
                       </div>
                     </td>
 
-                    {/* Actions */}
+                 
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-1">
-                        {/* VIEW DIALOG */}
+                      <div className="flex justify-end items-center gap-1">
+                        {emp.is_paid === false && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white mr-2 h-8 px-3 cursor-pointer"
+                            onClick={() => {
+                              setPaymentEmployeeIds([emp.id]);
+                              setPaymentModalOpen(true);
+                            }}
+                          >
+                            Pay Now
+                          </Button>
+                        )}
+                
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="text-primary-600 hover:bg-blue-50"
+                              className="text-primary-600 hover:bg-blue-50 cursor-pointer"
                             >
                               <Eye size={18} />
                             </Button>
@@ -231,7 +251,7 @@ const EmployeePage = () => {
                               </DialogTitle>
                             </DialogHeader>
 
-                            {/* PROFILE GRID */}
+                         
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
                               <InfoTile
                                 label="Education"
@@ -315,7 +335,7 @@ const EmployeePage = () => {
                               />
                             </div>
 
-                            {/* SCHEDULE SECTION */}
+                         
                             {emp.schedule?.length > 0 &&
                               emp.schedule[0]?.date?.length > 0 && (
                                 <div className="mt-6">
@@ -329,6 +349,7 @@ const EmployeePage = () => {
                                     </h4>
 
                                     <Button
+                                    className="cursor-pointer"
                                       size="sm"
                                       variant="outline"
                                       onClick={() => setScheduleViewId(emp.id)}
@@ -339,12 +360,13 @@ const EmployeePage = () => {
                                 </div>
                               )}
 
-                            {/* DOCUMENT SECTION */}
+                         
                             <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
                               {emp.idCopy && (
                                 <Button
+                                
                                   variant="outline"
-                                  className="text-xs h-8"
+                                  className="text-xs h-8 cursor-pointer"
                                   onClick={() => openFile(emp.idCopy)}
                                 >
                                   View ID Copy
@@ -354,7 +376,7 @@ const EmployeePage = () => {
                               {emp.aidCertificate && (
                                 <Button
                                   variant="outline"
-                                  className="text-xs h-8"
+                                  className="text-xs h-8 cursor-pointer"
                                   onClick={() => openFile(emp.aidCertificate)}
                                 >
                                   Aid Certificate
@@ -364,7 +386,7 @@ const EmployeePage = () => {
                               {emp.goodConductCertificate && (
                                 <Button
                                   variant="outline"
-                                  className="text-xs h-8"
+                                  className="text-xs h-8 cursor-pointer"
                                   onClick={() =>
                                     openFile(emp.goodConductCertificate)
                                   }
@@ -396,7 +418,7 @@ const EmployeePage = () => {
                           </DialogContent>
                         </Dialog>
 
-                        {/* UPDATE DIALOG */}
+                   
                         <Dialog
                           open={editModalId === emp.id}
                           onOpenChange={(open) => !open && setEditModalId(null)}
@@ -405,7 +427,7 @@ const EmployeePage = () => {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="text-emerald-600 hover:bg-emerald-50"
+                              className="text-emerald-600 hover:bg-emerald-50 cursor-pointer"
                               onClick={() => setEditModalId(emp.id)}
                             >
                               <Edit size={18} />
@@ -428,13 +450,13 @@ const EmployeePage = () => {
                           </DialogContent>
                         </Dialog>
 
-                        {/* DELETE DIALOG */}
+
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="text-red-500 hover:bg-red-50"
+                              className="text-red-500 hover:bg-red-50 cursor-pointer"
                             >
                               <Trash size={18} />
                             </Button>
@@ -452,9 +474,10 @@ const EmployeePage = () => {
                             </p>
                             <DialogFooter className="gap-2 sm:gap-0">
                               <DialogClose asChild>
-                                <Button variant="outline">Cancel</Button>
+                                <Button className="cursor-pointer" variant="outline">Cancel</Button>
                               </DialogClose>
                               <Button
+                              className="cursor-pointer"
                                 variant="destructive"
                                 onClick={() => handleDelete(emp.id)}
                               >
@@ -481,6 +504,13 @@ const EmployeePage = () => {
           </table>
         </div>
       </div>
+
+      <PaymentModal
+        open={paymentModalOpen}
+        onOpenChange={setPaymentModalOpen}
+        employeeIds={paymentEmployeeIds}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 };

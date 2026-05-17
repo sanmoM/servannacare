@@ -90,14 +90,14 @@ const Review = ({ data, }) => {
     <div>
       <h2 className="formHeading mb-4">Review and Submit</h2>
 
-      {/* Render Agency Details */}
+    
       {Object.entries(data)
         .slice(0, 1)
         .map(([sectionKey, sectionValue]) =>
           renderSection(sectionKey, sectionValue)
         )}
 
-      {/* Employees Summary */}
+     
       <div className="p-4 border rounded-xl">
         <h2 className="font-semibold pb-4 text-gray-600">Employee Details</h2>
         <div className="flex gap-2 flex-wrap">

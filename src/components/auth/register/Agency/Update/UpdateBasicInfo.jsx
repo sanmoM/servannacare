@@ -271,6 +271,7 @@ const UpdateBasicInfo = ({ agencyData }) => {
             {train.map((item, indx) => (
               <div key={indx} className="flex items-center gap-2">
                 <Checkbox
+                className="cursor-pointer"
                   id={`train-${indx}`}
                   checked={data.agency_services.includes(item)}
                   onCheckedChange={() => toggleTraining(item)}

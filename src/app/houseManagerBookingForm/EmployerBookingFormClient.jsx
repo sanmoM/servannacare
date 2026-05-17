@@ -648,7 +648,7 @@ export default function EmployerBookingFormClient() {
         </aside>
       </div>
 
-      {/* 1. M-PESA PAYMENT MODAL */}
+
       <Dialog open={isPayModalOpen} onOpenChange={setIsPayModalOpen}>
         <DialogContent className="sm:max-w-md rounded-lg p-0 border-none bg-white overflow-hidden">
           <div className="bg-[#7A295A] p-8 text-white text-center">
@@ -716,9 +716,8 @@ export default function EmployerBookingFormClient() {
         </DialogContent>
       </Dialog>
 
-      {/* 2. MONTH PREVIEW MODAL */}
       {previewMonth && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
           <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
               <CardTitle className="text-lg font-bold">

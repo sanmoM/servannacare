@@ -277,7 +277,7 @@ const CreateBasicInfo = ({ agencyData }) => {
         </div>
       </div>
 
-      {/* Agency Services */}
+   
       <div>
         <h2 className="formHeading">Agency Services</h2>
 
@@ -287,6 +287,7 @@ const CreateBasicInfo = ({ agencyData }) => {
             {train.map((item, indx) => (
               <div key={indx} className="flex items-center gap-2">
                 <Checkbox
+                className="cursor-pointer"
                   id={`train-${indx}`}
                   checked={data.agency_services.includes(item)}
                   onCheckedChange={() => toggleTraining(item)}
