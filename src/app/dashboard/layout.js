@@ -214,11 +214,11 @@ export default function DashboardLayout({ children }) {
   const agencyLinks = [
     { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
     { name: "Profile", href: "/dashboard/agency-profile", icon: User },
-    {
-      name: "Subscriptions",
-      href: "/dashboard/agency-subscriptions",
-      icon: Gem,
-    },
+    // {
+    //   name: "Subscriptions",
+    //   href: "/dashboard/agency-subscriptions",
+    //   icon: Gem,
+    // },
     {
       name: "Payment History",
       href: "/dashboard/agency-payment-history",

@@ -33,14 +33,13 @@ const validateEmployee = (data) => {
   if (!data.cooking) errors.push("Select cooking skill");
   if (!data.housekeeping) errors.push("Select housekeeping skill");
   if (!data.childcare) errors.push("Select childcare skill");
-
   if (!data.preferred) errors.push("service offered is required");
-  if (!data.aidCertificate) errors.push("First aid certificate require");
   if (!data.goodConductCertificate)
     errors.push("Good conduct certificate require");
   if (!data.idCopy) errors.push("Id copy require");
   if (!data.profilePhoto) errors.push("Profile photo require");
-
+  if (!data.serviceFeeDay) errors.push("Service fee per day is required");
+  if (!data.serviceFeeMonth) errors.push("Service fee per month is required");
   return errors;
 };
 
@@ -66,13 +65,11 @@ const Agency = () => {
 
   const handleSignupSuccess = (accountData) => {
     setStarted(true);
-    // setUser(accountData);
   };
 
   const handleNext = async () => {
     if (step < totalSteps) {
       if (step === 2) {
-        // validate all employees before moving on
         if (formData.allEmployees.length === 0) {
           toast.error("Please fill in at least one employee’s details!");
           return;
@@ -94,7 +91,6 @@ const Agency = () => {
       const AGENCY = formData.agency;
       const ALLEMPLOYEES = formData.allEmployees;
 
-      // Agency data
       fd.append("companyName", AGENCY?.companyName);
       fd.append("kraPin", AGENCY?.kraPin);
       fd.append("companyRegistrationNumber", AGENCY?.companyRegistrationNumber);
@@ -111,40 +107,79 @@ const Agency = () => {
       fd.append("replacementWindow", AGENCY?.replacementWindow);
       fd.append("numberOfReplacement", AGENCY?.numberOfReplacement);
 
-      // Employee data
+      const empFd = new FormData();
       ALLEMPLOYEES.forEach((employee, i) => {
-        fd.append(`employees[${i}][name]`, employee.name);
-        fd.append(`employees[${i}][educationLevel]`, employee.educationLevel);
-        fd.append(`employees[${i}][location]`, employee.location);
-        fd.append(`employees[${i}][experience]`, employee.experience);
-        fd.append(`employees[${i}][salaryRange]`, employee.salaryRange);
-        fd.append(`employees[${i}][isMother]`, employee.isMother ? 1 : 0);
-        fd.append(`employees[${i}][handlePets]`, employee.handlePets ? 1 : 0);
-        fd.append(`employees[${i}][preferredRole]`, employee.preferredRole);
-        fd.append(`employees[${i}][cooking]`, employee.cooking);
-        fd.append(`employees[${i}][housekeeping]`, employee.housekeeping);
-        fd.append(`employees[${i}][childcare]`, employee.childcare);
-        fd.append(`employees[${i}][preferred]`, employee.preferred);
-        fd.append(`employees[${i}][bio]`, employee.bio);
-
-        fd.append(`employees[${i}][idCopy]`, employee.idCopy);
-        fd.append(`employees[${i}][profilePhoto]`, employee.profilePhoto);
-        fd.append(`employees[${i}][drivingLicense]`, employee.drivingLicense);
-        fd.append(
-          `employees[${i}][goodConductCertificate]`,
-          employee.goodConductCertificate,
+        empFd.append(`employees[${i}][name]`, employee.name);
+        empFd.append(
+          `employees[${i}][educationLevel]`,
+          employee.educationLevel,
         );
-        fd.append(`employees[${i}][aidCertificate]`, employee.aidCertificate);
+        empFd.append(`employees[${i}][location]`, employee.location);
+        empFd.append(`employees[${i}][experience]`, employee.experience);
+        empFd.append(`employees[${i}][salaryRange]`, employee.salaryRange);
+        empFd.append(
+          `employees[${i}][serviceFeeDay]`,
+          employee.serviceFeeDay || "",
+        );
+        empFd.append(
+          `employees[${i}][serviceFeeMonth]`,
+          employee.serviceFeeMonth || "",
+        );
+        empFd.append(
+          `employees[${i}][isMother]`,
+          employee.isMother === "Yes" ? 1 : 0,
+        );
+        empFd.append(
+          `employees[${i}][handlePets]`,
+          employee.handlePets === "Yes" ? 1 : 0,
+        );
+        empFd.append(`employees[${i}][preferredRole]`, employee.preferredRole);
+        empFd.append(`employees[${i}][cooking]`, employee.cooking);
+        empFd.append(`employees[${i}][housekeeping]`, employee.housekeeping);
+        empFd.append(`employees[${i}][childcare]`, employee.childcare);
+
+        if (Array.isArray(employee.preferred)) {
+          employee.preferred.forEach((pref) =>
+            empFd.append(`employees[${i}][preferred][]`, pref),
+          );
+        } else {
+          empFd.append(`employees[${i}][preferred]`, employee.preferred || "");
+        }
+
+        empFd.append(`employees[${i}][bio]`, employee.bio);
+
+        if (employee.idCopy)
+          empFd.append(`employees[${i}][idCopy]`, employee.idCopy);
+        if (employee.profilePhoto)
+          empFd.append(`employees[${i}][profilePhoto]`, employee.profilePhoto);
+        if (employee.drivingLicense)
+          empFd.append(
+            `employees[${i}][drivingLicense]`,
+            employee.drivingLicense,
+          );
+        if (employee.goodConductCertificate)
+          empFd.append(
+            `employees[${i}][goodConductCertificate]`,
+            employee.goodConductCertificate,
+          );
+        if (employee.aidCertificate)
+          empFd.append(
+            `employees[${i}][aidCertificate]`,
+            employee.aidCertificate,
+          );
 
         employee.kidAges?.forEach((age) => {
-          fd.append(`employees[${i}][kidAges][]`, age);
+          empFd.append(`employees[${i}][kidAges][]`, age);
         });
 
         employee.languages?.forEach((lang) => {
-          fd.append(`employees[${i}][languages][]`, lang);
+          empFd.append(`employees[${i}][languages][]`, lang);
         });
       });
 
+      // console.log("Agency Object:", Object.fromEntries(fd.entries()));
+
+      // console.log("Employee Object:", Object.fromEntries(empFd.entries()));
       try {
         const res = await postApi("/create-profile", fd, {
           headers: {
@@ -153,18 +188,28 @@ const Agency = () => {
         });
 
         if (res?.status === 200) {
+          if (ALLEMPLOYEES.length > 0) {
+            const empRes = await postApi("/agency-employee", empFd, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            });
+            if (empRes?.status !== 200) {
+              toast.error("Agency registered, but failed to add employees.");
+              return;
+            }
+          }
+
           toast.success("Registered Successfully!");
-          
+
           const updatedUser = await refreshUser();
           router.push(`/dashboard/${updatedUser?.role || user?.role}-profile`);
-          //todo this localStorage
         } else {
           toast.error(
             res?.data?.message || "Something went wrong. Please try again.",
           );
         }
       } catch (error) {
-        
         if (error.response) {
           toast.error(
             error.response.data?.message || `Error: ${error.response.status}`,
@@ -175,8 +220,6 @@ const Agency = () => {
           toast.error("An unexpected error occurred.");
         }
       }
-
-      
     }
   };
 
@@ -198,13 +241,15 @@ const Agency = () => {
     });
   };
 
-  // add new employee
   const handleAddEmployee = () => {
+    if (employees.length >= 2) {
+      toast.error("You can add up to 2 employees on the free tier");
+      return;
+    }
     setEmployees((prev) => [...prev, prev.length + 1]);
     toast.success("New Employee Form Added!");
   };
 
-  // remove employee
   const handleRemoveEmployee = (index) => {
     setEmployees((prev) => prev.filter((_, i) => i !== index));
     setFormData((prev) => {
@@ -252,7 +297,6 @@ const Agency = () => {
             <Progress currentStep={step} totalSteps={totalSteps} />
 
             <div className="space-y-8 mt-6">
-              {/* STEP 1 — AGENCY INFO */}
               {step === 1 && (
                 <AgencyBasicInfo
                   key="agency-step"
@@ -280,7 +324,7 @@ const Agency = () => {
                       {index > 0 && (
                         <Button
                           type="button"
-                          className="absolute bg-red-400 hover:bg-red-500 top-2 right-2"
+                          className="absolute bg-red-400 hover:bg-red-500 top-2 cursor-pointer right-2"
                           onClick={() => handleRemoveEmployee(index)}
                         >
                           Remove
@@ -291,13 +335,12 @@ const Agency = () => {
                 </div>
               )}
 
-              {/* STEP 3 — REVIEW */}
               {step === 3 && <Review data={formData} />}
 
-              {/* NAVIGATION BUTTONS */}
               <div className="flex justify-between mt-6">
                 {step > 1 ? (
                   <Button
+                    className="cursor-pointer"
                     type="button"
                     size="lg"
                     variant="outline"
@@ -312,6 +355,7 @@ const Agency = () => {
                 {step === 2 && (
                   <div className="flex items-center gap-4">
                     <Button
+                      className="cursor-pointer"
                       type="button"
                       size="lg"
                       variant="outline"
@@ -320,7 +364,12 @@ const Agency = () => {
                       <Plus /> Add Employee
                     </Button>
 
-                    <Button type="submit" size="lg" onClick={handleNext}>
+                    <Button
+                      className="cursor-pointer"
+                      type="submit"
+                      size="lg"
+                      onClick={handleNext}
+                    >
                       Next
                     </Button>
                   </div>
@@ -328,7 +377,12 @@ const Agency = () => {
 
                 {step === 3 && (
                   <div className="flex items-center gap-4">
-                    <Button type="submit" size="lg" onClick={handleNext}>
+                    <Button
+                      className="cursor-pointer"
+                      type="submit"
+                      size="lg"
+                      onClick={handleNext}
+                    >
                       Confirm & submit
                     </Button>
                   </div>

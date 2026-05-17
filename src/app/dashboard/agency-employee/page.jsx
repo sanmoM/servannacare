@@ -94,8 +94,8 @@ const EmployeePage = () => {
       return;
     }
 
-    if (!user?.is_profile_verified) {
-      toast.error("Your profile must be verified before adding employees.");
+    if (!user?.is_profile_completed) {
+      toast.error("Your profile must be complete before adding employees.");
       router.push("/dashboard/agency-profile");
       return;
     }

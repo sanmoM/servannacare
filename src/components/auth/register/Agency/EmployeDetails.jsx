@@ -65,13 +65,14 @@ const EmployeDetails = ({
     },
   ];
 
-  // local employee data
   const [data, setData] = useState({
     name: "",
     educationLevel: "",
     location: "",
     experience: "",
     salaryRange: "",
+    serviceFeeDay: "",
+    serviceFeeMonth: "",
     isMother: null,
     kidAges: [],
     handlePets: null,
@@ -253,7 +254,36 @@ const EmployeDetails = ({
         </div>
       </div>
 
-      {/* Radio & Checkboxes */}
+
+      <div className="flex gap-4 pt-6 flex-col sm:flex-row">
+        <div className="flex-1">
+          <Input
+            placeholder="e.g. 1500"
+            label="Service Fee (Per Day in KSh)"
+            type="number"
+            name="serviceFeeDay"
+            value={data.serviceFeeDay}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+              handleSelect("serviceFeeDay", val);
+            }}
+          />
+        </div>
+        <div className="flex-1">
+          <Input
+            placeholder="e.g. 35000"
+            label="Service Fee (Per Month in KSh)"
+            type="number"
+            name="serviceFeeMonth"
+            value={data.serviceFeeMonth}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+              handleSelect("serviceFeeMonth", val);
+            }}
+          />
+        </div>
+      </div>
+
       <div className="flex flex-col py-8 sm:flex-row sm:gap-4 gap-8">
         <div className="flex-1">
           <Label className="mb-3">Are you a mother?</Label>
