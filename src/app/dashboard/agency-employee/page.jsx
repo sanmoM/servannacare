@@ -108,7 +108,6 @@ const EmployeePage = () => {
 
   return (
     <div className=" mx-auto bg-gray-50 min-h-screen">
-  
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
@@ -163,7 +162,6 @@ const EmployeePage = () => {
                     key={emp.id}
                     className="hover:bg-gray-50/50 transition-colors"
                   >
-                  
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-purple-100 flex-shrink-0 border overflow-hidden">
@@ -189,7 +187,6 @@ const EmployeePage = () => {
                       </div>
                     </td>
 
-                  
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
@@ -213,10 +210,29 @@ const EmployeePage = () => {
                       </div>
                     </td>
 
-                 
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end items-center gap-1">
-                        {emp.is_paid === false && (
+                        {emp.is_paid ? (
+                          emp.paid_ends_at ? (
+                            <div className="mr-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200">
+                              <p className="text-[11px] font-semibold text-emerald-700">
+                                Paid Until
+                              </p>
+
+                              <p className="text-xs text-emerald-600">
+                                {new Date(emp.paid_ends_at)
+                                  .toLocaleDateString("en-GB")
+                                  .replaceAll("/", "-")}
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="mr-2 px-3 py-1 rounded-md bg-blue-50 border border-blue-200">
+                              <p className="text-xs font-semibold text-primary-700">
+                                Free Employee
+                              </p>
+                            </div>
+                          )
+                        ) : (
                           <Button
                             variant="default"
                             size="sm"
@@ -229,7 +245,7 @@ const EmployeePage = () => {
                             Pay Now
                           </Button>
                         )}
-                
+
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
@@ -251,7 +267,6 @@ const EmployeePage = () => {
                               </DialogTitle>
                             </DialogHeader>
 
-                         
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
                               <InfoTile
                                 label="Education"
@@ -335,7 +350,6 @@ const EmployeePage = () => {
                               />
                             </div>
 
-                         
                             {emp.schedule?.length > 0 &&
                               emp.schedule[0]?.date?.length > 0 && (
                                 <div className="mt-6">
@@ -349,7 +363,7 @@ const EmployeePage = () => {
                                     </h4>
 
                                     <Button
-                                    className="cursor-pointer"
+                                      className="cursor-pointer"
                                       size="sm"
                                       variant="outline"
                                       onClick={() => setScheduleViewId(emp.id)}
@@ -360,11 +374,9 @@ const EmployeePage = () => {
                                 </div>
                               )}
 
-                         
                             <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
                               {emp.idCopy && (
                                 <Button
-                                
                                   variant="outline"
                                   className="text-xs h-8 cursor-pointer"
                                   onClick={() => openFile(emp.idCopy)}
@@ -398,7 +410,6 @@ const EmployeePage = () => {
                           </DialogContent>
                         </Dialog>
 
-                 
                         <Dialog
                           open={scheduleViewId === emp.id}
                           onOpenChange={(open) =>
@@ -418,7 +429,6 @@ const EmployeePage = () => {
                           </DialogContent>
                         </Dialog>
 
-                   
                         <Dialog
                           open={editModalId === emp.id}
                           onOpenChange={(open) => !open && setEditModalId(null)}
@@ -450,7 +460,6 @@ const EmployeePage = () => {
                           </DialogContent>
                         </Dialog>
 
-
                         <Dialog>
                           <DialogTrigger asChild>
                             <Button
@@ -474,10 +483,15 @@ const EmployeePage = () => {
                             </p>
                             <DialogFooter className="gap-2 sm:gap-0">
                               <DialogClose asChild>
-                                <Button className="cursor-pointer" variant="outline">Cancel</Button>
+                                <Button
+                                  className="cursor-pointer"
+                                  variant="outline"
+                                >
+                                  Cancel
+                                </Button>
                               </DialogClose>
                               <Button
-                              className="cursor-pointer"
+                                className="cursor-pointer"
                                 variant="destructive"
                                 onClick={() => handleDelete(emp.id)}
                               >

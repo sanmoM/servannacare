@@ -16,10 +16,12 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 
-const PaymentModal = ({ open, onOpenChange, employeeIds, onSuccess }) => {
+const PaymentModal = ({ open, onOpenChange, employeeIds = [], onSuccess }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [country, setCountry] = useState("KE");
+
+  const totalAmount = employeeIds.length * 500;
 
   const handlePayment = async () => {
     if (!phoneNumber) {
@@ -68,11 +70,16 @@ const PaymentModal = ({ open, onOpenChange, employeeIds, onSuccess }) => {
             M-Pesa Checkout
           </DialogTitle>
           <DialogDescription className="text-white/70">
-            Confirm your number to initiate payment.
+            Enter your M-Pesa phone number below to initiate the payment prompt.
           </DialogDescription>
         </div>
 
         <div className="p-8 space-y-6">
+          <div className="bg-emerald-50 text-emerald-800 p-4 rounded-lg flex justify-between items-center border border-emerald-100">
+            <span className="font-medium">Total Amount:</span>
+            <span className="text-xl font-bold">KSh {totalAmount}</span>
+          </div>
+
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase text-slate-400 block ml-1">
               Enter M-Pesa Number
