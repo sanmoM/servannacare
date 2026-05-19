@@ -185,9 +185,13 @@ const LoginPageContent = () => {
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 items-stretch">
                     {userRole.map((role, indx) => (
                       <DialogClose asChild key={indx}>
-                        <Link
-                          className="h-full"
-                          href={`/register?role=${role.role}`}
+                        <div
+                          className="h-full cursor-pointer"
+                          onClick={() => {
+                            setTimeout(() => {
+                              router.push(`/register?role=${role.role}`);
+                            }, 150);
+                          }}
                         >
                           <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border  hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
                             <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full hover:text-primary bg-cyan-100 mb-2 sm:mb-4">
@@ -202,7 +206,7 @@ const LoginPageContent = () => {
                               {role.text}
                             </h3>
                           </div>
-                        </Link>
+                        </div>
                       </DialogClose>
                     ))}
                   </div>

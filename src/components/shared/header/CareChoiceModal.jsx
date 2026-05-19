@@ -11,22 +11,32 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { userRole } from "@/utilities/data";
 import { Heart, BriefcaseMedical } from "lucide-react";
 
 const CareChoiceModal = ({ children }) => {
   const [view, setView] = useState("choice");
+  const [open, setOpen] = useState(false);
+  const router = useRouter();
 
-  const handleOpenChange = (open) => {
-    if (!open) {
+  const handleOpenChange = (isOpen) => {
+    setOpen(isOpen);
+    if (!isOpen) {
       setTimeout(() => setView("choice"), 300);
     }
   };
 
+  const handleNavigate = (path) => {
+    setOpen(false);
+    setTimeout(() => {
+      router.push(path);
+    }, 150);
+  };
+
   return (
-    <Dialog onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent overlayClassName="backdrop-blur-sm bg-black/60" className="sm:max-w-2xl overflow-hidden p-6 bg-white rounded-2xl border-none">
         {view === "choice" ? (
@@ -47,11 +57,10 @@ const CareChoiceModal = ({ children }) => {
             </DialogHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-4">
               {/* Option 1: Caregiver Search */}
-              <DialogClose asChild>
-                <Link
-                  href="/register?role=user"
-                  className="flex flex-col h-full group"
-                >
+              <div
+                onClick={() => handleNavigate("/register?role=user")}
+                className="flex flex-col h-full group cursor-pointer"
+              >
                   <div className="flex-1 flex flex-col items-center text-center p-6 sm:p-8 rounded-2xl border-2  hover:border-primary/50 hover:bg-primary/5 transition-all duration-300">
                     <div className="w-16 h-16 bg-blue-50 text-primary rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
                       <Heart size={32} />
@@ -66,10 +75,9 @@ const CareChoiceModal = ({ children }) => {
                       Find Care
                     </Button>
                   </div>
-                </Link>
-              </DialogClose>
+              </div>
 
-              {/* Option 2: Care Job */}
+             
               <div
                 onClick={() => setView("roles")}
                 className="flex-1 flex flex-col items-center text-center p-6 sm:p-8 rounded-2xl border-2 hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 cursor-pointer group"
@@ -108,11 +116,11 @@ const CareChoiceModal = ({ children }) => {
                 if (role.role === "user") return null;
 
                 return (
-                  <DialogClose asChild key={indx}>
-                    <Link
-                      className="h-full"
-                      href={`/register?role=${role.role}`}
-                    >
+                  <div
+                    key={indx}
+                    onClick={() => handleNavigate(`/register?role=${role.role}`)}
+                    className="h-full cursor-pointer"
+                  >
                       <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
                         <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full bg-cyan-100 mb-2 sm:mb-4">
                           <Image
@@ -126,8 +134,7 @@ const CareChoiceModal = ({ children }) => {
                           {role.text}
                         </h3>
                       </div>
-                    </Link>
-                  </DialogClose>
+                  </div>
                 );
               })}
             </div>
