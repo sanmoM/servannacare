@@ -372,13 +372,13 @@ export const userRole = [
     href: "/register",
     role: "nurse",
   },
-  {
-    id: 4,
-    text: "Physiotherapist",
-    icon: physiotherapist,
-    href: "/register",
-    role: "physiotherapist",
-  },
+  // {
+  //   id: 4,
+  //   text: "Physiotherapist",
+  //   icon: physiotherapist,
+  //   href: "/register",
+  //   role: "physiotherapist",
+  // },
   {
     id: 5,
     text: "Nurse Aide or Assistant",
@@ -386,13 +386,13 @@ export const userRole = [
     href: "/register",
     role: "nurse-aide-or-assistant",
   },
-  {
-    id: 6,
-    text: "Special Need Caregivers",
-    icon: caregivers,
-    href: "/register",
-    role: "special-need-caregivers",
-  },
+  // {
+  //   id: 6,
+  //   text: "Special Need Caregivers",
+  //   icon: caregivers,
+  //   href: "/register",
+  //   role: "special-need-caregivers",
+  // },
   {
     id: 7,
     text: "Agency",
