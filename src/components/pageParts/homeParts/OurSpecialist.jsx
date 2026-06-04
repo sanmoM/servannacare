@@ -27,7 +27,7 @@ const OurSpecialist = () => {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data?.data?.data?.slice(0, 6).map((data, indx) => (
-          <ProfileCard key={indx} profile={data} />
+          <ProfileCard key={data?.id} profile={data} />
         ))}
       </div>
       <Link href={"/specialist?"} className="mt-8 flex justify-center">
