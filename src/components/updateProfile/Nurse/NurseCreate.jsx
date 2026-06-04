@@ -23,6 +23,14 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const NurseCreate = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
@@ -35,6 +43,9 @@ const NurseCreate = ({ data = {} }) => {
       age: data?.age || "",
       gender: data?.gender || "",
       phone: data?.phone || "",
+      experience: data?.experience || "",
+      preferredRole: data?.preferredRole || "",
+      bio: data?.bio || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
     },
@@ -227,7 +238,6 @@ const NurseCreate = ({ data = {} }) => {
       return;
     }
 
-    // ================= BASIC INFO =================
     if (!basicInfo.name?.trim()) return toast.error("Full name is required");
 
     if (!basicInfo.location?.trim()) return toast.error("Location is required");
@@ -338,6 +348,9 @@ const NurseCreate = ({ data = {} }) => {
     fd.append("location", BASICINFO.location);
     fd.append("age", BASICINFO.age);
     fd.append("experience", BASICINFO.experience);
+    fd.append("preferredRole", BASICINFO.preferredRole);
+    fd.append("bio", BASICINFO.bio);
+
     fd.append("gender", BASICINFO.gender);
     fd.append("number_two", BASICINFO.phone);
     BASICINFO.languages.forEach((lang) => fd.append("languages[]", lang));
@@ -432,11 +445,9 @@ const NurseCreate = ({ data = {} }) => {
   return (
     <div>
       <form onSubmit={handleCreate} className="space-y-6 relative">
-        {/* basic info  */}
-
         <h4 className="formHeading">Basic Information</h4>
 
-        {/* Name + Location */}
+        {/* Name + phone */}
         <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
           <div className="flex-1">
             <Input
@@ -448,35 +459,8 @@ const NurseCreate = ({ data = {} }) => {
               }
             />
           </div>
+
           <div className="flex-1">
-            <Input
-              label="Your Location"
-              name="location"
-              placeholder="Type your location.."
-              onChange={(e) =>
-                handleChange("basicInfo", "location", e.target.value)
-              }
-            />
-          </div>
-        </div>
-
-        {/* Age */}
-        <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-4 gap-6 ">
-          <div className="flex">
-            <Input
-              type="number"
-              label="Age"
-              name="age"
-              placeholder="Your age"
-              maxLength={2}
-              onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, "").slice(0, 2);
-                handleChange("basicInfo", "age", val);
-              }}
-            />
-          </div>
-
-          <div>
             <Label>Phone Number</Label>
 
             <div className="w-full mt-2">
@@ -503,37 +487,145 @@ const NurseCreate = ({ data = {} }) => {
           </div>
         </div>
 
-        <div className="flex-1 mt-2">
-          <Label className="mb-3 block">Gender</Label>
-          <RadioGroup
-            className="flex gap-4 mt-2"
-            value={formData.basicInfo?.gender}
-            onValueChange={(value) =>
-              handleChange("basicInfo", "gender", value)
+        {/* Age + experience*/}
+        <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-4 gap-6 ">
+          <div className="flex-1">
+            <Input
+              type="number"
+              label="Age"
+              name="age"
+              placeholder="Your age"
+              maxLength={2}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+                handleChange("basicInfo", "age", val);
+              }}
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Experience (Years)
+            </label>
+            <Select
+              value={formData?.basicInfo?.experience}
+              onValueChange={(value) =>
+                handleChange("basicInfo", "experience", value)
+              }
+            >
+              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                <SelectValue placeholder="Select years of experience" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="1">1 year</SelectItem>
+                  <SelectItem value="2">2 years</SelectItem>
+                  <SelectItem value="3">3 years</SelectItem>
+                  <SelectItem value="4">4 years</SelectItem>
+                  <SelectItem value="5">5 years</SelectItem>
+                  <SelectItem value="5+">More than 5 years</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="">
+          <Input
+            label="Your Location"
+            name="location"
+            placeholder="Type your location.."
+            onChange={(e) =>
+              handleChange("basicInfo", "location", e.target.value)
             }
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <Label className="mb-3 block">Gender</Label>
+            <RadioGroup
+              className="flex gap-4 mt-2"
+              value={data.gender}
+              onValueChange={(value) =>
+                setData((prev) => ({ ...prev, gender: value }))
+              }
+            >
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="Male" id="r1" />
+                <Label
+                  htmlFor="r1"
+                  className="text-gray-700 font-normal cursor-pointer"
+                >
+                  Male
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem value="Female" id="r2" />
+                <Label
+                  htmlFor="r2"
+                  className="text-gray-700 font-normal cursor-pointer"
+                >
+                  Female
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div>
+            <Label className="mb-3 block">Can you drive?</Label>
+            <RadioGroup
+              className="flex gap-4 cursor-pointer"
+              value={
+                formData.basicInfo.canDrive === true
+                  ? "true"
+                  : formData.basicInfo.canDrive === false
+                    ? "false"
+                    : ""
+              }
+              onValueChange={(value) =>
+                handleChange("basicInfo", "canDrive", value === "true")
+              }
+            >
+              <div className="flex items-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="true"
+                  id="d1"
+                />
+                <Label className="cursor-pointer text-gray-700" htmlFor="d1">
+                  Yes
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <RadioGroupItem
+                  className="cursor-pointer"
+                  value="false"
+                  id="d2"
+                />
+                <Label className="cursor-pointer text-gray-700" htmlFor="d2">
+                  No
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+        </div>
+
+        {/* preferredRole */}
+        <div className="flex-1 ">
+          <Label className={"mb-2"}>Preferred Role?</Label>
+          <RadioGroup
+            value={formData?.basicInfo?.preferredRole}
+            onValueChange={(value) =>
+              handleChange("basicInfo", "preferredRole", value)
+            }
+            className="flex gap-4"
           >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem className="cursor-pointer" value="Male" id="r1" />
-              <Label
-                htmlFor="r1"
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                Male
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem
-                className="cursor-pointer"
-                value="Female"
-                id="r2"
-              />
-              <Label
-                htmlFor="r2"
-                className="text-gray-700 font-normal cursor-pointer"
-              >
-                Female
-              </Label>
-            </div>
+            <RadioGroupItem value="Medical Nurse" id={`r3`} />
+            <Label htmlFor={`r3`}>Medical Nurse</Label>
+
+            <RadioGroupItem value="Nurse Aide" id={`r4`} />
+            <Label htmlFor={`r4`}>Nurse Aide</Label>
           </RadioGroup>
         </div>
         {/* Languages */}
@@ -560,37 +652,15 @@ const NurseCreate = ({ data = {} }) => {
         </div>
 
         <div>
-          <Label className="mb-3 block">Can you drive?</Label>
-          <RadioGroup
-            className="flex gap-4 cursor-pointer"
-            value={
-              formData.basicInfo.canDrive === true
-                ? "true"
-                : formData.basicInfo.canDrive === false
-                  ? "false"
-                  : ""
-            }
-            onValueChange={(value) =>
-              handleChange("basicInfo", "canDrive", value === "true")
-            }
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem className="cursor-pointer" value="true" id="d1" />
-              <Label className="cursor-pointer text-gray-700" htmlFor="d1">
-                Yes
-              </Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem
-                className="cursor-pointer"
-                value="false"
-                id="d2"
-              />
-              <Label className="cursor-pointer text-gray-700" htmlFor="d2">
-                No
-              </Label>
-            </div>
-          </RadioGroup>
+          <label htmlFor="bio">Bio</label>
+          <textarea
+            value={formData?.basicInfo?.bio}
+            name="bio"
+            placeholder="Write a brief bio about yourself and the services you offer.."
+            className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+            rows={6}
+            onChange={(e) => handleChange("basicInfo", "bio", e.target.value)}
+          />
         </div>
 
         {/* education  */}
