@@ -23,7 +23,9 @@ import {
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 const Page = () => {
-  const router = useRouter();
+  
+  const [isActionLoading, setIsActionLoading] = useState(false);
+const router = useRouter();
   const [months, setMonths] = useState(1);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [expiryDate, setExpiryDate] = useState(null);
@@ -107,8 +109,9 @@ const Page = () => {
       return;
     }
 
+    setIsActionLoading(true);
     try {
-      setLoading(true);
+setLoading(true);
 
       const paymentData = {
         phone: phoneNumber,
@@ -124,9 +127,12 @@ const Page = () => {
       toast.success("Payment request sent! Check your phone.");
       setIsDialogOpen(false);
       router.push("/dashboard/house-manager-payment-history");
-    } catch (err) {
+    }
+    catch (err) {
       toast.error("Payment failed. Please try again.");
     } finally {
+      setIsActionLoading(false);
+
       setLoading(false);
     }
   };

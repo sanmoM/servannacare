@@ -37,8 +37,9 @@ export default function NodeChatArea({
   const fileInputRef = useRef(null);
   const fetchNodes = async (isInitial = false) => {
     if (isInitial) setIsLoading(true);
+    setIsActionLoading(true);
     try {
-      const response = await getApi(fetchNodesEndpoint);
+const response = await getApi(fetchNodesEndpoint);
       const data = response?.data || {};
       const sentNodes = Array.isArray(data?.sent_nodes) ? data?.sent_nodes : [];
       const receivedNodes = Array.isArray(data?.received_nodes) ? data?.received_nodes : [];
@@ -152,11 +153,14 @@ export default function NodeChatArea({
         setNodes(prev => prev.filter(msg => msg.id !== tempId));
         fetchNodes(false);
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error("Error sending node:", error);
       toast.error("Failed to send message. Please try again.");
       setNodes(prev => prev.filter(msg => msg.id !== tempId));
     } finally {
+      setIsActionLoading(false);
+
       setIsSending(false);
     }
   };

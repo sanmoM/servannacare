@@ -173,8 +173,9 @@ export default function EmployerBookingFormClient() {
       booking_amount: 1
       // booking_amount: bookingAmount,
     };
+    setIsActionLoading(true);
     try {
-      const paymentRes = await postApi("/checkout", {
+const paymentRes = await postApi("/checkout", {
         phone: phoneNumber,
         plan_id: planId,
         specialist_id: parseInt(matchedSpecialist?.id),
@@ -198,9 +199,12 @@ export default function EmployerBookingFormClient() {
       } else {
         toast.error("Payment not completed.");
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error("Payment failed. Try again.");
     } finally {
+      setIsActionLoading(false);
+
       setIsProcessingPayment(false);
     }
   };

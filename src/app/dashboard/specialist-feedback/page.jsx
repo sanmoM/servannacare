@@ -8,7 +8,9 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 const SpecialistFeedbackPage = () => {
-  const { user } = useAuth();
+  
+  const [isActionLoading, setIsActionLoading] = useState(false);
+const { user } = useAuth();
 
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
@@ -35,17 +37,21 @@ const SpecialistFeedbackPage = () => {
     if (!message.trim()) return toast.error("Please enter a message");
 
     setIsSubmitting(true);
+    setIsActionLoading(true);
     try {
-      const response = await postApi("/feedback", { rating, message });
+const response = await postApi("/feedback", { rating, message });
       if (response?.status === 200) {
         toast.success("Feedback submitted successfully!");
         refetch();
       } else {
         toast.error("Failed to submit feedback");
       }
-    } catch (err) {
+    }
+    catch (err) {
       toast.error("Something went wrong");
     } finally {
+      setIsActionLoading(false);
+
       setIsSubmitting(false);
     }
   };

@@ -278,8 +278,9 @@ export default function BookingFormClient() {
       return toast.error("Enter valid phone number");
     }
     setIsProcessingPayment(true);
+    setIsActionLoading(true);
     try {
-      const paymentRes = await postApi("/checkout", {
+const paymentRes = await postApi("/checkout", {
         phone: phoneNumber,
         plan_id: planId,
         specialist_id: parseInt(matchedSpecialist?.id),
@@ -302,9 +303,12 @@ export default function BookingFormClient() {
       } else {
         toast.error("Payment not completed.");
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error("Payment failed or cancelled.");
     } finally {
+      setIsActionLoading(false);
+
       setIsProcessingPayment(false);
     }
   };

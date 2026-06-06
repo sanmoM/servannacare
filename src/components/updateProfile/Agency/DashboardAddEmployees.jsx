@@ -100,8 +100,9 @@ const DashboardAddEmployees = ({
         empFd.append(`employees[${i}][languages][]`, lang);
       });
     });
+    setIsActionLoading(true);
     try {
-      const res = await postApi("/agency-employee", empFd, {
+const res = await postApi("/agency-employee", empFd, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
@@ -117,9 +118,12 @@ const DashboardAddEmployees = ({
       } else {
         toast.error("Failed to add employees.");
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error(error.response?.data?.message || "An unexpected error occurred.");
     } finally {
+      setIsActionLoading(false);
+
       setLoading(false);
     }
   };

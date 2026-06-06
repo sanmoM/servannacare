@@ -21,7 +21,9 @@ import { useRouter } from "next/navigation";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 
 const SpecialistSubscription = () => {
-  const router = useRouter();
+  
+  const [isActionLoading, setIsActionLoading] = useState(false);
+const router = useRouter();
   const { user } = useAuth();
   const [tier, setTier] = useState("Silver");
   const [months, setMonths] = useState(1);
@@ -62,8 +64,9 @@ const SpecialistSubscription = () => {
       return;
     }
 
+    setIsActionLoading(true);
     try {
-      setLoading(true);
+setLoading(true);
 
       if (!planId?.[tier]) {
         toast.error("Plan not loaded yet. Please wait.");
@@ -85,10 +88,13 @@ const SpecialistSubscription = () => {
       router.push("/dashboard/agency-payment-history");
       setIsDialogOpen(false);
       setPhoneNumber("");
-    } catch (err) {
+    }
+    catch (err) {
       
       toast.error("Payment failed. Please try again.");
     } finally {
+      setIsActionLoading(false);
+
       setLoading(false);
     }
   };

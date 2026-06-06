@@ -127,11 +127,11 @@ const Review = ({ data, onNext, onBack }) => {
 
       {/* Buttons */}
       <div className="flex justify-between pt-6">
-        <Button type="button" size="lg" variant="outline" onClick={onBack}>
+        <Button className={"cursor-pointer"} type="button" size="lg" variant="outline" onClick={onBack}>
           Back
         </Button>
 
-        <Button type="button" size="lg" onClick={handleSubmit}>
+        <Button className={"cursor-pointer"} type="button" size="lg" onClick={handleSubmit}>
           Confirm
         </Button>
       </div>

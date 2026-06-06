@@ -36,8 +36,9 @@ const VerifyOtpPage = () => {
   }, [router]);
   const handleVerify = async () => {
     setLoading(true);
+    setIsActionLoading(true);
     try {
-      const res = await postApi("/verify", {
+const res = await postApi("/verify", {
         email,
         otp
       });
@@ -70,9 +71,12 @@ const VerifyOtpPage = () => {
         return;
       }
       router.replace("/");
-    } catch (error) {
+    }
+    catch (error) {
       toast.error(error?.response?.data?.message || "Invalid OTP");
     } finally {
+      setIsActionLoading(false);
+
       setLoading(false);
     }
   };

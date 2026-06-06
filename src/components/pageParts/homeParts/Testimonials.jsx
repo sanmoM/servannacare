@@ -18,7 +18,9 @@ import LoadingSpinner from "@/components/shared/LoadingSpin";
 export default function Testimonials({
   homeData
 }) {
-  const [startCount, setStartCount] = useState(false);
+  
+  const [isActionLoading, setIsActionLoading] = useState(false);
+const [startCount, setStartCount] = useState(false);
   const sectionRef = useRef(null);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,8 +48,9 @@ export default function Testimonials({
       toast.error("Please enter a valid email address");
       return;
     }
+    setIsActionLoading(true);
     try {
-      setLoading(true);
+setLoading(true);
       const res = await postApi("subscribe", {
         email
       });
@@ -56,9 +59,12 @@ export default function Testimonials({
       }
       toast.success("Thanks for subscribing!");
       setEmail("");
-    } catch (error) {
+    }
+    catch (error) {
       toast.error("Something went wrong. Please try again.");
     } finally {
+      setIsActionLoading(false);
+
       setLoading(false);
     }
   };

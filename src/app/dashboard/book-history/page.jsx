@@ -245,8 +245,9 @@ const BookingHistoryPage = () => {
     </div>;
   async function handleReviewSubmit() {
     if (!reviewMessage.trim()) return toast.error("Please write a review.");
+    setIsActionLoading(true);
     try {
-      setIsSubmittingReview(true);
+setIsSubmittingReview(true);
       await postApi("/review", {
         booking_id: selectedBooking?.id,
         specialist_id: selectedBooking?.specialist_id,
@@ -258,9 +259,12 @@ const BookingHistoryPage = () => {
       toast.success("Review submitted!");
       setIsReviewOpen(false);
       setReviewMessage("");
-    } catch (err) {
+    }
+    catch (err) {
       toast.error("Failed to submit review.");
     } finally {
+      setIsActionLoading(false);
+
       setIsSubmittingReview(false);
     }
   }

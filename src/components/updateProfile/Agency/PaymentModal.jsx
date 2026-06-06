@@ -27,8 +27,9 @@ const PaymentModal = ({
       return;
     }
     setLoading(true);
+    setIsActionLoading(true);
     try {
-      const payload = {
+const payload = {
         phone: phoneNumber,
         plan_id: 4,
         employee_ids: employeeIds,
@@ -42,9 +43,12 @@ const PaymentModal = ({
       } else {
         toast.error(res?.data?.message || "Payment failed to initiate.");
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error(error.response?.data?.message || "An error occurred during payment.");
     } finally {
+      setIsActionLoading(false);
+
       setLoading(false);
     }
   };

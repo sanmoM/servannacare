@@ -45,8 +45,9 @@ const ResetPasswordContent = () => {
     }
     if (!validate()) return;
     setIsLoading(true);
+    setIsActionLoading(true);
     try {
-      const payload = {
+const payload = {
         email,
         token,
         password,
@@ -55,10 +56,13 @@ const ResetPasswordContent = () => {
       const res = await postApi("/reset-password", payload);
       setIsSuccess(true);
       toast.success(res?.data?.message || "Password reset successfully!");
-    } catch (error) {
+    }
+    catch (error) {
       const message = error?.response?.data?.message || "Failed to reset password. The link may have expired.";
       toast.error(message);
     } finally {
+      setIsActionLoading(false);
+
       setIsLoading(false);
     }
   };
