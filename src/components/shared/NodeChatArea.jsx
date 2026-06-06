@@ -1,39 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  FileText,
-  Loader2,
-  ArrowLeft,
-  Plus,
-  Image as ImageIcon,
-  Paperclip,
-  CheckCircle2,
-  Clock,
-  ExternalLink,
-  X,
-} from "lucide-react";
+import { FileText, Loader2, ArrowLeft, Plus, Image as ImageIcon, Paperclip, CheckCircle2, Clock, ExternalLink, X } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { getApi, postApi } from "@/lib/apiHandler";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import LoadingSpinner from "./LoadingSpin";
-
-const getFileType = (url) => {
+const getFileType = url => {
   if (!url) return null;
   const ext = url.split(".").pop().toLowerCase();
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) return "image";
   if (["pdf", "doc", "docx", "xls", "xlsx"].includes(ext)) return "file";
   return "unknown";
 };
-
 export default function NodeChatArea({
   currentUser,
   chatRole,
@@ -44,8 +23,9 @@ export default function NodeChatArea({
   fetchNodesEndpoint,
   chatTitle,
   chatSubtitle,
-  chatAvatarText,
+  chatAvatarText
 }) {
+  const [isActionLoading, setIsActionLoading] = useState(false);
   // console.log("receiver id", receiverAuthId);
 
   const [nodes, setNodes] = useState([]);
@@ -55,17 +35,13 @@ export default function NodeChatArea({
   const [selectedFile, setSelectedFile] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const fileInputRef = useRef(null);
-
   const fetchNodes = async (isInitial = false) => {
     if (isInitial) setIsLoading(true);
     try {
       const response = await getApi(fetchNodesEndpoint);
       const data = response?.data || {};
       const sentNodes = Array.isArray(data?.sent_nodes) ? data?.sent_nodes : [];
-      const receivedNodes = Array.isArray(data?.received_nodes)
-        ? data?.received_nodes
-        : [];
-
+      const receivedNodes = Array.isArray(data?.received_nodes) ? data?.received_nodes : [];
       const allNotes = [...sentNodes, ...receivedNodes];
 
       // console.log("sent nodes", sentNodes);
@@ -73,63 +49,32 @@ export default function NodeChatArea({
       // console.log("all nodes", allNotes);
 
       let filteredNotes = [];
-      if (
-        chatRole === "user" ||
-        chatRole === "agency" ||
-        chatRole === "care_institutions"
-      ) {
-        filteredNotes = allNotes.filter((note) => {
-          const isSentToSpecialist =
-            note.sender_id === currentUser?.id &&
-            note.receiver_id === receiverId &&
-            note.receiver_type === receiverType;
-
-          const isReceivedFromSpecialist =
-            note.receiver_id === currentUser?.id &&
-            note.sender_id === receiverId &&
-            note.sender_type === receiverType;
-
+      if (chatRole === "user" || chatRole === "agency" || chatRole === "care_institutions") {
+        filteredNotes = allNotes.filter(note => {
+          const isSentToSpecialist = note.sender_id === currentUser?.id && note.receiver_id === receiverId && note.receiver_type === receiverType;
+          const isReceivedFromSpecialist = note.receiver_id === currentUser?.id && note.sender_id === receiverId && note.sender_type === receiverType;
           return isSentToSpecialist || isReceivedFromSpecialist;
         });
       } else {
-        filteredNotes = allNotes.filter((note) => {
-          const isSentToPatient =
-            note.sender_id === currentUser?.id &&
-            note.receiver_id === receiverId;
-
-          const isReceivedFromPatient =
-            note.receiver_id === currentUser?.id &&
-            note.sender_id === receiverId;
-
+        filteredNotes = allNotes.filter(note => {
+          const isSentToPatient = note.sender_id === currentUser?.id && note.receiver_id === receiverId;
+          const isReceivedFromPatient = note.receiver_id === currentUser?.id && note.sender_id === receiverId;
           return isSentToPatient || isReceivedFromPatient;
         });
       }
 
       // console.log("filter notes",filteredNotes)
 
-      const formatted = filteredNotes.map((node) => ({
+      const formatted = filteredNotes.map(node => ({
         ...node,
-        type:
-          node.sender_id === currentUser?.id ||
-          String(node.id).startsWith("temp-")
-            ? "Sent"
-            : "Received",
+        type: node.sender_id === currentUser?.id || String(node.id).startsWith("temp-") ? "Sent" : "Received"
       }));
-
-      const sorted = formatted.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at),
-      );
-
-      setNodes((prev) => {
-        const oldTemp = prev.filter((p) => String(p.id).startsWith("temp-"));
-        const newConfirmedIds = new Set(sorted.map((s) => s.id));
-        const merged = [
-          ...oldTemp.filter((t) => !newConfirmedIds.has(t.id)),
-          ...sorted,
-        ];
-        return merged.sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at),
-        );
+      const sorted = formatted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setNodes(prev => {
+        const oldTemp = prev.filter(p => String(p.id).startsWith("temp-"));
+        const newConfirmedIds = new Set(sorted.map(s => s.id));
+        const merged = [...oldTemp.filter(t => !newConfirmedIds.has(t.id)), ...sorted];
+        return merged.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
       });
     } catch (error) {
       console.error("Error fetching nodes:", error);
@@ -137,7 +82,6 @@ export default function NodeChatArea({
       if (isInitial) setIsLoading(false);
     }
   };
-
   useEffect(() => {
     fetchNodes(true);
     const interval = setInterval(() => {
@@ -145,19 +89,16 @@ export default function NodeChatArea({
     }, 5000);
     return () => clearInterval(interval);
   }, [fetchNodesEndpoint, receiverId, receiverAuthId, receiverType]);
-
-  const handleFileSelect = (e) => {
+  const handleFileSelect = e => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
   };
-
   const handleSend = async () => {
     if (!newMessage.trim() && !selectedFile) {
       toast.error("Please enter a message or select a file.");
       return;
     }
-
     const tempId = `temp-${Date.now()}`;
     let filePreview = null;
     if (selectedFile) {
@@ -167,7 +108,6 @@ export default function NodeChatArea({
         filePreview = "tempfile." + selectedFile.name.split(".").pop();
       }
     }
-
     const tempNode = {
       id: tempId,
       node_message: newMessage.trim() || null,
@@ -181,128 +121,80 @@ export default function NodeChatArea({
       status: "sending",
       type: "Sent",
       _isTempFile: !!selectedFile && !selectedFile.type.startsWith("image/"),
-      _fileName: selectedFile?.name,
+      _fileName: selectedFile?.name
     };
-
-    setNodes((prev) =>
-      [tempNode, ...prev].sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at),
-      ),
-    );
-
+    setNodes(prev => [tempNode, ...prev].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
     const messageToSend = newMessage;
     const fileToSend = selectedFile;
-
     setIsModalOpen(false);
     setNewMessage("");
     setSelectedFile(null);
     setIsSending(true);
-
     try {
       const formData = new FormData();
       formData.append("sender_id", currentUser?.id);
-      formData.append(
-        "sender_type",
-        chatRole === "user" ? "user" : currentUser?.type,
-      );
+      formData.append("sender_type", chatRole === "user" ? "user" : currentUser?.type);
       formData.append("receiver_id", receiverId);
       formData.append("receiver_auth_id", receiverAuthId);
       if (receiverType) formData.append("receiver_type", receiverType);
-
       if (messageToSend) {
         formData.append("node_message", messageToSend);
       }
-
       if (fileToSend) {
         formData.append("node_image", fileToSend);
       }
-
       const res = await postApi("/node", formData);
       const returnedNode = res?.data?.data || res?.data;
-
       if (returnedNode && returnedNode.id) {
         returnedNode.type = "Sent";
-        setNodes((prev) =>
-          prev.map((msg) => (msg.id === tempId ? returnedNode : msg)),
-        );
+        setNodes(prev => prev.map(msg => msg.id === tempId ? returnedNode : msg));
       } else {
-        setNodes((prev) => prev.filter((msg) => msg.id !== tempId));
+        setNodes(prev => prev.filter(msg => msg.id !== tempId));
         fetchNodes(false);
       }
     } catch (error) {
       console.error("Error sending node:", error);
       toast.error("Failed to send message. Please try again.");
-      setNodes((prev) => prev.filter((msg) => msg.id !== tempId));
+      setNodes(prev => prev.filter(msg => msg.id !== tempId));
     } finally {
       setIsSending(false);
     }
   };
-
-  const formatFileName = (name) => {
+  const formatFileName = name => {
     if (!name) return "";
-
     const parts = name.split(".");
-    if (parts.length === 1)
-      return name.length > 25 ? name.substring(0, 20) + "..." : name;
-
+    if (parts.length === 1) return name.length > 25 ? name.substring(0, 20) + "..." : name;
     const ext = parts.pop();
     const baseName = parts.join(".");
-
     if (baseName.length > 25) {
       return `${baseName.substring(0, 12)}...${baseName.substring(baseName.length - 8)}.${ext}`;
     }
-
     return name;
   };
-
-  const getFormatDate = (dateString) => {
+  const getFormatDate = dateString => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleString([], {
       month: "short",
       day: "numeric",
       hour: "2-digit",
-      minute: "2-digit",
+      minute: "2-digit"
     });
   };
-
-  const renderFileCell = (node) => {
+  const renderFileCell = node => {
     if (!node.node_image) return <span className="text-gray-400">-</span>;
-
-    const fileUrl =
-      node.node_image.startsWith("http") || node.node_image.startsWith("blob:")
-        ? node.node_image
-        : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${node.node_image}`;
+    const fileUrl = node.node_image.startsWith("http") || node.node_image.startsWith("blob:") ? node.node_image : `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${node.node_image}`;
     const isPending = node.status === "sending";
-
-    return (
-      <a
-        href={isPending ? "#" : fileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-primary rounded-md hover:bg-primary/20 transition-colors text-sm font-medium whitespace-nowrap max-w-[200px] group w-fit"
-        onClick={(e) => isPending && e.preventDefault()}
-      >
+    return <a href={isPending ? "#" : fileUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-primary rounded-md hover:bg-primary/20 transition-colors text-sm font-medium whitespace-nowrap max-w-[200px] group w-fit" onClick={e => isPending && e.preventDefault()}>
         <FileText size={16} className="flex-shrink-0" />
         <span className="truncate">{node._fileName || "View Document"}</span>
-        <ExternalLink
-          size={14}
-          className="ml-0.5 opacity-70 group-hover:opacity-100 flex-shrink-0"
-        />
-      </a>
-    );
+        <ExternalLink size={14} className="ml-0.5 opacity-70 group-hover:opacity-100 flex-shrink-0" />
+      </a>;
   };
-
-  return (
-    <div className="flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-h-[90vh] h-full">
+  return <div className="flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-h-[90vh] h-full">
       <div className="bg-white border-b border-gray-100 flex items-center justify-between px-6 py-5">
         <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="text-gray-500 hover:text-primary hover:bg-primary/5 -ml-2"
-          >
+          <Button variant="ghost" size="icon" onClick={onBack} className="text-gray-500 hover:text-primary hover:bg-primary/5 -ml-2" isActionLoading={isActionLoading}>
             <ArrowLeft size={20} />
           </Button>
           <div className="flex items-center gap-3">
@@ -322,7 +214,7 @@ export default function NodeChatArea({
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
-            <Button className="flex items-center gap-2 rounded-lg px-4 bg-primary cursor-pointer text-white hover:bg-primary/90 transition-colors">
+            <Button className="flex items-center gap-2 rounded-lg px-4 bg-primary cursor-pointer text-white hover:bg-primary/90 transition-colors" isActionLoading={isActionLoading}>
               <Plus size={18} />
               <span>Create Note</span>
             </Button>
@@ -339,12 +231,7 @@ export default function NodeChatArea({
                 <label className="text-sm font-medium text-gray-700">
                   Message
                 </label>
-                <textarea
-                  placeholder="Write your message..."
-                  className="w-full min-h-[120px] resize-none border border-gray-200 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                />
+                <textarea placeholder="Write your message..." className="w-full min-h-[120px] resize-none border border-gray-200 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary" value={newMessage} onChange={e => setNewMessage(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
@@ -352,47 +239,21 @@ export default function NodeChatArea({
                 </label>
 
                 <div className="relative w-full">
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    onChange={handleFileSelect}
-                    accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => fileInputRef.current.click()}
-                    className="flex items-center justify-start w-full pr-10 overflow-hidden text-gray-600 border-gray-300 hover:bg-gray-50 px-4 py-2 bg-white"
-                  >
-                    <Paperclip
-                      size={18}
-                      className="mr-2 opacity-70 flex-shrink-0"
-                    />
+                  <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx" />
+                  <Button type="button" variant="outline" onClick={() => fileInputRef.current.click()} className="flex items-center justify-start w-full pr-10 overflow-hidden text-gray-600 border-gray-300 hover:bg-gray-50 px-4 py-2 bg-white" isActionLoading={isActionLoading}>
+                    <Paperclip size={18} className="mr-2 opacity-70 flex-shrink-0" />
 
-                    <span
-                      title={selectedFile?.name}
-                      className="flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-left"
-                    >
-                      {selectedFile
-                        ? formatFileName(selectedFile.name)
-                        : "Select Image or File"}
+                    <span title={selectedFile?.name} className="flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap text-left">
+                      {selectedFile ? formatFileName(selectedFile.name) : "Select Image or File"}
                     </span>
                   </Button>
 
-                  {selectedFile && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedFile(null);
-                        if (fileInputRef.current)
-                          fileInputRef.current.value = "";
-                      }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white text-red-500 hover:text-red-600"
-                    >
+                  {selectedFile && <button type="button" onClick={() => {
+                  setSelectedFile(null);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white text-red-500 hover:text-red-600">
                       <X size={16} />
-                    </button>
-                  )}
+                    </button>}
                 </div>
 
                 <p className="text-[11px] text-gray-400">
@@ -401,23 +262,11 @@ export default function NodeChatArea({
               </div>
             </div>
             <DialogFooter className="border-t border-gray-100 pt-4 mt-2">
-              <Button
-                className="cursor-pointer"
-                variant="outline"
-                onClick={() => setIsModalOpen(false)}
-              >
+              <Button className="cursor-pointer" variant="outline" onClick={() => setIsModalOpen(false)} isActionLoading={isActionLoading}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleSend}
-                disabled={(!newMessage.trim() && !selectedFile) || isSending}
-                className="bg-primary text-white cursor-pointer"
-              >
-                {isSending ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : (
-                  <Plus className="h-4 w-4 mr-2" />
-                )}
+              <Button onClick={handleSend} disabled={!newMessage.trim() && !selectedFile || isSending} className="bg-primary text-white cursor-pointer" isActionLoading={isActionLoading}>
+                {isSending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
                 Submit Node
               </Button>
             </DialogFooter>
@@ -426,10 +275,7 @@ export default function NodeChatArea({
       </div>
 
       <div className="flex-1 overflow-auto bg-white p-6">
-        {isLoading && nodes.length === 0 ? (
-          <LoadingSpinner />
-        ) : nodes.length === 0 ? (
-          <div className="h-[300px] flex flex-col items-center justify-center">
+        {isLoading && nodes.length === 0 ? <LoadingSpinner /> : nodes.length === 0 ? <div className="h-[300px] flex flex-col items-center justify-center">
             <div className="bg-gray-50 p-8 rounded-xl border border-dashed border-gray-200 text-center mx-auto max-w-sm">
               <div className="bg-white h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
                 <FileText className="text-primary/60 h-8 w-8" />
@@ -441,9 +287,7 @@ export default function NodeChatArea({
                 Click "Create Note" to send a message or document.
               </p>
             </div>
-          </div>
-        ) : (
-          <div className="rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+          </div> : <div className="rounded-lg border border-gray-200 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm whitespace-nowrap">
                 <thead className="bg-gray-50 text-gray-600 font-medium border-b border-gray-200">
@@ -458,32 +302,18 @@ export default function NodeChatArea({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 text-gray-700 bg-white">
-                  {nodes.map((node) => (
-                    <tr
-                      key={node.id}
-                      className={`hover:bg-gray-50/70 transition-colors ${node.status === "sending" ? "opacity-70 bg-gray-50/50" : ""}`}
-                    >
+                  {nodes.map(node => <tr key={node.id} className={`hover:bg-gray-50/70 transition-colors ${node.status === "sending" ? "opacity-70 bg-gray-50/50" : ""}`}>
                       <td className="px-5 py-4 align-top">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
-                            node.type === "Sent"
-                              ? "bg-primary/10 text-primary"
-                              : "bg-primary/40 text-primary"
-                          }`}
-                        >
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${node.type === "Sent" ? "bg-primary/10 text-primary" : "bg-primary/40 text-primary"}`}>
                           {node.type}
                         </span>
                       </td>
                       <td className="px-5 py-4 whitespace-normal break-words max-w-sm align-top">
-                        {node.node_message ? (
-                          <div className="text-gray-800 leading-relaxed font-medium">
+                        {node.node_message ? <div className="text-gray-800 leading-relaxed font-medium">
                             {node.node_message}
-                          </div>
-                        ) : (
-                          <span className="text-gray-400 italic font-medium">
+                          </div> : <span className="text-gray-400 italic font-medium">
                             No message
-                          </span>
-                        )}
+                          </span>}
                       </td>
                       <td className="px-5 py-4 align-top">
                         {renderFileCell(node)}
@@ -498,26 +328,19 @@ export default function NodeChatArea({
                         {getFormatDate(node.created_at)}
                       </td>
                       <td className="px-5 py-4 align-top">
-                        {node.status === "sending" ? (
-                          <div className="flex items-center text-orange-500 font-semibold gap-1.5 bg-orange-50 px-2 py-1 rounded-md w-fit">
+                        {node.status === "sending" ? <div className="flex items-center text-orange-500 font-semibold gap-1.5 bg-orange-50 px-2 py-1 rounded-md w-fit">
                             <Clock size={14} />
                             <span className="text-xs">Sending</span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center text-primary font-semibold gap-1.5 bg-primary/10 px-2 py-1 rounded-md w-fit">
+                          </div> : <div className="flex items-center text-primary font-semibold gap-1.5 bg-primary/10 px-2 py-1 rounded-md w-fit">
                             <CheckCircle2 size={14} />
                             <span className="text-xs">Delivered</span>
-                          </div>
-                        )}
+                          </div>}
                       </td>
-                    </tr>
-                  ))}
+                    </tr>)}
                 </tbody>
               </table>
             </div>
-          </div>
-        )}
+          </div>}
       </div>
-    </div>
-  );
+    </div>;
 }

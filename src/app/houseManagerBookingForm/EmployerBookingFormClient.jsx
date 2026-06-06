@@ -15,94 +15,70 @@ import toast from "react-hot-toast";
 import { Eye, Smartphone, Info } from "lucide-react";
 import { postApi, getApi } from "@/lib/apiHandler";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import PhoneInputWithCountrySelect from "react-phone-number-input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import { Checkbox } from "@/components/ui/checkbox";
-
 export default function EmployerBookingFormClient() {
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const router = useRouter();
   const category = searchParams.get("category");
-
   const [previewMonth, setPreviewMonth] = useState(null);
   const [bookingAmount, setBookingAmount] = useState(0);
   const [serviceFee, setServiceFee] = useState(0);
   const [planId, setPlanId] = useState(0);
-  const { user } = useAuth();
-
+  const {
+    user
+  } = useAuth();
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [country, setCountry] = useState("KE");
-
-  const { data: specData, isLoading: specLoading } = useFetch("/specialist");
-  const { data, isLoading } = useFetch("/subscription-plan");
-
+  const {
+    data: specData,
+    isLoading: specLoading
+  } = useFetch("/specialist");
+  const {
+    data,
+    isLoading
+  } = useFetch("/subscription-plan");
   useEffect(() => {
     if (data?.status === 200 && data?.data?.data.length > 0) {
-      const individualPlan = data?.data?.data?.find(
-        (item) => item.name === "Service Fee",
-      );
+      const individualPlan = data?.data?.data?.find(item => item.name === "Service Fee");
       if (individualPlan) {
         setServiceFee(parseFloat(individualPlan.price));
         setPlanId(individualPlan.id);
       }
     }
   }, [data]);
-
   const specialists = specData?.data?.data ?? [];
-
-  const matchedSpecialist = useMemo(
-    () => specialists.find((s) => s.id === Number(id)),
-    [specialists, id],
-  );
-
-  const monthlyRate = Number(
-    matchedSpecialist?.house_manager?.serviceFeeMonth ??
-      matchedSpecialist?.serviceFeeMonth ??
-      0,
-  );
-
-  const dailyRate = Number(
-    matchedSpecialist?.house_manager?.serviceFeeDay ??
-      matchedSpecialist?.serviceFeeDay ??
-      0,
-  );
-
+  const matchedSpecialist = useMemo(() => specialists.find(s => s.id === Number(id)), [specialists, id]);
+  const monthlyRate = Number(matchedSpecialist?.house_manager?.serviceFeeMonth ?? matchedSpecialist?.serviceFeeMonth ?? 0);
+  const dailyRate = Number(matchedSpecialist?.house_manager?.serviceFeeDay ?? matchedSpecialist?.serviceFeeDay ?? 0);
   const availableDates = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    return (
-      matchedSpecialist?.schedule
-        ?.flatMap((s) => s.date)
-        ?.filter((d) => {
-          const dateObj = new Date(d);
-          dateObj.setHours(0, 0, 0, 0);
-          return dateObj >= today;
-        }) || []
-    );
+    return matchedSpecialist?.schedule?.flatMap(s => s.date)?.filter(d => {
+      const dateObj = new Date(d);
+      dateObj.setHours(0, 0, 0, 0);
+      return dateObj >= today;
+    }) || [];
   }, [matchedSpecialist]);
-
   const hasSchedule = availableDates.length > 0;
-
   const {
     register,
     handleSubmit,
     control,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: {
+      errors,
+      isSubmitting
+    }
   } = useForm({
     defaultValues: {
       lookingFor: "monthly",
@@ -111,107 +87,79 @@ export default function EmployerBookingFormClient() {
       kids: "",
       ageBracket: [],
       homeType: "",
-      homeSize: "",
-    },
+      homeSize: ""
+    }
   });
-
   const lookingFor = watch("lookingFor");
   const selectedMonths = watch("selectedMonths");
   const selectedDates = watch("selectedDates");
   const kids = watch("kids");
   const homeType = watch("homeType");
   const homeSize = watch("homeSize");
-
   const isMonthly = lookingFor === "monthly";
   const isDaily = lookingFor === "daily";
-
   useEffect(() => {
     if (kids !== "yes") setValue("ageBracket", []);
   }, [kids, setValue]);
-
   useEffect(() => {
-    const amount = isMonthly
-      ? selectedMonths.length * monthlyRate
-      : selectedDates.length * dailyRate;
+    const amount = isMonthly ? selectedMonths.length * monthlyRate : selectedDates.length * dailyRate;
     setBookingAmount(amount);
   }, [selectedMonths, selectedDates, isMonthly, monthlyRate, dailyRate]);
 
   // const totalAmount = bookingAmount + serviceFee;
   const totalAmount = serviceFee;
-
-  const isDateDisabled = (date) => {
+  const isDateDisabled = date => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     const current = new Date(date);
     current.setHours(0, 0, 0, 0);
-
     if (current < today) return true;
-
     const y = current.getFullYear();
     const m = String(current.getMonth() + 1).padStart(2, "0");
     const d = String(current.getDate()).padStart(2, "0");
     const dateStr = `${y}-${m}-${d}`;
-
     return !availableDates.includes(dateStr);
   };
-
   const onSubmit = async () => {
-    if (
-      (isMonthly && !selectedMonths.length) ||
-      (isDaily && !selectedDates.length)
-    ) {
+    if (isMonthly && !selectedMonths.length || isDaily && !selectedDates.length) {
       return toast.error("Please select dates/months");
     }
-    if (!homeType || !homeSize || !kids)
-      return toast.error("Please complete all fields");
-
+    if (!homeType || !homeSize || !kids) return toast.error("Please complete all fields");
     if (kids === "yes" && !watch("ageBracket")?.length) {
       return toast.error("Please select at least one age bracket");
     }
     setIsPayModalOpen(true);
   };
-
   const handleFinalSubmit = async () => {
     if (!phoneNumber || !isValidPhoneNumber(phoneNumber)) {
       return toast.error("Please enter a valid phone number");
     }
-
     setIsProcessingPayment(true);
     const formData = watch();
-
     let formattedSelections = [];
-
     if (isMonthly) {
-      formattedSelections = selectedMonths.map((month) => {
-        const monthDates = availableDates.filter((date) =>
-          date.startsWith(month),
-        );
-
+      formattedSelections = selectedMonths.map(month => {
+        const monthDates = availableDates.filter(date => date.startsWith(month));
         return {
           month,
-          dates: monthDates,
+          dates: monthDates
         };
       });
     } else {
       const groupedByMonth = selectedDates.reduce((acc, dateObj) => {
         const formattedDate = dateObj.toISOString().split("T")[0];
         const month = formattedDate.slice(0, 7);
-
         if (!acc[month]) {
           acc[month] = [];
         }
-
         acc[month].push(formattedDate);
         return acc;
       }, {});
-
-      formattedSelections = Object.keys(groupedByMonth).map((month) => ({
+      formattedSelections = Object.keys(groupedByMonth).map(month => ({
         month,
-        dates: groupedByMonth[month],
+        dates: groupedByMonth[month]
       }));
     }
-
     const bookingPayload = {
       specialist_id: parseInt(matchedSpecialist?.id),
       specialist_type: matchedSpecialist.type,
@@ -222,33 +170,26 @@ export default function EmployerBookingFormClient() {
       home_type: formData.homeType,
       home_size: formData.homeSize,
       selected_dates_or_months: formattedSelections,
-      booking_amount: 1,
+      booking_amount: 1
       // booking_amount: bookingAmount,
     };
-
     try {
       const paymentRes = await postApi("/checkout", {
         phone: phoneNumber,
         plan_id: planId,
         specialist_id: parseInt(matchedSpecialist?.id),
         specialist_type: matchedSpecialist.type,
-        book_amount: 1,
+        book_amount: 1
         // book_amount: bookingAmount,
       });
-
       const checkoutId = paymentRes?.data?.checkout_id;
-
       if (!checkoutId) {
         throw new Error("Checkout failed");
       }
-
       toast.success("M-Pesa prompt sent!");
-
       const queryRes = await getApi(`/mpesa/query/${checkoutId}`);
-
       if (queryRes?.status === 200) {
         const bookingRes = await postApi("/booking", bookingPayload);
-
         if (bookingRes?.status === 200 || bookingRes?.status === 201) {
           toast.success("Booking confirmed successfully!");
           setIsPayModalOpen(false);
@@ -263,16 +204,10 @@ export default function EmployerBookingFormClient() {
       setIsProcessingPayment(false);
     }
   };
-
-  if (specLoading)
-    return (
-      <div className="h-screen flex items-center justify-center">
+  if (specLoading) return <div className="h-screen flex items-center justify-center">
         <LoadingSpinner />
-      </div>
-    );
-
-  return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4">
+      </div>;
+  return <div className="min-h-screen bg-[#F8FAFC] py-12 px-4">
       <div className="max-w-6xl mx-auto grid lg:grid-cols-3 gap-8">
         {/* LEFT SIDE */}
         <div className="lg:col-span-2 space-y-6">
@@ -288,80 +223,46 @@ export default function EmployerBookingFormClient() {
                   <Label className="font-bold block mb-4">
                     2. Do you have kids?
                   </Label>
-                  <RadioGroup
-                    value={kids}
-                    onValueChange={(val) => setValue("kids", val)}
-                    className="space-y-3"
-                  >
+                  <RadioGroup value={kids} onValueChange={val => setValue("kids", val)} className="space-y-3">
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="yes"
-                        id="kids-yes"
-                      />
+                      <RadioGroupItem className={"cursor-pointer"} value="yes" id="kids-yes" />
                       <Label className={"cursor-pointer"} htmlFor="kids-yes">
                         Yes
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="no"
-                        id="kids-no"
-                      />
+                      <RadioGroupItem className={"cursor-pointer"} value="no" id="kids-no" />
                       <Label className={"cursor-pointer"} htmlFor="kids-no">
                         No
                       </Label>
                     </div>
                   </RadioGroup>
 
-                  {kids === "yes" && (
-                    <div className="mt-6 space-y-4">
+                  {kids === "yes" && <div className="mt-6 space-y-4">
                       <Label className="font-medium">Choose age brackets</Label>
 
                       <div className="space-y-3">
-                        {["0-3", "4-10", "11+"].map((range) => {
-                          const selected = watch("ageBracket") || [];
-                          const checked = selected.includes(range);
+                        {["0-3", "4-10", "11+"].map(range => {
+                      const selected = watch("ageBracket") || [];
+                      const checked = selected.includes(range);
+                      return <div key={range} className="flex items-center space-x-2">
+                              <Checkbox className="h-4 w-4 rounded-sm border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all" id={`age-${range}`} checked={checked} onCheckedChange={value => {
+                          let updated = [...selected];
+                          if (value) {
+                            updated.push(range);
+                          } else {
+                            updated = updated.filter(r => r !== range);
+                          }
+                          setValue("ageBracket", updated);
+                        }} />
 
-                          return (
-                            <div
-                              key={range}
-                              className="flex items-center space-x-2"
-                            >
-                              <Checkbox
-                                className="h-4 w-4 rounded-sm border-slate-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
-                                id={`age-${range}`}
-                                checked={checked}
-                                onCheckedChange={(value) => {
-                                  let updated = [...selected];
-
-                                  if (value) {
-                                    updated.push(range);
-                                  } else {
-                                    updated = updated.filter(
-                                      (r) => r !== range,
-                                    );
-                                  }
-
-                                  setValue("ageBracket", updated);
-                                }}
-                              />
-
-                              <Label
-                                htmlFor={`age-${range}`}
-                                className="cursor-pointer"
-                              >
-                                {range === "11+"
-                                  ? "11 yrs and Above"
-                                  : `${range} yrs`}
+                              <Label htmlFor={`age-${range}`} className="cursor-pointer">
+                                {range === "11+" ? "11 yrs and Above" : `${range} yrs`}
                               </Label>
-                            </div>
-                          );
-                        })}
+                            </div>;
+                    })}
                       </div>
-                    </div>
-                  )}
+                    </div>}
                 </div>
 
                 <Separator />
@@ -371,27 +272,15 @@ export default function EmployerBookingFormClient() {
                   <Label className="font-bold block mb-4">
                     3. Type of home:
                   </Label>
-                  <RadioGroup
-                    value={homeType}
-                    onValueChange={(val) => setValue("homeType", val)}
-                    className="space-y-2"
-                  >
+                  <RadioGroup value={homeType} onValueChange={val => setValue("homeType", val)} className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="compound"
-                        id="compound"
-                      />
+                      <RadioGroupItem className={"cursor-pointer"} value="compound" id="compound" />
                       <Label className={"cursor-pointer"} htmlFor="compound">
                         Own compound
                       </Label>
                     </div>
                     <div className="flex items-center gap-2">
-                      <RadioGroupItem
-                        className={"cursor-pointer"}
-                        value="apartment"
-                        id="apartment"
-                      />
+                      <RadioGroupItem className={"cursor-pointer"} value="apartment" id="apartment" />
                       <Label className={"cursor-pointer"} htmlFor="apartment">
                         Apartment
                       </Label>
@@ -406,25 +295,13 @@ export default function EmployerBookingFormClient() {
                   <Label className="font-bold block mb-4">
                     4. How Big is your home:
                   </Label>
-                  <RadioGroup
-                    value={homeSize}
-                    onValueChange={(val) => setValue("homeSize", val)}
-                    className="grid grid-cols-2 md:grid-cols-3 gap-4"
-                  >
-                    {["1Br", "2Br", "3Br", "4Br", "5Br and above"].map(
-                      (size) => (
-                        <div key={size} className="flex items-center gap-2">
-                          <RadioGroupItem
-                            className={"cursor-pointer"}
-                            value={size}
-                            id={size}
-                          />
+                  <RadioGroup value={homeSize} onValueChange={val => setValue("homeSize", val)} className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {["1Br", "2Br", "3Br", "4Br", "5Br and above"].map(size => <div key={size} className="flex items-center gap-2">
+                          <RadioGroupItem className={"cursor-pointer"} value={size} id={size} />
                           <Label className={"cursor-pointer"} htmlFor={size}>
                             {size}
                           </Label>
-                        </div>
-                      ),
-                    )}
+                        </div>)}
                   </RadioGroup>
                 </div>
               </CardContent>
@@ -433,27 +310,15 @@ export default function EmployerBookingFormClient() {
             <Card className="border-none shadow-sm ring-1 ring-slate-200 mt-6">
               <CardHeader className="border-b bg-white p-6">
                 <Label className="font-bold block mb-4">1. Looking for:</Label>
-                <RadioGroup
-                  value={lookingFor}
-                  onValueChange={(val) => setValue("lookingFor", val)}
-                  className="space-y-3"
-                >
+                <RadioGroup value={lookingFor} onValueChange={val => setValue("lookingFor", val)} className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem
-                      className={"cursor-pointer"}
-                      value="monthly"
-                      id="livein"
-                    />
+                    <RadioGroupItem className={"cursor-pointer"} value="monthly" id="livein" />
                     <Label className={"cursor-pointer"} htmlFor="livein">
                       Live In
                     </Label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <RadioGroupItem
-                      className={"cursor-pointer"}
-                      value="daily"
-                      id="dayburg"
-                    />
+                    <RadioGroupItem className={"cursor-pointer"} value="daily" id="dayburg" />
                     <Label className={"cursor-pointer"} htmlFor="dayburg">
                       Dayburg
                     </Label>
@@ -463,83 +328,61 @@ export default function EmployerBookingFormClient() {
 
               <CardContent className="p-8 space-y-8">
                 <div className="grid grid-cols-2 gap-6">
-                  <div
-                    onClick={() => {
-                      setValue("lookingFor", "monthly");
-                      setValue("selectedMonths", []);
-                    }}
-                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${isMonthly ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100"}`}
-                  >
+                  <div onClick={() => {
+                  setValue("lookingFor", "monthly");
+                  setValue("selectedMonths", []);
+                }} className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${isMonthly ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100"}`}>
                     <p className="text-xs font-bold text-slate-800 uppercase tracking-widest">
                       Monthly Plan
                     </p>
                     {/* <p className="text-2xl font-bold mt-2">
                       KES {monthlyRate.toLocaleString()}
-                    </p> */}
+                     </p> */}
                   </div>
 
-                  <div
-                    onClick={() => {
-                      setValue("lookingFor", "daily");
-                      setValue("selectedDates", []);
-                    }}
-                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${isDaily ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100"}`}
-                  >
+                  <div onClick={() => {
+                  setValue("lookingFor", "daily");
+                  setValue("selectedDates", []);
+                }} className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${isDaily ? "border-[#7A295A] bg-[#7A295A]/5" : "border-slate-100"}`}>
                     <p className="text-xs font-bold text-slate-800 uppercase tracking-widest">
                       Daily Plan
                     </p>
                     {/* <p className="text-2xl font-bold mt-2">
                       KES {dailyRate.toLocaleString()}
-                    </p> */}
+                     </p> */}
                   </div>
                 </div>
 
-                {isMonthly && (
-                  <>
-                    {!hasSchedule ? (
-                      <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                {isMonthly && <>
+                    {!hasSchedule ? <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                         <p className="text-lg font-semibold text-slate-500">
                           No available month for this specialist.
                         </p>
                         <p className="text-sm text-slate-400 mt-2">
                           Please select another specialist.
                         </p>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-                        {Array.from({ length: 12 }).map((_, i) => {
-                          const monthKey = `2026-${String(i + 1).padStart(2, "0")}`;
-                          const monthLabel = new Date(2026, i).toLocaleString(
-                            "default",
-                            { month: "long" },
-                          );
-                          const hasAvailability = availableDates.some((d) => {
-                            if (!d.startsWith(monthKey)) return false;
-
-                            const dateObj = new Date(d);
-                            const today = new Date();
-                            today.setHours(0, 0, 0, 0);
-                            dateObj.setHours(0, 0, 0, 0);
-
-                            return dateObj >= today;
-                          });
-                          const isSelected = selectedMonths.includes(monthKey);
-
-                          return (
-                            <div key={monthKey} className="relative">
-                              <button
-                                type="button"
-                                disabled={!hasAvailability}
-                                onClick={() => {
-                                  const next = isSelected
-                                    ? selectedMonths.filter(
-                                        (m) => m !== monthKey,
-                                      )
-                                    : [...selectedMonths, monthKey];
-                                  setValue("selectedMonths", next);
-                                }}
-                                className={`w-full cursor-pointer p-5 rounded-xl border flex flex-col items-center transition-all ${isSelected ? "bg-[#7A295A] text-white border-[#7A295A]" : "bg-white border-slate-200"} ${!hasAvailability && "opacity-25 cursor-not-allowed"}`}
-                              >
+                      </div> : <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+                        {Array.from({
+                    length: 12
+                  }).map((_, i) => {
+                    const monthKey = `2026-${String(i + 1).padStart(2, "0")}`;
+                    const monthLabel = new Date(2026, i).toLocaleString("default", {
+                      month: "long"
+                    });
+                    const hasAvailability = availableDates.some(d => {
+                      if (!d.startsWith(monthKey)) return false;
+                      const dateObj = new Date(d);
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      dateObj.setHours(0, 0, 0, 0);
+                      return dateObj >= today;
+                    });
+                    const isSelected = selectedMonths.includes(monthKey);
+                    return <div key={monthKey} className="relative">
+                              <button type="button" disabled={!hasAvailability} onClick={() => {
+                        const next = isSelected ? selectedMonths.filter(m => m !== monthKey) : [...selectedMonths, monthKey];
+                        setValue("selectedMonths", next);
+                      }} className={`w-full cursor-pointer p-5 rounded-xl border flex flex-col items-center transition-all ${isSelected ? "bg-[#7A295A] text-white border-[#7A295A]" : "bg-white border-slate-200"} ${!hasAvailability && "opacity-25 cursor-not-allowed"}`}>
                                 <span className="font-bold text-sm">
                                   {monthLabel}
                                 </span>
@@ -547,58 +390,33 @@ export default function EmployerBookingFormClient() {
                                   {hasAvailability ? "Available" : "No Dates"}
                                 </span>
                               </button>
-                              {hasAvailability && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setPreviewMonth(monthKey);
-                                  }}
-                                  className="absolute -top-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg cursor-pointer"
-                                >
+                              {hasAvailability && <button type="button" onClick={e => {
+                        e.stopPropagation();
+                        setPreviewMonth(monthKey);
+                      }} className="absolute -top-1 -right-1 bg-primary text-white p-1.5 rounded-full shadow-lg cursor-pointer">
                                   <Eye size={14} />
-                                </button>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </>
-                )}
+                                </button>}
+                            </div>;
+                  })}
+                      </div>}
+                  </>}
 
-                {isDaily && (
-                  <>
-                    {!hasSchedule ? (
-                      <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                {isDaily && <>
+                    {!hasSchedule ? <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                         <p className="text-lg font-semibold text-slate-500">
                           No available dates for this specialist.
                         </p>
                         <p className="text-sm text-slate-400 mt-2">
                           Please select another specialist.
                         </p>
-                      </div>
-                    ) : (
-                      <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
-                        <Calendar
-                          mode="multiple"
-                          selected={selectedDates}
-                          onSelect={(val) => setValue("selectedDates", val)}
-                          disabled={isDateDisabled}
-                          className="bg-white border rounded-xl w-full cursor-pointer"
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
+                      </div> : <div className="flex justify-center p-6 bg-slate-50 rounded-2xl">
+                        <Calendar mode="multiple" selected={selectedDates} onSelect={val => setValue("selectedDates", val)} disabled={isDateDisabled} className="bg-white border rounded-xl w-full cursor-pointer" />
+                      </div>}
+                  </>}
               </CardContent>
             </Card>
 
-            <Button
-              type="submit"
-              disabled={!hasSchedule && isSubmitting}
-              className="w-full h-16 text-xl font-bold rounded-2xl cursor-pointer shadow-xl mt-8 bg-[#7A295A] hover:bg-[#631f49] text-white"
-            >
+            <Button type="submit" disabled={!hasSchedule && isSubmitting} className="w-full h-16 text-xl font-bold rounded-2xl cursor-pointer shadow-xl mt-8 bg-[#7A295A] hover:bg-[#631f49] text-white" isActionLoading={isActionLoading}>
               {isSubmitting ? "Processing..." : "Go To Checkout"}
             </Button>
           </form>
@@ -623,15 +441,13 @@ export default function EmployerBookingFormClient() {
               <div className="flex justify-between font-bold text-sm">
                 <span className="text-slate-400">SELECTION</span>
                 <span className="text-[#7A295A]">
-                  {isMonthly
-                    ? `${selectedMonths.length} Months`
-                    : `${selectedDates.length} Days`}
+                  {isMonthly ? `${selectedMonths.length} Months` : `${selectedDates.length} Days`}
                 </span>
               </div>
               {/* <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Booking Amount</span>
                 <span>KES {bookingAmount.toLocaleString()}</span>
-              </div> */}
+               </div> */}
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Service Fee</span>
                 <span>KES {serviceFee.toLocaleString()}</span>
@@ -669,30 +485,19 @@ export default function EmployerBookingFormClient() {
                 Enter M-Pesa Number
               </label>
               <div className="phone-input-container">
-                <PhoneInputWithCountrySelect
-                  className="w-full flex border rounded-2xl px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all"
-                  international
-                  defaultCountry={country}
-                  value={phoneNumber}
-                  onChange={(value) => setPhoneNumber(value || "")}
-                  onCountryChange={(countryCode) => {
-                    setCountry(countryCode || "KE");
-                    const example = countryCode
-                      ? getExampleNumber(countryCode)
-                      : null;
-                    if (example) {
-                      setPhoneNumber(`+${example.countryCallingCode}`);
-                    } else {
-                      setPhoneNumber("");
-                    }
-                  }}
-                />
+                <PhoneInputWithCountrySelect className="w-full flex border rounded-2xl px-4 py-3 bg-slate-50 focus-within:ring-2 focus-within:ring-primary transition-all" international defaultCountry={country} value={phoneNumber} onChange={value => setPhoneNumber(value || "")} onCountryChange={countryCode => {
+                setCountry(countryCode || "KE");
+                const example = countryCode ? getExampleNumber(countryCode) : null;
+                if (example) {
+                  setPhoneNumber(`+${example.countryCallingCode}`);
+                } else {
+                  setPhoneNumber("");
+                }
+              }} />
               </div>
-              {phoneNumber && !isValidPhoneNumber(phoneNumber) && (
-                <p className="text-red-500 text-[11px] font-bold mt-2 ml-1">
+              {phoneNumber && !isValidPhoneNumber(phoneNumber) && <p className="text-red-500 text-[11px] font-bold mt-2 ml-1">
                   Invalid phone number for {country}
-                </p>
-              )}
+                </p>}
             </div>
 
             <div className="bg-slate-50 p-6 rounded-2xl border flex justify-between items-center">
@@ -702,61 +507,35 @@ export default function EmployerBookingFormClient() {
               </span>
             </div>
 
-            <Button
-              onClick={handleFinalSubmit}
-              disabled={
-                isProcessingPayment ||
-                (phoneNumber !== "" && !isValidPhoneNumber(phoneNumber))
-              }
-              className="w-full h-14 bg-[#7A295A] text-white rounded-2xl font-black uppercase cursor-pointer tracking-widest shadow-xl"
-            >
+            <Button onClick={handleFinalSubmit} disabled={isProcessingPayment || phoneNumber !== "" && !isValidPhoneNumber(phoneNumber)} className="w-full h-14 bg-[#7A295A] text-white rounded-2xl font-black uppercase cursor-pointer tracking-widest shadow-xl" isActionLoading={isActionLoading}>
               {isProcessingPayment ? "Requesting...." : "Confirm & Pay"}
             </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {previewMonth && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
+      {previewMonth && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-100 p-4">
           <Card className="w-full max-w-sm animate-in fade-in zoom-in duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b">
               <CardTitle className="text-lg font-bold">
                 {new Date(previewMonth + "-02").toLocaleString("default", {
-                  month: "long",
-                  year: "numeric",
-                })}
+              month: "long",
+              year: "numeric"
+            })}
               </CardTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full"
-                onClick={() => setPreviewMonth(null)}
-              >
+              <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setPreviewMonth(null)} isActionLoading={isActionLoading}>
                 ✕
               </Button>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="flex justify-center">
-                <Calendar
-                  mode="multiple"
-                  month={new Date(previewMonth + "-02")}
-                  disableNavigation
-                  selected={availableDates
-                    .filter((d) => d.startsWith(previewMonth))
-                    .map((d) => new Date(d + "T00:00:00"))}
-                  className="rounded-md border pointer-events-none cursor-progress w-full h-full"
-                />
+                <Calendar mode="multiple" month={new Date(previewMonth + "-02")} disableNavigation selected={availableDates.filter(d => d.startsWith(previewMonth)).map(d => new Date(d + "T00:00:00"))} className="rounded-md border pointer-events-none cursor-progress w-full h-full" />
               </div>
-              <Button
-                className="w-full mt-6 bg-[#7A295A] text-white cursor-pointer"
-                onClick={() => setPreviewMonth(null)}
-              >
+              <Button className="w-full mt-6 bg-[#7A295A] text-white cursor-pointer" onClick={() => setPreviewMonth(null)} isActionLoading={isActionLoading}>
                 Got it
               </Button>
             </CardContent>
           </Card>
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 }

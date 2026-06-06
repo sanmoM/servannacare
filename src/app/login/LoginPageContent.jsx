@@ -3,15 +3,7 @@
 import Input from "@/components/shared/Input";
 import PublicRoute from "@/components/shared/PublicRoute";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { getApi, postApi } from "@/lib/apiHandler";
 import { userRole } from "@/utilities/data";
@@ -21,20 +13,22 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
 const LoginPageContent = () => {
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, setUser, setRole, loading, refreshUser } = useAuth();
-
+  const {
+    user,
+    setUser,
+    setRole,
+    loading,
+    refreshUser
+  } = useAuth();
   const redirect = searchParams.get("redirect");
-
   useEffect(() => {
     if (loading) return;
-
     if (!user) return;
-
     if (user?.role === "user") {
       router.replace(redirect || "/dashboard");
     } else {
@@ -44,48 +38,44 @@ const LoginPageContent = () => {
       router.replace("/dashboard");
     }
   }, [user, loading, redirect, router]);
-
-  const handleLoginUser = async (e) => {
+  const handleLoginUser = async e => {
     e.preventDefault();
-
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-
     if (!email || !password) {
       toast.error("All fields are required!");
       return;
     }
-
     if (password.length < 6) {
       toast.error("Password must be at least 6 characters");
       return;
     }
-
-    const userInfo = { email, password };
-
+    const userInfo = {
+      email,
+      password
+    };
+    setIsActionLoading(true);
     try {
       const res = await postApi("/login", userInfo);
-      const { token } = res.data.data;
+      const {
+        token
+      } = res.data.data;
       localStorage.setItem("token", token);
-
       const userData = await refreshUser();
       toast.success("Login Successful");
       if (redirect) {
         router.replace(redirect);
         return;
       }
-
       if (userData.role === "user") {
         router.replace("/dashboard");
         return;
       }
-
       if (userData.role === "specialist" && !userData.is_profile_completed) {
         router.replace(`/register?role=${userData.subRole}`);
         return;
       }
-
       router.replace(`/dashboard/${userData.role}-profile`);
     } catch (error) {
       if (error?.response?.data?.email_verified === null) {
@@ -95,69 +85,40 @@ const LoginPageContent = () => {
         router.replace("/verify-otp");
         return;
       }
-      toast.error(
-        error?.response?.data?.message || "Invalid email or password",
-      );
+      toast.error(error?.response?.data?.message || "Invalid email or password");
+    } finally {
+      setIsActionLoading(false);
     }
   };
-
   const handleShowPassword = () => {
     setShowPass(!showPass);
   };
-
-  return (
-    <PublicRoute>
+  return <PublicRoute>
       <div className="w-full flex justify-center items-center min-h-screen px-2">
         <div className="w-full max-w-[400px] px-4 bg-white">
           <div className="flex justify-center mb-2">
-            <Image
-              src="/logo1.png"
-              alt="logo"
-              quality={100}
-              width={80}
-              height={80}
-            />
+            <Image src="/logo1.png" alt="logo" quality={100} width={80} height={80} />
           </div>
           <h2 className="text-xl font-semibold mb-6 text-center text-gray-900">
             Welcome Back!
           </h2>
           <form onSubmit={handleLoginUser} className="space-y-5">
-            <Input
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="Enter Your Email"
-            />
+            <Input label="Email" name="email" type="email" placeholder="Enter Your Email" />
 
             <div className="relative">
-              <Input
-                label="Password"
-                name="password"
-                type={showPass ? "text" : "password"}
-                placeholder="Enter Your Password"
-              />
-              <div
-                onClick={handleShowPassword}
-                className="absolute cursor-pointer top-10 right-5"
-              >
-                {showPass ? (
-                  <EyeOff className="text-gray-600" />
-                ) : (
-                  <Eye className="text-gray-600" />
-                )}
+              <Input label="Password" name="password" type={showPass ? "text" : "password"} placeholder="Enter Your Password" />
+              <div onClick={handleShowPassword} className="absolute cursor-pointer top-10 right-5">
+                {showPass ? <EyeOff className="text-gray-600" /> : <Eye className="text-gray-600" />}
               </div>
             </div>
 
             <div className="flex justify-end">
-              <Link
-                className="underline cursor-pointer text-sm"
-                href={"/forgot-password"}
-              >
+              <Link className="underline cursor-pointer text-sm" href={"/forgot-password"}>
                 Forgot Password?
               </Link>
             </div>
 
-            <Button size={"lg"} className={"w-full cursor-pointer"}>
+            <Button size={"lg"} className={"w-full cursor-pointer"} isActionLoading={isActionLoading}>
               LOGIN
             </Button>
           </form>
@@ -165,14 +126,11 @@ const LoginPageContent = () => {
           <div className="flex gap-2 mt-6 items-center">
             <p className="text-sm">Do not have an account?</p>
 
-            {redirect ? (
-              <Link href={`/register?role=user&redirect=${redirect}`}>
-                <Button variant="link">SIGN UP</Button>
-              </Link>
-            ) : (
-              <Dialog>
+            {redirect ? <Link href={`/register?role=user&redirect=${redirect}`}>
+                <Button variant="link" isActionLoading={isActionLoading}>SIGN UP</Button>
+              </Link> : <Dialog>
                 <DialogTrigger asChild>
-                  <Button variant="link">SIGN UP</Button>
+                  <Button variant="link" isActionLoading={isActionLoading}>SIGN UP</Button>
                 </DialogTrigger>
 
                 <DialogContent className="sm:max-w-2xl">
@@ -183,41 +141,28 @@ const LoginPageContent = () => {
                   </DialogHeader>
 
                   <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 items-stretch">
-                    {userRole.map((role, indx) => (
-                      <DialogClose asChild key={indx}>
-                        <div
-                          className="h-full cursor-pointer"
-                          onClick={() => {
-                            setTimeout(() => {
-                              router.push(`/register?role=${role.role}`);
-                            }, 150);
-                          }}
-                        >
+                    {userRole.map((role, indx) => <DialogClose asChild key={indx}>
+                        <div className="h-full cursor-pointer" onClick={() => {
+                    setTimeout(() => {
+                      router.push(`/register?role=${role.role}`);
+                    }, 150);
+                  }}>
                           <div className="h-full flex flex-col items-center p-2 py-3 sm:py-4 rounded-lg border  hover:border-primary transition-all duration-500 border-border bg-background hover:shadow-md">
                             <div className="flex items-center justify-center w-6 h-6 sm:h-8 sm:w-8 rounded-full hover:text-primary bg-cyan-100 mb-2 sm:mb-4">
-                              <Image
-                                src={role.icon}
-                                alt="role"
-                                quality={100}
-                                className="h-full w-full"
-                              />
+                              <Image src={role.icon} alt="role" quality={100} className="h-full w-full" />
                             </div>
                             <h3 className="text-[9px] sm:text-sm text-center font-semibold text-gray-700">
                               {role.text}
                             </h3>
                           </div>
                         </div>
-                      </DialogClose>
-                    ))}
+                      </DialogClose>)}
                   </div>
                 </DialogContent>
-              </Dialog>
-            )}
+              </Dialog>}
           </div>
         </div>
       </div>
-    </PublicRoute>
-  );
+    </PublicRoute>;
 };
-
 export default LoginPageContent;

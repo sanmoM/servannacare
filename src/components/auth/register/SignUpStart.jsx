@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import Input from "@/components/shared/Input";
 import { Eye, EyeOff } from "lucide-react";
-
 import Link from "next/link";
 import OtpModal from "../OtpModal";
 import { Label } from "@/components/ui/label";
@@ -17,75 +16,61 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import { useAuth } from "@/hooks/useAuth";
-
-const SignUpStart = ({ onSuccess }) => {
+const SignUpStart = ({
+  onSuccess
+}) => {
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const inComingRole = searchParams.get("role");
   const redirect = searchParams.get("redirect");
-
-  const SPECIALIST_SUBROLE = [
-    "house-manager",
-    "nurse",
-    "physiotherapist",
-    "nurse-aide-or-assistant",
-    "special-need-caregivers",
-  ];
+  const SPECIALIST_SUBROLE = ["house-manager", "nurse", "physiotherapist", "nurse-aide-or-assistant", "special-need-caregivers"];
   const isSpecialistSubRole = SPECIALIST_SUBROLE.includes(inComingRole);
   const role = isSpecialistSubRole ? "specialist" : inComingRole;
   const subRole = isSpecialistSubRole ? inComingRole : "";
-
   const [showPass, setShowPass] = useState(false);
   const [phone, setPhone] = useState("");
   const [openOTP, setOpenOTP] = useState(false);
   const [temUser, setTemUser] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [country, setCountry] = useState("KE");
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-
     if (!phone) {
       toast.error("Phone number is required!");
       return;
     }
-
     if (!isValidPhoneNumber(phone)) {
       toast.error("Phone number is invalid or incomplete!");
       return;
     }
-
     if (!email || !password) {
       toast.error("All fields are required");
       return;
     }
-
     if (password.length < 6) {
       toast.error("Password will be more than 6 character");
       return;
     }
-
     if (!termsAccepted) {
       toast.error("Please accept terms and condition!");
       return;
     }
-
     const newUserData = {
       role,
       subRole,
       number: phone,
       email,
-      password,
+      password
     };
+    setIsActionLoading(true);
     try {
       const res = await postApi("/register", newUserData);
-
       if (res?.data?.status) {
         const emailVerified = res?.data?.email_verified;
-
         if (emailVerified === null) {
           toast.success(`OTP sent to ${email}!`);
           if (redirect) {
@@ -99,15 +84,14 @@ const SignUpStart = ({ onSuccess }) => {
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Registration failed");
+    } finally {
+      setIsActionLoading(false);
     }
   };
-
   const handleShowPassword = () => {
     setShowPass(!showPass);
   };
-
-  return (
-    <div className="w-full flex justify-center items-center min-h-screen px-2">
+  return <div className="w-full flex justify-center items-center min-h-screen px-2">
       <div className="w-full max-w-[400px] px-4 bg-white">
         <h2 className="text-xl font-semibold mb-6 text-center text-gray-900">
           Create an Account!
@@ -116,78 +100,43 @@ const SignUpStart = ({ onSuccess }) => {
           <Label>Phone Number</Label>
 
           <div className="w-full">
-            <PhoneInputWithCountrySelect
-              className="w-full border rounded-md px-3 py-2"
-              international
-              defaultCountry={country}
-              value={phone}
-              onChange={(value) => {
-                if (!value) return setPhone("");
-                const sanitized = value.replace(/[^+\d]/g, "");
-                setPhone(sanitized);
-              }}
-              onCountryChange={(countryCode) => {
-                setCountry(countryCode);
-                const exampleNumber = countryCode
-                  ? getExampleNumber(countryCode)
-                  : null;
-                if (exampleNumber) {
-                  setPhone(`+${exampleNumber.countryCallingCode}`);
-                } else {
-                  setPhone("");
-                }
-              }}
-            />
+            <PhoneInputWithCountrySelect className="w-full border rounded-md px-3 py-2" international defaultCountry={country} value={phone} onChange={value => {
+            if (!value) return setPhone("");
+            const sanitized = value.replace(/[^+\d]/g, "");
+            setPhone(sanitized);
+          }} onCountryChange={countryCode => {
+            setCountry(countryCode);
+            const exampleNumber = countryCode ? getExampleNumber(countryCode) : null;
+            if (exampleNumber) {
+              setPhone(`+${exampleNumber.countryCallingCode}`);
+            } else {
+              setPhone("");
+            }
+          }} />
           </div>
 
-          {phone && !isValidPhoneNumber(phone) && (
-            <p className="text-red-500 text-sm mt-1">
+          {phone && !isValidPhoneNumber(phone) && <p className="text-red-500 text-sm mt-1">
               Invalid phone number for selected country
-            </p>
-          )}
+            </p>}
 
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Enter Your Email"
-          />
+          <Input label="Email" name="email" type="email" placeholder="Enter Your Email" />
 
           <div className="relative">
-            <Input
-              label="Password"
-              name="password"
-              type={showPass ? "text" : "password"}
-              placeholder="Enter Your Password"
-            />
-            <div
-              onClick={handleShowPassword}
-              className="absolute cursor-pointer top-10 right-5"
-            >
-              {showPass ? (
-                <EyeOff className="text-gray-600" />
-              ) : (
-                <Eye className="text-gray-600" />
-              )}
+            <Input label="Password" name="password" type={showPass ? "text" : "password"} placeholder="Enter Your Password" />
+            <div onClick={handleShowPassword} className="absolute cursor-pointer top-10 right-5">
+              {showPass ? <EyeOff className="text-gray-600" /> : <Eye className="text-gray-600" />}
             </div>
           </div>
 
           {/* Terms and Conditions */}
           <div className="flex items-center gap-2 mt-6">
-            <Checkbox
-              id="terms"
-              checked={termsAccepted}
-              onCheckedChange={() => setTermsAccepted(!termsAccepted)}
-            />
-            <Label
-              className="text-gray-700 font-normal cursor-pointer"
-              htmlFor="terms"
-            >
+            <Checkbox id="terms" checked={termsAccepted} onCheckedChange={() => setTermsAccepted(!termsAccepted)} />
+            <Label className="text-gray-700 font-normal cursor-pointer" htmlFor="terms">
               I agree to the terms and conditions
             </Label>
           </div>
 
-          <Button size={"lg"} className={"w-full cursor-pointer"}>
+          <Button size={"lg"} className={"w-full cursor-pointer"} isActionLoading={isActionLoading}>
             SIGN UP
           </Button>
         </form>
@@ -195,7 +144,7 @@ const SignUpStart = ({ onSuccess }) => {
         <div className="flex gap-2 mt-6 items-center">
           <p className="text-sm">Already have an account?</p>
           <Link href={"/login"}>
-            <Button className={"cursor-pointer"} variant={"link"}>
+            <Button className={"cursor-pointer"} variant={"link"} isActionLoading={isActionLoading}>
               Login
             </Button>
           </Link>
@@ -209,9 +158,7 @@ const SignUpStart = ({ onSuccess }) => {
           onVerify={handleVerifyOTP}
           onClose={() => setOpenOTP(false)}
         />
-      )} */}
-    </div>
-  );
+       )} */}
+    </div>;
 };
-
 export default SignUpStart;

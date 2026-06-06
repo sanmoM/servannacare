@@ -16,9 +16,12 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import { useAuth } from "@/hooks/useAuth";
-
 const UserForm = () => {
-  const { setUser, setRole } = useAuth();
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const {
+    setUser,
+    setRole
+  } = useAuth();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
   const [redirectUrl, setRedirectUrl] = useState(null);
@@ -29,58 +32,48 @@ const UserForm = () => {
   const [temUser, setTemUser] = useState(null);
   const [phone, setPhone] = useState("");
   const [country, setCountry] = useState("KE");
-
   useEffect(() => {
     const r = searchParams.get("redirect");
     if (r) setRedirectUrl(r);
   }, [searchParams]);
-
-  const handleCreateUser = async (e) => {
+  const handleCreateUser = async e => {
     e.preventDefault();
     const form = e.target;
     const name = form.name.value;
     const email = form.email.value;
     const password = form.password.value;
-
     if (!name || !email || !password) {
       toast.error("All fields are required!");
       return;
     }
-
     if (!phone) {
       toast.error("Phone number is required!");
       return;
     }
-
     if (!isValidPhoneNumber(phone)) {
       toast.error("Phone number is invalid or incomplete!");
       return;
     }
-
     if (password.length < 6) {
       toast.error("Password will be more than 6 character");
       return;
     }
-
     if (!termsAccepted) {
       toast.error("Please accept terms and condition!");
       return;
     }
-
     const userInfo = {
       name,
       role: "user",
       number: phone,
       email,
-      password,
+      password
     };
-
+    setIsActionLoading(true);
     try {
       const res = await postApi("/register", userInfo);
-
       if (res?.data?.status) {
         const emailVerified = res?.data?.email_verified;
-
         if (emailVerified === null) {
           toast.success(`OTP sent to ${email}!`);
           if (redirect) {
@@ -94,105 +87,64 @@ const UserForm = () => {
       }
     } catch (error) {
       toast.error(error?.response?.data?.message || "Registration failed");
+    } finally {
+      setIsActionLoading(false);
     }
   };
-
   const handleShowPassword = () => {
     setShowPass(!showPass);
   };
-
-  return (
-    <div className="w-full flex justify-center items-center min-h-screen px-2">
+  return <div className="w-full flex justify-center items-center min-h-screen px-2">
       <div className="w-full  max-w-[400px] bg-white">
         <h2 className="text-xl font-semibold mb-6 text-center text-gray-900">
           Continue as Client
         </h2>
         <form onSubmit={handleCreateUser} className="space-y-5 " action="">
-          <Input
-            label="Name"
-            name="name"
-            type="text"
-            placeholder="Enter Your Name"
-          />
+          <Input label="Name" name="name" type="text" placeholder="Enter Your Name" />
           <Label>Phone Number</Label>
 
           <div className="w-full">
-            <PhoneInputWithCountrySelect
-              className="w-full border rounded-md px-3 py-2"
-              international
-              defaultCountry={country}
-              value={phone}
-              onChange={(value) => {
-                if (!value) return setPhone("");
-                const sanitized = value.replace(/[^+\d]/g, "");
-                setPhone(sanitized);
-              }}
-              onCountryChange={(countryCode) => {
-                setCountry(countryCode);
-                const exampleNumber = countryCode
-                  ? getExampleNumber(countryCode)
-                  : null;
-                if (exampleNumber) {
-                  setPhone(`+${exampleNumber.countryCallingCode}`);
-                } else {
-                  setPhone("");
-                }
-              }}
-            />
+            <PhoneInputWithCountrySelect className="w-full border rounded-md px-3 py-2" international defaultCountry={country} value={phone} onChange={value => {
+            if (!value) return setPhone("");
+            const sanitized = value.replace(/[^+\d]/g, "");
+            setPhone(sanitized);
+          }} onCountryChange={countryCode => {
+            setCountry(countryCode);
+            const exampleNumber = countryCode ? getExampleNumber(countryCode) : null;
+            if (exampleNumber) {
+              setPhone(`+${exampleNumber.countryCallingCode}`);
+            } else {
+              setPhone("");
+            }
+          }} />
           </div>
 
-          {phone && !isValidPhoneNumber(phone) && (
-            <p className="text-red-500 text-sm mt-1">
+          {phone && !isValidPhoneNumber(phone) && <p className="text-red-500 text-sm mt-1">
               Invalid phone number for selected country
-            </p>
-          )}
+            </p>}
 
-          <Input
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Enter Your email"
-          />
+          <Input label="Email" name="email" type="email" placeholder="Enter Your email" />
           <div className="relative">
-            <Input
-              label="Password"
-              name="password"
-              type={showPass ? "text" : "password"}
-              placeholder="Enter Your Password"
-            />
-            <div
-              onClick={handleShowPassword}
-              className="absolute cursor-pointer top-10 right-5"
-            >
-              {showPass ? (
-                <EyeOff className="text-gray-600" />
-              ) : (
-                <Eye className="text-gray-600" />
-              )}
+            <Input label="Password" name="password" type={showPass ? "text" : "password"} placeholder="Enter Your Password" />
+            <div onClick={handleShowPassword} className="absolute cursor-pointer top-10 right-5">
+              {showPass ? <EyeOff className="text-gray-600" /> : <Eye className="text-gray-600" />}
             </div>
           </div>
           {/* Terms and Conditions */}
           <div className="flex items-center gap-2 mt-6">
-            <Checkbox
-              id="terms"
-              checked={termsAccepted}
-              onCheckedChange={() => setTermsAccepted(!termsAccepted)}
-            />
-            <Label
-              className="text-gray-700 font-normal cursor-pointer"
-              htmlFor="terms"
-            >
+            <Checkbox id="terms" checked={termsAccepted} onCheckedChange={() => setTermsAccepted(!termsAccepted)} />
+            <Label className="text-gray-700 font-normal cursor-pointer" htmlFor="terms">
               I agree to the terms and conditions
             </Label>
           </div>
-          <Button size={"lg"} className={"w-full cursor-pointer"}>
+          <Button size={"lg"} className={"w-full cursor-pointer"} isActionLoading={isActionLoading}>
             Register
           </Button>
         </form>
         <div className="flex gap-2 mt-6 items-center">
           <p className="text-sm">Already have an account?</p>
           <Link href={`/login?redirect=${redirect || ""}`}>
-            <Button variant={"link"}>LOGIN</Button>
+            <Button variant={"link"} isActionLoading={isActionLoading}>LOGIN</Button>
           </Link>
         </div>
       </div>
@@ -204,9 +156,7 @@ const UserForm = () => {
           onVerify={handleVerifyOTP}
           onClose={() => setOpenOTP(false)}
         />
-      )} */}
-    </div>
-  );
+       )} */}
+    </div>;
 };
-
 export default UserForm;
