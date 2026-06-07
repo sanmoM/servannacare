@@ -34,7 +34,7 @@ const NurseAideCreate = ({ data = {} }) => {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",
@@ -317,7 +317,9 @@ const NurseAideCreate = ({ data = {} }) => {
         //     is_profile_verified: Boolean(res?.data?.is_profile_verified),
         //   }),
         // );
-        router.push("/dashboard");
+        // Refresh auth user data and navigate without full page reload
+        await refreshUser(true);
+        router.replace("/dashboard");
       } else {
         toast.error(res?.data?.message || "Something went wrong.");
       }

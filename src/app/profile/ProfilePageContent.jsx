@@ -97,6 +97,7 @@ const ProfilePageContent = () => {
     matchedData.nurse ||
     matchedData.physiotherapist;
 
+    console.log(roleSpecificInfo)
   return (
     <>
       <PageBanner
@@ -197,7 +198,7 @@ const ProfilePageContent = () => {
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-primary" />
                   <p className="text-sm">
-                    <b>Exp:</b> {roleSpecificInfo?.experience || 0} Years
+                    <b>Exp:</b> {roleSpecificInfo?.experience || 0} Years 
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

@@ -276,7 +276,9 @@ const NurseAideUpdate = ({ data = {} }) => {
       if (res?.status === 200) {
         await refreshUser();
         toast.success("Profile Updated Successfully!");
-        router.push("/dashboard");
+        // Refresh auth user data and navigate without full page reload
+        await refreshUser();
+        router.replace("/dashboard");
       } else {
         toast.error(res?.data?.message || "Something went wrong.");
       }

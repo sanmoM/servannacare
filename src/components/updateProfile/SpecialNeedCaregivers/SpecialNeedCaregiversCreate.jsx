@@ -23,9 +23,7 @@ const SpecialNeedCaregiversCreate = ({
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [country, setCountry] = useState("KE");
   const router = useRouter();
-  const {
-    user
-  } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",

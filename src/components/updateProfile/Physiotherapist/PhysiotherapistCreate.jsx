@@ -264,7 +264,9 @@ const PhysiotherapistCreate = ({
         //   }),
         // );
 
-        router.push("/dashboard");
+        // Refresh auth user data and navigate without full page reload
+        await refreshUser(true);
+        router.replace("/dashboard");
       } else {
         toast.error(res?.data?.message || "Something went wrong. Please try again.");
       }
