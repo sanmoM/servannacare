@@ -118,8 +118,8 @@ const ProfilePageContent = () => {
             <h2 className="text-2xl mt-4 text-gray-800 font-semibold text-center">
               {matchedData?.name || matchedData?.fullName}
             </h2>
-            <p className="text-sm mt-1 font-bold text-primary uppercase">
-              {matchedData?.subRole?.replace("-", " ")}
+            <p className="text-sm mt-1 font-bold uppercase">
+              {matchedData?.subRole?.replace("-", " ")} <span className="text-purple-800">{matchedData.type === "agency-employee" && "(AGENCY LISTED)"}</span>
             </p>
           </div>
 

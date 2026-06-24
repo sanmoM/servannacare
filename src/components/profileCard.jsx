@@ -124,7 +124,7 @@ const ProfileCard = ({ profile }) => {
               </h2>
 
               <p className="text-sm font-medium text-primary">
-                {profile.subRole}
+                {profile.subRole} <span className="text-purple-800">{profile.type === "agency-employee" && "(AGENCY LISTED)"}</span>
               </p>
             </div>
 

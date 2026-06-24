@@ -184,6 +184,8 @@ const SearchContent = () => {
   const filteredSpecialists = useMemo(() => {
     const rawData = data?.data?.data || [];
 
+    console.log(rawData)
+
     if (!rawData.length) return [];
 
     return rawData.filter((item) => {
