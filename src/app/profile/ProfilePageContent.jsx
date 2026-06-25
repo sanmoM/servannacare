@@ -97,7 +97,7 @@ const ProfilePageContent = () => {
     matchedData.nurse ||
     matchedData.physiotherapist;
 
-    console.log(roleSpecificInfo)
+    // console.log(roleSpecificInfo)
   return (
     <>
       <PageBanner
