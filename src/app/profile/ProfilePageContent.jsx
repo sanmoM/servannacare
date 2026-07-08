@@ -97,7 +97,7 @@ const ProfilePageContent = () => {
     matchedData.nurse ||
     matchedData.physiotherapist;
 
-    // console.log(roleSpecificInfo)
+  console.log(roleSpecificInfo);
   return (
     <>
       <PageBanner
@@ -119,7 +119,10 @@ const ProfilePageContent = () => {
               {matchedData?.name || matchedData?.fullName}
             </h2>
             <p className="text-sm mt-1 font-bold uppercase">
-              {matchedData?.subRole?.replace("-", " ")} <span className="text-purple-800">{matchedData.type === "agency-employee" && "(AGENCY LISTED)"}</span>
+              {matchedData?.subRole?.replace("-", " ")}{" "}
+              <span className="text-purple-800">
+                {matchedData.type === "agency-employee" && "(AGENCY LISTED)"}
+              </span>
             </p>
           </div>
 
@@ -182,7 +185,6 @@ const ProfilePageContent = () => {
             </p>
           </section>
 
-          
           <section className="grid sm:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-lg">
             <div>
               <h3 className="font-bold text-sm text-gray-400 uppercase mb-3">
@@ -198,7 +200,14 @@ const ProfilePageContent = () => {
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-primary" />
                   <p className="text-sm">
-                    <b>Exp:</b> {roleSpecificInfo?.experience || 0} Years 
+                    <b>Exp:</b>{" "}
+                    {roleSpecificInfo?.experience === "more"
+                      ? "More than 5 years"
+                      : `${roleSpecificInfo?.experience || 0} ${
+                          roleSpecificInfo?.experience === "1"
+                            ? "year"
+                            : "years"
+                        }`}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -237,7 +246,6 @@ const ProfilePageContent = () => {
             </div>
           </section>
 
-        
           <section>
             <h2 className="text-xl font-bold border-b-2 border-primary w-fit mb-4 uppercase">
               Available Schedule
@@ -266,7 +274,6 @@ const ProfilePageContent = () => {
             )}
           </section>
 
-          
           {matchedData.services && (
             <section>
               <h2 className="text-xl font-bold border-b-2 border-primary w-fit mb-4 uppercase">

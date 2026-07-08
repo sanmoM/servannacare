@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
@@ -14,6 +15,7 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
     preferredRole: defaultValues.preferredRole || "",
     serviceFeeMonth: defaultValues.serviceFeeMonth || "",
     serviceFeeDay: defaultValues.serviceFeeDay || "",
+    bio: defaultValues.bio || "",
   });
 
   const toggleageOfKids = (kid) => {
@@ -36,7 +38,7 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!data.isMother === null) {
+    if (data.isMother === null) {
       toast.error("Please select if you are a mother or not!");
       return;
     }
@@ -46,11 +48,11 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
       return;
     }
 
-    if (!data.isHandelingPet === null) {
+    if (data.isHandelingPet === null) {
       toast.error("Please select your preference for handling pets!");
       return;
     }
-
+console.log("Additional Details Data:", data);
     onNext(data);
   };
 
@@ -206,6 +208,18 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
             }}
           />
         </div>
+      </div>
+
+      <div>
+        <label htmlFor="bio">Bio</label>
+        <Textarea
+          value={data.bio}
+          name="bio"
+          placeholder="Write a brief bio about yourself and the services you offer.."
+          className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+          rows={6}
+          onChange={handleChange}
+        />
       </div>
 
       {/* Navigation Buttons */}

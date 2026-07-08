@@ -136,7 +136,8 @@ const Navbar = () => {
                 <Link href={"/login"}>
                   <Button
                     className={
-                      "rounded-full hidden md:flex text-xs cursor-pointer"
+                      "rounded-full text-xs cursor-pointer"
+                      // "rounded-full hidden md:flex text-xs cursor-pointer"
                     }
                     variant={"outline"}
                   >

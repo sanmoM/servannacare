@@ -97,7 +97,9 @@ const LoginPageContent = () => {
       <div className="w-full flex justify-center items-center min-h-screen px-2">
         <div className="w-full max-w-[400px] px-4 bg-white">
           <div className="flex justify-center mb-2">
-            <Image src="/logo1.png" alt="logo" quality={100} width={80} height={80} />
+            <Link href="/">
+              <Image src="/logo1.png" alt="logo" quality={100} width={80} height={80} />
+            </Link>
           </div>
           <h2 className="text-xl font-semibold mb-6 text-center text-gray-900">
             Welcome Back!
