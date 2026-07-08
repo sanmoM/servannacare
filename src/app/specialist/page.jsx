@@ -184,7 +184,7 @@ const SearchContent = () => {
   const filteredSpecialists = useMemo(() => {
     const rawData = data?.data?.data || [];
 
-    // console.log(rawData)
+    console.log(rawData)
 
     if (!rawData.length) return [];
 
@@ -203,9 +203,47 @@ const SearchContent = () => {
 
       const matchesServices =
         selectedService.length === 0 ||
-        selectedService.every((service) =>
-          item.preferredRole?.includes(service),
-        );
+        selectedService.every((service) => {
+          const normalize = (str) =>
+            str
+              ?.toLowerCase()
+              ?.replace(/[^a-z0-9]/g, "")
+              ?.replace("cage", "care") || "";
+
+          const normalizedService = normalize(service);
+
+          const preferredArray = Array.isArray(item.preferred)
+            ? item.preferred
+            : item.preferred
+            ? [item.preferred]
+            : [];
+
+          const inPreferred = preferredArray.some((p) => {
+            const normalizedP = normalize(p);
+            return (
+              normalizedP === normalizedService ||
+              normalizedP.includes(normalizedService) ||
+              normalizedService.includes(normalizedP)
+            );
+          });
+
+          const preferredRoleArray = Array.isArray(item.preferredRole)
+            ? item.preferredRole
+            : item.preferredRole
+            ? [item.preferredRole]
+            : [];
+
+          const inPreferredRole = preferredRoleArray.some((p) => {
+            const normalizedP = normalize(p);
+            return (
+              normalizedP === normalizedService ||
+              normalizedP.includes(normalizedService) ||
+              normalizedService.includes(normalizedP)
+            );
+          });
+
+          return inPreferred || inPreferredRole;
+        });
 
       const matchesLanguages =
         selectedLanguages.length === 0 ||

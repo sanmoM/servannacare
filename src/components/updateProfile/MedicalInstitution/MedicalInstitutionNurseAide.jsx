@@ -66,7 +66,7 @@ const MedicalInstitutionNurseAide = ({
     optional: true
   }];
   const servicesList = ["Basic Patient Care (bathing, dressing, feeding, and assisting with mobility)", "Vital Signs Monitoring (checking blood pressure, blood sugar, pulse, temperature, etc.)", "Compassion & Strong Communication Skills", "Special needs caregiver (e.g., autistic, deaf, blind)", "Elderly caregiving"];
-  const preferredInterventions = ["Pre and post pregnancy care", "Post surgery cage", "Elderly care"];
+  const preferredInterventions = ["Pre and post pregnancy care", "Post surgery cage", "Elderly care", "Palliative care"];
   const [data, setData] = useState({
     name: "",
     age: "",

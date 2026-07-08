@@ -100,6 +100,9 @@ const NurseAideUpdate = ({ data = {} }) => {
     {
       title: "Elderly care",
     },
+    {
+      title: "Palliative care",
+    },
   ];
   const isImageUrl = (url) => {
     if (!url) return false;

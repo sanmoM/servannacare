@@ -794,6 +794,7 @@ export const serviceCategory = [
     subCategory: [
       "Pre and Post Pregnancy Care",
       "Post Surgery Care",
+      "Palliative Care",
       "Elderly Care",
     ],
   },

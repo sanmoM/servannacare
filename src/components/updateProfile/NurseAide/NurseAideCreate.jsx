@@ -106,6 +106,9 @@ const NurseAideCreate = ({ data = {} }) => {
     {
       title: "Elderly care",
     },
+    {
+      title: "Palliative care",
+    },
   ];
   const documents = [
     {
