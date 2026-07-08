@@ -554,6 +554,13 @@ const NurseAideUpdate = ({ data = {} }) => {
             }
           >
             <div className="flex items-center gap-2">
+              <RadioGroupItem value="Certificate In Nursing" id="edu0" />
+              <Label htmlFor="edu0" className="text-gray-700 cursor-pointer">
+                Certificate In Nursing
+              </Label>
+            </div>
+
+            <div className="flex items-center gap-2">
               <RadioGroupItem value="Diploma In Nursing" id="edu1" />
               <Label htmlFor="edu1" className="text-gray-700 cursor-pointer">
                 Diploma In Nursing

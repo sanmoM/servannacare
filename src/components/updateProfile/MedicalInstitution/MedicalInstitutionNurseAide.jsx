@@ -407,6 +407,13 @@ const MedicalInstitutionNurseAide = ({
           education: val
         }))} className="flex flex-wrap gap-4">
             <div className="flex item-center gap-2">
+              <RadioGroupItem className={"cursor-pointer"} value="Certificate In Nursing" id="edu0" />
+              <Label className={"cursor-pointer"} htmlFor="edu0">
+                Certificate In Nursing
+              </Label>
+            </div>
+
+            <div className="flex item-center gap-2">
               <RadioGroupItem className={"cursor-pointer"} value="Diploma In Nursing" id="edu1" />
               <Label className={"cursor-pointer"} htmlFor="edu1">
                 Diploma In Nursing

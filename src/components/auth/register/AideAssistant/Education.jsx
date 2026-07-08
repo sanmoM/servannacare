@@ -46,6 +46,15 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           }
         >
           <div className="flex items-center gap-2">
+            <RadioGroupItem value="Certificate In Nursing" id="d0" />
+            <Label
+              htmlFor="d0"
+              className="text-gray-700 font-normal cursor-pointer"
+            >
+              Certificate In Nursing
+            </Label>
+          </div>
+          <div className="flex items-center gap-2">
             <RadioGroupItem value="Diploma In Nursing" id="d1" />
             <Label
               htmlFor="d1"
@@ -66,7 +75,7 @@ const Education = ({ defaultValues, onNext, onBack }) => {
           <div className="flex items-center gap-2">
             <RadioGroupItem value="other" id="d3" />
             <Label
-              htmlFor="d4"
+              htmlFor="d3"
               className="text-gray-700 font-normal cursor-pointer"
             >
               Other

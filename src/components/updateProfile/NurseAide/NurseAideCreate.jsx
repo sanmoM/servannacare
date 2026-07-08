@@ -579,6 +579,17 @@ const NurseAideCreate = ({ data = {} }) => {
             <div className="flex items-center gap-2">
               <RadioGroupItem
                 className="cursor-pointer"
+                value="Certificate In Nursing"
+                id="edu0"
+              />
+              <Label htmlFor="edu0" className="text-gray-700 cursor-pointer">
+                Certificate In Nursing
+              </Label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <RadioGroupItem
+                className="cursor-pointer"
                 value="Diploma In Nursing"
                 id="edu1"
               />
