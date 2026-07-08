@@ -527,17 +527,19 @@ const Step4Documents = ({ defaultValues, onNext, onBack }) => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <h3 className="formHeading">Upload Documents</h3>
 
-      <FileUpload title="National ID Copy" accept="application/pdf,image/*" icon={<IdCardLanyard size={32} />} file={data.idCopy} onFileSelect={(file) => handleFileSelect("idCopy", file)} />
-      
-      <FileUpload title="Passport / Profile Photo" accept="image/*" icon={<Camera size={32} />} file={data.profilePhoto} onFileSelect={(file) => handleFileSelect("profilePhoto", file)} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <FileUpload title="National ID Copy" accept="application/pdf,image/*" icon={<IdCardLanyard size={32} />} file={data.idCopy} onFileSelect={(file) => handleFileSelect("idCopy", file)} />
+        
+        <FileUpload title="Passport / Profile Photo" accept="image/*" icon={<Camera size={32} />} file={data.profilePhoto} onFileSelect={(file) => handleFileSelect("profilePhoto", file)} />
 
-      <FileUpload title="Certificate of Good Conduct" accept="application/pdf,image/*" icon={<FileText size={32} />} file={data.goodConductCertificate} onFileSelect={(file) => handleFileSelect("goodConductCertificate", file)} />
+        <FileUpload title="Certificate of Good Conduct" accept="application/pdf,image/*" icon={<FileText size={32} />} file={data.goodConductCertificate} onFileSelect={(file) => handleFileSelect("goodConductCertificate", file)} />
 
-      <FileUpload title="Educational Certificates" accept="application/pdf,image/*" icon={<IdCard size={32} />} file={data.educationCertificate} onFileSelect={(file) => handleFileSelect("educationCertificate", file)} />
+        <FileUpload title="Educational Certificates" accept="application/pdf,image/*" icon={<IdCard size={32} />} file={data.educationCertificate} onFileSelect={(file) => handleFileSelect("educationCertificate", file)} />
 
-      <FileUpload title="First Aid Certificate (Optional)" accept="application/pdf,image/*" icon={<FileCheckCorner size={32} />} file={data.firstAidCertificate} onFileSelect={(file) => handleFileSelect("firstAidCertificate", file)} optional="Optional" />
+        <FileUpload title="First Aid Certificate (Optional)" accept="application/pdf,image/*" icon={<FileCheckCorner size={32} />} file={data.firstAidCertificate} onFileSelect={(file) => handleFileSelect("firstAidCertificate", file)} optional="Optional" />
 
-      <FileUpload title="References (Letter / Contacts)" accept="application/pdf,image/*" icon={<FileCheckCorner size={32} />} file={data.referenceLetter} onFileSelect={(file) => handleFileSelect("referenceLetter", file)} />
+        <FileUpload title="References (Letter / Contacts)" accept="application/pdf,image/*" icon={<FileCheckCorner size={32} />} file={data.referenceLetter} onFileSelect={(file) => handleFileSelect("referenceLetter", file)} />
+      </div>
 
       <div className="flex justify-between pt-4">
         <Button type="button" variant="outline" onClick={onBack}>Back</Button>
