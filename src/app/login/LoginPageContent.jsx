@@ -58,10 +58,21 @@ const LoginPageContent = () => {
     setIsActionLoading(true);
     try {
       const res = await postApi("/login", userInfo);
-      const {
-        token
-      } = res.data.data;
-      localStorage.setItem("token", token);
+      const token = res.data?.data?.token || res.data?.token;
+      if (token) {
+        localStorage.setItem("token", token);
+      } else {
+        console.error("Token not found in login response:", res.data);
+      }
+      const rawUser = res.data?.data || res.data;
+      const userObj = {
+        role: rawUser?.role,
+        subRole: rawUser?.subRole,
+        is_profile_completed: rawUser?.is_profile_completed === true || rawUser?.is_profile_completed === 1 || String(rawUser?.is_profile_completed) === "true",
+        name: rawUser?.name,
+        email: rawUser?.email,
+      };
+      localStorage.setItem("user", JSON.stringify(userObj));
       const userData = await refreshUser();
       toast.success("Login Successful");
       if (redirect) {

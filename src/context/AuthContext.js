@@ -22,11 +22,28 @@ export const AuthProvider = ({ children }) => {
         const userData = res.data.data;
         setUser(userData);
         setRole(userData.role);
+        localStorage.setItem("user", JSON.stringify(userData));
         return userData;
       } else {
+        console.error("Profile API returned falsy status:", res);
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser);
+          setUser(parsed);
+          setRole(parsed.role);
+          return parsed;
+        }
         logout();
       }
     } catch (error) {
+      console.error("Error fetching current user profile:", error);
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        setUser(parsed);
+        setRole(parsed.role);
+        return parsed;
+      }
       logout();
     } finally {
       if (showLoader) setLoading(false);
@@ -44,6 +61,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     setRole(null);
     router.push("/");

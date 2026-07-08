@@ -38,16 +38,28 @@ const VerifyOtpPage = () => {
     setLoading(true);
     setIsActionLoading(true);
     try {
-const res = await postApi("/verify", {
+      const res = await postApi("/verify", {
         email,
         otp
       });
-      const {
-        token
-      } = res.data.data;
-      localStorage.setItem("token", token);
+      const token = res.data?.data?.token || res.data?.token;
+      if (token) {
+        localStorage.setItem("token", token);
+      } else {
+        console.error("Token not found in OTP verification response:", res.data);
+      }
+      // const rawUser = res.data?.data || res.data;
+      // const userObj = {
+      //   role: rawUser?.role,
+      //   subRole: rawUser?.subRole,
+      //   is_profile_completed: rawUser?.is_profile_completed === true || rawUser?.is_profile_completed === 1 || String(rawUser?.is_profile_completed) === "true",
+      //   name: rawUser?.name,
+      //   email: rawUser?.email,
+      // };
+      // localStorage.setItem("user", JSON.stringify(userObj));
       toast.success("OTP verified successfully!");
       const userData = await refreshUser();
+      console.log("OTP verification complete. User data fetched:", userData);
       sessionStorage.removeItem("verifyEmail");
       sessionStorage.removeItem("redirectUrl");
       if (redirectUrl) {

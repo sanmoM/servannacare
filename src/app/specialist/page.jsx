@@ -180,6 +180,8 @@ const SearchContent = () => {
     "physiotherapist",
     "nurse-aide-or-assistant",
     "special-need-caregivers",
+    "home-health-assistant",
+    "home_health_assistant",
   ];
   const filteredSpecialists = useMemo(() => {
     const rawData = data?.data?.data || [];
@@ -267,9 +269,20 @@ const SearchContent = () => {
         matchesSalary = true;
       }
 
+      const categoryKeyMap = {
+        "house-manager": "house_manager",
+        "nurse": "nurse",
+        "physiotherapist": "physiotherapist",
+        "nurse-aide-or-assistant": "nurse_assistant",
+        "special-need-caregivers": "special_need",
+        "home-health-assistant": "home_health_assistant",
+        "home_health_assistant": "home_health_assistant",
+      };
+      const backendKey = categoryKeyMap[selectedCategory] || selectedCategory;
+
       let matchesExperience = true;
       if (selectedCategory !== "house-manager") {
-        const roleData = item[selectedCategory];
+        const roleData = item[backendKey];
         const experience = roleData?.experience
           ? parseInt(roleData.experience)
           : 0;
@@ -290,7 +303,7 @@ const SearchContent = () => {
       if (selectedCategory === "house-manager") {
         specialistAge = item.age ?? 0;
       } else {
-        specialistAge = item[selectedCategory]?.age ?? item.age ?? 0;
+        specialistAge = item[backendKey]?.age ?? item.age ?? 0;
       }
 
       if (specialistAge !== undefined && specialistAge !== null) {

@@ -21,6 +21,8 @@ import NurseCreate from "@/components/updateProfile/Nurse/NurseCreate";
 import NurseUpdate from "@/components/updateProfile/Nurse/NurseUpdate";
 import NurseAideUpdate from "@/components/updateProfile/NurseAide/NurseAide";
 import NurseAideCreate from "@/components/updateProfile/NurseAide/NurseAideCreate";
+import HomeHealthAssistantUpdate from "@/components/updateProfile/HomeHealthAssistant/HomeHealthAssistant";
+import HomeHealthAssistantCreate from "@/components/updateProfile/HomeHealthAssistant/HomeHealthAssistantCreate";
 import Physiotherapist from "@/components/updateProfile/Physiotherapist/Physiotherapist";
 import PhysiotherapistCreate from "@/components/updateProfile/Physiotherapist/PhysiotherapistCreate";
 import SpecialNeedCaregiversCreate from "@/components/updateProfile/SpecialNeedCaregivers/SpecialNeedCaregiversCreate";
@@ -230,12 +232,19 @@ export default function ProfilePage() {
               <NurseAideCreate />
             ))}
 
-          {specialistDatas?.subRole === "special-need-caregivers" &&
+           {specialistDatas?.subRole === "special-need-caregivers" &&
             (specialistDatas?.is_profile_completed ? (
               
               <SpecialNeedCaregiversUpdate data={specialistDatas} />
             ) : (
               <SpecialNeedCaregiversCreate />
+            ))}
+
+          {(specialistDatas?.subRole === "home-health-assistant" || specialistDatas?.subRole === "home_health_assistant") &&
+            (specialistDatas?.is_profile_completed ? (
+              <HomeHealthAssistantUpdate data={specialistDatas} />
+            ) : (
+              <HomeHealthAssistantCreate />
             ))}
         </div>
       </div>

@@ -68,7 +68,9 @@ export default function BookingFormClient() {
       nurse: "nurse",
       physiotherapist: "physiotherapist",
       "nurse-aide-or-assistant": "nurse_assistant",
-      "special-need-caregivers": "special_need"
+      "special-need-caregivers": "special_need",
+      "home-health-assistant": "home_health_assistant",
+      "home_health_assistant": "home_health_assistant"
     };
     const key = roleKeyMap[matchedSpecialist.subRole];
     const nestedData = key ? matchedSpecialist[key] : null;

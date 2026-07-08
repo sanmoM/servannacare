@@ -95,7 +95,10 @@ const ProfilePageContent = () => {
   const roleSpecificInfo =
     matchedData.house_manager ||
     matchedData.nurse ||
-    matchedData.physiotherapist;
+    matchedData.physiotherapist ||
+    matchedData.nurse_assistant ||
+    matchedData.special_need ||
+    matchedData.home_health_assistant;
 
   console.log(roleSpecificInfo);
   return (

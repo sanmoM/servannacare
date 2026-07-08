@@ -393,8 +393,15 @@ export const userRole = [
     href: "/register",
     role: "special-need-caregivers",
   },
+    {
+    id: 9,
+    text: "Home Health Assistant",
+    icon: aide,
+    href: "/register",
+    role: "home-health-assistant",
+  },
   {
-    id: 7,
+    id: 8,
     text: "Agency",
     icon: agency,
     href: "/register",
@@ -410,12 +417,13 @@ export const userRole = [
   //   role: "employer",
   // },
   {
-    id: 8,
+    id: 9,
     text: "Care Institutions",
     icon: hospital,
     href: "/register",
     role: "care_institutions",
   },
+
 ];
 
 export const languages = [
@@ -809,6 +817,17 @@ export const serviceCategory = [
       "Down Syndrome",
       "Blindness",
       "Dementia & Alzheimer",
+    ],
+  },
+  {
+    mainCategory: "Home Health Assistant",
+    value: "home-health-assistant",
+    subCategory: [
+      "Childcare / Nanny Care",
+      "Companionship",
+      "Disability Support",
+      "Elderly Care (e.g., Dementia Care)",
+      "Special Needs Care",
     ],
   },
 ];

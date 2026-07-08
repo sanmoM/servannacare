@@ -7,6 +7,7 @@ import MedicalInstitution from "@/components/auth/register/MedicalInstitution/Me
 import Nurse from "@/components/auth/register/Nurse/Nurse";
 import Physiotherapist from "@/components/auth/register/Physiotherapist/Physiotherapist";
 import SpecialNeedCaregivers from "@/components/auth/register/SpecialNeedCaregivers/SpecialNeedCaregivers";
+import HomeHealthAssistant from "@/components/auth/register/HomeHealthAssistant/HomeHealthAssistant";
 import UserForm from "@/components/auth/register/UserForm";
 import LoadingSpinner from "@/components/shared/LoadingSpin";
 import LoadingSpinnerSecond from "@/components/shared/Loadingspiner";
@@ -61,6 +62,9 @@ const PageContent = () => {
         return <NurseAideOrAssistant skills={roleSkills} />;
       case "special-need-caregivers":
         return <SpecialNeedCaregivers />;
+      case "home-health-assistant":
+      case "home_health_assistant":
+        return <HomeHealthAssistant />;
       case "care_institutions":
         return <MedicalInstitution skills={roleSkills} />;
 
