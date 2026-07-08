@@ -238,7 +238,7 @@ const ProfilePageContent = () => {
                 {roleSpecificInfo?.salaryRange && (
                   <div className="flex items-center gap-2">
                     <p className="text-sm">
-                      <b>Salary Range:</b> ${roleSpecificInfo.salaryRange}
+                      <b>Salary Range:</b> KSH {" "}{roleSpecificInfo.salaryRange}
                     </p>
                   </div>
                 )}

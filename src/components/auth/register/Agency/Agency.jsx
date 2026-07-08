@@ -195,7 +195,7 @@ const Agency = () => {
   };
   const handleAddEmployee = () => {
     if (employees.length >= 2) {
-      toast.error("You can add up to 2 employees on the free tier");
+      toast.error("You can add up to 2 free employees. Additional employees will attract a monthly subscription fee of KSH 500 per employee.");
       return;
     }
     setEmployees(prev => [...prev, prev.length + 1]);
