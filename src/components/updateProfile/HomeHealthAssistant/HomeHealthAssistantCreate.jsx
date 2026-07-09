@@ -16,10 +16,16 @@ import { languages } from "@/utilities/data";
 import { Camera, FileCheckCorner, FileText, IdCard, IdCardLanyard } from "lucide-react";
 import toast from "react-hot-toast";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const HomeHealthAssistantCreate = () => {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const router = useRouter();
   const { refreshUser } = useAuth();
+  const [country, setCountry] = useState("KE");
 
   const [formData, setFormData] = useState({
     basicInfo: {
@@ -155,7 +161,8 @@ const HomeHealthAssistantCreate = () => {
     const { basicInfo, experience, skillsServices, documents } = formData;
 
     if (!basicInfo.name.trim()) return toast.error("Full Name is required");
-    if (!basicInfo.phone.trim()) return toast.error("Phone number is required");
+    if (!basicInfo.phone) return toast.error("Phone number is required");
+    if (!isValidPhoneNumber(basicInfo.phone)) return toast.error("Phone number is invalid or incomplete");
     if (!basicInfo.age.trim()) return toast.error("Age is required");
     if (!basicInfo.location.trim()) return toast.error("Location is required");
     if (!basicInfo.gender) return toast.error("Please select gender");
@@ -246,7 +253,46 @@ const HomeHealthAssistantCreate = () => {
         
         <div className="flex gap-4">
           <div className="flex-1">
-            <Input label="Phone Number" name="phone" placeholder="+254..." value={formData.basicInfo.phone} onChange={handleBasicChange} />
+            <Label>Phone Number</Label>
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData.basicInfo.phone}
+                onChange={(value) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    basicInfo: { ...prev.basicInfo, phone: value || "" }
+                  }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      basicInfo: {
+                        ...prev.basicInfo,
+                        phone: `+${exampleNumber.countryCallingCode}`
+                      }
+                    }));
+                  } else {
+                    setFormData((prev) => ({
+                      ...prev,
+                      basicInfo: { ...prev.basicInfo, phone: "" }
+                    }));
+                  }
+                }}
+              />
+            </div>
+            {formData.basicInfo.phone && !isValidPhoneNumber(formData.basicInfo.phone) && (
+              <p className="text-red-500 text-sm mt-1">
+                Invalid phone number for selected country
+              </p>
+            )}
           </div>
           <div className="w-1/3">
             <Input type="number" label="Age" name="age" value={formData.basicInfo.age} onChange={handleBasicChange} />

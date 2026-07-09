@@ -18,6 +18,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { languages } from "@/utilities/data";
 import { Camera, FileCheckCorner, FileText, IdCard, IdCardLanyard } from "lucide-react";
 
+import PhoneInputWithCountrySelect from "react-phone-number-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
+import { getExampleNumber } from "libphonenumber-js";
+import "react-phone-number-input/style.css";
+
 const HomeHealthAssistant = () => {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [started, setStarted] = useState(false);
@@ -195,6 +200,7 @@ const HomeHealthAssistant = () => {
 // --- Step 1: Basic Info ---
 const Step1BasicInfo = ({ defaultValues, onNext }) => {
   const [data, setData] = useState({ ...defaultValues });
+  const [country, setCountry] = useState("KE");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -216,7 +222,8 @@ const Step1BasicInfo = ({ defaultValues, onNext }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!data.name.trim()) return toast.error("Full Name is required");
-    if (!data.phone.trim()) return toast.error("Phone number is required");
+    if (!data?.phone) return toast.error("Phone number is required");
+    if (!isValidPhoneNumber(data?.phone)) return toast.error("Phone number is invalid or incomplete");
     if (!data.age.trim()) return toast.error("Age is required");
     if (!data.location.trim()) return toast.error("Location is required");
     if (!data.gender) return toast.error("Please select your gender");
@@ -232,7 +239,37 @@ const Step1BasicInfo = ({ defaultValues, onNext }) => {
       
       <div className="flex gap-4">
         <div className="flex-1">
-          <Input label="Phone Number" name="phone" placeholder="e.g. +254712345678" value={data.phone} onChange={handleChange} />
+          <Label>Phone Number</Label>
+          <div className="w-full mt-2">
+            <PhoneInputWithCountrySelect
+              className="w-full border rounded-md px-3 py-2"
+              international
+              defaultCountry={country}
+              value={data?.phone}
+              onChange={(value) => {
+                setData((prev) => ({ ...prev, phone: value || "" }));
+              }}
+              onCountryChange={(countryCode) => {
+                setCountry(countryCode);
+                const exampleNumber = countryCode
+                  ? getExampleNumber(countryCode)
+                  : null;
+                if (exampleNumber) {
+                  setData((prev) => ({
+                    ...prev,
+                    phone: `+${exampleNumber.countryCallingCode}`,
+                  }));
+                } else {
+                  setData((prev) => ({ ...prev, phone: "" }));
+                }
+              }}
+            />
+          </div>
+          {data?.phone && !isValidPhoneNumber(data?.phone) && (
+            <p className="text-red-500 text-sm mt-1">
+              Invalid phone number for selected country
+            </p>
+          )}
         </div>
         <div className="w-1/3">
           <Input type="number" label="Age" name="age" placeholder="Age" value={data.age} onChange={handleChange} />
@@ -287,7 +324,7 @@ const Step1BasicInfo = ({ defaultValues, onNext }) => {
       </div>
 
       <div className="flex justify-end pt-4">
-        <Button type="submit" size="lg">Next</Button>
+        <Button className="cursor-pointer" type="submit" size="lg">Next</Button>
       </div>
     </form>
   );
@@ -428,8 +465,8 @@ const Step2Experience = ({ defaultValues, onNext, onBack }) => {
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" onClick={onBack}>Back</Button>
-        <Button type="submit">Next</Button>
+        <Button className="cursor-pointer" type="button" variant="outline" onClick={onBack}>Back</Button>
+        <Button className="cursor-pointer" type="submit">Next</Button>
       </div>
     </form>
   );
@@ -498,8 +535,8 @@ const Step3SkillsRates = ({ defaultValues, onNext, onBack }) => {
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" onClick={onBack}>Back</Button>
-        <Button type="submit">Next</Button>
+        <Button className="cursor-pointer" type="button" variant="outline" onClick={onBack}>Back</Button>
+        <Button className="cursor-pointer" type="submit">Next</Button>
       </div>
     </form>
   );
@@ -542,8 +579,8 @@ const Step4Documents = ({ defaultValues, onNext, onBack }) => {
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" onClick={onBack}>Back</Button>
-        <Button type="submit">Next</Button>
+        <Button className="cursor-pointer" type="button" variant="outline" onClick={onBack}>Back</Button>
+        <Button className="cursor-pointer" type="submit">Next</Button>
       </div>
     </form>
   );
@@ -602,8 +639,8 @@ const Step5Review = ({ data, onBack, onConfirm, isActionLoading }) => {
       </div>
 
       <div className="flex justify-between pt-4">
-        <Button type="button" variant="outline" onClick={onBack} disabled={isActionLoading}>Back</Button>
-        <Button onClick={onConfirm} isActionLoading={isActionLoading}>Confirm & submit</Button>
+        <Button className="cursor-pointer" type="button" variant="outline" onClick={onBack} disabled={isActionLoading}>Back</Button>
+        <Button className="cursor-pointer" onClick={onConfirm} isActionLoading={isActionLoading}>Confirm & submit</Button>
       </div>
     </div>
   );
