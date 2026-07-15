@@ -210,6 +210,7 @@ const HouseManager = ({ data = {} }) => {
     const fd = new FormData();
     fd.append("name", formData.basicInfo.name);
     fd.append("age", formData.basicInfo.age);
+    fd.append("bio", formData.basicInfo.bio);
     fd.append("education", formData.basicInfo.education);
     fd.append("experience", formData.basicInfo.experience);
     fd.append("salaryRange", formData.basicInfo.salaryRange);
