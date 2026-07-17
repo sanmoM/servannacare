@@ -162,35 +162,56 @@ const ProfilePageContent = () => {
     }
   ];
 
-  // Documents checklist
-  const documents = [
-    {
-      name: "Government ID Copy",
-      path: matchedData.idCopy || matchedData.id_copy || roleSpecificInfo?.idCopy,
-      verified: !!(matchedData.idCopy || matchedData.id_copy || roleSpecificInfo?.idCopy || matchedData.is_profile_verified),
-      desc: "Identity verified via official document upload",
-    },
-    {
-      name: "Driving License",
-      path: matchedData.drivingLicense || matchedData.driving_license || roleSpecificInfo?.drivingLicense,
-      verified: matchedData.canDrive || !!(matchedData.drivingLicense || matchedData.driving_license || roleSpecificInfo?.drivingLicense),
-      desc: matchedData.canDrive ? "Verified licensed driver" : "No driving license registered",
-      notApplicable: !matchedData.canDrive,
-    },
-    {
-      name: "First Aid Certificate",
-      path: roleSpecificInfo?.firstAidCertificate,
-      verified: !!roleSpecificInfo?.firstAidCertificate,
-      desc: "Certified emergency response training",
-    },
-    {
-      name: "Good Conduct Certificate",
-      path: matchedData.goodConductCertificate || roleSpecificInfo?.goodConductCertificate,
-      verified: !!(matchedData.goodConductCertificate || roleSpecificInfo?.goodConductCertificate),
-      desc: "Official background check & clearance certificate",
-    },
-  ];
+  // Dynamic Trust Score calculation
+  const calculateTrustScore = () => {
+    let score = 30; // Base score
+    const items = [];
 
+    // 1. Verified Identity
+    const identityVerified = !!matchedData.is_profile_verified;
+    if (identityVerified) score += 15;
+    items.push({ name: "Verified Identity", verified: identityVerified });
+
+    // 2. Trade License / Good Conduct
+    const hasGoodConduct = !!(matchedData.goodConductCertificate || roleSpecificInfo?.goodConductCertificate);
+    if (hasGoodConduct) score += 15;
+    items.push({ name: "Trade License / Good Conduct", verified: hasGoodConduct });
+
+    // 3. NID/Passport (Government ID Copy)
+    const hasIdCopy = !!(matchedData.idCopy || matchedData.id_copy || roleSpecificInfo?.idCopy);
+    if (hasIdCopy) score += 15;
+    items.push({ name: "NID/Passport Uploaded", verified: hasIdCopy });
+
+    // 4. Professional Certification (First Aid Certificate)
+    const hasCert = !!roleSpecificInfo?.firstAidCertificate;
+    if (hasCert) score += 15;
+    items.push({ name: "Professional Certification", verified: hasCert });
+
+    // 5. Experience Verified
+    const hasExperience = !!roleSpecificInfo?.experience;
+    if (hasExperience) score += 10;
+    items.push({ name: "Experience Verified", verified: hasExperience });
+
+    // 6. Driving License Verified
+    const hasLicense = !!(matchedData.drivingLicense || matchedData.driving_license || roleSpecificInfo?.drivingLicense || matchedData.canDrive);
+    if (hasLicense) score += 5;
+    items.push({ name: "Driving License", verified: hasLicense });
+
+    // 7. Phone Verified
+    const phoneVerified = !!(matchedData.phone || matchedData.is_phone_verified || matchedData.phone_verified);
+    if (phoneVerified) score += 5;
+    items.push({ name: "Phone Verified", verified: phoneVerified });
+
+    // 8. Email Verified
+    const emailVerified = !!(matchedData.email || matchedData.is_email_verified || matchedData.email_verified);
+    if (emailVerified) score += 5;
+    items.push({ name: "Email Verified", verified: emailVerified });
+
+    score = Math.min(100, score);
+    return { score, items };
+  };
+
+  const trustDetails = calculateTrustScore();
   const dates = matchedData.schedule?.[0]?.date || [];
 
   return (
@@ -467,66 +488,54 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            {/* DOCUMENTS AND VERIFICATION */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            {/* TRUST & VERIFICATION */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-primary" />
-                Trust & Verification Documents
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {documents.map((doc, idx) => {
-                  const isUrl = typeof doc.path === 'string' && doc.path.startsWith('/');
-                  const fileUrl = isUrl ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${doc.path}` : null;
-                  
-                  return (
-                    <div
-                      key={idx}
-                      className="flex items-start gap-4 p-4 rounded-lg border border-border bg-muted/10"
-                    >
-                      <div className={`p-2 rounded-md shrink-0 border ${
-                        doc.notApplicable 
-                          ? "bg-muted text-muted-foreground border-border" 
-                          : doc.verified 
-                            ? "bg-primary/5 text-primary border-primary/20" 
-                            : "bg-muted/30 text-muted-foreground border-border/80"
-                      }`}>
-                        {doc.notApplicable ? (
-                          <Lock className="w-4 h-4" />
-                        ) : (
-                          <FileCheck className="w-4 h-4" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-foreground truncate">{doc.name}</p>
-                        <p className="text-xs text-muted-foreground leading-relaxed mt-0.5">{doc.desc}</p>
-                        
-                        {fileUrl ? (
-                          <a
-                            href={fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center text-xs font-bold text-primary hover:underline mt-2.5 transition-all group"
-                          >
-                            View Document 
-                            <ArrowRight className="w-3.5 h-3.5 ml-1 group-hover:translate-x-0.5 transition-transform" />
-                          </a>
-                        ) : doc.verified && !doc.notApplicable ? (
-                          <span className="inline-flex items-center text-[10px] font-extrabold text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded mt-2.5 uppercase tracking-wide">
-                            Verified
-                          </span>
-                        ) : doc.notApplicable ? (
-                          <span className="inline-flex items-center text-[10px] font-extrabold text-muted-foreground bg-muted border border-border px-2 py-0.5 rounded mt-2.5 uppercase tracking-wide">
-                            Not Required
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center text-[10px] font-extrabold text-muted-foreground/80 bg-muted/20 border border-border/60 px-2 py-0.5 rounded mt-2.5 uppercase tracking-wide">
-                            Pending Upload
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+                <h2 className="text-lg font-bold text-foreground">Trust & Verification</h2>
+              </div>
+              
+              {/* Trust Score Card */}
+              <div className="p-5 bg-secondary/5 border border-border rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Overall Trust Rating</p>
+                  <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                    Trust Score: <span className="text-primary font-black">{trustDetails.score}/100</span>
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Calculated dynamically based on verified credentials, phone, email, and documents submitted.
+                  </p>
+                </div>
+                
+                {/* Progress bar */}
+                <div className="w-full sm:w-48 h-3 bg-muted rounded-full overflow-hidden shrink-0 border border-border">
+                  <div 
+                    className="h-full bg-primary transition-all duration-500 ease-out" 
+                    style={{ width: `${trustDetails.score}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Verification Checklist */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {trustDetails.items.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-3.5 rounded-lg border border-border bg-muted/10 text-sm font-semibold"
+                  >
+                    <span className="text-foreground">{item.name}</span>
+                    {item.verified ? (
+                      <span className="text-primary font-bold flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 fill-primary/10 text-primary shrink-0" />
+                        <span className="text-xs">Verified</span>
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground text-xs font-normal">
+                        Not Provided
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
