@@ -34,7 +34,7 @@ import {
   AlertTriangle,
   Clock,
   CheckCircle2,
-  FileCheck
+  FileCheck,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -70,7 +70,9 @@ const ProfilePageContent = () => {
     const bookingUrl = `${basePath}?category=${category}&id=${matchedData.id}`;
 
     if (!user) {
-      router.push(`/register?role=user&redirect=${encodeURIComponent(bookingUrl)}`);
+      router.push(
+        `/register?role=user&redirect=${encodeURIComponent(bookingUrl)}`,
+      );
       return;
     }
 
@@ -88,7 +90,9 @@ const ProfilePageContent = () => {
     const messageUrl = `/dashboard/user-inbox?specialistId=${matchedData.id}&specialistName=${encodeURIComponent(matchedData.name)}&specialistType=${matchedData.type}`;
 
     if (!user) {
-      router.push(`/register?role=user&redirect=${encodeURIComponent(messageUrl)}`);
+      router.push(
+        `/register?role=user&redirect=${encodeURIComponent(messageUrl)}`,
+      );
       return;
     }
 
@@ -102,7 +106,11 @@ const ProfilePageContent = () => {
 
   if (isLoading) return <LoadingSpinner />;
   if (error || !matchedData)
-    return <div className="py-20 text-center text-gray-500 font-medium">Specialist data not found</div>;
+    return (
+      <div className="py-20 text-center text-gray-500 font-medium">
+        Specialist data not found
+      </div>
+    );
 
   const roleSpecificInfo =
     matchedData.house_manager ||
@@ -113,14 +121,15 @@ const ProfilePageContent = () => {
     matchedData.home_health_assistant;
 
   // Rating Status
-  const hasReviews = matchedData.review_count > 0 && matchedData.review_avg_rating !== null;
+  const hasReviews =
+    matchedData.review_count > 0 && matchedData.review_avg_rating !== null;
 
   // Member Date Formatter
   const getMemberSince = () => {
     if (matchedData?.created_at) {
       return new Date(matchedData.created_at).toLocaleDateString("en-US", {
         month: "long",
-        year: "numeric"
+        year: "numeric",
       });
     }
     if (matchedData?.memberSince) {
@@ -150,16 +159,23 @@ const ProfilePageContent = () => {
     {
       name: "Comfortable with Kids",
       has: roleSpecificInfo?.ageOfKids && roleSpecificInfo.ageOfKids.length > 0,
-      details: roleSpecificInfo?.ageOfKids ? `Ages: ${roleSpecificInfo.ageOfKids.join(", ")}` : "",
+      details: roleSpecificInfo?.ageOfKids
+        ? `Ages: ${roleSpecificInfo.ageOfKids.join(", ")}`
+        : "",
     },
     {
       name: "Hospital Based Care",
-      has: matchedData.services?.some(s => s.toLowerCase().includes("hospital")) || !!roleSpecificInfo?.hospitalCare,
+      has:
+        matchedData.services?.some((s) =>
+          s.toLowerCase().includes("hospital"),
+        ) || !!roleSpecificInfo?.hospitalCare,
     },
     {
       name: "Home Based Care",
-      has: matchedData.services?.some(s => s.toLowerCase().includes("home")) || !!roleSpecificInfo?.homeCare,
-    }
+      has:
+        matchedData.services?.some((s) => s.toLowerCase().includes("home")) ||
+        !!roleSpecificInfo?.homeCare,
+    },
   ];
 
   // Dynamic Trust Score calculation
@@ -173,12 +189,22 @@ const ProfilePageContent = () => {
     items.push({ name: "Verified Identity", verified: identityVerified });
 
     // 2. Trade License / Good Conduct
-    const hasGoodConduct = !!(matchedData.goodConductCertificate || roleSpecificInfo?.goodConductCertificate);
+    const hasGoodConduct = !!(
+      matchedData.goodConductCertificate ||
+      roleSpecificInfo?.goodConductCertificate
+    );
     if (hasGoodConduct) score += 15;
-    items.push({ name: "Trade License / Good Conduct", verified: hasGoodConduct });
+    items.push({
+      name: "Trade License / Good Conduct",
+      verified: hasGoodConduct,
+    });
 
     // 3. NID/Passport (Government ID Copy)
-    const hasIdCopy = !!(matchedData.idCopy || matchedData.id_copy || roleSpecificInfo?.idCopy);
+    const hasIdCopy = !!(
+      matchedData.idCopy ||
+      matchedData.id_copy ||
+      roleSpecificInfo?.idCopy
+    );
     if (hasIdCopy) score += 15;
     items.push({ name: "NID/Passport Uploaded", verified: hasIdCopy });
 
@@ -193,17 +219,30 @@ const ProfilePageContent = () => {
     items.push({ name: "Experience Verified", verified: hasExperience });
 
     // 6. Driving License Verified
-    const hasLicense = !!(matchedData.drivingLicense || matchedData.driving_license || roleSpecificInfo?.drivingLicense || matchedData.canDrive);
+    const hasLicense = !!(
+      matchedData.drivingLicense ||
+      matchedData.driving_license ||
+      roleSpecificInfo?.drivingLicense ||
+      matchedData.canDrive
+    );
     if (hasLicense) score += 5;
     items.push({ name: "Driving License", verified: hasLicense });
 
     // 7. Phone Verified
-    const phoneVerified = !!(matchedData.phone || matchedData.is_phone_verified || matchedData.phone_verified);
+    const phoneVerified = !!(
+      matchedData.phone ||
+      matchedData.is_phone_verified ||
+      matchedData.phone_verified
+    );
     if (phoneVerified) score += 5;
     items.push({ name: "Phone Verified", verified: phoneVerified });
 
     // 8. Email Verified
-    const emailVerified = !!(matchedData.email || matchedData.is_email_verified || matchedData.email_verified);
+    const emailVerified = !!(
+      matchedData.email ||
+      matchedData.is_email_verified ||
+      matchedData.email_verified
+    );
     if (emailVerified) score += 5;
     items.push({ name: "Email Verified", verified: emailVerified });
 
@@ -234,7 +273,10 @@ const ProfilePageContent = () => {
               }}
             />
             {matchedData.is_profile_verified && (
-              <span className="absolute bottom-1 right-1 bg-primary text-primary-foreground p-1.5 rounded-full border-2 border-background shadow-xs flex items-center justify-center" title="Verified Specialist">
+              <span
+                className="absolute bottom-1 right-1 bg-primary text-primary-foreground p-1.5 rounded-full border-2 border-background shadow-xs flex items-center justify-center"
+                title="Verified Specialist"
+              >
                 <ShieldCheck className="w-4 h-4" />
               </span>
             )}
@@ -260,11 +302,15 @@ const ProfilePageContent = () => {
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3.5 text-muted-foreground text-sm">
               <div className="flex items-center gap-1.5 font-medium">
                 <Briefcase className="w-4 h-4 text-primary" />
-                <span className="capitalize">{matchedData?.subRole?.replace("-", " ")}</span>
+                <span className="capitalize">
+                  {matchedData?.subRole?.replace("-", " ")}
+                </span>
               </div>
               <div className="flex items-center gap-1.5 font-medium">
                 <MapPin className="w-4 h-4 text-primary" />
-                <span className="capitalize">{matchedData?.location || "N/A"}</span>
+                <span className="capitalize">
+                  {matchedData?.location || "N/A"}
+                </span>
               </div>
             </div>
 
@@ -274,10 +320,15 @@ const ProfilePageContent = () => {
                 <div className="flex items-center gap-1.5">
                   <div className="flex items-center text-primary font-bold">
                     <Star className="w-4 h-4 fill-primary text-primary" />
-                    <span className="ml-1 text-foreground">{matchedData.review_avg_rating}</span>
+                    <span className="ml-1 text-foreground">
+                      {matchedData.review_avg_rating}
+                    </span>
                   </div>
                   <span>•</span>
-                  <span className="font-medium">{matchedData.review_count} {matchedData.review_count === 1 ? 'review' : 'reviews'}</span>
+                  <span className="font-medium">
+                    {matchedData.review_count}{" "}
+                    {matchedData.review_count === 1 ? "review" : "reviews"}
+                  </span>
                 </div>
               ) : (
                 <div className="flex items-center gap-1.5 font-medium">
@@ -312,7 +363,6 @@ const ProfilePageContent = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start mt-8">
           {/* Main Content Area (2 Columns) */}
           <div className="lg:col-span-2 space-y-10">
-            
             {/* PROFILE STATISTICS CARDS */}
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
@@ -321,20 +371,63 @@ const ProfilePageContent = () => {
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                 {[
-                  { label: "Age", value: matchedData.age ? `${matchedData.age} Years` : "N/A", icon: User },
-                  { label: "Education Level", value: matchedData.education || "Not specified", icon: GraduationCap },
-                  { label: "Experience", value: roleSpecificInfo?.experience === "more" ? "5+ Years" : roleSpecificInfo?.experience ? `${roleSpecificInfo.experience} Years` : "N/A", icon: Briefcase },
-                  { label: "Languages", value: matchedData.languages?.filter(l => l !== "Other")?.join(", ") || "N/A", icon: Globe },
-                  { label: "Can Drive", value: matchedData.canDrive ? "Yes" : "No", icon: Car },
-                  { label: "Preferred Role", value: matchedData.preferredRole || "N/A", icon: Award }
+                  {
+                    label: "Age",
+                    value: matchedData.age ? `${matchedData.age} Years` : "N/A",
+                    icon: User,
+                  },
+                  {
+                    label: "Education Level",
+                    value: matchedData.education || "Not specified",
+                    icon: GraduationCap,
+                  },
+                  {
+                    label: "Experience",
+                    value:
+                      roleSpecificInfo?.experience === "more"
+                        ? "5+ Years"
+                        : roleSpecificInfo?.experience
+                          ? `${roleSpecificInfo.experience} Years`
+                          : "N/A",
+                    icon: Briefcase,
+                  },
+                  {
+                    label: "Languages",
+                    value:
+                      matchedData.languages
+                        ?.filter((l) => l !== "Other")
+                        ?.join(", ") || "N/A",
+                    icon: Globe,
+                  },
+                  {
+                    label: "Can Drive",
+                    value: matchedData.canDrive ? "Yes" : "No",
+                    icon: Car,
+                  },
+                  {
+                    label: "Preferred Role",
+                    value:
+                      matchedData.preferredRole ||
+                      (matchedData.preferred?.length
+                        ? matchedData.preferred.join(", ")
+                        : "N/A"),
+                    icon: Award,
+                  },
                 ].map((stat, idx) => (
                   <div key={idx} className="flex gap-3 items-start">
                     <div className="p-2 rounded-md bg-secondary/5 text-primary border border-border shrink-0">
                       <stat.icon className="w-4 h-4" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs text-muted-foreground font-semibold">{stat.label}</p>
-                      <p className="text-sm font-bold text-foreground capitalize truncate" title={stat.value}>{stat.value}</p>
+                      <p className="text-xs text-muted-foreground font-semibold">
+                        {stat.label}
+                      </p>
+                      <p
+                        className="text-sm font-bold text-foreground capitalize truncate"
+                        title={stat.value}
+                      >
+                        {stat.value}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -365,34 +458,63 @@ const ProfilePageContent = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm">
                 <div className="space-y-3">
                   <div className="flex justify-between border-b border-border/60 pb-2">
-                    <span className="text-muted-foreground font-medium">Experience</span>
+                    <span className="text-muted-foreground font-medium">
+                      Experience
+                    </span>
                     <span className="font-bold text-foreground">
-                      {roleSpecificInfo?.experience === "more" ? "More than 5 years" : `${roleSpecificInfo?.experience || 0} years`}
+                      {roleSpecificInfo?.experience === "more"
+                        ? "More than 5 years"
+                        : `${roleSpecificInfo?.experience || 0} years`}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
-                    <span className="text-muted-foreground font-medium">Education Background</span>
-                    <span className="font-bold text-foreground capitalize">{matchedData.education || "Not specified"}</span>
+                    <span className="text-muted-foreground font-medium">
+                      Education Background
+                    </span>
+                    <span className="font-bold text-foreground capitalize">
+                      {matchedData.education || "Not specified"}
+                    </span>
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
-                    <span className="text-muted-foreground font-medium">Languages</span>
-                    <span className="font-bold text-foreground truncate max-w-[200px]" title={matchedData.languages?.join(", ")}>
+                    <span className="text-muted-foreground font-medium">
+                      Languages
+                    </span>
+                    <span
+                      className="font-bold text-foreground truncate max-w-[200px]"
+                      title={matchedData.languages?.join(", ")}
+                    >
                       {matchedData.languages?.join(", ") || "N/A"}
                     </span>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between border-b border-border/60 pb-2">
-                    <span className="text-muted-foreground font-medium">Preferred Role</span>
-                    <span className="font-bold text-foreground capitalize">{matchedData.preferredRole || "N/A"}</span>
+                    <span className="text-muted-foreground font-medium">
+                      Preferred Role
+                    </span>
+                    <span className="font-bold text-foreground capitalize">
+                      {/* {matchedData.preferredRole || "N/A"} */}
+                      {matchedData.preferredRole ||
+                      (matchedData.preferred?.length
+                        ? matchedData.preferred.join(", ")
+                        : "N/A")}
+                    </span>
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
-                    <span className="text-muted-foreground font-medium">Location</span>
-                    <span className="font-bold text-foreground capitalize">{matchedData.location || "N/A"}</span>
+                    <span className="text-muted-foreground font-medium">
+                      Location
+                    </span>
+                    <span className="font-bold text-foreground capitalize">
+                      {matchedData.location || "N/A"}
+                    </span>
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
-                    <span className="text-muted-foreground font-medium">Age</span>
-                    <span className="font-bold text-foreground">{matchedData.age ? `${matchedData.age} years old` : "N/A"}</span>
+                    <span className="text-muted-foreground font-medium">
+                      Age
+                    </span>
+                    <span className="font-bold text-foreground">
+                      {matchedData.age ? `${matchedData.age} years old` : "N/A"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -408,12 +530,26 @@ const ProfilePageContent = () => {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { label: "Daily Salary", val: roleSpecificInfo?.serviceFeeDay },
-                  { label: "Monthly Salary", val: roleSpecificInfo?.serviceFeeMonth },
-                  { label: "Total Salary Expectation", val: roleSpecificInfo?.salaryRange }
+                  {
+                    label: "Daily Salary",
+                    val: roleSpecificInfo?.serviceFeeDay,
+                  },
+                  {
+                    label: "Monthly Salary",
+                    val: roleSpecificInfo?.serviceFeeMonth,
+                  },
+                  {
+                    label: "Total Salary Expectation",
+                    val: roleSpecificInfo?.salaryRange,
+                  },
                 ].map((item, idx) => (
-                  <div key={idx} className="p-4 bg-muted/30 border border-border rounded-lg">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{item.label}</p>
+                  <div
+                    key={idx}
+                    className="p-4 bg-muted/30 border border-border rounded-lg"
+                  >
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                      {item.label}
+                    </p>
                     <p className="text-lg font-bold text-foreground">
                       {item.val ? `KSH ${item.val}` : "N/A"}
                     </p>
@@ -440,7 +576,9 @@ const ProfilePageContent = () => {
                         : "bg-muted/20 text-muted-foreground border-border/40"
                     }`}
                   >
-                    {skill.has && <CheckCircle2 className="w-3.5 h-3.5 mr-1 inline shrink-0" />}
+                    {skill.has && (
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1 inline shrink-0" />
+                    )}
                     <span>{skill.name}</span>
                     {skill.has && skill.details && (
                       <span className="text-[10px] bg-primary/10 px-1.5 py-0.5 rounded text-primary font-bold ml-1.5">
@@ -454,63 +592,37 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            {/* AVAILABILITY SECTION */}
-            <div className="space-y-4">
-              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                Availability Schedule
-              </h2>
-              {dates.length > 0 ? (
-                <div className="flex flex-wrap gap-3.5">
-                  {dates.map((dateStr, idx) => {
-                    const dateObj = new Date(dateStr);
-                    const dayNum = dateObj.toLocaleDateString("en-US", { day: "numeric" });
-                    const monthStr = dateObj.toLocaleDateString("en-US", { month: "short" });
-                    const weekdayStr = dateObj.toLocaleDateString("en-US", { weekday: "short" });
-                    return (
-                      <div
-                        key={idx}
-                        className="flex flex-col items-center justify-center p-3.5 bg-muted/20 border border-border rounded-lg min-w-[70px] text-center"
-                      >
-                        <span className="text-[10px] uppercase font-bold text-primary tracking-wider mb-0.5">{monthStr}</span>
-                        <span className="text-xl font-bold text-foreground leading-none mb-1">{dayNum}</span>
-                        <span className="text-[9px] text-muted-foreground font-semibold uppercase">{weekdayStr}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground italic">
-                  No specific availability dates listed. Please contact the specialist directly.
-                </p>
-              )}
-            </div>
-
-            <hr className="border-border" />
-
             {/* TRUST & VERIFICATION */}
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-primary" />
-                <h2 className="text-lg font-bold text-foreground">Trust & Verification</h2>
+                <h2 className="text-lg font-bold text-foreground">
+                  Trust & Verification
+                </h2>
               </div>
-              
+
               {/* Trust Score Card */}
               <div className="p-5 bg-secondary/5 border border-border rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Overall Trust Rating</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                    Overall Trust Rating
+                  </p>
                   <h3 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                    Trust Score: <span className="text-primary font-black">{trustDetails.score}/100</span>
+                    Trust Score:{" "}
+                    <span className="text-primary font-black">
+                      {trustDetails.score}/100
+                    </span>
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Calculated dynamically based on verified credentials, phone, email, and documents submitted.
+                    Calculated dynamically based on verified credentials, phone,
+                    email, and documents submitted.
                   </p>
                 </div>
-                
+
                 {/* Progress bar */}
                 <div className="w-full sm:w-48 h-3 bg-muted rounded-full overflow-hidden shrink-0 border border-border">
-                  <div 
-                    className="h-full bg-primary transition-all duration-500 ease-out" 
+                  <div
+                    className="h-full bg-primary transition-all duration-500 ease-out"
                     style={{ width: `${trustDetails.score}%` }}
                   />
                 </div>
@@ -539,6 +651,55 @@ const ProfilePageContent = () => {
               </div>
             </div>
 
+            <hr className="border-border" />
+
+            {/* AVAILABILITY SECTION */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-primary" />
+                Availability Schedule
+              </h2>
+              {dates.length > 0 ? (
+                <div className="flex flex-wrap gap-3.5">
+                  {dates.map((dateStr, idx) => {
+                    const dateObj = new Date(dateStr);
+                    const dayNum = dateObj.toLocaleDateString("en-US", {
+                      day: "numeric",
+                    });
+                    const monthStr = dateObj.toLocaleDateString("en-US", {
+                      month: "short",
+                    });
+                    const weekdayStr = dateObj.toLocaleDateString("en-US", {
+                      weekday: "short",
+                    });
+                    return (
+                      <div
+                        key={idx}
+                        className="flex flex-col items-center justify-center p-3.5 bg-muted/20 border border-border rounded-lg min-w-[70px] text-center"
+                      >
+                        <span className="text-[10px] uppercase font-bold text-primary tracking-wider mb-0.5">
+                          {monthStr}
+                        </span>
+                        <span className="text-xl font-bold text-foreground leading-none mb-1">
+                          {dayNum}
+                        </span>
+                        <span className="text-[9px] text-muted-foreground font-semibold uppercase">
+                          {weekdayStr}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  No specific availability dates listed. Please contact the
+                  specialist directly.
+                </p>
+              )}
+            </div>
+
+            <hr className="border-border" />
+
             {/* SERVICES SECTION */}
             {matchedData.services && matchedData.services.length > 0 && (
               <>
@@ -562,7 +723,6 @@ const ProfilePageContent = () => {
                 </div>
               </>
             )}
-
           </div>
 
           {/* STICKY SIDEBAR DESIGN (1 Column) */}
@@ -599,24 +759,32 @@ const ProfilePageContent = () => {
 
               <div className="space-y-3.5 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold">Location</span>
+                  <span className="text-muted-foreground font-semibold">
+                    Location
+                  </span>
                   <span className="text-foreground font-bold capitalize flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
                     {matchedData?.location || "N/A"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold">Verification</span>
-                  <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
-                    matchedData.is_profile_verified 
-                      ? "bg-primary/10 text-primary border border-primary/20" 
-                      : "bg-muted text-muted-foreground"
-                  }`}>
+                  <span className="text-muted-foreground font-semibold">
+                    Verification
+                  </span>
+                  <span
+                    className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
+                      matchedData.is_profile_verified
+                        ? "bg-primary/10 text-primary border border-primary/20"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
                     {matchedData.is_profile_verified ? "Verified" : "Pending"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold">Member since</span>
+                  <span className="text-muted-foreground font-semibold">
+                    Member since
+                  </span>
                   <span className="text-foreground font-bold flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                     {getMemberSince()}
@@ -631,7 +799,7 @@ const ProfilePageContent = () => {
                 <Button
                   onClick={handleBookNow}
                   disabled={loading}
-                  className="w-full font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all rounded-md py-5.5 h-auto text-sm"
+                  className="w-full font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 transition-all rounded-md py-5.5 h-auto text-sm"
                 >
                   <CheckCircle className="w-5 h-5 mr-2" /> Book Specialist
                 </Button>
@@ -639,34 +807,36 @@ const ProfilePageContent = () => {
                   onClick={handleMessage}
                   disabled={loading}
                   variant="outline"
-                  className="w-full font-semibold border border-border bg-background hover:bg-accent text-foreground transition-all rounded-md py-5.5 h-auto text-sm"
+                  className="w-full font-semibold cursor-pointer border border-border bg-background hover:bg-accent text-foreground transition-all rounded-md py-5.5 h-auto text-sm"
                 >
-                  <MessageCircle className="w-5 h-5 mr-2 text-primary" /> Send Message
+                  <MessageCircle className="w-5 h-5 mr-2 text-primary" /> Send
+                  Message
                 </Button>
               </div>
             </div>
 
             {/* Sticky Actions Utility Widget */}
             <div className="border border-border rounded-xl bg-background p-4 flex justify-around items-center text-xs font-bold text-muted-foreground">
-              <button 
+              <button
                 onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
                   toast.success("Profile link copied!");
                 }}
-                className="flex items-center gap-2 hover:text-primary transition-colors"
+                className="flex items-center gap-2 hover:text-primary cursor-pointer transition-colors"
               >
-                <Share2 className="w-4 h-4 text-muted-foreground shrink-0" /> Share Profile
+                <Share2 className="w-4 h-4 text-muted-foreground shrink-0" />{" "}
+                Share Profile
               </button>
               <div className="h-4 w-px bg-border"></div>
-              <button 
+              <button
                 onClick={() => toast.success("Report submitted successfully.")}
-                className="flex items-center gap-2 hover:text-primary transition-colors"
+                className="flex items-center gap-2 hover:text-primary cursor-pointer transition-colors"
               >
-                <AlertTriangle className="w-4 h-4 text-muted-foreground shrink-0" /> Report Profile
+                <AlertTriangle className="w-4 h-4 text-muted-foreground shrink-0" />{" "}
+                Report Profile
               </button>
             </div>
           </div>
-
         </div>
       </Container>
     </div>
