@@ -49,6 +49,7 @@ export default function EmployerBookingFormClient() {
   useEffect(() => {
     if (data?.status === 200 && data?.data?.data.length > 0) {
       const individualPlan = data?.data?.data?.find(item => item.name === "Service Fee");
+      console.log("individualPlan", individualPlan);
       if (individualPlan) {
         setServiceFee(parseFloat(individualPlan.price));
         setPlanId(individualPlan.id);
@@ -170,7 +171,7 @@ export default function EmployerBookingFormClient() {
       home_type: formData.homeType,
       home_size: formData.homeSize,
       selected_dates_or_months: formattedSelections,
-      booking_amount: 1
+      // booking_amount: 1
       // booking_amount: bookingAmount,
     };
     setIsActionLoading(true);

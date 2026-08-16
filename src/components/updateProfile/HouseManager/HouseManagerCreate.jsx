@@ -53,6 +53,9 @@ const HouseManagerCreate = ({ data = {} }) => {
       ageOfKids: data.additionalDetails?.ageOfKids || [],
       isHandelingPet: data.additionalDetails?.isHandelingPet ?? null,
       preferredRole: data.additionalDetails?.preferredRole || "",
+      cooking: data.additionalDetails?.cooking || "",
+      housekeeping: data.additionalDetails?.housekeeping || "",
+      childcare: data.additionalDetails?.childcare || "",
       serviceFeeMonth: data?.additionalDetails?.serviceFeeMonth || "",
       serviceFeeDay: data?.additionalDetails?.serviceFeeDay || "",
     },
@@ -287,6 +290,18 @@ const HouseManagerCreate = ({ data = {} }) => {
       toast.error("Please select a preferred role!");
       return;
     }
+    if (!additionalDetails.cooking?.trim()) {
+      toast.error("Please select your cooking proficiency!");
+      return;
+    }
+    if (!additionalDetails.housekeeping?.trim()) {
+      toast.error("Please select your housekeeping proficiency!");
+      return;
+    }
+    if (!additionalDetails.childcare?.trim()) {
+      toast.error("Please select your childcare proficiency!");
+      return;
+    }
     const day = additionalDetails.serviceFeeDay?.trim();
     const month = additionalDetails.serviceFeeMonth?.trim();
     if (!day || Number(day) <= 0) {
@@ -345,6 +360,9 @@ const HouseManagerCreate = ({ data = {} }) => {
     // fd.append("isMother", formData.additionalDetails.isMother);
     // fd.append("isHandelingPet", formData.additionalDetails.isHandelingPet);
     fd.append("preferredRole", formData.additionalDetails.preferredRole);
+    fd.append("cooking", formData.additionalDetails.cooking);
+    fd.append("housekeeping", formData.additionalDetails.housekeeping);
+    fd.append("childcare", formData.additionalDetails.childcare);
     fd.append("serviceFeeMonth", formData.additionalDetails.serviceFeeMonth);
     fd.append("serviceFeeDay", formData.additionalDetails.serviceFeeDay);
     formData.additionalDetails.ageOfKids.forEach((age) =>
@@ -735,6 +753,41 @@ const HouseManagerCreate = ({ data = {} }) => {
                 </Label>
               </div>
             </RadioGroup>
+          </div>
+        </div>
+
+        {/* Skill Proficiency */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            Skill Proficiency
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { key: "cooking", label: "Cooking" },
+              { key: "housekeeping", label: "Housekeeping" },
+              { key: "childcare", label: "Childcare" },
+            ].map(({ key, label }) => (
+              <div key={key}>
+                <Label className="block mb-2 text-sm font-medium text-gray-700">
+                  {label}
+                </Label>
+                <Select
+                  value={formData.additionalDetails[key]}
+                  onValueChange={(val) => handleAdditionalSelect(key, val)}
+                >
+                  <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                    <SelectValue placeholder="Select proficiency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="Strong">Strong</SelectItem>
+                      <SelectItem value="Average">Average</SelectItem>
+                      <SelectItem value="Weak">Weak</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
           </div>
         </div>
 

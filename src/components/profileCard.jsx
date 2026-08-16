@@ -7,6 +7,7 @@ import {
   Briefcase,
   GraduationCap,
   CheckCircle,
+  Home,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -59,6 +60,30 @@ const ProfileCard = ({ profile }) => {
   const avgRating = parseFloat(profile.review_avg_rating || 0);
   const reviewCount = profile.review_count || 0;
   const hasRating = reviewCount > 0;
+
+  // Extract preferred living/service arrangement (e.g. LIVE IN / DAYBURG)
+  const getPreferredArrangements = () => {
+    let raw =
+      profile?.preferred ||
+      profile?.house_manager?.preferred ||
+      profile?.services ||
+      profile?.service;
+    if (!raw) return [];
+    if (!Array.isArray(raw)) raw = [raw];
+
+    return raw
+      .filter(Boolean)
+      .map((p) => {
+        const str = String(p).trim();
+        const lower = str.toLowerCase();
+        if (lower.includes("live")) return "LIVE IN";
+        if (lower.includes("day")) return "DAYBURG";
+        return str.toUpperCase();
+      })
+      .filter((v, i, a) => a.indexOf(v) === i);
+  };
+
+  const preferredArrangements = getPreferredArrangements();
 
   const handleBookNow = () => {
     if (loading) return;
@@ -124,8 +149,28 @@ const ProfileCard = ({ profile }) => {
               </h2>
 
               <p className="text-sm font-medium text-primary">
-                {profile.subRole} <span className="text-purple-800">{profile.type === "agency-employee" && "(AGENCY LISTED)"}</span>
+                {profile.subRole}{" "}
+                <span className="text-purple-800">
+                  {profile.type === "agency-employee" && "(AGENCY LISTED)"}
+                </span>
               </p>
+{/* 
+              {preferredArrangements.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {preferredArrangements.map((item, idx) => (
+                    <span
+                      key={idx}
+                      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold tracking-wider uppercase ${
+                        item === "LIVE IN"
+                          ? "bg-purple-100 text-purple-800 border border-purple-200"
+                          : "bg-teal-100 text-teal-800 border border-teal-200"
+                      }`}
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              )} */}
             </div>
 
             <div className="flex flex-col items-end gap-1 shrink-0">
@@ -160,6 +205,13 @@ const ProfileCard = ({ profile }) => {
           </div>
 
           <div className="space-y-2.5 mt-4">
+            {preferredArrangements.length > 0 && (
+              <InfoItem
+                icon={Home}
+                label="Arrangement"
+                value={preferredArrangements.join(" / ")}
+              />
+            )}
             {profile.experience && (
               <InfoItem
                 icon={Briefcase}

@@ -35,6 +35,8 @@ import {
   Clock,
   CheckCircle2,
   FileCheck,
+  Home,
+  Utensils,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -137,6 +139,37 @@ const ProfilePageContent = () => {
     }
     return "July 2024";
   };
+
+  // Extract preferred living/service arrangement (e.g. LIVE IN / DAYBURG)
+  const getPreferredArrangements = () => {
+    let raw =
+      matchedData?.preferred ||
+      roleSpecificInfo?.preferred ||
+      matchedData?.services ||
+      matchedData?.service;
+    if (!raw) return [];
+    if (!Array.isArray(raw)) raw = [raw];
+
+    return raw
+      .filter(Boolean)
+      .map((p) => {
+        const str = String(p).trim();
+        const lower = str.toLowerCase();
+        if (lower.includes("live")) return "LIVE IN";
+        if (lower.includes("day")) return "DAYBURG";
+        return str.toUpperCase();
+      })
+      .filter((v, i, a) => a.indexOf(v) === i);
+  };
+
+  const preferredArrangements = getPreferredArrangements();
+  const cookingSkill = roleSpecificInfo?.cooking || matchedData?.cooking;
+  const housekeepingSkill =
+    roleSpecificInfo?.housekeeping || matchedData?.housekeeping;
+  const childcareSkill = roleSpecificInfo?.childcare || matchedData?.childcare;
+  const hasSkillProficiency = Boolean(
+    cookingSkill || housekeepingSkill || childcareSkill,
+  );
 
   // Skills Checklist
   const skillsList = [
@@ -287,6 +320,18 @@ const ProfilePageContent = () => {
               <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight capitalize">
                 {matchedData?.name}
               </h1>
+              {/* {preferredArrangements.map((item, idx) => (
+                <Badge
+                  key={idx}
+                  className={`font-bold px-2.5 py-0.5 rounded-md text-xs shrink-0 ${
+                    item === "LIVE IN"
+                      ? "bg-purple-100 text-purple-800 border border-purple-300"
+                      : "bg-teal-100 text-teal-800 border border-teal-300"
+                  }`}
+                >
+                  {item}
+                </Badge>
+              ))} */}
               {matchedData.is_profile_verified && (
                 <Badge className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 font-medium px-2 py-0.5 rounded-md text-xs flex items-center gap-1 shrink-0">
                   <ShieldCheck className="w-3.5 h-3.5" /> Verified
@@ -390,6 +435,13 @@ const ProfilePageContent = () => {
                           ? `${roleSpecificInfo.experience} Years`
                           : "N/A",
                     icon: Briefcase,
+                  },
+                  {
+                    label: "Living Arrangement",
+                    value: preferredArrangements.length
+                      ? preferredArrangements.join(" / ")
+                      : "N/A",
+                    icon: Home,
                   },
                   {
                     label: "Languages",
@@ -502,6 +554,16 @@ const ProfilePageContent = () => {
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
                     <span className="text-muted-foreground font-medium">
+                      Living Arrangement
+                    </span>
+                    <span className="font-bold text-foreground capitalize">
+                      {preferredArrangements.length
+                        ? preferredArrangements.join(" / ")
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-b border-border/60 pb-2">
+                    <span className="text-muted-foreground font-medium">
                       Location
                     </span>
                     <span className="font-bold text-foreground capitalize">
@@ -589,6 +651,90 @@ const ProfilePageContent = () => {
                 ))}
               </div>
             </div>
+
+            {/* SKILL PROFICIENCY SECTION */}
+            {hasSkillProficiency && (
+              <>
+                <hr className="border-border" />
+                <div className="space-y-4">
+                  <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Award className="w-5 h-5 text-primary" />
+                    Skill Proficiency
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                      { name: "Cooking", value: cookingSkill, icon: Utensils },
+                      {
+                        name: "Housekeeping",
+                        value: housekeepingSkill,
+                        icon: Sparkles,
+                      },
+                      {
+                        name: "Childcare",
+                        value: childcareSkill,
+                        icon: Baby,
+                      },
+                    ].map((skill, idx) => {
+                      const val = skill.value || "Not specified";
+                      const isStrong = val?.toLowerCase() === "strong";
+                      const isAverage = val?.toLowerCase() === "average";
+                      const isWeak = val?.toLowerCase() === "weak";
+
+                      let badgeColor =
+                        "bg-muted text-muted-foreground border-border";
+                      if (isStrong)
+                        badgeColor =
+                          "bg-green-100 text-green-800 border-green-300";
+                      if (isAverage)
+                        badgeColor =
+                          "bg-amber-100 text-amber-800 border-amber-300";
+                      if (isWeak)
+                        badgeColor = "bg-red-100 text-red-800 border-red-300";
+
+                      return (
+                        <div
+                          key={idx}
+                          className="p-4 bg-muted/20 border border-border rounded-xl flex flex-col justify-between space-y-3"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                              <skill.icon className="w-4 h-4" />
+                            </div>
+                            <span className="font-bold text-sm text-foreground">
+                              {skill.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-1">
+                            <span className="text-xs text-muted-foreground font-semibold">
+                              Proficiency:
+                            </span>
+                            <span
+                              className={`px-2.5 py-1 text-xs font-bold rounded-md border capitalize ${badgeColor}`}
+                            >
+                              {val}
+                            </span>
+                          </div>
+                          {/* Visual proficiency bar */}
+                          <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-300 ${
+                                isStrong
+                                  ? "w-full bg-green-500"
+                                  : isAverage
+                                    ? "w-2/3 bg-amber-500"
+                                    : isWeak
+                                      ? "w-1/3 bg-red-400"
+                                      : "w-0"
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
 
             <hr className="border-border" />
 

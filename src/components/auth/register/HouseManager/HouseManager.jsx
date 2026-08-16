@@ -63,6 +63,9 @@ const HouseManager = () => {
       );
       fd.append("isHandelingPet", ADDITIONALDETAILS.isHandelingPet ? 1 : 0);
       fd.append("preferredRole", ADDITIONALDETAILS.preferredRole);
+      fd.append("cooking", ADDITIONALDETAILS.cooking || "");
+      fd.append("housekeeping", ADDITIONALDETAILS.housekeeping || "");
+      fd.append("childcare", ADDITIONALDETAILS.childcare || "");
       fd.append("serviceFeeMonth", ADDITIONALDETAILS.serviceFeeMonth);
       fd.append("serviceFeeDay", ADDITIONALDETAILS.serviceFeeDay);
       fd.append("bio", ADDITIONALDETAILS.bio);

@@ -51,6 +51,9 @@ const HouseManager = ({ data = {} }) => {
       ageOfKids: data.house_manager?.ageOfKids || [],
       isHandelingPet: data.house_manager?.isHandelingPet ?? null,
       preferredRole: data?.preferredRole || "",
+      cooking: data?.house_manager?.cooking || data?.cooking || "",
+      housekeeping: data?.house_manager?.housekeeping || data?.housekeeping || "",
+      childcare: data?.house_manager?.childcare || data?.childcare || "",
       serviceFeeMonth: data?.house_manager?.serviceFeeMonth || "",
       serviceFeeDay: data?.house_manager?.serviceFeeDay || "",
       bio: data?.bio || "",
@@ -229,6 +232,9 @@ const HouseManager = ({ data = {} }) => {
       formData.additionalDetails.isHandelingPet === "true" ? 1 : 0,
     );
     fd.append("preferredRole", formData.additionalDetails.preferredRole);
+    fd.append("cooking", formData.additionalDetails.cooking || "");
+    fd.append("housekeeping", formData.additionalDetails.housekeeping || "");
+    fd.append("childcare", formData.additionalDetails.childcare || "");
     fd.append("serviceFeeDay", formData.additionalDetails.serviceFeeDay);
     fd.append("serviceFeeMonth", formData.additionalDetails.serviceFeeMonth);
     formData.additionalDetails.ageOfKids.forEach((age) =>
@@ -696,6 +702,41 @@ const HouseManager = ({ data = {} }) => {
           </div>
         </div>
 
+        {/* Skill Proficiency */}
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            Skill Proficiency
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { key: "cooking", label: "Cooking" },
+              { key: "housekeeping", label: "Housekeeping" },
+              { key: "childcare", label: "Childcare" },
+            ].map(({ key, label }) => (
+              <div key={key}>
+                <Label className="block mb-2 text-sm font-medium text-gray-700">
+                  {label}
+                </Label>
+                <Select
+                  value={formData.additionalDetails[key]}
+                  onValueChange={(val) => handleAdditionalSelect(key, val)}
+                >
+                  <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                    <SelectValue placeholder="Select proficiency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="Strong">Strong</SelectItem>
+                      <SelectItem value="Average">Average</SelectItem>
+                      <SelectItem value="Weak">Weak</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="mt-6">
           {/* Section Label */}
           <h3 className="text-lg font-semibold text-gray-800 mb-3">
@@ -744,7 +785,7 @@ const HouseManager = ({ data = {} }) => {
         <div>
           <label htmlFor="bio">Bio</label>
           <Textarea
-            value={data.bio}
+            value={formData.basicInfo.bio}
             name="bio"
             placeholder="Write a brief bio about yourself and the services you offer.."
             className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"

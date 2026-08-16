@@ -388,10 +388,7 @@ const NurseCreate = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <Label className="mb-3 block">Gender</Label>
-            <RadioGroup className="flex gap-4 mt-2" value={data.gender} onValueChange={value => setData(prev => ({
-            ...prev,
-            gender: value
-          }))}>
+            <RadioGroup className="flex gap-4 mt-2" value={formData?.basicInfo?.gender} onValueChange={value => handleChange("basicInfo", "gender", value)}>
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="Male" id="r1" />
                 <Label htmlFor="r1" className="text-gray-700 font-normal cursor-pointer">

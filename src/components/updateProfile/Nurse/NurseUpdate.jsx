@@ -16,6 +16,7 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import { useAuth } from "@/hooks/useAuth";
+import { Textarea } from "@/components/ui/textarea";
 const NurseUpdate = ({
   data = {}
 }) => {
@@ -35,7 +36,9 @@ const NurseUpdate = ({
       phone: data?.number || "",
       number_two: data?.number_two || "",
       languages: data?.languages || [],
-      canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive)
+      canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
+      preferredRole: data?.preferredRole || "",
+      bio: data?.bio || "",
     },
     education: {
       education: data.education || "",
@@ -378,6 +381,38 @@ const NurseUpdate = ({
               <Label htmlFor="d2">No</Label>
             </div>
           </RadioGroup>
+        </div>
+
+        {/* preferredRole */}
+        <div>
+          <Label className="mb-2 block">Preferred Role?</Label>
+          <RadioGroup
+            value={formData.basicInfo?.preferredRole}
+            onValueChange={(value) => handleChange("basicInfo", "preferredRole", value)}
+            className="flex gap-4"
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="Medical Nurse" id="r3" />
+              <Label htmlFor="r3">Medical Nurse</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="Nurse Aide" id="r4" />
+              <Label htmlFor="r4">Nurse Aide</Label>
+            </div>
+          </RadioGroup>
+        </div>
+
+        {/* Bio */}
+        <div>
+          <Label htmlFor="bio" className="mb-2 block">Bio</Label>
+          <Textarea
+            value={formData.basicInfo?.bio || ""}
+            name="bio"
+            placeholder="Write a brief bio about yourself and the services you offer.."
+            className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+            rows={6}
+            onChange={(e) => handleChange("basicInfo", "bio", e.target.value)}
+          />
         </div>
 
         {/* education  */}

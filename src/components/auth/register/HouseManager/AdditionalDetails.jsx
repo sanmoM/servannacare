@@ -3,6 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
@@ -13,6 +21,9 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
     ageOfKids: defaultValues.ageOfKids || [],
     isHandelingPet: defaultValues.isHandelingPet || null,
     preferredRole: defaultValues.preferredRole || "",
+    cooking: defaultValues.cooking || "",
+    housekeeping: defaultValues.housekeeping || "",
+    childcare: defaultValues.childcare || "",
     serviceFeeMonth: defaultValues.serviceFeeMonth || "",
     serviceFeeDay: defaultValues.serviceFeeDay || "",
     bio: defaultValues.bio || "",
@@ -52,7 +63,28 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
       toast.error("Please select your preference for handling pets!");
       return;
     }
-console.log("Additional Details Data:", data);
+
+    if (!data.preferredRole) {
+      toast.error("Please select your preferred role!");
+      return;
+    }
+
+    if (!data.cooking) {
+      toast.error("Please select your cooking proficiency!");
+      return;
+    }
+
+    if (!data.housekeeping) {
+      toast.error("Please select your housekeeping proficiency!");
+      return;
+    }
+
+    if (!data.childcare) {
+      toast.error("Please select your childcare proficiency!");
+      return;
+    }
+
+    console.log("Additional Details Data:", data);
     onNext(data);
   };
 
@@ -174,6 +206,43 @@ console.log("Additional Details Data:", data);
               </Label>
             </div>
           </RadioGroup>
+        </div>
+      </div>
+
+      {/* Skill Proficiency */}
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">
+          Skill Proficiency
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[
+            { key: "cooking", label: "Cooking" },
+            { key: "housekeeping", label: "Housekeeping" },
+            { key: "childcare", label: "Childcare" },
+          ].map(({ key, label }) => (
+            <div key={key}>
+              <Label className="block mb-2 text-sm font-medium text-gray-700">
+                {label}
+              </Label>
+              <Select
+                value={data[key]}
+                onValueChange={(val) =>
+                  setData((prev) => ({ ...prev, [key]: val }))
+                }
+              >
+                <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                  <SelectValue placeholder="Select proficiency" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="Strong">Strong</SelectItem>
+                    <SelectItem value="Average">Average</SelectItem>
+                    <SelectItem value="Weak">Weak</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          ))}
         </div>
       </div>
 
