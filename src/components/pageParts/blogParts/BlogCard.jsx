@@ -19,7 +19,7 @@ const BlogCard = ({ blog, slug }) => {
         </div>
       </div>
 
-      {/* Text Section */}
+
       <div className="flex-1 flex flex-col h-full">
         <Link
           href={`/blog/${slug}?id=${id}`}
@@ -28,25 +28,19 @@ const BlogCard = ({ blog, slug }) => {
           {title}
         </Link>
 
-        {/* Truncated Description */}
-        <p className="text-gray-700 text-sm mt-2">
-          {description.length > 60
-            ? description.substring(0, 150) + "..."
-            : description}
-        </p>
 
-        {/* <div className="flex items-center text-gray-600 gap-2 mt-2">
-      <Calendar width={14} />
-      <p className="text-xs">{formatDate(blog.date)}</p>
-    </div> */}
+        <p className="text-gray-700 text-sm mt-2">
+          {(() => {
+            const plain = description.replace(/<[^>]+>/g, "");
+            return plain.length > 150 ? plain.substring(0, 150) + "..." : plain;
+          })()}
+        </p>
 
         <div className="flex justify-between mt-auto pt-3">
           <Link href={`/blog/${slug}?id=${id}`}>
             <Button className={"cursor-pointer"}>Read More</Button>
           </Link>
-          {/* <div className="flex gap-1 hover:text-primary cursor-pointer items-center">
-            <MessageCircleMoreIcon />
-          </div> */}
+
         </div>
       </div>
     </div>

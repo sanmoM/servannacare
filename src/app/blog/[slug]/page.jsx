@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useFetch } from "@/hooks/useFetch";
 import Image from "next/image";
 import { notFound, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import DOMPurify from "dompurify";
+import { useEffect, useState } from "react";
 
 const BlogDetails = () => {
   const searchParams = useSearchParams();
@@ -32,7 +33,7 @@ const BlogDetails = () => {
 
   const blog = blogData?.blogs?.find((blog) => blog.id === parseInt(paramsId));
   const slug = blog.title.toLowerCase().replace(/ /g, "-");
-
+  console.log("single blog show here ", blog);
 
   if (!blog) {
     return notFound();
@@ -46,10 +47,8 @@ const BlogDetails = () => {
           <div className="md:col-span-5">
             <h2 className="sectionHeading mb-4 lg:mb-6">{blog?.title}</h2>
 
-            <p className="text-gray-700 mt-3 text-justify text-sm">
-              {blog?.description}
-            </p>
-            <div className="flex flex-col md:flex-row gap-4 my-10">
+            <div className="text-gray-700 mt-3 text-justify text-sm" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog?.description || "") }} />
+            {/* <div className="flex flex-col md:flex-row gap-4 my-10">
               <div className="w-full">
                 <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${blog.image}`}
@@ -62,7 +61,7 @@ const BlogDetails = () => {
                 />
               </div>
               <div className="w-full">
-               <Image
+                <Image
                   src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${blog.image}`}
                   alt={blog?.title}
                   // fill
@@ -72,31 +71,11 @@ const BlogDetails = () => {
                   className="rounded-md"
                 />
               </div>
-            </div>
-            <h2 className="sectionHeading ">{blog?.title}</h2>
+            </div> */}
+            {/* <h2 className="sectionHeading ">{blog?.title}</h2>
             <p className="text-gray-700 mt-4 lg:mt-6 text-justify text-sm">
                {blog?.description}
-            </p>
-
-            {/* <div className="mt-6 lg:mt-10">
-              <h2 className="sectionHeading">Leave a Reply</h2>
-              <form className="mt-3" action="">
-                <label
-                  className="text-gray-700 text-sm md:text-base"
-                  htmlFor="comment"
-                >
-                  Comment*
-                </label>
-                <textarea
-                  rows={7}
-                  className="border mt-2 w-full outline-primary p-4 rounded-xl"
-                  placeholder="Enter your comment..."
-                  name="comment"
-                  id="comment"
-                ></textarea>
-                <Button className={"cursor-pointer"} size={"lg"}>Send</Button>
-              </form>
-            </div> */}
+            </p> */}
           </div>
           <div className="md:col-span-2">
             <div className="md:sticky md:top-10 ">
