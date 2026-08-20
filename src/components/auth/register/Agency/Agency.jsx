@@ -12,27 +12,34 @@ import SignUpStart from "../SignUpStart";
 import { useRouter } from "next/navigation";
 import { postApi } from "@/lib/apiHandler";
 import { useAuth } from "@/hooks/useAuth";
-const validateEmployee = data => {
+import { isValidPhoneNumber } from "react-phone-number-input";
+
+const validateEmployee = (data) => {
   const errors = [];
   if (!data.name) errors.push("Full name is required");
-  if (!data.educationLevel) errors.push("Education level is required");
-  if (!data.location) errors.push("Location is required");
+  if (!data.age) errors.push("Age is required");
+  else if (Number(data.age) < 25) errors.push("Age must be 25 or above");
+  if (!data.education && !data.educationLevel) errors.push("Education level is required");
   if (!data.experience) errors.push("Experience is required");
   if (!data.salaryRange) errors.push("Salary range is required");
-  if (data.isMother === null) errors.push("Please select if you are a mother");
-  if (data.kidAges.length === 0) errors.push("Please select at least one kid age group");
-  if (data.handlePets === null) errors.push("Please select if you can handle pets");
+  if (!data.phone) errors.push("Phone number is required");
+  else if (!isValidPhoneNumber(data.phone)) errors.push("Phone number is invalid or incomplete");
+  if (!data.location) errors.push("Location is required");
+  if (!data.languages || data.languages.length === 0) errors.push("Please select at least one language");
+  if (!data.preferred || (Array.isArray(data.preferred) && data.preferred.length === 0)) {
+    errors.push("Please select at least one service preference");
+  }
+  if (data.isMother === null || data.isMother === undefined) errors.push("Please select if employee is a mother");
+  const kids = data.ageOfKids || data.kidAges || [];
+  if (kids.length === 0) errors.push("Please select at least one kid age group");
+  if (data.isHandelingPet === null && data.handlePets === null) errors.push("Please select preference for handling pets");
   if (!data.preferredRole) errors.push("Preferred role is required");
-  if (data.languages.length === 0) errors.push("Please select at least one language");
-  if (!data.cooking) errors.push("Select cooking skill");
-  if (!data.housekeeping) errors.push("Select housekeeping skill");
-  if (!data.childcare) errors.push("Select childcare skill");
-  if (!data.preferred) errors.push("service offered is required");
-  if (!data.goodConductCertificate) errors.push("Good conduct certificate require");
-  if (!data.idCopy) errors.push("Id copy require");
-  if (!data.profilePhoto) errors.push("Profile photo require");
-  if (!data.serviceFeeDay) errors.push("Service fee per day is required");
-  if (!data.serviceFeeMonth) errors.push("Service fee per month is required");
+  if (!data.cooking) errors.push("Select cooking skill proficiency");
+  if (!data.housekeeping) errors.push("Select housekeeping skill proficiency");
+  if (!data.childcare) errors.push("Select childcare skill proficiency");
+  if (!data.idCopy && !data.iDCopy) errors.push("ID copy is required");
+  if (!data.profilePhoto) errors.push("Profile photo is required");
+  if (!data.goodConductCertificate) errors.push("Good conduct certificate is required");
   return errors;
 };
 const Agency = () => {
@@ -95,33 +102,71 @@ const Agency = () => {
       const empFd = new FormData();
       ALLEMPLOYEES.forEach((employee, i) => {
         empFd.append(`employees[${i}][name]`, employee.name);
-        empFd.append(`employees[${i}][educationLevel]`, employee.educationLevel);
-        empFd.append(`employees[${i}][location]`, employee.location);
-        empFd.append(`employees[${i}][experience]`, employee.experience);
-        empFd.append(`employees[${i}][salaryRange]`, employee.salaryRange);
+        empFd.append(`employees[${i}][age]`, employee.age || "");
+        empFd.append(`employees[${i}][education]`, employee.education || employee.educationLevel || "");
+        empFd.append(`employees[${i}][educationLevel]`, employee.education || employee.educationLevel || "");
+        empFd.append(`employees[${i}][location]`, employee.location || "");
+        empFd.append(`employees[${i}][experience]`, employee.experience || "");
+        empFd.append(`employees[${i}][salaryRange]`, employee.salaryRange || "");
+        empFd.append(`employees[${i}][phone]`, employee.phone || "");
+        empFd.append(`employees[${i}][number_two]`, employee.phone || "");
         empFd.append(`employees[${i}][serviceFeeDay]`, employee.serviceFeeDay || "");
         empFd.append(`employees[${i}][serviceFeeMonth]`, employee.serviceFeeMonth || "");
-        empFd.append(`employees[${i}][isMother]`, employee.isMother === "Yes" ? 1 : 0);
-        empFd.append(`employees[${i}][handlePets]`, employee.handlePets === "Yes" ? 1 : 0);
-        empFd.append(`employees[${i}][preferredRole]`, employee.preferredRole);
-        empFd.append(`employees[${i}][cooking]`, employee.cooking);
-        empFd.append(`employees[${i}][housekeeping]`, employee.housekeeping);
-        empFd.append(`employees[${i}][childcare]`, employee.childcare);
+        empFd.append(
+          `employees[${i}][isMother]`,
+          employee.isMother === true || employee.isMother === "Yes" || employee.isMother === 1 ? 1 : 0
+        );
+        empFd.append(
+          `employees[${i}][isHandelingPet]`,
+          employee.isHandelingPet === true || employee.isHandelingPet === "Yes" || employee.isHandelingPet === 1 || employee.handlePets === true || employee.handlePets === "Yes" || employee.handlePets === 1 ? 1 : 0
+        );
+        empFd.append(
+          `employees[${i}][handlePets]`,
+          employee.isHandelingPet === true || employee.isHandelingPet === "Yes" || employee.isHandelingPet === 1 || employee.handlePets === true || employee.handlePets === "Yes" || employee.handlePets === 1 ? 1 : 0
+        );
+        empFd.append(`employees[${i}][preferredRole]`, employee.preferredRole || "");
+        empFd.append(`employees[${i}][cooking]`, employee.cooking || "");
+        empFd.append(`employees[${i}][housekeeping]`, employee.housekeeping || "");
+        empFd.append(`employees[${i}][childcare]`, employee.childcare || "");
         if (Array.isArray(employee.preferred)) {
-          employee.preferred.forEach(pref => empFd.append(`employees[${i}][preferred][]`, pref));
-        } else {
-          empFd.append(`employees[${i}][preferred]`, employee.preferred || "");
+          employee.preferred.forEach((pref) =>
+            empFd.append(`employees[${i}][preferred][]`, pref)
+          );
+        } else if (employee.preferred) {
+          empFd.append(`employees[${i}][preferred][]`, employee.preferred);
         }
-        empFd.append(`employees[${i}][bio]`, employee.bio);
-        if (employee.idCopy) empFd.append(`employees[${i}][idCopy]`, employee.idCopy);
-        if (employee.profilePhoto) empFd.append(`employees[${i}][profilePhoto]`, employee.profilePhoto);
-        if (employee.drivingLicense) empFd.append(`employees[${i}][drivingLicense]`, employee.drivingLicense);
-        if (employee.goodConductCertificate) empFd.append(`employees[${i}][goodConductCertificate]`, employee.goodConductCertificate);
-        if (employee.aidCertificate) empFd.append(`employees[${i}][aidCertificate]`, employee.aidCertificate);
-        employee.kidAges?.forEach(age => {
+        empFd.append(`employees[${i}][bio]`, employee.bio || "");
+        if (employee.idCopy || employee.iDCopy) {
+          empFd.append(`employees[${i}][idCopy]`, employee.idCopy || employee.iDCopy);
+        }
+        if (employee.profilePhoto) {
+          empFd.append(`employees[${i}][profilePhoto]`, employee.profilePhoto);
+        }
+        if (employee.drivingLicense) {
+          empFd.append(`employees[${i}][drivingLicense]`, employee.drivingLicense);
+        }
+        if (employee.goodConductCertificate) {
+          empFd.append(
+            `employees[${i}][goodConductCertificate]`,
+            employee.goodConductCertificate
+          );
+        }
+        if (employee.firstAidCertificate || employee.aidCertificate) {
+          empFd.append(
+            `employees[${i}][firstAidCertificate]`,
+            employee.firstAidCertificate || employee.aidCertificate
+          );
+          empFd.append(
+            `employees[${i}][aidCertificate]`,
+            employee.firstAidCertificate || employee.aidCertificate
+          );
+        }
+        const kids = employee.ageOfKids || employee.kidAges || [];
+        kids.forEach((age) => {
+          empFd.append(`employees[${i}][ageOfKids][]`, age);
           empFd.append(`employees[${i}][kidAges][]`, age);
         });
-        employee.languages?.forEach(lang => {
+        employee.languages?.forEach((lang) => {
           empFd.append(`employees[${i}][languages][]`, lang);
         });
       });

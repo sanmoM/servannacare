@@ -37,6 +37,7 @@ import {
   FileCheck,
   Home,
   Utensils,
+  ExternalLink,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
@@ -120,7 +121,83 @@ const ProfilePageContent = () => {
     matchedData.physiotherapist ||
     matchedData.nurse_assistant ||
     matchedData.special_need ||
-    matchedData.home_health_assistant;
+    matchedData.home_health_assistant ||
+    matchedData.agency_employee;
+
+  // Normalized specialist attributes supporting both House Manager & Agency Employee
+  const age = matchedData.age || roleSpecificInfo?.age;
+  const experience = roleSpecificInfo?.experience || matchedData?.experience;
+  const education =
+    matchedData.education ||
+    matchedData.educationLevel ||
+    roleSpecificInfo?.education;
+  const phone =
+    matchedData.phone ||
+    matchedData.number_two ||
+    matchedData.number ||
+    roleSpecificInfo?.phone;
+  const location = matchedData.location || roleSpecificInfo?.location;
+  const bio = matchedData.bio || roleSpecificInfo?.bio;
+  const dailySalary =
+    roleSpecificInfo?.serviceFeeDay || matchedData?.serviceFeeDay;
+  const monthlySalary =
+    roleSpecificInfo?.serviceFeeMonth || matchedData?.serviceFeeMonth;
+  const salaryRange =
+    roleSpecificInfo?.salaryRange || matchedData?.salaryRange;
+  const isMother =
+    roleSpecificInfo?.isMother ?? matchedData?.isMother;
+  const isHandelingPet =
+    roleSpecificInfo?.isHandelingPet ??
+    matchedData?.isHandelingPet ??
+    matchedData?.handlePets;
+  const ageOfKids =
+    roleSpecificInfo?.ageOfKids ||
+    matchedData?.ageOfKids ||
+    matchedData?.kidAges ||
+    [];
+  const preferredRole =
+    matchedData.preferredRole || roleSpecificInfo?.preferredRole;
+  const cookingSkill = roleSpecificInfo?.cooking || matchedData?.cooking;
+  const housekeepingSkill =
+    roleSpecificInfo?.housekeeping || matchedData?.housekeeping;
+  const childcareSkill = roleSpecificInfo?.childcare || matchedData?.childcare;
+  const firstAidCert =
+    roleSpecificInfo?.firstAidCertificate ||
+    matchedData?.firstAidCertificate ||
+    matchedData?.aidCertificate;
+  const goodConductCert =
+    matchedData?.goodConductCertificate ||
+    roleSpecificInfo?.goodConductCertificate;
+  const idCopy =
+    matchedData?.idCopy || matchedData?.id_copy || roleSpecificInfo?.idCopy;
+  const drivingLicense =
+    matchedData?.drivingLicense ||
+    matchedData?.driving_license ||
+    roleSpecificInfo?.drivingLicense ||
+    matchedData?.canDrive;
+
+  // Agency data for Agency Employees
+  const isAgencyEmployee = matchedData.type === "agency-employee";
+  const agency = matchedData.agency || matchedData.agency_details || {};
+  const agencyName =
+    agency.companyName ||
+    agency.name ||
+    matchedData.agencyName ||
+    matchedData.companyName;
+  const agencyLocation =
+    agency.businessLocation || agency.location || matchedData.agencyLocation;
+  const agencyPhone =
+    agency.number || agency.phone || matchedData.agencyPhone;
+  const agencyEmail = agency.email || agency.user?.email;
+  const agencyRegNumber =
+    agency.companyRegistrationNumber || agency.registrationNumber;
+  const agencyKraPin = agency.kraPin || agency.pin;
+  const agencyPlacementFee = agency.placementFee;
+  const agencyReplacementWindow = agency.replacementWindow;
+  const agencyReplacementCount = agency.numberOfReplacement;
+  const agencyServices =
+    agency.agency_services || agency.trainingAreas || [];
+  const agencyRegistrationDoc = agency.registrationDocument;
 
   // Rating Status
   const hasReviews =
@@ -163,10 +240,6 @@ const ProfilePageContent = () => {
   };
 
   const preferredArrangements = getPreferredArrangements();
-  const cookingSkill = roleSpecificInfo?.cooking || matchedData?.cooking;
-  const housekeepingSkill =
-    roleSpecificInfo?.housekeeping || matchedData?.housekeeping;
-  const childcareSkill = roleSpecificInfo?.childcare || matchedData?.childcare;
   const hasSkillProficiency = Boolean(
     cookingSkill || housekeepingSkill || childcareSkill,
   );
@@ -175,26 +248,27 @@ const ProfilePageContent = () => {
   const skillsList = [
     {
       name: "First Aid Certificate",
-      has: !!roleSpecificInfo?.firstAidCertificate,
+      has: !!firstAidCert,
     },
     {
       name: "Good Conduct Certificate",
-      has: !!matchedData?.goodConductCertificate,
+      has: !!goodConductCert,
     },
     {
       name: "Pet Handling",
-      has: !!roleSpecificInfo?.isHandelingPet,
+      has: isHandelingPet === 1 || isHandelingPet === true || isHandelingPet === "Yes",
     },
     {
       name: "Mother Status",
-      has: !!roleSpecificInfo?.isMother,
+      has: isMother === 1 || isMother === true || isMother === "Yes",
     },
     {
       name: "Comfortable with Kids",
-      has: roleSpecificInfo?.ageOfKids && roleSpecificInfo.ageOfKids.length > 0,
-      details: roleSpecificInfo?.ageOfKids
-        ? `Ages: ${roleSpecificInfo.ageOfKids.join(", ")}`
-        : "",
+      has: Array.isArray(ageOfKids) && ageOfKids.length > 0,
+      details:
+        Array.isArray(ageOfKids) && ageOfKids.length > 0
+          ? `Ages: ${ageOfKids.join(", ")}`
+          : "",
     },
     {
       name: "Hospital Based Care",
@@ -222,10 +296,7 @@ const ProfilePageContent = () => {
     items.push({ name: "Verified Identity", verified: identityVerified });
 
     // 2. Trade License / Good Conduct
-    const hasGoodConduct = !!(
-      matchedData.goodConductCertificate ||
-      roleSpecificInfo?.goodConductCertificate
-    );
+    const hasGoodConduct = !!goodConductCert;
     if (hasGoodConduct) score += 15;
     items.push({
       name: "Trade License / Good Conduct",
@@ -233,37 +304,28 @@ const ProfilePageContent = () => {
     });
 
     // 3. NID/Passport (Government ID Copy)
-    const hasIdCopy = !!(
-      matchedData.idCopy ||
-      matchedData.id_copy ||
-      roleSpecificInfo?.idCopy
-    );
+    const hasIdCopy = !!idCopy;
     if (hasIdCopy) score += 15;
     items.push({ name: "NID/Passport Uploaded", verified: hasIdCopy });
 
     // 4. Professional Certification (First Aid Certificate)
-    const hasCert = !!roleSpecificInfo?.firstAidCertificate;
+    const hasCert = !!firstAidCert;
     if (hasCert) score += 15;
     items.push({ name: "Professional Certification", verified: hasCert });
 
     // 5. Experience Verified
-    const hasExperience = !!roleSpecificInfo?.experience;
+    const hasExperience = !!experience;
     if (hasExperience) score += 10;
     items.push({ name: "Experience Verified", verified: hasExperience });
 
     // 6. Driving License Verified
-    const hasLicense = !!(
-      matchedData.drivingLicense ||
-      matchedData.driving_license ||
-      roleSpecificInfo?.drivingLicense ||
-      matchedData.canDrive
-    );
+    const hasLicense = !!drivingLicense;
     if (hasLicense) score += 5;
     items.push({ name: "Driving License", verified: hasLicense });
 
     // 7. Phone Verified
     const phoneVerified = !!(
-      matchedData.phone ||
+      phone ||
       matchedData.is_phone_verified ||
       matchedData.phone_verified
     );
@@ -320,24 +382,12 @@ const ProfilePageContent = () => {
               <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight capitalize">
                 {matchedData?.name}
               </h1>
-              {/* {preferredArrangements.map((item, idx) => (
-                <Badge
-                  key={idx}
-                  className={`font-bold px-2.5 py-0.5 rounded-md text-xs shrink-0 ${
-                    item === "LIVE IN"
-                      ? "bg-purple-100 text-purple-800 border border-purple-300"
-                      : "bg-teal-100 text-teal-800 border border-teal-300"
-                  }`}
-                >
-                  {item}
-                </Badge>
-              ))} */}
               {matchedData.is_profile_verified && (
                 <Badge className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 font-medium px-2 py-0.5 rounded-md text-xs flex items-center gap-1 shrink-0">
                   <ShieldCheck className="w-3.5 h-3.5" /> Verified
                 </Badge>
               )}
-              {matchedData.type === "agency-employee" && (
+              {isAgencyEmployee && (
                 <Badge className="bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary/20 font-medium px-2 py-0.5 rounded-md text-xs shrink-0">
                   AGENCY LISTED
                 </Badge>
@@ -353,10 +403,14 @@ const ProfilePageContent = () => {
               </div>
               <div className="flex items-center gap-1.5 font-medium">
                 <MapPin className="w-4 h-4 text-primary" />
-                <span className="capitalize">
-                  {matchedData?.location || "N/A"}
-                </span>
+                <span className="capitalize">{location || "N/A"}</span>
               </div>
+              {isAgencyEmployee && agencyName && (
+                <div className="flex items-center gap-1.5 font-medium text-primary">
+                  <Building className="w-4 h-4" />
+                  <span>Agency: {agencyName}</span>
+                </div>
+              )}
             </div>
 
             {/* Rating Section */}
@@ -418,21 +472,21 @@ const ProfilePageContent = () => {
                 {[
                   {
                     label: "Age",
-                    value: matchedData.age ? `${matchedData.age} Years` : "N/A",
+                    value: age ? `${age} Years` : "N/A",
                     icon: User,
                   },
                   {
                     label: "Education Level",
-                    value: matchedData.education || "Not specified",
+                    value: education || "Not specified",
                     icon: GraduationCap,
                   },
                   {
                     label: "Experience",
                     value:
-                      roleSpecificInfo?.experience === "more"
+                      experience === "more"
                         ? "5+ Years"
-                        : roleSpecificInfo?.experience
-                          ? `${roleSpecificInfo.experience} Years`
+                        : experience
+                          ? `${experience} Years`
                           : "N/A",
                     icon: Briefcase,
                   },
@@ -453,13 +507,13 @@ const ProfilePageContent = () => {
                   },
                   {
                     label: "Can Drive",
-                    value: matchedData.canDrive ? "Yes" : "No",
+                    value: drivingLicense ? "Yes" : "No",
                     icon: Car,
                   },
                   {
                     label: "Preferred Role",
                     value:
-                      matchedData.preferredRole ||
+                      preferredRole ||
                       (matchedData.preferred?.length
                         ? matchedData.preferred.join(", ")
                         : "N/A"),
@@ -495,7 +549,7 @@ const ProfilePageContent = () => {
                 About Specialist
               </h2>
               <p className="text-muted-foreground leading-relaxed text-sm">
-                {matchedData?.bio || "No biography provided by the specialist."}
+                {bio || "No biography provided by the specialist."}
               </p>
             </div>
 
@@ -514,9 +568,9 @@ const ProfilePageContent = () => {
                       Experience
                     </span>
                     <span className="font-bold text-foreground">
-                      {roleSpecificInfo?.experience === "more"
+                      {experience === "more"
                         ? "More than 5 years"
-                        : `${roleSpecificInfo?.experience || 0} years`}
+                        : `${experience || 0} years`}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
@@ -524,7 +578,7 @@ const ProfilePageContent = () => {
                       Education Background
                     </span>
                     <span className="font-bold text-foreground capitalize">
-                      {matchedData.education || "Not specified"}
+                      {education || "Not specified"}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
@@ -538,6 +592,14 @@ const ProfilePageContent = () => {
                       {matchedData.languages?.join(", ") || "N/A"}
                     </span>
                   </div>
+                  <div className="flex justify-between border-b border-border/60 pb-2">
+                    <span className="text-muted-foreground font-medium">
+                      Phone
+                    </span>
+                    <span className="font-bold text-foreground">
+                      {phone || "N/A"}
+                    </span>
+                  </div>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between border-b border-border/60 pb-2">
@@ -545,11 +607,10 @@ const ProfilePageContent = () => {
                       Preferred Role
                     </span>
                     <span className="font-bold text-foreground capitalize">
-                      {/* {matchedData.preferredRole || "N/A"} */}
-                      {matchedData.preferredRole ||
-                      (matchedData.preferred?.length
-                        ? matchedData.preferred.join(", ")
-                        : "N/A")}
+                      {preferredRole ||
+                        (matchedData.preferred?.length
+                          ? matchedData.preferred.join(", ")
+                          : "N/A")}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
@@ -567,7 +628,7 @@ const ProfilePageContent = () => {
                       Location
                     </span>
                     <span className="font-bold text-foreground capitalize">
-                      {matchedData.location || "N/A"}
+                      {location || "N/A"}
                     </span>
                   </div>
                   <div className="flex justify-between border-b border-border/60 pb-2">
@@ -575,7 +636,7 @@ const ProfilePageContent = () => {
                       Age
                     </span>
                     <span className="font-bold text-foreground">
-                      {matchedData.age ? `${matchedData.age} years old` : "N/A"}
+                      {age ? `${age} years old` : "N/A"}
                     </span>
                   </div>
                 </div>
@@ -594,15 +655,15 @@ const ProfilePageContent = () => {
                 {[
                   {
                     label: "Daily Salary",
-                    val: roleSpecificInfo?.serviceFeeDay,
+                    val: dailySalary,
                   },
                   {
                     label: "Monthly Salary",
-                    val: roleSpecificInfo?.serviceFeeMonth,
+                    val: monthlySalary,
                   },
                   {
                     label: "Total Salary Expectation",
-                    val: roleSpecificInfo?.salaryRange,
+                    val: salaryRange,
                   },
                 ].map((item, idx) => (
                   <div
@@ -736,6 +797,157 @@ const ProfilePageContent = () => {
               </>
             )}
 
+            {/* AGENCY DETAILS SECTION (Agency Employees Only) */}
+            {isAgencyEmployee && (
+              <>
+                <hr className="border-border" />
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Building className="w-5 h-5 text-primary" />
+                      Associated Agency Details
+                    </h2>
+                    <Badge className="bg-primary/10 text-primary border border-primary/20 font-semibold px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      Agency Partner
+                    </Badge>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent border border-primary/20 rounded-2xl p-6 space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border/80">
+                      <div className="space-y-1">
+                        <p className="text-xs font-bold text-primary tracking-wider uppercase">
+                          Representing Agency
+                        </p>
+                        <h3 className="text-xl font-black text-foreground">
+                          {agencyName || "Registered Partner Agency"}
+                        </h3>
+                        {agencyLocation && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1 font-medium">
+                            <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                            {agencyLocation}
+                          </p>
+                        )}
+                      </div>
+                      {agencyPhone && (
+                        <div className="flex items-center gap-2 bg-background/80 border border-border px-3.5 py-2 rounded-xl text-sm font-semibold text-foreground">
+                          <Phone className="w-4 h-4 text-primary shrink-0" />
+                          <span>{agencyPhone}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Agency Key Stats */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="p-4 bg-background/70 border border-border rounded-xl">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                          Placement Fee
+                        </span>
+                        <p className="text-base font-bold text-foreground">
+                          {agencyPlacementFee
+                            ? `KSh ${agencyPlacementFee}`
+                            : "Standard Rate"}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-background/70 border border-border rounded-xl">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                          Replacement Window
+                        </span>
+                        <p className="text-base font-bold text-foreground">
+                          {agencyReplacementWindow
+                            ? `${agencyReplacementWindow} Months`
+                            : "Standard Window"}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-background/70 border border-border rounded-xl">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                          Replacements Offered
+                        </span>
+                        <p className="text-base font-bold text-foreground">
+                          {agencyReplacementCount
+                            ? `${agencyReplacementCount} Replacements`
+                            : "Available"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Agency Meta & Training Areas */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm pt-2">
+                      <div className="space-y-2.5">
+                        {agencyRegNumber && (
+                          <div className="flex justify-between border-b border-border/60 pb-2">
+                            <span className="text-muted-foreground font-medium text-xs">
+                              Registration No.
+                            </span>
+                            <span className="font-bold text-foreground text-xs">
+                              {agencyRegNumber}
+                            </span>
+                          </div>
+                        )}
+                        {agencyKraPin && (
+                          <div className="flex justify-between border-b border-border/60 pb-2">
+                            <span className="text-muted-foreground font-medium text-xs">
+                              KRA PIN
+                            </span>
+                            <span className="font-bold text-foreground text-xs">
+                              {agencyKraPin}
+                            </span>
+                          </div>
+                        )}
+                        {agencyEmail && (
+                          <div className="flex justify-between border-b border-border/60 pb-2">
+                            <span className="text-muted-foreground font-medium text-xs">
+                              Email
+                            </span>
+                            <span className="font-bold text-foreground text-xs">
+                              {agencyEmail}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
+                          Agency Training & Specialties
+                        </span>
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {agencyServices.length > 0 ? (
+                            agencyServices.map((area, idx) => (
+                              <span
+                                key={idx}
+                                className="text-xs font-semibold px-2.5 py-1 rounded-md bg-background border border-border text-foreground"
+                              >
+                                {area}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-xs text-muted-foreground italic">
+                              Professional household & childcare training provided
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {agencyRegistrationDoc && (
+                      <div className="pt-2">
+                        <a
+                          href={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${agencyRegistrationDoc}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline"
+                        >
+                          <FileText className="w-4 h-4" />
+                          View Agency Registration Certificate
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
             <hr className="border-border" />
 
             {/* TRUST & VERIFICATION */}
@@ -844,8 +1056,6 @@ const ProfilePageContent = () => {
               )}
             </div>
 
-            <hr className="border-border" />
-
             {/* SERVICES SECTION */}
             {matchedData.services && matchedData.services.length > 0 && (
               <>
@@ -898,6 +1108,11 @@ const ProfilePageContent = () => {
                   <p className="text-[10px] font-bold text-primary tracking-wider uppercase mt-1">
                     {matchedData?.subRole?.replace("-", " ")}
                   </p>
+                  {isAgencyEmployee && agencyName && (
+                    <p className="text-xs text-muted-foreground font-medium mt-0.5">
+                      via {agencyName}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -910,7 +1125,7 @@ const ProfilePageContent = () => {
                   </span>
                   <span className="text-foreground font-bold capitalize flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                    {matchedData?.location || "N/A"}
+                    {location || "N/A"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">

@@ -24,7 +24,7 @@ const BasicInfo = ({ defaultValues, onNext }) => {
 
   const [data, setData] = useState({
     name: defaultValues.name || "",
-    age: defaultValues.name || "",
+    age: defaultValues.age || "",
     education: defaultValues.education || "",
     experience: defaultValues.experience || "",
     salaryRange: defaultValues.salaryRange || "",

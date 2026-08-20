@@ -8,7 +8,28 @@ import AgencyEmployee from "@/components/updateProfile/Agency/AgencyEmployee";
 import DashboardAddEmployees from "@/components/updateProfile/Agency/DashboardAddEmployees";
 import PaymentModal from "@/components/updateProfile/Agency/PaymentModal";
 import { useFetch } from "@/hooks/useFetch";
-import { Eye, Edit, Trash, Plus, MapPin, Briefcase, GraduationCap, Languages, Baby, Heart, ShieldCheck, Banknote, Calendar, Star } from "lucide-react";
+import {
+  Eye,
+  Edit,
+  Trash,
+  Plus,
+  MapPin,
+  Briefcase,
+  GraduationCap,
+  Languages,
+  Baby,
+  Heart,
+  ShieldCheck,
+  Banknote,
+  Calendar,
+  Star,
+  Phone,
+  User,
+  Home,
+  Car,
+  Utensils,
+  Sparkles,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { deleteApi } from "@/lib/apiHandler";
 import SelectableCalendar from "@/components/SelectableCalendar";
@@ -204,43 +225,74 @@ const EmployeePage = () => {
                               </DialogTitle>
                             </DialogHeader>
 
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-                              <InfoTile label="Education" value={emp.educationLevel} icon={<GraduationCap className="text-primary" size={16} />} />
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 max-h-[70vh] overflow-y-auto pr-1">
+                              <InfoTile label="Age" value={emp.age ? `${emp.age} Years` : "N/A"} icon={<User className="text-primary" size={16} />} />
+                              <InfoTile label="Phone Number" value={emp.phone || emp.number_two || emp.number} icon={<Phone className="text-primary" size={16} />} />
+                              <InfoTile label="Location" value={emp.location} icon={<MapPin className="text-primary" size={16} />} />
+                              <InfoTile label="Education" value={emp.education || emp.educationLevel} icon={<GraduationCap className="text-primary" size={16} />} />
+                              <InfoTile label="Experience" value={emp.experience === "more" ? "5+ Years" : emp.experience ? `${emp.experience} Years` : "N/A"} icon={<Briefcase className="text-primary" size={16} />} />
+                              <InfoTile label="Salary Range" value={emp.salaryRange ? `KSh ${emp.salaryRange}` : "N/A"} icon={<Banknote className="text-primary" size={16} />} />
+                              <InfoTile label="Daily Rate" value={emp.serviceFeeDay ? `KSh ${emp.serviceFeeDay}` : "N/A"} icon={<Banknote className="text-primary" size={16} />} />
+                              <InfoTile label="Monthly Rate" value={emp.serviceFeeMonth ? `KSh ${emp.serviceFeeMonth}` : "N/A"} icon={<Banknote className="text-primary" size={16} />} />
+                              <InfoTile label="Service Arrangement" value={Array.isArray(emp.preferred) ? emp.preferred.join(", ") : emp.preferred} icon={<Home className="text-primary" size={16} />} />
+                              <InfoTile label="Preferred Role" value={emp.preferredRole} icon={<Briefcase className="text-primary" size={16} />} />
                               <InfoTile label="Languages" value={emp.languages?.join(", ")} icon={<Languages className="text-primary" size={16} />} />
-                              <InfoTile label="Cooking Skill" value={emp.cooking} icon={<Heart className="text-primary" size={16} />} />
-                              <InfoTile label="Housekeeping" value={emp.housekeeping} icon={<ShieldCheck className="text-primary" size={16} />} />
                               <InfoTile label="Motherhood" value={emp.isMother ? "Yes" : "No"} icon={<Baby className="text-primary" size={16} />} />
+                              <InfoTile label="Pets" value={emp.isHandelingPet ?? emp.handlePets ? "Comfortable" : "No"} icon={<ShieldCheck className="text-primary" size={16} />} />
+                              <InfoTile label="Kids Ages Handled" value={(emp.ageOfKids || emp.kidAges)?.join(", ")} icon={<Baby className="text-primary" size={16} />} />
+                              <InfoTile label="Cooking Skill" value={emp.cooking} icon={<Utensils className="text-primary" size={16} />} />
+                              <InfoTile label="Housekeeping" value={emp.housekeeping} icon={<Sparkles className="text-primary" size={16} />} />
                               <InfoTile label="Childcare" value={emp.childcare} icon={<Heart className="text-primary" size={16} />} />
-                              <InfoTile label="Kids Ages Handled" value={emp.kidAges?.join(", ")} icon={<Baby className="text-primary" size={16} />} />
-                              <InfoTile label="Pets" value={emp.handlePets ? "Comfortable" : "No"} icon={<ShieldCheck className="text-primary" size={16} />} />
-                              <InfoTile label="Created At" value={new Date(emp.created_at).toLocaleDateString()} icon={<Calendar className="text-primary" size={16} />} />
+                              <InfoTile label="Created At" value={emp.created_at ? new Date(emp.created_at).toLocaleDateString() : "N/A"} icon={<Calendar className="text-primary" size={16} />} />
                             </div>
 
-                            {emp.schedule?.length > 0 && emp.schedule[0]?.date?.length > 0 && <div className="mt-6">
-                                  <div className="flex items-center justify-between">
-                                    <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                                      <Calendar className="text-primary" size={16} />
-                                      Schedule
-                                    </h4>
+                            {emp.bio && (
+                              <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+                                <span className="text-xs font-bold text-gray-500 uppercase">Bio</span>
+                                <p className="text-sm text-gray-700 mt-1">{emp.bio}</p>
+                              </div>
+                            )}
 
-                                    <Button className="cursor-pointer" size="sm" variant="outline" onClick={() => setScheduleViewId(emp.id)} isActionLoading={isActionLoading}>
-                                      View
-                                    </Button>
-                                  </div>
-                                </div>}
+                            {emp.schedule?.length > 0 && emp.schedule[0]?.date?.length > 0 && (
+                              <div className="mt-4">
+                                <div className="flex items-center justify-between">
+                                  <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                    <Calendar className="text-primary" size={16} />
+                                    Schedule
+                                  </h4>
+                                  <Button className="cursor-pointer" size="sm" variant="outline" onClick={() => setScheduleViewId(emp.id)} isActionLoading={isActionLoading}>
+                                    View
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
 
                             <div className="mt-6 flex flex-wrap gap-2 pt-4 border-t">
-                              {emp.idCopy && <Button variant="outline" className="text-xs h-8 cursor-pointer" onClick={() => openFile(emp.idCopy)} isActionLoading={isActionLoading}>
+                              {emp.idCopy && (
+                                <Button variant="outline" className="text-xs h-8 cursor-pointer" onClick={() => openFile(emp.idCopy)} isActionLoading={isActionLoading}>
                                   View ID Copy
-                                </Button>}
-
-                              {emp.aidCertificate && <Button variant="outline" className="text-xs h-8 cursor-pointer" onClick={() => openFile(emp.aidCertificate)} isActionLoading={isActionLoading}>
-                                  Aid Certificate
-                                </Button>}
-
-                              {emp.goodConductCertificate && <Button variant="outline" className="text-xs h-8 cursor-pointer" onClick={() => openFile(emp.goodConductCertificate)} isActionLoading={isActionLoading}>
+                                </Button>
+                              )}
+                              {emp.profilePhoto && (
+                                <Button variant="outline" className="text-xs h-8 cursor-pointer" onClick={() => openFile(emp.profilePhoto)} isActionLoading={isActionLoading}>
+                                  View Profile Photo
+                                </Button>
+                              )}
+                              {emp.goodConductCertificate && (
+                                <Button variant="outline" className="text-xs h-8 cursor-pointer" onClick={() => openFile(emp.goodConductCertificate)} isActionLoading={isActionLoading}>
                                   Good Conduct Certificate
-                                </Button>}
+                                </Button>
+                              )}
+                              {(emp.firstAidCertificate || emp.aidCertificate) && (
+                                <Button variant="outline" className="text-xs h-8 cursor-pointer" onClick={() => openFile(emp.firstAidCertificate || emp.aidCertificate)} isActionLoading={isActionLoading}>
+                                  First Aid Certificate
+                                </Button>
+                              )}
+                              {emp.drivingLicense && (
+                                <Button variant="outline" className="text-xs h-8 cursor-pointer" onClick={() => openFile(emp.drivingLicense)} isActionLoading={isActionLoading}>
+                                  Driving License
+                                </Button>
+                              )}
                             </div>
                           </DialogContent>
                         </Dialog>

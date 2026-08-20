@@ -212,18 +212,22 @@ const ProfileCard = ({ profile }) => {
                 value={preferredArrangements.join(" / ")}
               />
             )}
-            {profile.experience && (
+            {(profile.experience || profile.house_manager?.experience) && (
               <InfoItem
                 icon={Briefcase}
                 label="Experience"
-                value={`${profile.experience} years`}
+                value={
+                  (profile.experience || profile.house_manager?.experience) === "more"
+                    ? "5+ years"
+                    : `${profile.experience || profile.house_manager?.experience} years`
+                }
               />
             )}
-            {profile.education && (
+            {(profile.education || profile.educationLevel || profile.house_manager?.education) && (
               <InfoItem
                 icon={GraduationCap}
                 label="Education"
-                value={profile.education}
+                value={profile.education || profile.educationLevel || profile.house_manager?.education}
               />
             )}
             {profile.location && (

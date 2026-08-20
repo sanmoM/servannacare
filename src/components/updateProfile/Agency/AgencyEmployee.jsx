@@ -6,9 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { languages } from "@/utilities/data";
-import { Camera, ClipboardPlus, Cross, FileText, IdCard, IdCardLanyard } from "lucide-react";
+import {
+  Cross,
+  FileText,
+  IdCard,
+  IdCardLanyard,
+  Image as ImageIcon,
+} from "lucide-react";
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { postApi } from "@/lib/apiHandler";
@@ -18,567 +32,765 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import FilePreview from "@/components/auth/register/FilePreview";
-const AgencyEmployee = ({
-  initialData,
-  isUpdate,
-  onSuccess
-}) => {
+
+const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [ready, setReady] = useState(!isUpdate);
   const [country, setCountry] = useState("KE");
+
+  const preferredOptions = [
+    { title: "Live In" },
+    { title: "DayBurg" },
+  ];
+
   const [formData, setFormData] = useState({
     name: "",
-    educationLevel: "",
-    location: "",
+    age: "",
+    education: "",
     experience: "",
-    phone: "",
     salaryRange: "",
-    isMother: null,
-    kidAges: [],
-    handlePets: null,
-    preferredRole: "",
+    phone: "",
+    preferred: [],
+    location: "",
     languages: [],
+    isMother: null,
+    ageOfKids: [],
+    isHandelingPet: null,
+    preferredRole: "",
     cooking: "",
     housekeeping: "",
     childcare: "",
-    date: [],
-    preferred: "",
     serviceFeeDay: "",
     serviceFeeMonth: "",
+    bio: "",
+    date: [],
     documents: {
-      aidCertificate: null,
-      goodConductCertificate: null,
       idCopy: null,
       profilePhoto: null,
-      drivingLicense: null
-    }
+      goodConductCertificate: null,
+      firstAidCertificate: null,
+      drivingLicense: null,
+    },
   });
+
   useEffect(() => {
     if (initialData && isUpdate) {
+      let pref = [];
+      if (Array.isArray(initialData.preferred)) {
+        pref = initialData.preferred;
+      } else if (initialData.preferred) {
+        pref = [initialData.preferred];
+      }
+
       setFormData({
         name: initialData.name || "",
-        educationLevel: initialData.educationLevel || "",
+        age: initialData.age || "",
+        education: initialData.education || initialData.educationLevel || "",
         location: initialData.location || "",
         experience: initialData.experience || "",
         salaryRange: initialData.salaryRange || "",
-        phone: initialData.number_two || "",
+        phone: initialData.phone || initialData.number_two || initialData.number || "",
+        preferred: pref,
         preferredRole: initialData.preferredRole || "",
-        preferred: initialData.preferred || "",
         cooking: initialData.cooking || "",
         housekeeping: initialData.housekeeping || "",
         childcare: initialData.childcare || "",
-        date: initialData.schedule?.length ? initialData.schedule[0].date : [],
-        isMother: initialData.isMother === 1,
-        handlePets: initialData.handlePets === 1,
-        kidAges: initialData.kidAges || [],
-        languages: initialData.languages || [],
         serviceFeeDay: initialData.serviceFeeDay || "",
         serviceFeeMonth: initialData.serviceFeeMonth || "",
+        bio: initialData.bio || "",
+        date: initialData.schedule?.length ? initialData.schedule[0].date : [],
+        isMother: initialData.isMother === 1 || initialData.isMother === true,
+        isHandelingPet:
+          initialData.isHandelingPet === 1 ||
+          initialData.isHandelingPet === true ||
+          initialData.handlePets === 1 ||
+          initialData.handlePets === true,
+        ageOfKids: initialData.ageOfKids || initialData.kidAges || [],
+        languages: initialData.languages || [],
         documents: {
-          aidCertificate: initialData.aidCertificate !== "null" ? initialData.aidCertificate : null,
-          goodConductCertificate: initialData.goodConductCertificate !== "null" ? initialData.goodConductCertificate : null,
-          idCopy: initialData.idCopy !== "null" ? initialData.idCopy : null,
-          profilePhoto: initialData.profilePhoto !== "null" ? initialData.profilePhoto : null,
-          drivingLicense: initialData.drivingLicense !== "null" ? initialData.drivingLicense : null
-        }
+          idCopy: initialData.idCopy && initialData.idCopy !== "null" ? initialData.idCopy : null,
+          profilePhoto: initialData.profilePhoto && initialData.profilePhoto !== "null" ? initialData.profilePhoto : null,
+          goodConductCertificate:
+            initialData.goodConductCertificate && initialData.goodConductCertificate !== "null"
+              ? initialData.goodConductCertificate
+              : null,
+          firstAidCertificate:
+            (initialData.firstAidCertificate || initialData.aidCertificate) &&
+            initialData.firstAidCertificate !== "null" &&
+            initialData.aidCertificate !== "null"
+              ? initialData.firstAidCertificate || initialData.aidCertificate
+              : null,
+          drivingLicense:
+            initialData.drivingLicense && initialData.drivingLicense !== "null"
+              ? initialData.drivingLicense
+              : null,
+        },
       });
       setReady(true);
     }
   }, [initialData, isUpdate]);
-  const validateForm = data => {
-    const requiredFields = ["name", "educationLevel", "location", "experience", "phone", "salaryRange", "preferredRole", "preferred", "cooking", "housekeeping", "childcare", "serviceFeeDay", "serviceFeeMonth"];
+
+  const validateForm = (data) => {
+    const requiredFields = [
+      "name",
+      "age",
+      "education",
+      "experience",
+      "salaryRange",
+      "phone",
+      "location",
+      "preferredRole",
+      "cooking",
+      "housekeeping",
+      "childcare",
+      "serviceFeeDay",
+      "serviceFeeMonth",
+    ];
+
     for (let field of requiredFields) {
       if (!data[field] || data[field].toString().trim() === "") {
-        throw new Error(`${field} is required`);
+        const formattedField = field
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase());
+        throw new Error(`${formattedField} is required`);
       }
     }
-    if (data.isMother === null) throw new Error("Mother status is required");
-    if (data.handlePets === null) throw new Error("Pet handling is required");
-    if (!data.languages.length) throw new Error("Select at least one language");
-    if (!data.kidAges.length) throw new Error("Select at least one kid age");
-    if (!isValidPhoneNumber(data.phone)) throw new Error("Invalid phone number");
+
+    if (Number(data.age) < 25) throw new Error("Age must be 25 or above");
+    if (!data.phone || !isValidPhoneNumber(data.phone)) {
+      throw new Error("Invalid phone number");
+    }
+    if (!data.preferred || data.preferred.length === 0) {
+      throw new Error("Please select at least one service preference");
+    }
+    if (!data.languages || data.languages.length === 0) {
+      throw new Error("Please select at least one language");
+    }
+    if (data.isMother === null || data.isMother === undefined) {
+      throw new Error("Please select if mother or not");
+    }
+    if (!data.ageOfKids || data.ageOfKids.length === 0) {
+      throw new Error("Please select at least one kid age group");
+    }
+    if (data.isHandelingPet === null || data.isHandelingPet === undefined) {
+      throw new Error("Please select preference for handling pets");
+    }
+
     if (!isUpdate) {
-      const requiredDocs = ["aidCertificate", "goodConductCertificate", "idCopy", "profilePhoto"];
+      const requiredDocs = ["idCopy", "profilePhoto", "goodConductCertificate"];
       for (let doc of requiredDocs) {
         if (!data.documents[doc]) {
-          throw new Error(`${doc} is required`);
+          throw new Error(`Missing required document: ${doc}`);
         }
       }
     }
     return true;
   };
-  const handleChange = e => {
-    const {
-      name,
-      value
-    } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleSelectChange = (name, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const toggleLanguage = (lan) => {
+    setFormData((prev) => {
+      const exists = prev.languages.includes(lan);
+      return {
+        ...prev,
+        languages: exists
+          ? prev.languages.filter((l) => l !== lan)
+          : [...prev.languages, lan],
+      };
+    });
+  };
+
+  const togglePreferred = (pref) => {
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      preferred: prev.preferred.includes(pref) ? [] : [pref],
     }));
   };
-  const toggleArray = (key, value) => {
-    setFormData(prev => ({
+
+  const toggleAgeOfKids = (age) => {
+    setFormData((prev) => {
+      const exists = prev.ageOfKids.includes(age);
+      return {
+        ...prev,
+        ageOfKids: exists
+          ? prev.ageOfKids.filter((a) => a !== age)
+          : [...prev.ageOfKids, age],
+      };
+    });
+  };
+
+  const handleFileSelect = (field, file) => {
+    setFormData((prev) => ({
       ...prev,
-      [key]: prev[key].includes(value) ? prev[key].filter(item => item !== value) : [...prev[key], value]
+      documents: {
+        ...prev.documents,
+        [field]: file,
+      },
     }));
   };
-  const handleFileSelect = (section, field, file) => {
-    setFormData(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: file
-      }
-    }));
-  };
-  const buildCreatePayload = data => {
+
+  const buildPayload = (data) => {
     const payload = new FormData();
-    const booleanToNumber = value => {
-      if (typeof value === "boolean") return value ? 1 : 0;
-      return value;
-    };
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "documents") return;
-      const finalValue = booleanToNumber(value);
-      if (Array.isArray(finalValue)) {
-        finalValue.forEach(v => payload.append(`${key}[]`, v));
-      } else if (finalValue !== null && finalValue !== undefined) {
-        payload.append(key, finalValue);
-      }
+    payload.append("name", data.name);
+    payload.append("age", data.age);
+    payload.append("education", data.education);
+    payload.append("educationLevel", data.education);
+    payload.append("experience", data.experience);
+    payload.append("salaryRange", data.salaryRange);
+    payload.append("phone", data.phone);
+    payload.append("number_two", data.phone);
+    payload.append("location", data.location);
+    payload.append("preferredRole", data.preferredRole);
+    payload.append("cooking", data.cooking);
+    payload.append("housekeeping", data.housekeeping);
+    payload.append("childcare", data.childcare);
+    payload.append("serviceFeeDay", data.serviceFeeDay);
+    payload.append("serviceFeeMonth", data.serviceFeeMonth);
+    payload.append("bio", data.bio || "");
+    payload.append("isMother", data.isMother ? 1 : 0);
+    payload.append("isHandelingPet", data.isHandelingPet ? 1 : 0);
+    payload.append("handlePets", data.isHandelingPet ? 1 : 0);
+
+    data.preferred.forEach((p) => payload.append("preferred[]", p));
+    data.languages.forEach((l) => payload.append("languages[]", l));
+    data.ageOfKids.forEach((a) => {
+      payload.append("ageOfKids[]", a);
+      payload.append("kidAges[]", a);
     });
-    const requiredDocs = ["aidCertificate", "goodConductCertificate", "idCopy", "profilePhoto"];
-    const optionalDocs = ["drivingLicense"];
-    requiredDocs.forEach(doc => {
-      if (!data.documents[doc]) {
-        throw new Error(`Missing required document: ${doc}`);
-      }
-      if (data.documents[doc] instanceof File) payload.append(doc, data.documents[doc]);
-    });
-    optionalDocs.forEach(doc => {
-      if (data.documents[doc] instanceof File) payload.append(doc, data.documents[doc]);
-    });
-    return payload;
-  };
-  const buildUpdatePayload = data => {
-    const payload = new FormData();
-    const booleanToNumber = value => {
-      if (typeof value === "boolean") return value ? 1 : 0;
-      return value;
-    };
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "documents") return;
-      const finalValue = booleanToNumber(value);
-      if (Array.isArray(finalValue)) {
-        finalValue.forEach(v => payload.append(`${key}[]`, v));
-      } else if (finalValue !== null && finalValue !== undefined) {
-        payload.append(key, finalValue);
-      }
-    });
+
+    if (data.date && Array.isArray(data.date)) {
+      data.date.forEach((d) => payload.append("date[]", d));
+    }
+
     Object.entries(data.documents).forEach(([key, value]) => {
-      if (value instanceof File) payload.append(key, value);
+      if (value instanceof File) {
+        payload.append(key, value);
+        if (key === "firstAidCertificate") {
+          payload.append("aidCertificate", value);
+        }
+      }
     });
+
     return payload;
   };
-  const handleSubmit = async e => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const loadingToast = toast.loading(isUpdate ? "Updating..." : "Adding...");
     setIsActionLoading(true);
     try {
       validateForm(formData);
-      const payload = isUpdate ? buildUpdatePayload(formData) : buildCreatePayload(formData);
+      const payload = buildPayload(formData);
       if (isUpdate) {
         await postApi(`/agency-employee/${initialData.id}`, payload);
-        toast.success("Employee updated!", {
-          id: loadingToast
-        });
+        toast.success("Employee updated successfully!", { id: loadingToast });
       } else {
         await postApi("/agency-employee", payload);
-        toast.success("Employee added!", {
-          id: loadingToast
-        });
+        toast.success("Employee added successfully!", { id: loadingToast });
       }
       onSuccess?.();
     } catch (error) {
-      toast.error(error.message || "Operation failed", {
-        id: loadingToast
-      });
+      toast.error(error.message || "Operation failed", { id: loadingToast });
     } finally {
       setIsActionLoading(false);
     }
   };
+
   if (!ready) return null;
-  const documents = [{
-    id: "aidCertificate",
-    title: "First Aid Certificate",
-    accept: "application/pdf,image/*",
-    icon: <Cross size={32} className="text-primary" />,
-    required: true
-  }, {
-    id: "goodConductCertificate",
-    title: "Good Conduct Certificate",
-    accept: "application/pdf,image/*",
-    icon: <FileText size={32} />,
-    required: true
-  }, {
-    id: "idCopy",
-    title: "ID Copy",
-    accept: "application/pdf,image/*",
-    icon: <IdCardLanyard size={32} />,
-    required: true
-  }, {
-    id: "profilePhoto",
-    title: "Profile Photo",
-    accept: "image/*",
-    icon: <Camera size={32} />,
-    required: true
-  }, {
-    id: "drivingLicense",
-    title: "Driving License (Optional)",
-    accept: "application/pdf,image/*",
-    icon: <IdCard size={32} />,
-    required: false,
-    optional: true
-  }];
-  return <div>
-      <form className="relative pb-16" onSubmit={handleSubmit}>
-        <div className="flex sm:gap-4 gap-6 flex-col sm:flex-row">
-          <div className="flex-1">
-            <Input placeholder="Name" name="name" label="Full Name (as per ID)" value={formData.name} onChange={handleChange} required />
-          </div>
-          <div className="flex-1">
+
+  const documents = [
+    {
+      id: "idCopy",
+      title: "ID Copy",
+      accept: "application/pdf,image/*",
+      icon: <IdCardLanyard size={32} />,
+      required: true,
+    },
+    {
+      id: "profilePhoto",
+      title: "Profile Photo",
+      accept: "image/*",
+      icon: <ImageIcon size={32} />,
+      required: true,
+    },
+    {
+      id: "goodConductCertificate",
+      title: "Good Conduct Certificate",
+      accept: "application/pdf,image/*",
+      icon: <FileText size={32} />,
+      required: true,
+    },
+    {
+      id: "firstAidCertificate",
+      title: "First Aid Certificate",
+      accept: "application/pdf,image/*",
+      icon: <Cross size={32} className="text-primary" />,
+      required: false,
+      optional: true,
+    },
+    {
+      id: "drivingLicense",
+      title: "Driving License (Optional)",
+      accept: "application/pdf,image/*",
+      icon: <IdCard size={32} />,
+      required: false,
+      optional: true,
+    },
+  ];
+
+  return (
+    <div>
+      <form className="relative pb-16 space-y-6" onSubmit={handleSubmit}>
+        <h4 className="formHeading">Basic Information</h4>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <Input
+            placeholder="Enter full name"
+            name="name"
+            label="Full Name (as per ID)"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+          <Input
+            type="number"
+            placeholder="Employee age"
+            name="age"
+            label="Age"
+            value={formData.age}
+            onChange={(e) => {
+              const val = e.target.value.replace(/\D/g, "").slice(0, 2);
+              setFormData((prev) => ({ ...prev, age: val }));
+            }}
+            required
+          />
+
+          <div>
             <Label className="block mb-2 text-sm font-medium text-gray-700">
               Education Level
             </Label>
-            <Select value={formData.educationLevel} onValueChange={v => handleSelectChange("educationLevel", v)}>
+            <Select
+              value={formData.education}
+              onValueChange={(v) => handleSelectChange("education", v)}
+            >
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select education" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {["Primary", "Secondary", "Diploma", "Bachelor", "Other"].map(edu => <SelectItem key={edu} value={edu}>
-                        {edu}
-                      </SelectItem>)}
+                  <SelectItem value="Primary">Primary</SelectItem>
+                  <SelectItem value="Secondary">Secondary</SelectItem>
+                  <SelectItem value="College">College</SelectItem>
+                  <SelectItem value="University">University</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        {/* Location, Experience, Salary */}
-        <div className="flex gap-4 pt-6 flex-col sm:flex-row">
-          <div className="flex-1">
-            <Input placeholder="Type your location." label="Location" name="location" value={formData.location} onChange={handleChange} />
-          </div>
-
-          <div className="flex-1">
-            <Label>Phone Number</Label>
-
-            <div className="w-full mt-2">
-              <PhoneInputWithCountrySelect className="w-full border rounded-md px-3 py-2" international defaultCountry={country} value={formData?.phone} onChange={value => {
-              setFormData(prev => ({
-                ...prev,
-                phone: value || ""
-              }));
-            }} onCountryChange={countryCode => {
-              setCountry(countryCode);
-              const exampleNumber = countryCode ? getExampleNumber(countryCode) : null;
-              if (exampleNumber) {
-                setFormData(prev => ({
-                  ...prev,
-                  phone: `+${exampleNumber.countryCallingCode}`
-                }));
-              } else {
-                setFormData(prev => ({
-                  ...prev,
-                  phone: ""
-                }));
-              }
-            }} />
-            </div>
-
-            {formData?.phone && !isValidPhoneNumber(formData?.phone) && <p className="text-red-500 text-sm mt-1">
-                Invalid phone number for selected country
-              </p>}
-          </div>
-        </div>
-        <div className="flex flex-col pt-4 sm:flex-row gap-4 w-full">
-          <div className="w-full sm:w-1/2">
+          <div>
             <Label className="block mb-2 text-sm font-medium text-gray-700">
-              Experience
+              Experience (Years)
             </Label>
-
-            <Select value={formData.experience} onValueChange={v => handleSelectChange("experience", v)}>
-              <SelectTrigger className="py-5.5 shadow-none w-full cursor-pointer">
-                <SelectValue placeholder="Select year" />
+            <Select
+              value={formData.experience}
+              onValueChange={(v) => handleSelectChange("experience", v)}
+            >
+              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                <SelectValue placeholder="Select years of experience" />
               </SelectTrigger>
-
-              <SelectContent>
-                {["1 year", "2 years", "3 years", "4 years", "5 years", "More than 5+ years"].map(y => <SelectItem className={"cursor-pointer"} key={y} value={y}>
-                    {y}
-                  </SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="w-full sm:w-1/2">
-            <Label className="block mb-2 text-sm font-medium text-gray-700">
-              Salary (KSh)
-            </Label>
-
-            <Select value={formData.salaryRange} onValueChange={v => handleSelectChange("salaryRange", v)}>
-              <SelectTrigger className="py-5.5 shadow-none w-full cursor-pointer">
-                <SelectValue placeholder="Salary range" />
-              </SelectTrigger>
-
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem className={"cursor-pointer"} value="1000-20000">
-                    1000 - 20000
-                  </SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="21000-40000">
-                    21000 - 40000
-                  </SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="41000-60000">
-                    41000 - 60000
-                  </SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="61000-80000">
-                    61000 - 80000
-                  </SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="81000-90000">
-                    81000 - 90000
-                  </SelectItem>
-                  <SelectItem className={"cursor-pointer"} value="100000+">
-                    More than 100000
-                  </SelectItem>
+                  <SelectItem value="1">1 year</SelectItem>
+                  <SelectItem value="2">2 years</SelectItem>
+                  <SelectItem value="3">3 years</SelectItem>
+                  <SelectItem value="4">4 years</SelectItem>
+                  <SelectItem value="5">5 years</SelectItem>
+                  <SelectItem value="more">More than 5 years</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        {/* Motherhood & Kid Ages */}
-        <div className="flex flex-col py-8 sm:flex-row sm:gap-4 gap-8">
-          <div className="flex-1">
-            <Label className="mb-3 block text-sm font-medium">
-              Are you a mother?
+          <div>
+            <Label className="block mb-2 text-sm font-medium text-gray-700">
+              Salary Range (KSh)
             </Label>
-            <RadioGroup value={formData.isMother === null ? undefined : formData.isMother.toString()} onValueChange={v => handleSelectChange("isMother", v === "true")}>
-              <div className="flex gap-4">
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem className="cursor-pointer" value="true" id="mYes" />
-                  <Label className="cursor-pointer" htmlFor="mYes">
-                    Yes
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem className="cursor-pointer" value="false" id="mNo" />
-                  <Label className="cursor-pointer" htmlFor="mNo">
-                    No
-                  </Label>
-                </div>
-              </div>
-            </RadioGroup>
+            <Select
+              value={formData.salaryRange}
+              onValueChange={(v) => handleSelectChange("salaryRange", v)}
+            >
+              <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
+                <SelectValue placeholder="Select expected salary" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="1000-20000">1000 - 20000</SelectItem>
+                  <SelectItem value="21000-40000">21000 - 40000</SelectItem>
+                  <SelectItem value="41000-60000">41000 - 60000</SelectItem>
+                  <SelectItem value="61000-80000">61000 - 80000</SelectItem>
+                  <SelectItem value="81000-90000">81000 - 90000</SelectItem>
+                  <SelectItem value="100000+">More than 100000</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="flex-1">
-            <Label className="mb-3 block text-sm font-medium">
-              Preferred kid ages
+          <div>
+            <Label>Phone Number</Label>
+            <div className="w-full mt-2">
+              <PhoneInputWithCountrySelect
+                className="w-full border rounded-md px-3 py-2"
+                international
+                defaultCountry={country}
+                value={formData?.phone}
+                onChange={(value) => {
+                  setFormData((prev) => ({ ...prev, phone: value || "" }));
+                }}
+                onCountryChange={(countryCode) => {
+                  setCountry(countryCode);
+                  const exampleNumber = countryCode
+                    ? getExampleNumber(countryCode)
+                    : null;
+                  if (exampleNumber) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      phone: `+${exampleNumber.countryCallingCode}`,
+                    }));
+                  } else {
+                    setFormData((prev) => ({ ...prev, phone: "" }));
+                  }
+                }}
+              />
+            </div>
+            {formData?.phone && !isValidPhoneNumber(formData?.phone) && (
+              <p className="text-red-500 text-sm mt-1">
+                Invalid phone number for selected country
+              </p>
+            )}
+          </div>
+
+          <div>
+            <Label className="block mb-2 text-sm font-medium text-gray-700">
+              Service Offered
             </Label>
-            <div className="flex flex-wrap gap-y-2 gap-x-4">
-              {["0-3", "4-10", "11+"].map(age => <div key={age} className="flex items-center gap-2">
-                  <Checkbox className="cursor-pointer" id={age} checked={formData.kidAges.includes(age)} onCheckedChange={() => toggleArray("kidAges", age)} />
-                  <Label className="cursor-pointer" htmlFor={age}>
-                    {age} years
+            <div className="flex flex-wrap flex-col gap-2">
+              {preferredOptions.map((item, indx) => (
+                <div key={indx} className="flex items-center gap-2">
+                  <Checkbox
+                    id={`pref-update-${item.title}`}
+                    checked={formData.preferred.includes(item.title)}
+                    onCheckedChange={() => togglePreferred(item.title)}
+                  />
+                  <Label
+                    htmlFor={`pref-update-${item.title}`}
+                    className="text-gray-700 font-normal cursor-pointer"
+                  >
+                    {item.title}
                   </Label>
-                </div>)}
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Pets & Role */}
-        <div className="flex flex-col sm:flex-row sm:gap-4 gap-8">
-          <div className="flex-1">
-            <Label className="mb-3 block text-sm font-medium">
-              Handle pets?
-            </Label>
-            <RadioGroup value={formData.handlePets === null ? undefined : formData.handlePets.toString()} onValueChange={v => handleSelectChange("handlePets", v === "true")}>
-              <div className="flex gap-4">
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem className="cursor-pointer" value="true" id="pYes" />
-                  <Label className="cursor-pointer" htmlFor="pYes">
+        <Input
+          placeholder="Type location.."
+          label="Location"
+          name="location"
+          value={formData.location}
+          onChange={handleChange}
+        />
+
+        <div>
+          <Label className="font-medium text-gray-700">Languages</Label>
+          <div className="flex flex-wrap gap-4 mt-3">
+            {languages.map((lan) => (
+              <div key={lan.value} className="flex items-center gap-2">
+                <Checkbox
+                  className="cursor-pointer"
+                  id={`lang-update-${lan.value}`}
+                  checked={formData.languages.includes(lan.value)}
+                  onCheckedChange={() => toggleLanguage(lan.value)}
+                />
+                <Label
+                  className="cursor-pointer text-gray-700 font-normal"
+                  htmlFor={`lang-update-${lan.value}`}
+                >
+                  {lan.text}
+                </Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Additional Details */}
+        <div className="pt-4 border-t space-y-6">
+          <h4 className="formHeading">Additional Details</h4>
+
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full flex-1 flex flex-col">
+              <Label>Are you a mother?</Label>
+              <RadioGroup
+                className="flex gap-4 mt-3"
+                value={
+                  formData.isMother !== null ? String(formData.isMother) : ""
+                }
+                onValueChange={(v) =>
+                  handleSelectChange("isMother", v === "true")
+                }
+              >
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem className="cursor-pointer" value="true" id="mYes" />
+                  <Label className="cursor-pointer text-gray-700 font-normal" htmlFor="mYes">
                     Yes
                   </Label>
                 </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem className="cursor-pointer" value="false" id="pNo" />
-                  <Label className="cursor-pointer" htmlFor="pNo">
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem className="cursor-pointer" value="false" id="mNo" />
+                  <Label className="cursor-pointer text-gray-700 font-normal" htmlFor="mNo">
                     No
                   </Label>
                 </div>
+              </RadioGroup>
+            </div>
+
+            <div className="flex-1">
+              <Label>What age of kids do you prefer working with?</Label>
+              <div className="flex flex-wrap mt-3 gap-4">
+                {["0-3", "4-10", "11+"].map((age) => (
+                  <div key={age} className="flex gap-2">
+                    <Checkbox
+                      className="cursor-pointer"
+                      id={`age-update-${age}`}
+                      checked={formData.ageOfKids.includes(age)}
+                      onCheckedChange={() => toggleAgeOfKids(age)}
+                    />
+                    <Label
+                      className="cursor-pointer text-gray-700 font-normal"
+                      htmlFor={`age-update-${age}`}
+                    >
+                      {age} years
+                    </Label>
+                  </div>
+                ))}
               </div>
-            </RadioGroup>
+            </div>
           </div>
-          <div className="flex-1">
-            <Label className="mb-3 block text-sm font-medium">
-              Preferred Role
-            </Label>
-            <RadioGroup value={formData.preferredRole} onValueChange={v => handleSelectChange("preferredRole", v)}>
-              <div className="flex gap-4">
-                <div className="flex items-center gap-2">
+
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex-1">
+              <Label>Are you okay handling pets?</Label>
+              <RadioGroup
+                className="flex gap-4 mt-3"
+                value={
+                  formData.isHandelingPet !== null
+                    ? String(formData.isHandelingPet)
+                    : ""
+                }
+                onValueChange={(v) =>
+                  handleSelectChange("isHandelingPet", v === "true")
+                }
+              >
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem className="cursor-pointer" value="true" id="pYes" />
+                  <Label className="cursor-pointer text-gray-700 font-normal" htmlFor="pYes">
+                    Yes
+                  </Label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem className="cursor-pointer" value="false" id="pNo" />
+                  <Label className="cursor-pointer text-gray-700 font-normal" htmlFor="pNo">
+                    No
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            <div className="flex-1">
+              <Label>Preferred Role</Label>
+              <RadioGroup
+                className="flex gap-4 mt-3"
+                value={formData.preferredRole}
+                onValueChange={(v) => handleSelectChange("preferredRole", v)}
+              >
+                <div className="flex items-center gap-3">
                   <RadioGroupItem className="cursor-pointer" value="Nanny" id="rNanny" />
-                  <Label className="cursor-pointer" htmlFor="rNanny">
+                  <Label className="cursor-pointer text-gray-700 font-normal" htmlFor="rNanny">
                     Nanny
                   </Label>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <RadioGroupItem className="cursor-pointer" value="Housekeeper" id="rHK" />
-                  <Label className="cursor-pointer" htmlFor="rHK">
+                  <Label className="cursor-pointer text-gray-700 font-normal" htmlFor="rHK">
                     Housekeeper
                   </Label>
                 </div>
-              </div>
-            </RadioGroup>
-          </div>
-        </div>
-
-        {/* Languages Checkboxes */}
-        <div className="pt-8">
-          <Label className="mb-3 block text-sm font-medium">
-            Languages Spoken
-          </Label>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            {languages.map(lan => <div key={lan.value} className="flex items-center gap-2">
-                <Checkbox className="cursor-pointer" id={lan.value} checked={formData.languages.includes(lan.value)} onCheckedChange={() => toggleArray("languages", lan.value)} />
-                <Label className="cursor-pointer" htmlFor={lan.value}>
-                  {lan.text}
-                </Label>
-              </div>)}
-          </div>
-        </div>
-
-        {/* Proficiency Selects */}
-        <div className="pt-6">
-          <Label className="mb-3 block text-sm font-medium text-primary">
-            Skill Proficiency
-          </Label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {["cooking", "housekeeping", "childcare"].map(skill => <div key={skill}>
-                <Label className="block mb-2 capitalize text-xs font-semibold">
-                  {skill}
-                </Label>
-                <Select value={formData[skill]} onValueChange={v => handleSelectChange(skill, v)}>
-                  <SelectTrigger className="py-5.5 shadow-none cursor-pointer">
-                    <SelectValue placeholder="Proficiency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem className="cursor-pointer" value="Strong">
-                      Strong
-                    </SelectItem>
-                    <SelectItem className="cursor-pointer" value="Average">
-                      Average
-                    </SelectItem>
-                    <SelectItem className="cursor-pointer" value="Weak">
-                      Weak
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>)}
-          </div>
-        </div>
-
-        {/* Live Type */}
-        <div className="py-6">
-          <Label className="mb-3 block text-sm font-medium">
-            Live Preference
-          </Label>
-          <RadioGroup value={formData.preferred} onValueChange={v => handleSelectChange("preferred", v)}>
-            <div className="flex gap-4">
-              <div className="flex items-center gap-2">
-                <RadioGroupItem className="cursor-pointer" value="Live-In" id="lIn" />
-                <Label className="cursor-pointer" htmlFor="lIn">
-                  Live In
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <RadioGroupItem className="cursor-pointer" value="Dayburg" id="lDay" />
-                <Label className="cursor-pointer" htmlFor="lDay">
-                  Dayburg
-                </Label>
-              </div>
+              </RadioGroup>
             </div>
-          </RadioGroup>
-        </div>
-
-        <h3 className="text-lg font-semibold text-primary/80 mb-2">
-          Service Fee (KSh)
-        </h3>
-
-        <div className="flex sm:gap-4 gap-6 flex-col sm:flex-row mb-4">
-          <div className="flex-1">
-            <Input label="Per Day" type="number" name="serviceFeeDay" placeholder="e.g., 1500" value={formData.serviceFeeDay} onChange={e => {
-            const val = e.target.value.replace(/\D/g, "").slice(0, 5);
-            handleSelectChange("serviceFeeDay", val);
-          }} />
           </div>
-          <div className="flex-1">
-            <Input label="Per Month" type="number" name="serviceFeeMonth" placeholder="e.g., 35000" value={formData.serviceFeeMonth} onChange={e => {
-            const val = e.target.value.replace(/\D/g, "").slice(0, 6);
-            handleSelectChange("serviceFeeMonth", val);
-          }} />
-          </div>
-        </div>
 
-        {isUpdate && <div className="mb-5">
-            <div className="gap-2">
-              <Label htmlFor="Schedule" className="block mb-2 text-sm font-medium text-gray-700">
-                Schedule
-              </Label>
-
-              <SelectableCalendar selectedDates={formData.date || []} onChange={dates => setFormData(prev => ({
-            ...prev,
-            date: dates
-          }))} disabled={date => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const d = new Date(date);
-            d.setHours(0, 0, 0, 0);
-            return d < today;
-          }} />
+          <div>
+            <h3 className="text-md font-semibold text-gray-800 mb-3">
+              Skill Proficiency
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                { key: "cooking", label: "Cooking" },
+                { key: "housekeeping", label: "Housekeeping" },
+                { key: "childcare", label: "Childcare" },
+              ].map(({ key, label }) => (
+                <div key={key}>
+                  <Label className="block mb-2 text-sm font-medium text-gray-700">
+                    {label}
+                  </Label>
+                  <Select
+                    value={formData[key]}
+                    onValueChange={(v) => handleSelectChange(key, v)}
+                  >
+                    <SelectTrigger className="py-5.5 shadow-none cursor-pointer w-full">
+                      <SelectValue placeholder="Proficiency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem className="cursor-pointer" value="Strong">
+                        Strong
+                      </SelectItem>
+                      <SelectItem className="cursor-pointer" value="Average">
+                        Average
+                      </SelectItem>
+                      <SelectItem className="cursor-pointer" value="Weak">
+                        Weak
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
             </div>
-          </div>}
+          </div>
+
+          <div>
+            <h3 className="text-md font-semibold text-gray-800 mb-3">
+              Service Fee (KSh)
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Per Day"
+                type="number"
+                name="serviceFeeDay"
+                placeholder="e.g., 1500"
+                value={formData.serviceFeeDay}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 5);
+                  handleSelectChange("serviceFeeDay", val);
+                }}
+              />
+              <Input
+                label="Per Month"
+                type="number"
+                name="serviceFeeMonth"
+                placeholder="e.g., 35000"
+                value={formData.serviceFeeMonth}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  handleSelectChange("serviceFeeMonth", val);
+                }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="bio-agency-emp">Bio</Label>
+            <Textarea
+              id="bio-agency-emp"
+              value={formData.bio}
+              name="bio"
+              placeholder="Write a brief bio about yourself and the services you offer.."
+              className="border text-sm mt-2 p-3 w-full rounded-md outline-primary"
+              rows={6}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {isUpdate && (
+          <div className="pt-4 border-t">
+            <Label htmlFor="Schedule" className="block mb-2 text-sm font-medium text-gray-700">
+              Schedule Availability
+            </Label>
+            <SelectableCalendar
+              selectedDates={formData.date || []}
+              onChange={(dates) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  date: dates,
+                }))
+              }
+              disabled={(date) => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const d = new Date(date);
+                d.setHours(0, 0, 0, 0);
+                return d < today;
+              }}
+            />
+          </div>
+        )}
 
         {/* Documents Section */}
-        <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl flex gap-2 items-center mb-4">
-          <ClipboardPlus className="text-primary" />
-          <span className="text-sm font-medium text-primary">
-            Update or upload documents
-          </span>
+        <div className="pt-4 border-t space-y-4">
+          <h4 className="formHeading">Document Uploads</h4>
+          <div className="p-3 bg-primary/10 border border-primary/20 rounded-xl flex gap-2 items-center">
+            <FileText className="text-primary" />
+            <span className="text-sm font-medium text-primary">
+              Upload or update documents (PDF or images, max 2MB)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {documents.map((item) => {
+              const file = formData.documents[item.id];
+              return (
+                <div key={item.id} className="border rounded-xl p-4">
+                  <FileUpload
+                    title={item.title}
+                    accept={item.accept}
+                    icon={item.icon}
+                    optional={item.optional || false}
+                    file={file}
+                    onFileSelect={(f) => handleFileSelect(item.id, f)}
+                  />
+                  {file && typeof file === "string" && (
+                    <div className="mt-2">
+                      <FilePreview file={file} alt={item.title} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 gap-4">
-          {documents?.map((item, indx) => {
-          const file = formData.documents[item.id];
-          return <div key={indx} className="border rounded-xl p-4">
-                <FileUpload title={item.title} accept={item.accept} icon={item.icon} optional={item.optional || false} file={file} onFileSelect={file => handleFileSelect("documents", item.id, file)} />
-
-                {file && !file?.type?.startsWith("image/") && <FilePreview file={file} alt={item.title} />}
-              </div>;
-        })}
-        </div>
-
-        <div className="pt-8">
-          <Button className="w-full cursor-pointer sm:w-48 bg-primary hover:bg-primary/90" size="lg" type="submit" isActionLoading={isActionLoading}>
+        <div className="pt-8 flex justify-end">
+          <Button
+            className="w-full cursor-pointer sm:w-48 bg-primary hover:bg-primary/90"
+            size="lg"
+            type="submit"
+            isActionLoading={isActionLoading}
+          >
             {isUpdate ? "Save Changes" : "Register Employee"}
           </Button>
         </div>
       </form>
-    </div>;
+    </div>
+  );
 };
+
 export default AgencyEmployee;
