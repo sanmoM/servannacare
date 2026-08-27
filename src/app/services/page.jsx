@@ -25,7 +25,7 @@ const Page = () => {
       <PageBanner />
       <Container>
         <div className="py-10 md:py-16">
-          {/* Heading */}
+          
           {serviceData?.serviceHeading && (
             <div className="mb-8 space-y-2 md:mb-12">
               <h4 className="md:text-sm text-xs font-semibold text-primary">
@@ -40,7 +40,7 @@ const Page = () => {
             </div>
           )}
 
-          {/* Services Grid */}
+          
           <div
             data-aos="fade-up"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-6 lg:gap-8"
