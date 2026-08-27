@@ -124,7 +124,7 @@ const ProfilePageContent = () => {
     matchedData.home_health_assistant ||
     matchedData.agency_employee;
 
-  // Normalized specialist attributes supporting both House Manager & Agency Employee
+  
   const age = matchedData.age || roleSpecificInfo?.age;
   const experience = roleSpecificInfo?.experience || matchedData?.experience;
   const education =
@@ -176,7 +176,7 @@ const ProfilePageContent = () => {
     roleSpecificInfo?.drivingLicense ||
     matchedData?.canDrive;
 
-  // Agency data for Agency Employees
+  
   const isAgencyEmployee = matchedData.type === "agency-employee";
   const agency = matchedData.agency || matchedData.agency_details || {};
   const agencyName =
@@ -199,11 +199,11 @@ const ProfilePageContent = () => {
     agency.agency_services || agency.trainingAreas || [];
   const agencyRegistrationDoc = agency.registrationDocument;
 
-  // Rating Status
+  
   const hasReviews =
     matchedData.review_count > 0 && matchedData.review_avg_rating !== null;
 
-  // Member Date Formatter
+  
   const getMemberSince = () => {
     if (matchedData?.created_at) {
       return new Date(matchedData.created_at).toLocaleDateString("en-US", {
@@ -217,7 +217,7 @@ const ProfilePageContent = () => {
     return "July 2024";
   };
 
-  // Extract preferred living/service arrangement (e.g. LIVE IN / DAYBURG)
+  
   const getPreferredArrangements = () => {
     let raw =
       matchedData?.preferred ||
@@ -244,7 +244,6 @@ const ProfilePageContent = () => {
     cookingSkill || housekeepingSkill || childcareSkill,
   );
 
-  // Skills Checklist
   const skillsList = [
     {
       name: "First Aid Certificate",
@@ -285,17 +284,14 @@ const ProfilePageContent = () => {
     },
   ];
 
-  // Dynamic Trust Score calculation
   const calculateTrustScore = () => {
     let score = 30; // Base score
     const items = [];
 
-    // 1. Verified Identity
     const identityVerified = !!matchedData.is_profile_verified;
     if (identityVerified) score += 15;
     items.push({ name: "Verified Identity", verified: identityVerified });
 
-    // 2. Trade License / Good Conduct
     const hasGoodConduct = !!goodConductCert;
     if (hasGoodConduct) score += 15;
     items.push({
@@ -303,27 +299,25 @@ const ProfilePageContent = () => {
       verified: hasGoodConduct,
     });
 
-    // 3. NID/Passport (Government ID Copy)
     const hasIdCopy = !!idCopy;
     if (hasIdCopy) score += 15;
     items.push({ name: "NID/Passport Uploaded", verified: hasIdCopy });
 
-    // 4. Professional Certification (First Aid Certificate)
     const hasCert = !!firstAidCert;
     if (hasCert) score += 15;
     items.push({ name: "Professional Certification", verified: hasCert });
 
-    // 5. Experience Verified
+    
     const hasExperience = !!experience;
     if (hasExperience) score += 10;
     items.push({ name: "Experience Verified", verified: hasExperience });
 
-    // 6. Driving License Verified
+    
     const hasLicense = !!drivingLicense;
     if (hasLicense) score += 5;
     items.push({ name: "Driving License", verified: hasLicense });
 
-    // 7. Phone Verified
+    
     const phoneVerified = !!(
       phone ||
       matchedData.is_phone_verified ||
@@ -332,7 +326,7 @@ const ProfilePageContent = () => {
     if (phoneVerified) score += 5;
     items.push({ name: "Phone Verified", verified: phoneVerified });
 
-    // 8. Email Verified
+    
     const emailVerified = !!(
       matchedData.email ||
       matchedData.is_email_verified ||
@@ -356,7 +350,7 @@ const ProfilePageContent = () => {
       />
 
       <Container className="py-12">
-        {/* HERO PROFILE SECTION */}
+        
         <div className="flex flex-col md:flex-row md:items-start gap-6 pb-8 border-b border-border">
           <div className="relative shrink-0 mx-auto md:mx-0">
             <img
@@ -413,7 +407,7 @@ const ProfilePageContent = () => {
               )}
             </div>
 
-            {/* Rating Section */}
+            
             <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-muted-foreground">
               {hasReviews ? (
                 <div className="flex items-center gap-1.5">
@@ -437,7 +431,7 @@ const ProfilePageContent = () => {
               )}
             </div>
 
-            {/* Mobile CTAs */}
+            
             <div className="flex md:hidden gap-3 mt-4">
               <Button
                 onClick={handleMessage}
@@ -458,11 +452,11 @@ const ProfilePageContent = () => {
           </div>
         </div>
 
-        {/* 3-Column Desktop Grid Layout */}
+        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start mt-8">
-          {/* Main Content Area (2 Columns) */}
+          
           <div className="lg:col-span-2 space-y-10">
-            {/* PROFILE STATISTICS CARDS */}
+            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
@@ -542,7 +536,7 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            {/* ABOUT SECTION */}
+            
             <div className="space-y-3">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
@@ -555,7 +549,7 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            {/* PROFESSIONAL INFORMATION */}
+            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-primary" />
@@ -645,7 +639,7 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            {/* SALARY AND PRICING SECTION */}
+            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-primary" />
@@ -683,7 +677,7 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            {/* SKILLS AND PREFERENCES SECTION */}
+            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
@@ -713,7 +707,7 @@ const ProfilePageContent = () => {
               </div>
             </div>
 
-            {/* SKILL PROFICIENCY SECTION */}
+            
             {hasSkillProficiency && (
               <>
                 <hr className="border-border" />
@@ -775,7 +769,7 @@ const ProfilePageContent = () => {
                               {val}
                             </span>
                           </div>
-                          {/* Visual proficiency bar */}
+                          
                           <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all duration-300 ${
@@ -797,7 +791,7 @@ const ProfilePageContent = () => {
               </>
             )}
 
-            {/* AGENCY DETAILS SECTION (Agency Employees Only) */}
+            
             {isAgencyEmployee && (
               <>
                 <hr className="border-border" />
@@ -837,7 +831,7 @@ const ProfilePageContent = () => {
                       )}
                     </div>
 
-                    {/* Agency Key Stats */}
+                    
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="p-4 bg-background/70 border border-border rounded-xl">
                         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
@@ -871,7 +865,7 @@ const ProfilePageContent = () => {
                       </div>
                     </div>
 
-                    {/* Agency Meta & Training Areas */}
+                    
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm pt-2">
                       <div className="space-y-2.5">
                         {agencyRegNumber && (
@@ -950,7 +944,7 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            {/* TRUST & VERIFICATION */}
+            
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-primary" />
@@ -959,7 +953,7 @@ const ProfilePageContent = () => {
                 </h2>
               </div>
 
-              {/* Trust Score Card */}
+              
               <div className="p-5 bg-secondary/5 border border-border rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
@@ -977,7 +971,7 @@ const ProfilePageContent = () => {
                   </p>
                 </div>
 
-                {/* Progress bar */}
+                
                 <div className="w-full sm:w-48 h-3 bg-muted rounded-full overflow-hidden shrink-0 border border-border">
                   <div
                     className="h-full bg-primary transition-all duration-500 ease-out"
@@ -986,7 +980,7 @@ const ProfilePageContent = () => {
                 </div>
               </div>
 
-              {/* Verification Checklist */}
+              
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {trustDetails.items.map((item, idx) => (
                   <div
@@ -1011,7 +1005,7 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            {/* AVAILABILITY SECTION */}
+            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-primary" />
@@ -1056,7 +1050,7 @@ const ProfilePageContent = () => {
               )}
             </div>
 
-            {/* SERVICES SECTION */}
+            
             {matchedData.services && matchedData.services.length > 0 && (
               <>
                 <hr className="border-border" />
@@ -1081,9 +1075,9 @@ const ProfilePageContent = () => {
             )}
           </div>
 
-          {/* STICKY SIDEBAR DESIGN (1 Column) */}
+          
           <div className="lg:col-span-1 lg:sticky lg:top-6 space-y-6">
-            {/* Quick Summary Sticky Card */}
+            
             <div className="border border-border rounded-xl bg-background p-6 space-y-5">
               <div className="flex items-center gap-4">
                 <div className="relative shrink-0">
@@ -1155,7 +1149,7 @@ const ProfilePageContent = () => {
 
               <hr className="border-border/60" />
 
-              {/* Quick Actions using project custom Button */}
+              
               <div className="space-y-3">
                 <Button
                   onClick={handleBookNow}
@@ -1176,7 +1170,7 @@ const ProfilePageContent = () => {
               </div>
             </div>
 
-            {/* Sticky Actions Utility Widget */}
+            
             <div className="border border-border rounded-xl bg-background p-4 flex justify-around items-center text-xs font-bold text-muted-foreground">
               <button
                 onClick={() => {

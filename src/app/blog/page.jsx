@@ -18,7 +18,7 @@ const page = () => {
     }
   }, [data]);
 
-  console.log("all blogs",blogs?.blogs);
+  // console.log("all blogs",blogs?.blogs);
   if (isLoading) return <LoadingSpinner/>;
   if (error) return <div>Error loading data</div>;
 

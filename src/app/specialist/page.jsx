@@ -33,6 +33,8 @@ const SearchContent = () => {
   const router = useRouter();
 
   const [selectedCategory, setSelectedCategory] = useState("house-manager");
+  const [selectedPreferredServices, setSelectedPreferredServices] = useState([]);
+  const [selectedPreferredRoles, setSelectedPreferredRoles] = useState([]);
   const [selectedService, setSelectedService] = useState([]);
   const [sortBy, setSortBy] = useState("relevance");
   const [mobileFilterSidebar, setMobileFilterSidebarOpen] = useState(false);
@@ -73,9 +75,9 @@ const SearchContent = () => {
     };
 
     setSelectedCategory(searchParams.get("category") || "");
-    setSelectedService(
-      searchParams.get("service") ? searchParams.get("service").split(",") : [],
-    );
+    setSelectedPreferredServices(getArray("preferred"));
+    setSelectedPreferredRoles(getArray("preferredRole"));
+    setSelectedService(getArray("service"));
     setSelectedLocation(searchParams.get("location") || "");
     setSelectedKidAge(searchParams.get("kidAge") || "");
     setSelectedLanguages(getArray("languages"));
@@ -118,23 +120,49 @@ const SearchContent = () => {
     });
 
     router.push(`?${params.toString()}`, { scroll: false });
-
-    // window.scrollTo({
-    //   top: 0,
-    //   behavior: "smooth",
-    // });
   };
 
   const handleCategoryChange = (value) => {
+    setSelectedPreferredServices([]);
+    setSelectedPreferredRoles([]);
+    setSelectedService([]);
     updateQueryParams({
       category: value || undefined,
-      service: "",
+      preferred: undefined,
+      preferredRole: undefined,
+      service: undefined,
       location: "",
       kidAge: "",
       languages: [],
       rating: "",
       minSalary: "",
       maxSalary: "",
+      page: 1,
+    });
+  };
+
+  const handlePreferredServiceToggle = (service) => {
+    const isSelected = selectedPreferredServices.includes(service);
+    const updated = isSelected
+      ? selectedPreferredServices.filter((s) => s !== service)
+      : [...selectedPreferredServices, service];
+    setSelectedPreferredServices(updated);
+
+    updateQueryParams({
+      preferred: updated.length ? updated : undefined,
+      page: 1,
+    });
+  };
+
+  const handlePreferredRoleToggle = (role) => {
+    const isSelected = selectedPreferredRoles.includes(role);
+    const updated = isSelected
+      ? selectedPreferredRoles.filter((r) => r !== role)
+      : [...selectedPreferredRoles, role];
+    setSelectedPreferredRoles(updated);
+
+    updateQueryParams({
+      preferredRole: updated.length ? updated : undefined,
       page: 1,
     });
   };
@@ -155,6 +183,88 @@ const SearchContent = () => {
   const selectedCategoryObj = serviceCategory.find(
     (cat) => cat.value === selectedCategory,
   );
+
+  const availablePreferredServices = useMemo(() => {
+    const selectedCat = serviceCategory.find((c) => c.value === selectedCategory);
+    const predefined = selectedCat
+      ? selectedCat.preferredServices || []
+      : serviceCategory.flatMap((c) => c.preferredServices || []);
+
+    const rawData = data?.data?.data || [];
+    const dynamicValues = [];
+    rawData.forEach((item) => {
+      const matchesCat =
+        !selectedCategory ||
+        [item.subRole]
+          .filter(Boolean)
+          .some((role) => role.toLowerCase() === selectedCategory.toLowerCase());
+      if (matchesCat) {
+        const prefs = [
+          ...(Array.isArray(item.preferred) ? item.preferred : item.preferred ? [item.preferred] : []),
+          ...(Array.isArray(item.house_manager?.preferred) ? item.house_manager.preferred : []),
+          ...(Array.isArray(item.nurse?.preferred) ? item.nurse.preferred : []),
+          ...(Array.isArray(item.physiotherapist?.preferred) ? item.physiotherapist.preferred : []),
+          ...(Array.isArray(item.special_need?.preferred) ? item.special_need.preferred : []),
+          ...(Array.isArray(item.nurse_assistant?.preferred) ? item.nurse_assistant.preferred : []),
+          ...(Array.isArray(item.home_health_assistant?.preferred) ? item.home_health_assistant.preferred : []),
+        ];
+        prefs.forEach((p) => {
+          if (p && typeof p === "string" && p.trim()) {
+            dynamicValues.push(p.trim());
+          }
+        });
+      }
+    });
+
+    const combined = [...predefined];
+    dynamicValues.forEach((val) => {
+      if (!combined.some((existing) => existing.toLowerCase() === val.toLowerCase())) {
+        combined.push(val);
+      }
+    });
+    return combined;
+  }, [selectedCategory, data]);
+
+  const availablePreferredRoles = useMemo(() => {
+    const selectedCat = serviceCategory.find((c) => c.value === selectedCategory);
+    const predefined = selectedCat
+      ? selectedCat.preferredRoles || []
+      : serviceCategory.flatMap((c) => c.preferredRoles || []);
+
+    const rawData = data?.data?.data || [];
+    const dynamicValues = [];
+    rawData.forEach((item) => {
+      const matchesCat =
+        !selectedCategory ||
+        [item.subRole]
+          .filter(Boolean)
+          .some((role) => role.toLowerCase() === selectedCategory.toLowerCase());
+      if (matchesCat) {
+        const roles = [
+          ...(Array.isArray(item.preferredRole) ? item.preferredRole : item.preferredRole ? [item.preferredRole] : []),
+          ...(Array.isArray(item.house_manager?.preferredRole) ? item.house_manager.preferredRole : item.house_manager?.preferredRole ? [item.house_manager.preferredRole] : []),
+          ...(Array.isArray(item.nurse?.preferredRole) ? item.nurse.preferredRole : item.nurse?.preferredRole ? [item.nurse.preferredRole] : []),
+          ...(Array.isArray(item.physiotherapist?.preferredRole) ? item.physiotherapist.preferredRole : item.physiotherapist?.preferredRole ? [item.physiotherapist.preferredRole] : []),
+          ...(Array.isArray(item.special_need?.preferredRole) ? item.special_need.preferredRole : item.special_need?.preferredRole ? [item.special_need.preferredRole] : []),
+          ...(Array.isArray(item.nurse_assistant?.preferredRole) ? item.nurse_assistant.preferredRole : item.nurse_assistant?.preferredRole ? [item.nurse_assistant.preferredRole] : []),
+          ...(Array.isArray(item.home_health_assistant?.preferredRole) ? item.home_health_assistant.preferredRole : item.home_health_assistant?.preferredRole ? [item.home_health_assistant.preferredRole] : []),
+        ];
+        roles.forEach((r) => {
+          if (r && typeof r === "string" && r.trim()) {
+            dynamicValues.push(r.trim());
+          }
+        });
+      }
+    });
+
+    const combined = [...predefined];
+    dynamicValues.forEach((val) => {
+      if (!combined.some((existing) => existing.toLowerCase() === val.toLowerCase())) {
+        combined.push(val);
+      }
+    });
+    return combined;
+  }, [selectedCategory, data]);
 
   const parseSalaryRange = (salaryString) => {
     if (!salaryString) return { min: 0, max: Infinity };
@@ -203,24 +313,167 @@ const SearchContent = () => {
         !selectedLocation ||
         item.location?.toLowerCase().includes(selectedLocation.toLowerCase());
 
+      const normalize = (str) =>
+        str
+          ?.toLowerCase()
+          ?.replace(/[^a-z0-9]/g, "")
+          ?.replace("cage", "care") || "";
+
+      const categoryKeyMap = {
+        "house-manager": "house_manager",
+        "nurse": "nurse",
+        "physiotherapist": "physiotherapist",
+        "nurse-aide-or-assistant": "nurse_assistant",
+        "special-need-caregivers": "special_need",
+        "home-health-assistant": "home_health_assistant",
+        "home_health_assistant": "home_health_assistant",
+      };
+      const backendKey = categoryKeyMap[selectedCategory] || selectedCategory;
+
+      const preferredArray = [
+        ...(Array.isArray(item.preferred)
+          ? item.preferred
+          : item.preferred
+            ? [item.preferred]
+            : []),
+        ...(Array.isArray(item[backendKey]?.preferred)
+          ? item[backendKey].preferred
+          : item[backendKey]?.preferred
+            ? [item[backendKey].preferred]
+            : []),
+        ...(Array.isArray(item.house_manager?.preferred)
+          ? item.house_manager.preferred
+          : []),
+        ...(Array.isArray(item.nurse?.preferred) ? item.nurse.preferred : []),
+        ...(Array.isArray(item.physiotherapist?.preferred)
+          ? item.physiotherapist.preferred
+          : []),
+        ...(Array.isArray(item.special_need?.preferred)
+          ? item.special_need.preferred
+          : []),
+        ...(Array.isArray(item.nurse_assistant?.preferred)
+          ? item.nurse_assistant.preferred
+          : []),
+        ...(Array.isArray(item.home_health_assistant?.preferred)
+          ? item.home_health_assistant.preferred
+          : []),
+      ];
+
+      const matchesPreferred =
+        selectedPreferredServices.length === 0 ||
+        selectedPreferredServices.every((service) => {
+          const normalizedService = normalize(service);
+          return preferredArray.some((p) => {
+            const normalizedP = normalize(p);
+            return (
+              normalizedP === normalizedService ||
+              normalizedP.includes(normalizedService) ||
+              normalizedService.includes(normalizedP)
+            );
+          });
+        });
+
+      const preferredRoleArray = [
+        ...(Array.isArray(item.preferredRole)
+          ? item.preferredRole
+          : item.preferredRole
+            ? [item.preferredRole]
+            : []),
+        ...(Array.isArray(item[backendKey]?.preferredRole)
+          ? item[backendKey].preferredRole
+          : item[backendKey]?.preferredRole
+            ? [item[backendKey].preferredRole]
+            : []),
+        ...(Array.isArray(item.house_manager?.preferredRole)
+          ? item.house_manager.preferredRole
+          : item.house_manager?.preferredRole
+            ? [item.house_manager.preferredRole]
+            : []),
+        ...(Array.isArray(item.nurse?.preferredRole)
+          ? item.nurse.preferredRole
+          : item.nurse?.preferredRole
+            ? [item.nurse.preferredRole]
+            : []),
+        ...(Array.isArray(item.physiotherapist?.preferredRole)
+          ? item.physiotherapist.preferredRole
+          : item.physiotherapist?.preferredRole
+            ? [item.physiotherapist.preferredRole]
+            : []),
+        ...(Array.isArray(item.special_need?.preferredRole)
+          ? item.special_need.preferredRole
+          : item.special_need?.preferredRole
+            ? [item.special_need.preferredRole]
+            : []),
+        ...(Array.isArray(item.nurse_assistant?.preferredRole)
+          ? item.nurse_assistant.preferredRole
+          : item.nurse_assistant?.preferredRole
+            ? [item.nurse_assistant.preferredRole]
+            : []),
+        ...(Array.isArray(item.home_health_assistant?.preferredRole)
+          ? item.home_health_assistant.preferredRole
+          : item.home_health_assistant?.preferredRole
+            ? [item.home_health_assistant.preferredRole]
+            : []),
+      ];
+
+      const matchesPreferredRole =
+        selectedPreferredRoles.length === 0 ||
+        selectedPreferredRoles.every((role) => {
+          const normalizedRole = normalize(role);
+          return preferredRoleArray.some((p) => {
+            const normalizedP = normalize(p);
+            return (
+              normalizedP === normalizedRole ||
+              normalizedP.includes(normalizedRole) ||
+              normalizedRole.includes(normalizedP)
+            );
+          });
+        });
+
+      const specializedServicesArray = [
+        ...(Array.isArray(item.skills)
+          ? item.skills
+          : item.skills
+            ? [item.skills]
+            : []),
+        ...(Array.isArray(item.services)
+          ? item.services
+          : item.services
+            ? [item.services]
+            : []),
+        ...(Array.isArray(item.service)
+          ? item.service
+          : item.service
+            ? [item.service]
+            : []),
+        ...(Array.isArray(item.specializedServices)
+          ? item.specializedServices
+          : item.specializedServices
+            ? [item.specializedServices]
+            : []),
+        ...(Array.isArray(item.skillsServices?.skills)
+          ? item.skillsServices.skills
+          : []),
+        ...(Array.isArray(item[backendKey]?.skills)
+          ? item[backendKey].skills
+          : item[backendKey]?.skills
+            ? [item[backendKey].skills]
+            : []),
+        ...(Array.isArray(item[backendKey]?.services)
+          ? item[backendKey].services
+          : item[backendKey]?.services
+            ? [item[backendKey].services]
+            : []),
+        ...(Array.isArray(item[backendKey]?.skillsServices?.skills)
+          ? item[backendKey].skillsServices.skills
+          : []),
+      ];
+
       const matchesServices =
         selectedService.length === 0 ||
         selectedService.every((service) => {
-          const normalize = (str) =>
-            str
-              ?.toLowerCase()
-              ?.replace(/[^a-z0-9]/g, "")
-              ?.replace("cage", "care") || "";
-
           const normalizedService = normalize(service);
-
-          const preferredArray = Array.isArray(item.preferred)
-            ? item.preferred
-            : item.preferred
-            ? [item.preferred]
-            : [];
-
-          const inPreferred = preferredArray.some((p) => {
+          return specializedServicesArray.some((p) => {
             const normalizedP = normalize(p);
             return (
               normalizedP === normalizedService ||
@@ -228,23 +481,6 @@ const SearchContent = () => {
               normalizedService.includes(normalizedP)
             );
           });
-
-          const preferredRoleArray = Array.isArray(item.preferredRole)
-            ? item.preferredRole
-            : item.preferredRole
-            ? [item.preferredRole]
-            : [];
-
-          const inPreferredRole = preferredRoleArray.some((p) => {
-            const normalizedP = normalize(p);
-            return (
-              normalizedP === normalizedService ||
-              normalizedP.includes(normalizedService) ||
-              normalizedService.includes(normalizedP)
-            );
-          });
-
-          return inPreferred || inPreferredRole;
         });
 
       const matchesLanguages =
@@ -268,17 +504,6 @@ const SearchContent = () => {
       } else {
         matchesSalary = true;
       }
-
-      const categoryKeyMap = {
-        "house-manager": "house_manager",
-        "nurse": "nurse",
-        "physiotherapist": "physiotherapist",
-        "nurse-aide-or-assistant": "nurse_assistant",
-        "special-need-caregivers": "special_need",
-        "home-health-assistant": "home_health_assistant",
-        "home_health_assistant": "home_health_assistant",
-      };
-      const backendKey = categoryKeyMap[selectedCategory] || selectedCategory;
 
       let matchesExperience = true;
       if (selectedCategory !== "house-manager") {
@@ -315,6 +540,8 @@ const SearchContent = () => {
       return (
         matchesCategory &&
         matchesLocation &&
+        matchesPreferred &&
+        matchesPreferredRole &&
         matchesServices &&
         matchesLanguages &&
         matchesRating &&
@@ -328,6 +555,8 @@ const SearchContent = () => {
     data,
     selectedCategory,
     selectedLocation,
+    selectedPreferredServices,
+    selectedPreferredRoles,
     selectedService,
     selectedKidAge,
     salaryRange,
@@ -931,43 +1160,74 @@ const SearchContent = () => {
                 </div>
               )}
 
-            {selectedCategoryObj && (
-              <div className="pt-4 border-t border-slate-50">
+            {availablePreferredServices.length > 0 && (
+              <div className="pt-4 border-t border-slate-100">
                 <label className="text-sm font-semibold text-slate-700 block mb-4 ml-1">
-                  Specialized Services
+                  Preferred Services
                 </label>
-                <div className="bg-slate-50/80 rounded-2xl p-4 space-y-3 border border-slate-100/50">
-                  {selectedCategoryObj.subCategory.map((service, i) => (
-                    <div key={i} className="flex items-center gap-3 py-1 group">
-                      {/* <Checkbox
-                        id={`desktop-${service}`}
-                        className="border-slate-300 rounded-sm cursor-pointer"
-                        checked={selectedService === service}
-                        onCheckedChange={(checked) =>
-                          handleServiceToggle(service, checked === true)
-                        }
-                      />
-                      <Label
-                        htmlFor={`desktop-${service}`}
-                        className="text-sm font-medium text-slate-600 group-hover:text-slate-900 leading-none cursor-pointer transition-colors"
-                      >
-                        {service}
-                      </Label> */}
-                      <button
-                        onClick={() => handleServiceToggle(service)}
-                        className={`px-3 py-1 rounded-lg border cursor-pointer ${
-                          selectedService.includes(service)
-                            ? "bg-primary text-white"
-                            : ""
+                <div className="bg-slate-50/80 rounded-2xl p-4 flex flex-wrap gap-2 border border-slate-100/50">
+                  {availablePreferredServices.map((service, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handlePreferredServiceToggle(service)}
+                      className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer ${selectedPreferredServices.includes(service)
+                          ? "bg-primary text-white border-primary"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-primary/40"
                         }`}
-                      >
-                        {service}
-                      </button>
-                    </div>
+                    >
+                      {service}
+                    </button>
                   ))}
                 </div>
               </div>
             )}
+
+            {availablePreferredRoles.length > 0 && (
+              <div className="pt-4 border-t border-slate-100">
+                <label className="text-sm font-semibold text-slate-700 block mb-4 ml-1">
+                  Preferred Roles
+                </label>
+                <div className="bg-slate-50/80 rounded-2xl p-4 flex flex-wrap gap-2 border border-slate-100/50">
+                  {availablePreferredRoles.map((role, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handlePreferredRoleToggle(role)}
+                      className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer ${selectedPreferredRoles.includes(role)
+                          ? "bg-primary text-white border-primary"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-primary/40"
+                        }`}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* {availableSpecializedServices.length > 0 && (
+              <div className="pt-4 border-t border-slate-100">
+                <label className="text-sm font-semibold text-slate-700 block mb-4 ml-1">
+                  Specialized Services
+                </label>
+                <div className="bg-slate-50/80 rounded-2xl p-4 flex flex-wrap gap-2 border border-slate-100/50">
+                  {availableSpecializedServices.map((service, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => handleServiceToggle(service)}
+                      className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer ${selectedService.includes(service)
+                          ? "bg-primary text-white border-primary"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-primary/40"
+                        }`}
+                    >
+                      {service}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )} */}
           </aside>
 
           <main className="col-span-5">
@@ -1521,8 +1781,8 @@ const SearchContent = () => {
                                   const updated = checked
                                     ? [...selectedLanguages, lang]
                                     : selectedLanguages.filter(
-                                        (l) => l !== lang,
-                                      );
+                                      (l) => l !== lang,
+                                    );
                                   updateQueryParams({
                                     languages: updated,
                                     page: 1,
@@ -1560,38 +1820,74 @@ const SearchContent = () => {
                     </div>
                   )}
 
-                {selectedCategoryObj && (
+                {availablePreferredServices.length > 0 && (
                   <div>
                     <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
-                      Services
+                      Preferred Services
                     </h2>
-                    <div className="space-y-3">
-                      {selectedCategoryObj.subCategory.map((service, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          {/* <Checkbox
-                            id={`mobile-${service}`}
-                            checked={selectedService === service}
-                            onCheckedChange={(checked) =>
-                              handleServiceToggle(service, checked === true)
-                            }
-                          />
-
-                          <Label htmlFor={`mobile-${service}`}>{service}</Label> */}
-                          <button
-                            onClick={() => handleServiceToggle(service)}
-                            className={`px-3 py-1 rounded-lg border cursor-pointer ${
-                              selectedService.includes(service)
-                                ? "bg-primary text-white"
-                                : ""
+                    <div className="flex flex-wrap gap-2">
+                      {availablePreferredServices.map((service, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handlePreferredServiceToggle(service)}
+                          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer ${selectedPreferredServices.includes(service)
+                              ? "bg-primary text-white border-primary"
+                              : "bg-slate-50 text-slate-700 border-slate-200"
                             }`}
-                          >
-                            {service}
-                          </button>
-                        </div>
+                        >
+                          {service}
+                        </button>
                       ))}
                     </div>
                   </div>
                 )}
+
+                {availablePreferredRoles.length > 0 && (
+                  <div>
+                    <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                      Preferred Roles
+                    </h2>
+                    <div className="flex flex-wrap gap-2">
+                      {availablePreferredRoles.map((role, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handlePreferredRoleToggle(role)}
+                          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer ${selectedPreferredRoles.includes(role)
+                              ? "bg-primary text-white border-primary"
+                              : "bg-slate-50 text-slate-700 border-slate-200"
+                            }`}
+                        >
+                          {role}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* {availableSpecializedServices.length > 0 && (
+                  <div>
+                    <h2 className="text-lg border-b mb-4 pb-1 font-semibold">
+                      Specialized Services
+                    </h2>
+                    <div className="flex flex-wrap gap-2">
+                      {availableSpecializedServices.map((service, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => handleServiceToggle(service)}
+                          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors cursor-pointer ${selectedService.includes(service)
+                              ? "bg-primary text-white border-primary"
+                              : "bg-slate-50 text-slate-700 border-slate-200"
+                            }`}
+                        >
+                          {service}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )} */}
               </div>
             </div>
             <div

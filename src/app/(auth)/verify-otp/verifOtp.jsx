@@ -59,7 +59,7 @@ const VerifyOtpPage = () => {
       // localStorage.setItem("user", JSON.stringify(userObj));
       toast.success("OTP verified successfully!");
       const userData = await refreshUser();
-      console.log("OTP verification complete. User data fetched:", userData);
+      // console.log("OTP verification complete. User data fetched:", userData);
       sessionStorage.removeItem("verifyEmail");
       sessionStorage.removeItem("redirectUrl");
       if (redirectUrl) {

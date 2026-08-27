@@ -18,16 +18,16 @@ export default function useNotificationListener(authId, onMessage) {
     const channel = echo
       .private(`chat.${user?.id}`)
       .listen(".message.sent", (event) => {
-        console.log("📩 Event received:", event);
+        // console.log("📩 Event received:", event);
         onMessage?.(event);
       });
 
     channel.subscribed(() => {
-      console.log("✅ Subscribed to:", `chat.${user?.id}`);
+      // console.log("✅ Subscribed to:", `chat.${user?.id}`);
     });
 
     channel.error((err) => {
-      console.log("❌ Subscription error:", err);
+      // console.log("❌ Subscription error:", err);
     });
 
     return () => {

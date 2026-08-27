@@ -49,7 +49,7 @@ export default function EmployerBookingFormClient() {
   useEffect(() => {
     if (data?.status === 200 && data?.data?.data.length > 0) {
       const individualPlan = data?.data?.data?.find(item => item.name === "Service Fee");
-      console.log("individualPlan", individualPlan);
+      // console.log("individualPlan", individualPlan);
       if (individualPlan) {
         setServiceFee(parseFloat(individualPlan.price));
         setPlanId(individualPlan.id);

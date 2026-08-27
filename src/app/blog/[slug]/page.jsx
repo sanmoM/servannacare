@@ -33,7 +33,7 @@ const BlogDetails = () => {
 
   const blog = blogData?.blogs?.find((blog) => blog.id === parseInt(paramsId));
   const slug = blog.title.toLowerCase().replace(/ /g, "-");
-  console.log("single blog show here ", blog);
+  // console.log("single blog show here ", blog);
 
   if (!blog) {
     return notFound();

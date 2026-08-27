@@ -98,7 +98,7 @@ const ChatInbox = () => {
     }
   }, [messageData]);
   useNotificationListener(activeId, notification => {
-    console.log("Real-time notification received in specialist-inbox:", notification);
+    // console.log("Real-time notification received in specialist-inbox:", notification);
     if (notification?.message) {
       setLocalMessages(prev => [...prev, notification.message]);
     }

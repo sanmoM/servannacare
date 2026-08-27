@@ -30,7 +30,7 @@ const HouseManager = ({ data = {} }) => {
   const [country, setCountry] = useState("KE");
   const router = useRouter();
   const { user, refreshUser } = useAuth();
-  console.log(data);
+  // console.log(data);
   const [formData, setFormData] = useState({
     basicInfo: {
       name: data?.name || "",

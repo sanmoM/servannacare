@@ -84,7 +84,7 @@ const AdditionalDetails = ({ defaultValues, onNext, onBack }) => {
       return;
     }
 
-    console.log("Additional Details Data:", data);
+    // console.log("Additional Details Data:", data);
     onNext(data);
   };
 

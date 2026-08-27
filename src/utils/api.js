@@ -26,7 +26,7 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-    console.log(`[API Request] ${config.method.toUpperCase()} ${config.url} - Auth Header set: Bearer ${token.slice(0, 10)}...`);
+    // console.log(`[API Request] ${config.method.toUpperCase()} ${config.url} - Auth Header set: Bearer ${token.slice(0, 10)}...`);
   } else {
     console.warn(`[API Request] ${config.method.toUpperCase()} ${config.url} - No token found in localStorage`);
   }
