@@ -399,12 +399,12 @@ const ProfilePageContent = () => {
                 <MapPin className="w-4 h-4 text-primary" />
                 <span className="capitalize">{location || "N/A"}</span>
               </div>
-              {isAgencyEmployee && agencyName && (
+              {/* {isAgencyEmployee && agencyName && (
                 <div className="flex items-center gap-1.5 font-medium text-primary">
                   <Building className="w-4 h-4" />
                   <span>Agency: {agencyName}</span>
                 </div>
-              )}
+              )} */}
             </div>
 
             
@@ -792,7 +792,7 @@ const ProfilePageContent = () => {
             )}
 
             
-            {isAgencyEmployee && (
+            {/* {isAgencyEmployee && (
               <>
                 <hr className="border-border" />
                 <div className="space-y-6">
@@ -940,7 +940,7 @@ const ProfilePageContent = () => {
                   </div>
                 </div>
               </>
-            )}
+            )} */}
 
             <hr className="border-border" />
 
@@ -1102,11 +1102,11 @@ const ProfilePageContent = () => {
                   <p className="text-[10px] font-bold text-primary tracking-wider uppercase mt-1">
                     {matchedData?.subRole?.replace("-", " ")}
                   </p>
-                  {isAgencyEmployee && agencyName && (
+                  {/* {isAgencyEmployee && agencyName && (
                     <p className="text-xs text-muted-foreground font-medium mt-0.5">
                       via {agencyName}
                     </p>
-                  )}
+                  )} */}
                 </div>
               </div>
 
