@@ -39,7 +39,6 @@ const validateEmployee = (data) => {
   if (!data.childcare) errors.push("Select childcare skill proficiency");
   if (!data.idCopy && !data.iDCopy) errors.push("ID copy is required");
   if (!data.profilePhoto) errors.push("Profile photo is required");
-  if (!data.goodConductCertificate) errors.push("Good conduct certificate is required");
   return errors;
 };
 const Agency = () => {

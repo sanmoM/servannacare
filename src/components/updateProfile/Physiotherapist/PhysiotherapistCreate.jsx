@@ -85,10 +85,11 @@ const PhysiotherapistCreate = ({
     required: true
   }, {
     id: "goodConductCertificate",
-    title: "Good Conduct Certificate",
+    title: "Good Conduct Certificate (Optional)",
     accept: "application/pdf,image/*",
     icon: <FileText size={32} />,
-    required: true
+    required: false,
+    optional: true
   }, {
     id: "drivingLicense",
     title: "Driving License (Optional)",
@@ -197,7 +198,6 @@ const PhysiotherapistCreate = ({
     // ================= DOCUMENTS =================
     if (!documents.idCopy) return toast.error("ID copy is required");
     if (!documents.profilePhoto) return toast.error("Profile photo is required");
-    if (!documents.goodConductCertificate) return toast.error("Good conduct certificate is required");
     setIsActionLoading(true);
     try {
       const fd = new FormData();

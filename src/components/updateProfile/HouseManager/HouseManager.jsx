@@ -169,8 +169,8 @@ const HouseManager = ({ data = {} }) => {
     },
     {
       id: "goodConductCertificate",
-      title: "Good Conduct Certificate",
-      required: true,
+      title: "Good Conduct Certificate (Optional)",
+      required: false,
     },
     {
       id: "iDCopy",

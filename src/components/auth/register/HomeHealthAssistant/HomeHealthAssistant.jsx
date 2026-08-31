@@ -554,7 +554,6 @@ const Step4Documents = ({ defaultValues, onNext, onBack }) => {
     e.preventDefault();
     if (!data.idCopy) return toast.error("National ID is required");
     if (!data.profilePhoto) return toast.error("Passport Photo is required");
-    if (!data.goodConductCertificate) return toast.error("Certificate of Good Conduct is required");
     if (!data.educationCertificate) return toast.error("Educational Certificate is required");
     if (!data.referenceLetter) return toast.error("References file is required");
     onNext(data);
@@ -569,7 +568,7 @@ const Step4Documents = ({ defaultValues, onNext, onBack }) => {
         
         <FileUpload title="Passport / Profile Photo" accept="image/*" icon={<Camera size={32} />} file={data.profilePhoto} onFileSelect={(file) => handleFileSelect("profilePhoto", file)} />
 
-        <FileUpload title="Certificate of Good Conduct" accept="application/pdf,image/*" icon={<FileText size={32} />} file={data.goodConductCertificate} onFileSelect={(file) => handleFileSelect("goodConductCertificate", file)} />
+        <FileUpload title="Certificate of Good Conduct (Optional)" accept="application/pdf,image/*" icon={<FileText size={32} />} file={data.goodConductCertificate} onFileSelect={(file) => handleFileSelect("goodConductCertificate", file)} optional="Optional" />
 
         <FileUpload title="Educational Certificates" accept="application/pdf,image/*" icon={<IdCard size={32} />} file={data.educationCertificate} onFileSelect={(file) => handleFileSelect("educationCertificate", file)} />
 
@@ -630,7 +629,7 @@ const Step5Review = ({ data, onBack, onConfirm, isActionLoading }) => {
           <div className="grid grid-cols-2 gap-4 mt-2">
             <FilePreview file={documents.idCopy} title="National ID Copy" />
             <FilePreview file={documents.profilePhoto} title="Passport Photo" />
-            <FilePreview file={documents.goodConductCertificate} title="Good Conduct Certificate" />
+            {documents.goodConductCertificate && <FilePreview file={documents.goodConductCertificate} title="Good Conduct Certificate" />}
             <FilePreview file={documents.educationCertificate} title="Educational Certificate" />
             {documents.firstAidCertificate && <FilePreview file={documents.firstAidCertificate} title="First Aid Certificate" />}
             <FilePreview file={documents.referenceLetter} title="References Document" />

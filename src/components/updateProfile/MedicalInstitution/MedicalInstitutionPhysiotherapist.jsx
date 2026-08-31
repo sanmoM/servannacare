@@ -47,10 +47,11 @@ const MedicalInstitutionPhysiotherapist = ({
     required: true
   }, {
     id: "goodConductCertificate",
-    title: "Good Conduct Certificate",
+    title: "Good Conduct Certificate (Optional)",
     accept: "application/pdf,image/*",
     icon: <FileText size={32} />,
-    required: true
+    required: false,
+    optional: true
   }, {
     id: "drivingLicense",
     title: "Driving License (Optional)",
@@ -255,7 +256,6 @@ const MedicalInstitutionPhysiotherapist = ({
     if (!isUpdate) {
       if (!data.documents.idCopy) return toast.error("ID copy is required");
       if (!data.documents.profilePhoto) return toast.error("Profile photo is required");
-      if (!data.documents.goodConductCertificate) return toast.error("Good conduct certificate is required");
     }
     const loadingToast = toast.loading(isUpdate ? "Updating Physiotherapist..." : "Adding Physiotherapist...");
     setIsActionLoading(true);

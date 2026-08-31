@@ -519,7 +519,7 @@ const HomeHealthAssistantUpdate = ({ data = {} }) => {
           
           <FileUpload title="Passport / Profile Photo" accept="image/*" icon={<Camera size={32} />} file={formData.documents.profilePhoto} onFileSelect={(file) => handleFileSelect("profilePhoto", file)} />
 
-          <FileUpload title="Certificate of Good Conduct" accept="application/pdf,image/*" icon={<FileText size={32} />} file={formData.documents.goodConductCertificate} onFileSelect={(file) => handleFileSelect("goodConductCertificate", file)} />
+          <FileUpload title="Certificate of Good Conduct (Optional)" accept="application/pdf,image/*" icon={<FileText size={32} />} file={formData.documents.goodConductCertificate} onFileSelect={(file) => handleFileSelect("goodConductCertificate", file)} optional="Optional" />
 
           <FileUpload title="Educational Certificates" accept="application/pdf,image/*" icon={<IdCard size={32} />} file={formData.documents.educationCertificate} onFileSelect={(file) => handleFileSelect("educationCertificate", file)} />
 

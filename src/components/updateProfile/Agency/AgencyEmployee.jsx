@@ -323,10 +323,11 @@ const AgencyEmployee = ({ initialData, isUpdate, onSuccess }) => {
     },
     {
       id: "goodConductCertificate",
-      title: "Good Conduct Certificate",
+      title: "Good Conduct Certificate (Optional)",
       accept: "application/pdf,image/*",
       icon: <FileText size={32} />,
-      required: true,
+      required: false,
+      optional: true,
     },
     {
       id: "firstAidCertificate",
