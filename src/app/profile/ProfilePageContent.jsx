@@ -124,7 +124,6 @@ const ProfilePageContent = () => {
     matchedData.home_health_assistant ||
     matchedData.agency_employee;
 
-  
   const age = matchedData.age || roleSpecificInfo?.age;
   const experience = roleSpecificInfo?.experience || matchedData?.experience;
   const education =
@@ -142,10 +141,8 @@ const ProfilePageContent = () => {
     roleSpecificInfo?.serviceFeeDay || matchedData?.serviceFeeDay;
   const monthlySalary =
     roleSpecificInfo?.serviceFeeMonth || matchedData?.serviceFeeMonth;
-  const salaryRange =
-    roleSpecificInfo?.salaryRange || matchedData?.salaryRange;
-  const isMother =
-    roleSpecificInfo?.isMother ?? matchedData?.isMother;
+  const salaryRange = roleSpecificInfo?.salaryRange || matchedData?.salaryRange;
+  const isMother = roleSpecificInfo?.isMother ?? matchedData?.isMother;
   const isHandelingPet =
     roleSpecificInfo?.isHandelingPet ??
     matchedData?.isHandelingPet ??
@@ -176,7 +173,6 @@ const ProfilePageContent = () => {
     roleSpecificInfo?.drivingLicense ||
     matchedData?.canDrive;
 
-  
   const isAgencyEmployee = matchedData.type === "agency-employee";
   const agency = matchedData.agency || matchedData.agency_details || {};
   const agencyName =
@@ -186,8 +182,7 @@ const ProfilePageContent = () => {
     matchedData.companyName;
   const agencyLocation =
     agency.businessLocation || agency.location || matchedData.agencyLocation;
-  const agencyPhone =
-    agency.number || agency.phone || matchedData.agencyPhone;
+  const agencyPhone = agency.number || agency.phone || matchedData.agencyPhone;
   const agencyEmail = agency.email || agency.user?.email;
   const agencyRegNumber =
     agency.companyRegistrationNumber || agency.registrationNumber;
@@ -195,15 +190,12 @@ const ProfilePageContent = () => {
   const agencyPlacementFee = agency.placementFee;
   const agencyReplacementWindow = agency.replacementWindow;
   const agencyReplacementCount = agency.numberOfReplacement;
-  const agencyServices =
-    agency.agency_services || agency.trainingAreas || [];
+  const agencyServices = agency.agency_services || agency.trainingAreas || [];
   const agencyRegistrationDoc = agency.registrationDocument;
 
-  
   const hasReviews =
     matchedData.review_count > 0 && matchedData.review_avg_rating !== null;
 
-  
   const getMemberSince = () => {
     if (matchedData?.created_at) {
       return new Date(matchedData.created_at).toLocaleDateString("en-US", {
@@ -217,7 +209,6 @@ const ProfilePageContent = () => {
     return "July 2024";
   };
 
-  
   const getPreferredArrangements = () => {
     let raw =
       matchedData?.preferred ||
@@ -255,7 +246,10 @@ const ProfilePageContent = () => {
     },
     {
       name: "Pet Handling",
-      has: isHandelingPet === 1 || isHandelingPet === true || isHandelingPet === "Yes",
+      has:
+        isHandelingPet === 1 ||
+        isHandelingPet === true ||
+        isHandelingPet === "Yes",
     },
     {
       name: "Mother Status",
@@ -307,17 +301,14 @@ const ProfilePageContent = () => {
     if (hasCert) score += 15;
     items.push({ name: "Professional Certification", verified: hasCert });
 
-    
     const hasExperience = !!experience;
     if (hasExperience) score += 10;
     items.push({ name: "Experience Verified", verified: hasExperience });
 
-    
     const hasLicense = !!drivingLicense;
     if (hasLicense) score += 5;
     items.push({ name: "Driving License", verified: hasLicense });
 
-    
     const phoneVerified = !!(
       phone ||
       matchedData.is_phone_verified ||
@@ -326,7 +317,6 @@ const ProfilePageContent = () => {
     if (phoneVerified) score += 5;
     items.push({ name: "Phone Verified", verified: phoneVerified });
 
-    
     const emailVerified = !!(
       matchedData.email ||
       matchedData.is_email_verified ||
@@ -350,7 +340,6 @@ const ProfilePageContent = () => {
       />
 
       <Container className="py-12">
-        
         <div className="flex flex-col md:flex-row md:items-start gap-6 pb-8 border-b border-border">
           <div className="relative shrink-0 mx-auto md:mx-0">
             <img
@@ -407,7 +396,6 @@ const ProfilePageContent = () => {
               )} */}
             </div>
 
-            
             <div className="flex items-center justify-center md:justify-start gap-2 text-sm text-muted-foreground">
               {hasReviews ? (
                 <div className="flex items-center gap-1.5">
@@ -431,7 +419,6 @@ const ProfilePageContent = () => {
               )}
             </div>
 
-            
             <div className="flex md:hidden gap-3 mt-4">
               <Button
                 onClick={handleMessage}
@@ -452,11 +439,8 @@ const ProfilePageContent = () => {
           </div>
         </div>
 
-        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start mt-8">
-          
           <div className="lg:col-span-2 space-y-10">
-            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
@@ -536,7 +520,6 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            
             <div className="space-y-3">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
@@ -549,7 +532,6 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-primary" />
@@ -639,7 +621,6 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-primary" />
@@ -677,7 +658,6 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
@@ -707,7 +687,6 @@ const ProfilePageContent = () => {
               </div>
             </div>
 
-            
             {hasSkillProficiency && (
               <>
                 <hr className="border-border" />
@@ -769,7 +748,7 @@ const ProfilePageContent = () => {
                               {val}
                             </span>
                           </div>
-                          
+
                           <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all duration-300 ${
@@ -791,8 +770,7 @@ const ProfilePageContent = () => {
               </>
             )}
 
-            
-            {/* {isAgencyEmployee && (
+            {isAgencyEmployee && (
               <>
                 <hr className="border-border" />
                 <div className="space-y-6">
@@ -813,7 +791,7 @@ const ProfilePageContent = () => {
                         <p className="text-xs font-bold text-primary tracking-wider uppercase">
                           Representing Agency
                         </p>
-                        <h3 className="text-xl font-black text-foreground">
+                        {/* <h3 className="text-xl font-black text-foreground">
                           {agencyName || "Registered Partner Agency"}
                         </h3>
                         {agencyLocation && (
@@ -821,17 +799,16 @@ const ProfilePageContent = () => {
                             <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
                             {agencyLocation}
                           </p>
-                        )}
+                        )} */}
                       </div>
-                      {agencyPhone && (
+                      {/* {agencyPhone && (
                         <div className="flex items-center gap-2 bg-background/80 border border-border px-3.5 py-2 rounded-xl text-sm font-semibold text-foreground">
                           <Phone className="w-4 h-4 text-primary shrink-0" />
                           <span>{agencyPhone}</span>
                         </div>
-                      )}
+                      )} */}
                     </div>
 
-                    
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div className="p-4 bg-background/70 border border-border rounded-xl">
                         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
@@ -865,10 +842,9 @@ const ProfilePageContent = () => {
                       </div>
                     </div>
 
-                    
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm pt-2">
                       <div className="space-y-2.5">
-                        {agencyRegNumber && (
+                        {/* {agencyRegNumber && (
                           <div className="flex justify-between border-b border-border/60 pb-2">
                             <span className="text-muted-foreground font-medium text-xs">
                               Registration No.
@@ -877,8 +853,8 @@ const ProfilePageContent = () => {
                               {agencyRegNumber}
                             </span>
                           </div>
-                        )}
-                        {agencyKraPin && (
+                        )} */}
+                        {/* {agencyKraPin && (
                           <div className="flex justify-between border-b border-border/60 pb-2">
                             <span className="text-muted-foreground font-medium text-xs">
                               KRA PIN
@@ -887,8 +863,8 @@ const ProfilePageContent = () => {
                               {agencyKraPin}
                             </span>
                           </div>
-                        )}
-                        {agencyEmail && (
+                        )} */}
+                        {/* {agencyEmail && (
                           <div className="flex justify-between border-b border-border/60 pb-2">
                             <span className="text-muted-foreground font-medium text-xs">
                               Email
@@ -897,10 +873,10 @@ const ProfilePageContent = () => {
                               {agencyEmail}
                             </span>
                           </div>
-                        )}
+                        )} */}
                       </div>
 
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
                           Agency Training & Specialties
                         </span>
@@ -916,14 +892,15 @@ const ProfilePageContent = () => {
                             ))
                           ) : (
                             <span className="text-xs text-muted-foreground italic">
-                              Professional household & childcare training provided
+                              Professional household & childcare training
+                              provided
                             </span>
                           )}
                         </div>
-                      </div>
+                      </div> */}
                     </div>
 
-                    {agencyRegistrationDoc && (
+                    {/* {agencyRegistrationDoc && (
                       <div className="pt-2">
                         <a
                           href={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${agencyRegistrationDoc}`}
@@ -936,15 +913,14 @@ const ProfilePageContent = () => {
                           <ExternalLink className="w-3 h-3" />
                         </a>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </>
-            )} */}
+            )}
 
             <hr className="border-border" />
 
-            
             <div className="space-y-6">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-primary" />
@@ -953,7 +929,6 @@ const ProfilePageContent = () => {
                 </h2>
               </div>
 
-              
               <div className="p-5 bg-secondary/5 border border-border rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">
@@ -971,7 +946,6 @@ const ProfilePageContent = () => {
                   </p>
                 </div>
 
-                
                 <div className="w-full sm:w-48 h-3 bg-muted rounded-full overflow-hidden shrink-0 border border-border">
                   <div
                     className="h-full bg-primary transition-all duration-500 ease-out"
@@ -980,7 +954,6 @@ const ProfilePageContent = () => {
                 </div>
               </div>
 
-              
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 {trustDetails.items.map((item, idx) => (
                   <div
@@ -1005,7 +978,6 @@ const ProfilePageContent = () => {
 
             <hr className="border-border" />
 
-            
             <div className="space-y-4">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-primary" />
@@ -1050,7 +1022,6 @@ const ProfilePageContent = () => {
               )}
             </div>
 
-            
             {matchedData.services && matchedData.services.length > 0 && (
               <>
                 <hr className="border-border" />
@@ -1075,9 +1046,7 @@ const ProfilePageContent = () => {
             )}
           </div>
 
-          
           <div className="lg:col-span-1 lg:sticky lg:top-6 space-y-6">
-            
             <div className="border border-border rounded-xl bg-background p-6 space-y-5">
               <div className="flex items-center gap-4">
                 <div className="relative shrink-0">
@@ -1149,7 +1118,6 @@ const ProfilePageContent = () => {
 
               <hr className="border-border/60" />
 
-              
               <div className="space-y-3">
                 <Button
                   onClick={handleBookNow}
@@ -1170,7 +1138,6 @@ const ProfilePageContent = () => {
               </div>
             </div>
 
-            
             <div className="border border-border rounded-xl bg-background p-4 flex justify-around items-center text-xs font-bold text-muted-foreground">
               <button
                 onClick={() => {
