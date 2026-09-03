@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import EmployeDetails from "@/components/auth/register/Agency/EmployeDetails";
 import { postApi } from "@/lib/apiHandler";
@@ -45,13 +45,14 @@ const DashboardAddEmployees = ({
   const [allEmployees, setAllEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const handleEmployeeChange = (index, employeeData) => {
+  const handleEmployeeChange = useCallback((index, employeeData) => {
     setAllEmployees((prev) => {
+      if (prev[index] === employeeData) return prev;
       const updated = [...prev];
       updated[index] = employeeData;
       return updated;
     });
-  };
+  }, []);
 
   const handleAddEmployee = () => {
     setEmployees((prev) => [...prev, prev.length + 1]);

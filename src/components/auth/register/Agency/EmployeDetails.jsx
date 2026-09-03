@@ -82,59 +82,45 @@ const EmployeDetails = ({
     { title: "DayBurg" },
   ];
 
-  const [data, setData] = useState({
-    name: defaultValues.name || "",
-    age: defaultValues.age || "",
-    education: defaultValues.education || defaultValues.educationLevel || "",
-    experience: defaultValues.experience || "",
-    salaryRange: defaultValues.salaryRange || "",
-    phone: defaultValues.phone || defaultValues.number_two || "",
-    preferred: Array.isArray(defaultValues.preferred)
+  const [data, setData] = useState(() => ({
+    name: defaultValues?.name || "",
+    age: defaultValues?.age || "",
+    education: defaultValues?.education || defaultValues?.educationLevel || "",
+    experience: defaultValues?.experience || "",
+    salaryRange: defaultValues?.salaryRange || "",
+    phone: defaultValues?.phone || defaultValues?.number_two || "",
+    preferred: Array.isArray(defaultValues?.preferred)
       ? defaultValues.preferred
-      : defaultValues.preferred
+      : defaultValues?.preferred
         ? [defaultValues.preferred]
         : [],
-    location: defaultValues.location || "",
-    languages: defaultValues.languages || [],
-    isMother: defaultValues.isMother ?? null,
-    ageOfKids: defaultValues.ageOfKids || defaultValues.kidAges || [],
-    isHandelingPet: defaultValues.isHandelingPet ?? defaultValues.handlePets ?? null,
-    preferredRole: defaultValues.preferredRole || "",
-    cooking: defaultValues.cooking || "",
-    housekeeping: defaultValues.housekeeping || "",
-    childcare: defaultValues.childcare || "",
-    serviceFeeDay: defaultValues.serviceFeeDay || "",
-    serviceFeeMonth: defaultValues.serviceFeeMonth || "",
-    bio: defaultValues.bio || "",
-    idCopy: defaultValues.idCopy || defaultValues.iDCopy || null,
-    profilePhoto: defaultValues.profilePhoto || null,
-    goodConductCertificate: defaultValues.goodConductCertificate || null,
-    firstAidCertificate: defaultValues.firstAidCertificate || defaultValues.aidCertificate || null,
-    drivingLicense: defaultValues.drivingLicense || null,
-  });
+    location: defaultValues?.location || "",
+    languages: defaultValues?.languages || [],
+    isMother: defaultValues?.isMother ?? null,
+    ageOfKids: defaultValues?.ageOfKids || defaultValues?.kidAges || [],
+    isHandelingPet: defaultValues?.isHandelingPet ?? defaultValues?.handlePets ?? null,
+    preferredRole: defaultValues?.preferredRole || "",
+    cooking: defaultValues?.cooking || "",
+    housekeeping: defaultValues?.housekeeping || "",
+    childcare: defaultValues?.childcare || "",
+    serviceFeeDay: defaultValues?.serviceFeeDay || "",
+    serviceFeeMonth: defaultValues?.serviceFeeMonth || "",
+    bio: defaultValues?.bio || "",
+    idCopy: defaultValues?.idCopy || defaultValues?.iDCopy || null,
+    profilePhoto: defaultValues?.profilePhoto || null,
+    goodConductCertificate: defaultValues?.goodConductCertificate || null,
+    firstAidCertificate: defaultValues?.firstAidCertificate || defaultValues?.aidCertificate || null,
+    drivingLicense: defaultValues?.drivingLicense || null,
+  }));
+
+  const onDataChangeRef = React.useRef(onDataChange);
+  useEffect(() => {
+    onDataChangeRef.current = onDataChange;
+  }, [onDataChange]);
 
   useEffect(() => {
-    if (defaultValues && Object.keys(defaultValues).length > 0) {
-      setData((prev) => ({
-        ...prev,
-        ...defaultValues,
-        education: defaultValues.education || defaultValues.educationLevel || prev.education,
-        phone: defaultValues.phone || defaultValues.number_two || prev.phone,
-        preferred: Array.isArray(defaultValues.preferred)
-          ? defaultValues.preferred
-          : defaultValues.preferred
-            ? [defaultValues.preferred]
-            : prev.preferred,
-        ageOfKids: defaultValues.ageOfKids || defaultValues.kidAges || prev.ageOfKids,
-        isHandelingPet: defaultValues.isHandelingPet ?? defaultValues.handlePets ?? prev.isHandelingPet,
-        firstAidCertificate: defaultValues.firstAidCertificate || defaultValues.aidCertificate || prev.firstAidCertificate,
-      }));
-    }
-  }, [defaultValues]);
-
-  useEffect(() => {
-    onDataChange && onDataChange(data);
-  }, [data, onDataChange]);
+    onDataChangeRef.current?.(data);
+  }, [data]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

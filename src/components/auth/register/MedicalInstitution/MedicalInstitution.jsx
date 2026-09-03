@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Progress from "../Progress";
 import SignUpStart from "../SignUpStart";
@@ -198,16 +198,17 @@ const MedicalInstitution = ({
       }
     }));
   };
-  const handleNursesChange = (index, nurseData) => {
-    setFormData(prev => {
+  const handleNursesChange = useCallback((index, nurseData) => {
+    setFormData((prev) => {
+      if (prev.nurses[index] === nurseData) return prev;
       const updated = [...prev.nurses];
       updated[index] = nurseData;
       return {
         ...prev,
-        nurses: updated
+        nurses: updated,
       };
     });
-  };
+  }, []);
   const handleAddNurse = () => {
     setNurses(prev => [...prev, prev.length + 1]);
     toast.success("New Nurse Form Added!");

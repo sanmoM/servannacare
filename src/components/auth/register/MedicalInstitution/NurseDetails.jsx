@@ -83,12 +83,13 @@ const NurseDetails = ({
     ...defaultValues,
   });
 
+  const onDataChangeRef = React.useRef(onDataChange);
   useEffect(() => {
-    setData((prev) => ({ ...prev, ...defaultValues }));
-  }, []);
+    onDataChangeRef.current = onDataChange;
+  }, [onDataChange]);
 
   useEffect(() => {
-    onDataChange && onDataChange(data);
+    onDataChangeRef.current?.(data);
   }, [data]);
 
   const handleChange = (e) => {
@@ -107,11 +108,6 @@ const NurseDetails = ({
       };
     });
   };
-
-  if (serviceFeeDay <= 0 || serviceFeeMonth <= 0) {
-    alert("Service fees must be greater than 0");
-    return;
-  }
 
   const handleFileSelect = (id, file) => {
     setData((prev) => ({

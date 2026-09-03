@@ -84,22 +84,15 @@ const UpdateNurseDetails = ({
     ...defaultValues,
   });
 
-  // Load initial data on mount
+  const onDataChangeRef = React.useRef(onDataChange);
   useEffect(() => {
-    setData((prev) => ({ ...prev, ...defaultValues }));
-  }, []);
+    onDataChangeRef.current = onDataChange;
+  }, [onDataChange]);
 
   // Send up to change
   useEffect(() => {
-    onDataChange && onDataChange(data);
+    onDataChangeRef.current?.(data);
   }, [data]);
-
-  useEffect(() => {
-    if (onDataChange) {
-      onDataChange(data);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(data)]);
 
   // Generic handler for text inputs
   const handleChange = (e) => {

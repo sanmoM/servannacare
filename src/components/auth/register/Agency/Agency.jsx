@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Progress from "../Progress";
 import AgencyBasicInfo from "./AgencyBasicInfo";
@@ -227,16 +227,17 @@ const Agency = () => {
   };
 
   // store employee data by index
-  const handleEmployeeChange = (index, employeeData) => {
-    setFormData(prev => {
+  const handleEmployeeChange = useCallback((index, employeeData) => {
+    setFormData((prev) => {
+      if (prev.allEmployees[index] === employeeData) return prev;
       const updated = [...prev.allEmployees];
       updated[index] = employeeData;
       return {
         ...prev,
-        allEmployees: updated
+        allEmployees: updated,
       };
     });
-  };
+  }, []);
   const handleAddEmployee = () => {
     if (employees.length >= 2) {
       toast.error("You can add up to 2 free employees. Additional employees will attract a monthly subscription fee of KSH 500 per employee.");
