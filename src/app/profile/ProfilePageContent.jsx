@@ -568,12 +568,21 @@ const ProfilePageContent = () => {
                       {matchedData.languages?.join(", ") || "N/A"}
                     </span>
                   </div>
-                  <div className="flex justify-between border-b border-border/60 pb-2">
+                  {/* <div className="flex justify-between border-b border-border/60 pb-2">
                     <span className="text-muted-foreground font-medium">
                       Phone
                     </span>
                     <span className="font-bold text-foreground">
                       {phone || "N/A"}
+                    </span>
+                  </div> */}
+
+                            <div className="flex justify-between border-b border-border/60 pb-2">
+                    <span className="text-muted-foreground font-medium">
+                      Age
+                    </span>
+                    <span className="font-bold text-foreground">
+                      {age ? `${age} years old` : "N/A"}
                     </span>
                   </div>
                 </div>
@@ -607,14 +616,7 @@ const ProfilePageContent = () => {
                       {location || "N/A"}
                     </span>
                   </div>
-                  <div className="flex justify-between border-b border-border/60 pb-2">
-                    <span className="text-muted-foreground font-medium">
-                      Age
-                    </span>
-                    <span className="font-bold text-foreground">
-                      {age ? `${age} years old` : "N/A"}
-                    </span>
-                  </div>
+        
                 </div>
               </div>
             </div>
