@@ -343,14 +343,14 @@ export default function DashboardLayout({ children }) {
           />
         )}
         <aside
-          className={`bg-primary text-white fixed top-0 left-0 h-full z-50
+          className={`bg-primary text-white fixed top-0 left-0 h-screen z-50
             transform transition-transform duration-300
     w-72
     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
     lg:translate-x-0 lg:static`}
         >
           <div className="flex flex-col h-full">
-            <div className="p-4 border-b border-white/20 flex justify-between items-center">
+            <div className="p-4 border-b border-white/20 flex justify-between items-center shrink-0">
               <Link href="/">
                 <img src="/logo2.png" className="w-20" />
               </Link>
@@ -363,18 +363,19 @@ export default function DashboardLayout({ children }) {
               </button>
             </div>
 
-            <nav className="flex-grow py-3">
+            <nav className="flex-1 min-h-0 overflow-y-auto py-3">
               {links.map((link) => (
                 <NavLink key={link.name} link={link} />
               ))}
             </nav>
-
-            <Button
-              onClick={handleLogout}
-              className="bg-secondary hover:bg-secondary/90 mx-3 mb-4 cursor-pointer"
-            >
-              Log Out
-            </Button>
+            <div className="shrink-0 p-3 border-t border-white/20">
+              <Button
+                onClick={handleLogout}
+                className="bg-secondary hover:bg-secondary/90  cursor-pointer w-full"
+              >
+                Log Out
+              </Button>
+            </div>
           </div>
         </aside>
 
