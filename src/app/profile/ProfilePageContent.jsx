@@ -299,7 +299,7 @@ const ProfilePageContent = () => {
 
     const hasCert = !!firstAidCert;
     if (hasCert) score += 15;
-    items.push({ name: "Professional Certification", verified: hasCert });
+    items.push({ name: "First Aid Certification", verified: hasCert });
 
     const hasExperience = !!experience;
     if (hasExperience) score += 10;
