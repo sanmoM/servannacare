@@ -1,4 +1,5 @@
-import HomeClient from "@/components/shared/HomeClient";
+
+import HomeClient from "@/components/HomeClient/HomeClient";
 import { getPageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata() {

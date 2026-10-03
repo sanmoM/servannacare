@@ -32,7 +32,9 @@ const SearchContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [selectedCategory, setSelectedCategory] = useState("house-manager");
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => searchParams.get("category") || ""
+  );
   const [selectedPreferredServices, setSelectedPreferredServices] = useState([]);
   const [selectedPreferredRoles, setSelectedPreferredRoles] = useState([]);
   const [selectedService, setSelectedService] = useState([]);
@@ -56,17 +58,12 @@ const SearchContent = () => {
     if (!isFirstLoad.current) return;
 
     const category = searchParams.get("category");
-
-    if (category === null) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("category", "house-manager");
-      params.set("page", "1");
-
-      router.replace(`/specialist?${params.toString()}`, { scroll: false });
+    if (category) {
+      setSelectedCategory(category);
     }
 
     isFirstLoad.current = false;
-  }, [searchParams, router]);
+  }, [searchParams]);
 
   useEffect(() => {
     const getArray = (key) => {
@@ -100,6 +97,47 @@ const SearchContent = () => {
 
     setCurrentPage(Number(searchParams.get("page")) || 1);
   }, [searchParams]);
+
+  // Dynamically update document title and meta tags when category changes
+  useEffect(() => {
+    const metadataList = data?.data?.metadata;
+    if (!Array.isArray(metadataList)) return;
+
+    const currentCat = selectedCategory || "specialist";
+    const matched =
+      metadataList.find(
+        (m) => m.page?.toLowerCase() === currentCat.toLowerCase()
+      ) ||
+      metadataList.find(
+        (m) => m.page?.toLowerCase() === "specialist"
+      );
+
+    if (matched) {
+      if (matched.title) {
+        document.title = matched.title;
+      }
+
+      if (matched.description) {
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (!metaDesc) {
+          metaDesc = document.createElement("meta");
+          metaDesc.name = "description";
+          document.head.appendChild(metaDesc);
+        }
+        metaDesc.setAttribute("content", matched.description);
+      }
+
+      if (matched.keywords && Array.isArray(matched.keywords)) {
+        let metaKeywords = document.querySelector('meta[name="keywords"]');
+        if (!metaKeywords) {
+          metaKeywords = document.createElement("meta");
+          metaKeywords.name = "keywords";
+          document.head.appendChild(metaKeywords);
+        }
+        metaKeywords.setAttribute("content", matched.keywords.join(", "));
+      }
+    }
+  }, [selectedCategory, data]);
 
   const updateQueryParams = (updates) => {
     const params = new URLSearchParams(searchParams.toString());

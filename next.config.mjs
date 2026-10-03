@@ -1,5 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source:
+          "/:category(house-manager|nurse|physiotherapist|nurse-aide-or-assistant|special-need-caregivers|home-health-assistant)",
+        destination: "/specialist?category=:category",
+      },
+      {
+        source:
+          "/specialist/:category(house-manager|nurse|physiotherapist|nurse-aide-or-assistant|special-need-caregivers|home-health-assistant)",
+        destination: "/specialist?category=:category",
+      },
+    ];
+  },
   images: {
     unoptimized: true,
     remotePatterns: [

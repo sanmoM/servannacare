@@ -1,4 +1,4 @@
-import ServicesClient from "@/components/shared/ServicesClient";
+import ServicesClient from "@/components/ServiceClient/ServicesClient";
 import { getPageMetadata } from "@/lib/metadata";
 
 export async function generateMetadata() {
