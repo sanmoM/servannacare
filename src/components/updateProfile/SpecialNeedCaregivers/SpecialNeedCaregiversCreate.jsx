@@ -350,10 +350,8 @@ const SpecialNeedCaregiversCreate = ({
           </div>
         </div>
 
-        {/* Next of Kin Details */}
-        <div className="w-full pt-4 border-t">
-        
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-4">
+          <div className="flex-1">
             <Input
               label="Emergency Contact Name"
               name="relative_name"
@@ -361,6 +359,8 @@ const SpecialNeedCaregiversCreate = ({
               value={formData.basicInfo?.relative_name || ""}
               onChange={e => handleChange("basicInfo", "relative_name", e.target.value)}
             />
+          </div>
+          <div className="flex-1">
             <Input
               label="Emergency Contact Number"
               name="relative_contact"

@@ -456,25 +456,22 @@ const NurseCreate = ({
           <textarea value={formData?.basicInfo?.bio} name="bio" placeholder="Write a brief bio about yourself and the services you offer.." className="border text-sm mt-2 p-3 w-full rounded-md outline-primary" rows={6} onChange={e => handleChange("basicInfo", "bio", e.target.value)} />
         </div>
 
-        {/* Next of Kin Details */}
-        <div className="w-full pt-4 border-t">
-        
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
-            <Input
-              label="Emergency Contact Name"
-              name="relative_name"
-              placeholder="Full name of emergency contact"
-              value={formData.basicInfo.relative_name}
-              onChange={e => handleChange("basicInfo", "relative_name", e.target.value)}
-            />
-            <Input
-              label="Emergency Contact Number"
-              name="relative_contact"
-              placeholder="Phone number of emergency contact"
-              value={formData.basicInfo.relative_contact}
-              onChange={e => handleChange("basicInfo", "relative_contact", e.target.value)}
-            />
-          </div>
+        {/* Emergency Contact Details */}
+        <div className="grid grid-cols-1 md:grid-cols-2 sm:gap-4 gap-6">
+          <Input
+            label="Emergency Contact Name"
+            name="relative_name"
+            placeholder="Full name of emergency contact"
+            value={formData.basicInfo.relative_name}
+            onChange={e => handleChange("basicInfo", "relative_name", e.target.value)}
+          />
+          <Input
+            label="Emergency Contact Number"
+            name="relative_contact"
+            placeholder="Phone number of emergency contact"
+            value={formData.basicInfo.relative_contact}
+            onChange={e => handleChange("basicInfo", "relative_contact", e.target.value)}
+          />
         </div>
 
         {/* education  */}
