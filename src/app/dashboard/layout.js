@@ -88,10 +88,10 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     if (loading) return;
-    if (token === null) return;
 
-    if (!token) {
-      router.push("/login");
+    const currentToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!currentToken || !user) {
+      router.replace("/login");
       return;
     }
 
@@ -326,12 +326,7 @@ export default function DashboardLayout({ children }) {
     );
   };
 
-  if (notificationLoading) return <LoadingSpinner />;
-
-  if (notificationError) return <div>Error loading data</div>;
-  // if (profileLoading || notificationLoading) return <LoadingSpinner />;
-
-  // if (profileError || notificationError) return <div>Error loading data</div>;
+  if (loading) return <LoadingSpinner />;
 
   return (
     <PrivateRoute>

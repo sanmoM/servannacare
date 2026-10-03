@@ -26,11 +26,23 @@ export default function DashboardPage() {
     }
   }, [data]);
 
-  if (isLoading) return <LoadingSpinner />;
-  if (error) return <div>Error loading data</div>;
-
-  if (loading) {
-    return <LoadingSpinner />;
+  if (loading || isLoading) return <LoadingSpinner />;
+  if (error) {
+    if (error?.response?.status === 401) {
+      return <LoadingSpinner />;
+    }
+    return (
+      <div className="flex flex-col items-center justify-center p-8 bg-red-50 rounded-2xl border border-red-200 text-center my-6">
+        <Info className="w-10 h-10 text-red-500 mb-2" />
+        <h3 className="text-lg font-semibold text-red-700">Unable to load dashboard data</h3>
+        <p className="text-sm text-red-600 mt-1 max-w-md">
+          {error?.response?.data?.message || "There was a problem communicating with the server. Please try refreshing or logging in again."}
+        </p>
+        <Button onClick={() => window.location.reload()} className="mt-4" variant="outline">
+          Retry
+        </Button>
+      </div>
+    );
   }
 
   const userDashboardStats = [

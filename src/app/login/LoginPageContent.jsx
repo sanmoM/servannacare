@@ -79,15 +79,18 @@ const LoginPageContent = () => {
         router.replace(redirect);
         return;
       }
-      if (userData.role === "user") {
+      const finalRole = userData?.role || userObj.role;
+      const isCompleted = userData?.is_profile_completed ?? userObj.is_profile_completed;
+
+      if (finalRole === "user") {
         router.replace("/dashboard");
         return;
       }
-      if (userData.role === "specialist" && !userData.is_profile_completed) {
-        router.replace(`/register?role=${userData.subRole}`);
+      if (finalRole === "specialist" && !isCompleted) {
+        router.replace(`/register?role=${userData?.subRole || userObj.subRole}`);
         return;
       }
-      router.replace(`/dashboard/${userData.role}-profile`);
+      router.replace(`/dashboard/${finalRole}-profile`);
     } catch (error) {
       if (error?.response?.data?.email_verified === null) {
         sessionStorage.setItem("verifyEmail", email);

@@ -33,7 +33,17 @@ export default function MedicalInstitutionProfile() {
   }, [data]);
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <div>Error loading data</div>;
+  if (error) {
+    if (error?.response?.status === 401) return <LoadingSpinner />;
+    return (
+      <div className="p-6 bg-red-50 border border-red-200 rounded-xl text-center my-6">
+        <p className="text-red-600 font-medium">Failed to load institution profile.</p>
+        <button onClick={() => window.location.reload()} className="mt-3 px-4 py-2 text-sm bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>

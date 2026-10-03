@@ -11,18 +11,15 @@ export default function PrivateRoute({ children }) {
   useEffect(() => {
     if (loading) return;
 
-    const token = localStorage.getItem("token");
-    (token)
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-    if (!token && !user) {
+    if (!token || !user) {
       router.replace("/login");
       return;
     }
   }, [user, role, loading, router]);
 
-  
-
-  if (loading) {
+  if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin" />
