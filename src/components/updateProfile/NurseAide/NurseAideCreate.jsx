@@ -43,6 +43,8 @@ const NurseAideCreate = ({ data = {} }) => {
       gender: data?.gender || "",
       phone: data?.phone || "",
       bio: data?.bio || "",
+      relative_name: data?.relative_name || data?.nurse_aide?.relative_name || "",
+      relative_contact: data?.relative_contact || data?.nurse_aide?.relative_contact || "",
       experience: data?.experience || "",
       languages: data?.languages || [],
       canDrive:
@@ -251,6 +253,8 @@ const NurseAideCreate = ({ data = {} }) => {
       fd.append("location", BASIC.location || "");
       fd.append("age", BASIC.age || "");
       fd.append("bio", BASIC.bio || "");
+      fd.append("relative_name", BASIC.relative_name || "");
+      fd.append("relative_contact", BASIC.relative_contact || "");
       fd.append("experience", BASIC.experience || "");
       fd.append("gender", BASIC.gender || "");
       fd.append("number_two", BASIC.phone || "");
@@ -561,6 +565,31 @@ const NurseAideCreate = ({ data = {} }) => {
                 </Label>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Next of Kin Details */}
+        <div className="w-full pt-4 border-t">
+        
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+            <Input
+              label="Emergency Contact Name"
+              name="relative_name"
+              placeholder="Full name of emergency contact"
+              value={formData.basicInfo?.relative_name || ""}
+              onChange={(e) =>
+                handleChange("basicInfo", "relative_name", e.target.value)
+              }
+            />
+            <Input
+              label="Emergency Contact Number"
+              name="relative_contact"
+              placeholder="Phone number of emergency contact"
+              value={formData.basicInfo?.relative_contact || ""}
+              onChange={(e) =>
+                handleChange("basicInfo", "relative_contact", e.target.value)
+              }
+            />
           </div>
         </div>
 

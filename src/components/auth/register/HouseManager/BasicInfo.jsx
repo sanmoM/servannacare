@@ -32,6 +32,10 @@ const BasicInfo = ({ defaultValues, onNext }) => {
     location: defaultValues.location || "",
     languages: defaultValues.languages || [],
     phone: defaultValues.phone || "",
+    previous_company: defaultValues.previous_company || "",
+    previous_company_contact: defaultValues.previous_company_contact || "",
+    relative_name: defaultValues.relative_name || "",
+    relative_contact: defaultValues.relative_contact || "",
   });
 
   const handleChange = (e) => {
@@ -305,6 +309,48 @@ const BasicInfo = ({ defaultValues, onNext }) => {
         value={data.location}
         onChange={handleChange}
       />
+
+      {/* Next of Kin Details */}
+      <div className="pt-4 border-t">
+  
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+          <Input
+            label="Emergency Contact Name"
+            name="relative_name"
+            placeholder="Full name of emergency contact"
+            value={data.relative_name}
+            onChange={handleChange}
+          />
+          <Input
+            label="Emergency Contact Number"
+            name="relative_contact"
+            placeholder="Phone number of emergency contact"
+            value={data.relative_contact}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+
+      {/* Previous Employer Details */}
+      <div className="pt-4 border-t">
+      
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+          <Input
+            label="Previous Employer / Company Name"
+            name="previous_company"
+            placeholder="Previous employer name or company"
+            value={data.previous_company}
+            onChange={handleChange}
+          />
+          <Input
+            label="Previous Employer Contact"
+            name="previous_company_contact"
+            placeholder="Phone number of previous employer"
+            value={data.previous_company_contact}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
 
       <div>
         <Label className="font-medium text-gray-700">Languages</Label>

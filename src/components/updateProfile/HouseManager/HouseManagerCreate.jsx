@@ -47,6 +47,10 @@ const HouseManagerCreate = ({ data = {} }) => {
       languages: data.basicInfo?.languages || [],
       phone: data.phone || "",
       bio: data.bio || "",
+      previous_company: data?.previous_company || "",
+      previous_company_contact: data?.previous_company_contact || "",
+      relative_name: data?.relative_name || "",
+      relative_contact: data?.relative_contact || "",
     },
     additionalDetails: {
       isMother: data.additionalDetails?.isMother ?? null,
@@ -345,6 +349,10 @@ const HouseManagerCreate = ({ data = {} }) => {
     );
     fd.append("number_two", formData.basicInfo.phone);
     fd.append("bio", formData.basicInfo.bio);
+    fd.append("previous_company", formData.basicInfo.previous_company || "");
+    fd.append("previous_company_contact", formData.basicInfo.previous_company_contact || "");
+    fd.append("relative_name", formData.basicInfo.relative_name || "");
+    fd.append("relative_contact", formData.basicInfo.relative_contact || "");
     formData.basicInfo.languages.forEach((lan) =>
       fd.append("languages[]", lan),
     );
@@ -587,6 +595,48 @@ const HouseManagerCreate = ({ data = {} }) => {
                   Invalid phone number for selected country
                 </p>
               )}
+          </div>
+
+          {/* Next of Kin Details */}
+          <div className="w-full pt-4 border-t">
+          
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+              <Input
+                label="Emergency Contact Name"
+                name="relative_name"
+                placeholder="Full name of emergency contact"
+                value={formData.basicInfo.relative_name}
+                onChange={handleChange}
+              />
+              <Input
+                label="Emergency Contact Number"
+                name="relative_contact"
+                placeholder="Phone number of emergency contact"
+                value={formData.basicInfo.relative_contact}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* Previous Employer Details */}
+          <div className="w-full pt-4 border-t">
+           
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+              <Input
+                label="Previous Employer / Company Name"
+                name="previous_company"
+                placeholder="Previous employer name or company"
+                value={formData.basicInfo.previous_company}
+                onChange={handleChange}
+              />
+              <Input
+                label="Previous Employer Contact"
+                name="previous_company_contact"
+                placeholder="Phone number of previous employer"
+                value={formData.basicInfo.previous_company_contact}
+                onChange={handleChange}
+              />
+            </div>
           </div>
 
           <div className="flex-1">

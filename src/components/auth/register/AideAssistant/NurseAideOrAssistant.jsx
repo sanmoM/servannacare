@@ -85,6 +85,8 @@ const NurseAideOrAssistant = ({
       BASICINFO.languages.forEach(lang => fd.append("languages[]", lang));
       fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
       fd.append("bio", BASICINFO.bio);
+      fd.append("relative_name", BASICINFO.relative_name || "");
+      fd.append("relative_contact", BASICINFO.relative_contact || "");
       fd.append("number_two", BASICINFO.phone);
       fd.append("education", EDUCATION.education);
       if (EDUCATION?.educationCertificate) {

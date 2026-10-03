@@ -36,6 +36,8 @@ const NurseCreate = ({
       experience: data?.experience || "",
       preferredRole: data?.preferredRole || "",
       bio: data?.bio || "",
+      relative_name: data?.relative_name || data?.nurse?.relative_name || "",
+      relative_contact: data?.relative_contact || data?.nurse?.relative_contact || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive)
     },
@@ -252,6 +254,8 @@ const NurseCreate = ({
     fd.append("experience", BASICINFO.experience);
     fd.append("preferredRole", BASICINFO.preferredRole);
     fd.append("bio", BASICINFO.bio);
+    fd.append("relative_name", BASICINFO.relative_name || "");
+    fd.append("relative_contact", BASICINFO.relative_contact || "");
     fd.append("gender", BASICINFO.gender);
     fd.append("number_two", BASICINFO.phone);
     BASICINFO.languages.forEach(lang => fd.append("languages[]", lang));
@@ -450,6 +454,27 @@ const NurseCreate = ({
         <div>
           <label htmlFor="bio">Bio</label>
           <textarea value={formData?.basicInfo?.bio} name="bio" placeholder="Write a brief bio about yourself and the services you offer.." className="border text-sm mt-2 p-3 w-full rounded-md outline-primary" rows={6} onChange={e => handleChange("basicInfo", "bio", e.target.value)} />
+        </div>
+
+        {/* Next of Kin Details */}
+        <div className="w-full pt-4 border-t">
+        
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+            <Input
+              label="Emergency Contact Name"
+              name="relative_name"
+              placeholder="Full name of emergency contact"
+              value={formData.basicInfo.relative_name}
+              onChange={e => handleChange("basicInfo", "relative_name", e.target.value)}
+            />
+            <Input
+              label="Emergency Contact Number"
+              name="relative_contact"
+              placeholder="Phone number of emergency contact"
+              value={formData.basicInfo.relative_contact}
+              onChange={e => handleChange("basicInfo", "relative_contact", e.target.value)}
+            />
+          </div>
         </div>
 
         {/* education  */}

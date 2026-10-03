@@ -33,6 +33,8 @@ const SpecialNeedBasicInfo = ({ defaultValues, onNext }) => {
     languages: defaultValues.languages || [],
     canDrive: defaultValues.canDrive || "",
     bio: defaultValues.bio || "",
+    relative_name: defaultValues.relative_name || "",
+    relative_contact: defaultValues.relative_contact || "",
   });
 
   const handleChange = (e) => {
@@ -315,6 +317,27 @@ const SpecialNeedBasicInfo = ({ defaultValues, onNext }) => {
           rows={6}
           onChange={handleChange}
         />
+      </div>
+
+      {/* Next of Kin Details */}
+      <div className="w-full pt-4 border-t">
+     
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+          <Input
+            label="Emergency Contact Name"
+            name="relative_name"
+            placeholder="Full name of emergency contact"
+            value={data.relative_name}
+            onChange={handleChange}
+          />
+          <Input
+            label="Emergency Contact Number"
+            name="relative_contact"
+            placeholder="Phone number of emergency contact"
+            value={data.relative_contact}
+            onChange={handleChange}
+          />
+        </div>
       </div>
 
       <div className="flex justify-end mt-6">

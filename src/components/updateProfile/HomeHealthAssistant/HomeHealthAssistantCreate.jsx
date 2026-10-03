@@ -37,6 +37,8 @@ const HomeHealthAssistantCreate = () => {
       languages: [],
       canDrive: false,
       bio: "",
+      relative_name: "",
+      relative_contact: "",
     },
     experience: {
       experience: "",
@@ -192,6 +194,8 @@ const HomeHealthAssistantCreate = () => {
     fd.append("age", basicInfo.age);
     fd.append("gender", basicInfo.gender);
     fd.append("bio", basicInfo.bio);
+    fd.append("relative_name", basicInfo.relative_name || "");
+    fd.append("relative_contact", basicInfo.relative_contact || "");
     fd.append("number_two", basicInfo.phone);
     fd.append("canDrive", basicInfo.canDrive ? 1 : 0);
     basicInfo.languages.forEach((lang) => fd.append("languages[]", lang));
@@ -343,6 +347,27 @@ const HomeHealthAssistantCreate = () => {
         <div>
           <Label className="mb-2 block">Summary Bio</Label>
           <Textarea name="bio" placeholder="Tell us about yourself..." value={formData.basicInfo.bio} onChange={handleBasicChange} />
+        </div>
+
+        {/* Next of Kin Details */}
+        <div className="w-full pt-4 border-t">
+         
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+            <Input
+              label="Emergency Contact Name"
+              name="relative_name"
+              placeholder="Full name of emergency contact"
+              value={formData.basicInfo?.relative_name || ""}
+              onChange={handleBasicChange}
+            />
+            <Input
+              label="Emergency Contact Number"
+              name="relative_contact"
+              placeholder="Phone number of emergency contact"
+              value={formData.basicInfo?.relative_contact || ""}
+              onChange={handleBasicChange}
+            />
+          </div>
         </div>
       </div>
 

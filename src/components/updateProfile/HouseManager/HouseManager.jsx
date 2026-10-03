@@ -4,14 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { postApi } from "@/lib/apiHandler";
 import { languages } from "@/utilities/data";
 import { FileText } from "lucide-react";
@@ -45,6 +38,10 @@ const HouseManager = ({ data = {} }) => {
       phone: data?.number_two || "",
       email: data?.email || "",
       bio: data?.bio || "",
+      previous_company: data?.previous_company || data?.house_manager?.previous_company || "",
+      previous_company_contact: data?.previous_company_contact || data?.house_manager?.previous_company_contact || "",
+      relative_name: data?.relative_name || data?.house_manager?.relative_name || "",
+      relative_contact: data?.relative_contact || data?.house_manager?.relative_contact || "",
     },
     additionalDetails: {
       isMother: data?.house_manager?.isMother ?? null,
@@ -127,9 +124,7 @@ const HouseManager = ({ data = {} }) => {
         ...p,
         basicInfo: {
           ...p.basicInfo,
-          languages: exists
-            ? p.basicInfo.languages.filter((l) => l !== lan)
-            : [...p.basicInfo.languages, lan],
+          languages: exists ? p.basicInfo.languages.filter((l) => l !== lan) : [...p.basicInfo.languages, lan],
         },
       };
     });
@@ -141,9 +136,7 @@ const HouseManager = ({ data = {} }) => {
         ...p,
         additionalDetails: {
           ...p.additionalDetails,
-          ageOfKids: exists
-            ? p.additionalDetails.ageOfKids.filter((a) => a !== age)
-            : [...p.additionalDetails.ageOfKids, age],
+          ageOfKids: exists ? p.additionalDetails.ageOfKids.filter((a) => a !== age) : [...p.additionalDetails.ageOfKids, age],
         },
       };
     });
@@ -221,25 +214,21 @@ const HouseManager = ({ data = {} }) => {
     fd.append("number_two", formData.basicInfo.phone);
     fd.append("location", formData.basicInfo.location);
     fd.append("email", formData.basicInfo.email);
+    fd.append("previous_company", formData.basicInfo.previous_company || "");
+    fd.append("previous_company_contact", formData.basicInfo.previous_company_contact || "");
+    fd.append("relative_name", formData.basicInfo.relative_name || "");
+    fd.append("relative_contact", formData.basicInfo.relative_contact || "");
     formData.basicInfo.preferred.forEach((p) => fd.append("preferred[]", p));
     formData.basicInfo.languages.forEach((l) => fd.append("languages[]", l));
-    fd.append(
-      "isMother",
-      formData.additionalDetails.isMother === "true" ? 1 : 0,
-    );
-    fd.append(
-      "isHandelingPet",
-      formData.additionalDetails.isHandelingPet === "true" ? 1 : 0,
-    );
+    fd.append("isMother", formData.additionalDetails.isMother === "true" ? 1 : 0);
+    fd.append("isHandelingPet", formData.additionalDetails.isHandelingPet === "true" ? 1 : 0);
     fd.append("preferredRole", formData.additionalDetails.preferredRole);
     fd.append("cooking", formData.additionalDetails.cooking || "");
     fd.append("housekeeping", formData.additionalDetails.housekeeping || "");
     fd.append("childcare", formData.additionalDetails.childcare || "");
     fd.append("serviceFeeDay", formData.additionalDetails.serviceFeeDay);
     fd.append("serviceFeeMonth", formData.additionalDetails.serviceFeeMonth);
-    formData.additionalDetails.ageOfKids.forEach((age) =>
-      fd.append("ageOfKids[]", age),
-    );
+    formData.additionalDetails.ageOfKids.forEach((age) => fd.append("ageOfKids[]", age));
     Object.entries(formData.documents).forEach(([key, value]) => {
       if (value instanceof File) {
         const backendKey = key === "iDCopy" ? "idCopy" : key;
@@ -273,13 +262,7 @@ const HouseManager = ({ data = {} }) => {
 
         <div className="flex flex-col sm:flex-row gap-6">
           <div className="flex-1">
-            <Input
-              label="Full Name (AS per ID)"
-              name="name"
-              placeholder="Enter your name"
-              defaultValue={formData?.basicInfo?.name}
-              onChange={handleChange}
-            />
+            <Input label="Full Name (AS per ID)" name="name" placeholder="Enter your name" defaultValue={formData?.basicInfo?.name} onChange={handleChange} />
           </div>
           <div className="flex-1">
             <Input
@@ -303,13 +286,8 @@ const HouseManager = ({ data = {} }) => {
           </div>
 
           <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Education Level
-            </label>
-            <Select
-              value={formData.basicInfo?.education}
-              onValueChange={(v) => handleSelect("education", v)}
-            >
+            <label className="block mb-2 text-sm font-medium text-gray-700">Education Level</label>
+            <Select value={formData.basicInfo?.education} onValueChange={(v) => handleSelect("education", v)}>
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
@@ -328,13 +306,8 @@ const HouseManager = ({ data = {} }) => {
         {/* Experience + Salary */}
         <div className="flex flex-col sm:flex-row gap-6">
           <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Experience (Years)
-            </label>
-            <Select
-              value={formData.basicInfo.experience}
-              onValueChange={(v) => handleSelect("experience", v)}
-            >
+            <label className="block mb-2 text-sm font-medium text-gray-700">Experience (Years)</label>
+            <Select value={formData.basicInfo.experience} onValueChange={(v) => handleSelect("experience", v)}>
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select years of experience" />
               </SelectTrigger>
@@ -354,13 +327,8 @@ const HouseManager = ({ data = {} }) => {
           {/* comment git */}
 
           <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Salary Range (KSh)
-            </label>
-            <Select
-              value={formData.basicInfo.salaryRange}
-              onValueChange={(v) => handleSelect("salaryRange", v)}
-            >
+            <label className="block mb-2 text-sm font-medium text-gray-700">Salary Range (KSh)</label>
+            <Select value={formData.basicInfo.salaryRange} onValueChange={(v) => handleSelect("salaryRange", v)}>
               <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                 <SelectValue placeholder="Select expected salary" />
               </SelectTrigger>
@@ -381,18 +349,10 @@ const HouseManager = ({ data = {} }) => {
         <div className="flex flex-col sm:flex-row gap-6">
           <div className="flex-1">
             {/* Location */}
-            <Input
-              label="Your Location"
-              name="location"
-              placeholder="Type your location.."
-              value={formData.basicInfo.location}
-              onChange={handleChange}
-            />
+            <Input label="Your Location" name="location" placeholder="Type your location.." value={formData.basicInfo.location} onChange={handleChange} />
           </div>
           <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Primary Email: (You can't change it.)
-            </label>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Primary Email: (You can't change it.)</label>
             <Input
               name="email"
               type="email"
@@ -449,9 +409,7 @@ const HouseManager = ({ data = {} }) => {
                 }}
                 onCountryChange={(countryCode) => {
                   setCountry(countryCode);
-                  const exampleNumber = countryCode
-                    ? getExampleNumber(countryCode)
-                    : null;
+                  const exampleNumber = countryCode ? getExampleNumber(countryCode) : null;
                   if (exampleNumber) {
                     setFormData((prev) => ({
                       ...prev,
@@ -473,12 +431,9 @@ const HouseManager = ({ data = {} }) => {
               />
             </div>
 
-            {formData?.basicInfo?.phone &&
-              !isValidPhoneNumber(formData?.basicInfo?.phone) && (
-                <p className="text-red-500 text-sm mt-1">
-                  Invalid phone number for selected country
-                </p>
-              )}
+            {formData?.basicInfo?.phone && !isValidPhoneNumber(formData?.basicInfo?.phone) && (
+              <p className="text-red-500 text-sm mt-1">Invalid phone number for selected country</p>
+            )}
           </div>
         </div>
 
@@ -489,15 +444,8 @@ const HouseManager = ({ data = {} }) => {
             <div className="flex flex-wrap gap-4 mt-3">
               {languages.map((lan) => (
                 <div key={lan.id} className="flex items-center gap-2">
-                  <Checkbox
-                    id={lan.value}
-                    checked={formData.basicInfo.languages.includes(lan.value)}
-                    onCheckedChange={() => toggleLanguage(lan.value)}
-                  />
-                  <Label
-                    className="text-gray-700 font-normal cursor-pointer"
-                    htmlFor={lan.value}
-                  >
+                  <Checkbox id={lan.value} checked={formData.basicInfo.languages.includes(lan.value)} onCheckedChange={() => toggleLanguage(lan.value)} />
+                  <Label className="text-gray-700 font-normal cursor-pointer" htmlFor={lan.value}>
                     {lan.text}
                   </Label>
                 </div>
@@ -506,27 +454,57 @@ const HouseManager = ({ data = {} }) => {
           </div>
 
           <div className="flex-1">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Service Offered
-            </label>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Service Offered</label>
             <div className="flex flex-wrap flex-col gap-2 ">
               {preferred.map((lan, indx) => (
                 <div key={indx} className="flex items-center gap-2">
-                  <Checkbox
-                    id={lan.title}
-                    checked={formData.basicInfo.preferred.includes(lan.title)}
-                    onCheckedChange={() => togglepreferred(lan.title)}
-                  />
+                  <Checkbox id={lan.title} checked={formData.basicInfo.preferred.includes(lan.title)} onCheckedChange={() => togglepreferred(lan.title)} />
 
-                  <Label
-                    htmlFor={lan.title}
-                    className="text-gray-700 font-normal cursor-pointer"
-                  >
+                  <Label htmlFor={lan.title} className="text-gray-700 font-normal cursor-pointer">
                     {lan.title}
                   </Label>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+        {/* Next of Kin Details */}
+        <div className="w-full pt-4 border-t">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+            <Input
+              label="Emergency Contact Name"
+              name="relative_name"
+              placeholder="Full name of emergency contact"
+              value={formData.basicInfo.relative_name}
+              onChange={handleChange}
+            />
+            <Input
+              label="Emergency Contact Number"
+              name="relative_contact"
+              placeholder="Phone number of emergency contact"
+              value={formData.basicInfo.relative_contact}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {/* Previous Employer Details */}
+        <div className="w-full pt-4 border-t">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+            <Input
+              label="Previous Employer / Company Name"
+              name="previous_company"
+              placeholder="Previous employer name or company"
+              value={formData.basicInfo.previous_company}
+              onChange={handleChange}
+            />
+            <Input
+              label="Previous Employer Contact"
+              name="previous_company_contact"
+              placeholder="Phone number of previous employer"
+              value={formData.basicInfo.previous_company_contact}
+              onChange={handleChange}
+            />
           </div>
         </div>
 
@@ -572,19 +550,13 @@ const HouseManager = ({ data = {} }) => {
             >
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="true" id="r1" />
-                <Label
-                  htmlFor="r1"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
+                <Label htmlFor="r1" className="text-gray-700 font-normal cursor-pointer">
                   Yes
                 </Label>
               </div>
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="false" id="r2" />
-                <Label
-                  htmlFor="r2"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
+                <Label htmlFor="r2" className="text-gray-700 font-normal cursor-pointer">
                   No
                 </Label>
               </div>
@@ -597,15 +569,8 @@ const HouseManager = ({ data = {} }) => {
             <div className="flex flex-wrap mt-3 gap-4">
               {["0-3", "4-10", "11+"].map((age) => (
                 <div key={age} className="flex  gap-2">
-                  <Checkbox
-                    id={`age-${age}`}
-                    checked={formData.additionalDetails.ageOfKids.includes(age)}
-                    onCheckedChange={() => toggleageOfKids(age)}
-                  />
-                  <Label
-                    htmlFor={`age-${age}`}
-                    className="text-gray-700 font-normal cursor-pointer"
-                  >
+                  <Checkbox id={`age-${age}`} checked={formData.additionalDetails.ageOfKids.includes(age)} onCheckedChange={() => toggleageOfKids(age)} />
+                  <Label htmlFor={`age-${age}`} className="text-gray-700 font-normal cursor-pointer">
                     {age === "11+" ? "years" : `${age} years`}
                   </Label>
                 </div>
@@ -654,19 +619,13 @@ const HouseManager = ({ data = {} }) => {
             >
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="true" id="p1" />
-                <Label
-                  htmlFor="p1"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
+                <Label htmlFor="p1" className="text-gray-700 font-normal cursor-pointer">
                   Yes
                 </Label>
               </div>
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="false" id="p2" />
-                <Label
-                  htmlFor="p2"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
+                <Label htmlFor="p2" className="text-gray-700 font-normal cursor-pointer">
                   No
                 </Label>
               </div>
@@ -682,19 +641,13 @@ const HouseManager = ({ data = {} }) => {
             >
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="Nanny" id="h1" />
-                <Label
-                  htmlFor="h1"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
+                <Label htmlFor="h1" className="text-gray-700 font-normal cursor-pointer">
                   Nanny
                 </Label>
               </div>
               <div className="flex items-center gap-3">
                 <RadioGroupItem value="Housekeeper" id="h2" />
-                <Label
-                  htmlFor="h2"
-                  className="text-gray-700 font-normal cursor-pointer"
-                >
+                <Label htmlFor="h2" className="text-gray-700 font-normal cursor-pointer">
                   Housekeeper
                 </Label>
               </div>
@@ -704,9 +657,7 @@ const HouseManager = ({ data = {} }) => {
 
         {/* Skill Proficiency */}
         <div className="mt-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            Skill Proficiency
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">Skill Proficiency</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { key: "cooking", label: "Cooking" },
@@ -714,13 +665,8 @@ const HouseManager = ({ data = {} }) => {
               { key: "childcare", label: "Childcare" },
             ].map(({ key, label }) => (
               <div key={key}>
-                <Label className="block mb-2 text-sm font-medium text-gray-700">
-                  {label}
-                </Label>
-                <Select
-                  value={formData.additionalDetails[key]}
-                  onValueChange={(val) => handleAdditionalSelect(key, val)}
-                >
+                <Label className="block mb-2 text-sm font-medium text-gray-700">{label}</Label>
+                <Select value={formData.additionalDetails[key]} onValueChange={(val) => handleAdditionalSelect(key, val)}>
                   <SelectTrigger className="w-full cursor-pointer py-5.5 shadow-none">
                     <SelectValue placeholder="Select proficiency" />
                   </SelectTrigger>
@@ -739,9 +685,7 @@ const HouseManager = ({ data = {} }) => {
 
         <div className="mt-6">
           {/* Section Label */}
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            Service Fee (KSh)
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">Service Fee (KSh)</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
@@ -798,9 +742,7 @@ const HouseManager = ({ data = {} }) => {
 
         <div className="p-3 bg-primary/20 rounded-xl flex gap-2 items-center">
           <FileText />
-          <span className="text-sm text-gray-700">
-            Upload PDF or images (max size: 2MB each)
-          </span>
+          <span className="text-sm text-gray-700">Upload PDF or images (max size: 2MB each)</span>
         </div>
 
         <div className="mt-6">
@@ -817,9 +759,7 @@ const HouseManager = ({ data = {} }) => {
                     onFileSelect={(file) => handleFileSelect(doc.id, file)}
                   />
 
-                  {file && !isImage && (
-                    <FilePreview file={file} alt={doc?.title} />
-                  )}
+                  {file && !isImage && <FilePreview file={file} alt={doc?.title} />}
                 </div>
               );
             })}
@@ -827,12 +767,7 @@ const HouseManager = ({ data = {} }) => {
         </div>
         <div className="flex justify-end mt-4 b-0">
           {user?.is_profile_completed && (
-            <Button
-              className={"cursor-pointer"}
-              size={"lg"}
-              type="submit"
-              isActionLoading={isActionLoading}
-            >
+            <Button className={"cursor-pointer"} size={"lg"} type="submit" isActionLoading={isActionLoading}>
               Update
             </Button>
           )}

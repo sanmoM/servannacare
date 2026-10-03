@@ -39,6 +39,8 @@ const NurseUpdate = ({
       canDrive: data?.canDrive === undefined ? null : Boolean(data.canDrive),
       preferredRole: data?.preferredRole || "",
       bio: data?.bio || "",
+      relative_name: data?.relative_name || data?.nurse?.relative_name || "",
+      relative_contact: data?.relative_contact || data?.nurse?.relative_contact || "",
     },
     education: {
       education: data.education || "",
@@ -209,6 +211,8 @@ const NurseUpdate = ({
     BASICINFO.languages.forEach(lang => fd.append("languages[]", lang));
     fd.append("canDrive", BASICINFO.canDrive ? 1 : 0);
     fd.append("bio", BASICINFO.bio);
+    fd.append("relative_name", BASICINFO.relative_name || "");
+    fd.append("relative_contact", BASICINFO.relative_contact || "");
     fd.append("number_two", BASICINFO.phone);
     fd.append("education", EDUCATION.education);
     fd.append("isNursingInKenya", EDUCATION.isNursingInKenya ? 1 : 0);
@@ -414,6 +418,27 @@ const NurseUpdate = ({
             rows={6}
             onChange={(e) => handleChange("basicInfo", "bio", e.target.value)}
           />
+        </div>
+
+        {/* Next of Kin Details */}
+        <div className="w-full pt-4 border-t">
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+            <Input
+              label="Emergency Contact Name"
+              name="relative_name"
+              placeholder="Full name of emergency contact"
+              value={formData.basicInfo?.relative_name || ""}
+              onChange={(e) => handleChange("basicInfo", "relative_name", e.target.value)}
+            />
+            <Input
+              label="Emergency Contact Number"
+              name="relative_contact"
+              placeholder="Phone number of emergency contact"
+              value={formData.basicInfo?.relative_contact || ""}
+              onChange={(e) => handleChange("basicInfo", "relative_contact", e.target.value)}
+            />
+          </div>
         </div>
 
         {/* education  */}

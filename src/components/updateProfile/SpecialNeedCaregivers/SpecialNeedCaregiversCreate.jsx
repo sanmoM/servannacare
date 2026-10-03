@@ -32,6 +32,8 @@ const SpecialNeedCaregiversCreate = ({
       gender: data?.gender || "",
       experience: data?.experience || "",
       bio: data?.bio || "",
+      relative_name: data?.relative_name || data?.special_need?.relative_name || "",
+      relative_contact: data?.relative_contact || data?.special_need?.relative_contact || "",
       phone: data?.phone || "",
       languages: data?.languages || [],
       canDrive: data?.canDrive || ""
@@ -200,6 +202,8 @@ const SpecialNeedCaregiversCreate = ({
       fd.append("education", EDU.education || "");
       fd.append("experience", BASIC.experience || "");
       fd.append("bio", BASIC.bio || "");
+      fd.append("relative_name", BASIC.relative_name || "");
+      fd.append("relative_contact", BASIC.relative_contact || "");
       if (EDU.educationCertificate) {
         fd.append("educationCertificate", EDU.educationCertificate);
       }
@@ -345,6 +349,28 @@ const SpecialNeedCaregiversCreate = ({
             </Select>
           </div>
         </div>
+
+        {/* Next of Kin Details */}
+        <div className="w-full pt-4 border-t">
+        
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+            <Input
+              label="Emergency Contact Name"
+              name="relative_name"
+              placeholder="Full name of emergency contact"
+              value={formData.basicInfo?.relative_name || ""}
+              onChange={e => handleChange("basicInfo", "relative_name", e.target.value)}
+            />
+            <Input
+              label="Emergency Contact Number"
+              name="relative_contact"
+              placeholder="Phone number of emergency contact"
+              value={formData.basicInfo?.relative_contact || ""}
+              onChange={e => handleChange("basicInfo", "relative_contact", e.target.value)}
+            />
+          </div>
+        </div>
+
         {/* education  */}
 
         <div className="py-2">

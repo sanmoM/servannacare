@@ -32,7 +32,9 @@ const PhysiotherapistCreate = ({
       phone: data.phone || "",
       gender: data.gender || "",
       languages: data.languages || [],
-      canDrive: data.canDrive || ""
+      canDrive: data.canDrive || "",
+      relative_name: data.relative_name || data?.physiotherapist?.relative_name || "",
+      relative_contact: data.relative_contact || data?.physiotherapist?.relative_contact || ""
     },
     education: {
       education: data.education || "",
@@ -216,6 +218,8 @@ const PhysiotherapistCreate = ({
         BASIC.languages.forEach(lang => fd.append("languages[]", lang));
       }
       fd.append("canDrive", BASIC.canDrive ? 1 : 0);
+      fd.append("relative_name", BASIC.relative_name || "");
+      fd.append("relative_contact", BASIC.relative_contact || "");
 
       // ================= EDUCATION =================
       fd.append("education", EDU.education || "");
@@ -358,6 +362,27 @@ const PhysiotherapistCreate = ({
               <Label htmlFor="d2">No</Label>
             </div>
           </RadioGroup>
+        </div>
+
+        {/* Next of Kin Details */}
+        <div className="w-full pt-4 border-t">
+       
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-3">
+            <Input
+              label="Emergency Contact Name"
+              name="relative_name"
+              placeholder="Full name of emergency contact"
+              value={formData.basicInfo?.relative_name || ""}
+              onChange={e => handleChange("basicInfo", "relative_name", e.target.value)}
+            />
+            <Input
+              label="Emergency Contact Number"
+              name="relative_contact"
+              placeholder="Phone number of emergency contact"
+              value={formData.basicInfo?.relative_contact || ""}
+              onChange={e => handleChange("basicInfo", "relative_contact", e.target.value)}
+            />
+          </div>
         </div>
 
         {/* education  */}

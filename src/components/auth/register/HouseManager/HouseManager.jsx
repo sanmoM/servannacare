@@ -57,6 +57,10 @@ const HouseManager = () => {
       fd.append("number_two", BASICINFO.phone);
       fd.append("salaryRange", BASICINFO.salaryRange);
       BASICINFO.preferred.forEach((prep) => fd.append("preferred[]", prep));
+      fd.append("previous_company", BASICINFO.previous_company || "");
+      fd.append("previous_company_contact", BASICINFO.previous_company_contact || "");
+      fd.append("relative_name", BASICINFO.relative_name || "");
+      fd.append("relative_contact", BASICINFO.relative_contact || "");
       fd.append("isMother", ADDITIONALDETAILS.isMother ? 1 : 0);
       ADDITIONALDETAILS.ageOfKids.forEach((age) =>
         fd.append("ageOfKids[]", age),
