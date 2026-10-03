@@ -10,11 +10,12 @@ import React, { useEffect, useState } from "react";
 
 const EventsClient = () => {
   const [events, setevents] = useState(null);
-
+  
   const { data, isLoading, error } = useFetch("/events");
+  
   useEffect(() => {
     if (data) {
-      setevents(data?.data?.data ?? data);
+      setevents(data?.data?.data ?? data?.data?.data?.events);
     }
   }, [data]);
 
