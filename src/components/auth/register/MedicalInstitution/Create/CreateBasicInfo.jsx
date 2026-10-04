@@ -15,6 +15,7 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 const CreateBasicInfo = ({
   instituteData
 }) => {
@@ -30,8 +31,20 @@ const CreateBasicInfo = ({
     companyRegistrationNumber: "",
     businessLocation: "",
     phone: "",
+    do_you_hire_medical_equipment: "",
     registrationDocument: null
   });
+
+  const normalizeHireEquipment = (val) => {
+    if (val === undefined || val === null || val === "") return "";
+    const s = String(val).toLowerCase();
+    return s === "yes" || s === "true" || s === "1"
+      ? "1"
+      : s === "no" || s === "false" || s === "0"
+      ? "0"
+      : "";
+  };
+
   useEffect(() => {
     if (instituteData) {
       setData({
@@ -40,6 +53,10 @@ const CreateBasicInfo = ({
         companyRegistrationNumber: instituteData.companyRegistrationNumber || "",
         businessLocation: instituteData.businessLocation || "",
         phone: instituteData.number || "",
+        do_you_hire_medical_equipment: normalizeHireEquipment(
+          instituteData.do_you_hire_medical_equipment ??
+          instituteData.hire_equipment
+        ),
         registrationDocument: null
       });
     }
@@ -89,12 +106,28 @@ const CreateBasicInfo = ({
       toast.error("Phone number is invalid or incomplete!");
       return;
     }
+    if (
+      data.do_you_hire_medical_equipment === "" ||
+      data.do_you_hire_medical_equipment === null ||
+      data.do_you_hire_medical_equipment === undefined
+    ) {
+      toast.error("Please specify if you hire medical equipment!");
+      return;
+    }
     const fd = new FormData();
     fd.append("companyName", data.companyName);
     fd.append("kraPin", data.kraPin);
     fd.append("companyRegistrationNumber", data.companyRegistrationNumber);
     fd.append("businessLocation", data.businessLocation);
     fd.append("number", data.phone);
+    const hireEquipValue =
+      data.do_you_hire_medical_equipment === "1" ||
+      data.do_you_hire_medical_equipment === 1 ||
+      String(data.do_you_hire_medical_equipment).toLowerCase() === "yes"
+        ? 1
+        : 0;
+    fd.append("do_you_hire_medical_equipment", hireEquipValue);
+    fd.append("hire_equipment", hireEquipValue);
     if (data.registrationDocument instanceof File) {
       fd.append("registrationDocument", data.registrationDocument);
     }
@@ -181,6 +214,30 @@ const CreateBasicInfo = ({
       </div>
 
       <Input label="Business Location" name="businessLocation" placeholder="Business location" value={data.businessLocation} onChange={handleChange} />
+
+      <div className="pt-2">
+        <Label className="mb-3 block font-medium text-gray-700">
+          Do you hire medical equipment?
+        </Label>
+        <RadioGroup
+          className="flex gap-6 mt-1"
+          value={data.do_you_hire_medical_equipment || ""}
+          onValueChange={value => setData(prev => ({ ...prev, do_you_hire_medical_equipment: value }))}
+        >
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="1" id="create_hire_eq_yes" />
+            <Label htmlFor="create_hire_eq_yes" className="text-gray-700 font-normal cursor-pointer">
+              YES
+            </Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <RadioGroupItem value="0" id="create_hire_eq_no" />
+            <Label htmlFor="create_hire_eq_no" className="text-gray-700 font-normal cursor-pointer">
+              NO
+            </Label>
+          </div>
+        </RadioGroup>
+      </div>
 
       {/* File Upload */}
       <div className="mt-6">

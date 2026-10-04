@@ -58,6 +58,8 @@ const ProfilePageContent = () => {
       item.type?.toLowerCase() === type?.toLowerCase(),
   );
 
+console.log(matchedData);
+
   const handleBookNow = () => {
     if (loading || !matchedData) return;
 
@@ -173,7 +175,8 @@ const ProfilePageContent = () => {
     roleSpecificInfo?.drivingLicense ||
     matchedData?.canDrive;
 
-  const isAgencyEmployee = matchedData.type === "agency-employee";
+  const isAgencyEmployee =
+    matchedData.type === "agency-employee" || Boolean(matchedData.agency);
   const agency = matchedData.agency || matchedData.agency_details || {};
   const agencyName =
     agency.companyName ||
@@ -192,6 +195,44 @@ const ProfilePageContent = () => {
   const agencyReplacementCount = agency.numberOfReplacement;
   const agencyServices = agency.agency_services || agency.trainingAreas || [];
   const agencyRegistrationDoc = agency.registrationDocument;
+
+  const isInstitutionEmployee =
+    matchedData.type?.toLowerCase()?.startsWith("institution-") ||
+    matchedData.type === "care-institution-specialist" ||
+    Boolean(matchedData.care_institution) ||
+    Boolean(matchedData.careInstitution) ||
+    Boolean(matchedData.institution);
+
+  const institution =
+    matchedData.care_institution ||
+    matchedData.careInstitution ||
+    matchedData.institution ||
+    {};
+  const institutionName =
+    institution.companyName ||
+    institution.name ||
+    matchedData.institutionName ||
+    matchedData.companyName;
+  const institutionLocation =
+    institution.businessLocation ||
+    institution.location ||
+    matchedData.institutionLocation;
+  const institutionPhone =
+    institution.number ||
+    institution.phone ||
+    matchedData.institutionPhone;
+
+  const hireEquipmentRaw =
+    institution.do_you_hire_medical_equipment ??
+    matchedData.do_you_hire_medical_equipment ??
+    institution.hire_equipment ??
+    matchedData.hire_equipment;
+
+  const isHireEquipmentYes =
+    String(hireEquipmentRaw).toLowerCase() === "yes" ||
+    hireEquipmentRaw === true ||
+    hireEquipmentRaw === 1 ||
+    hireEquipmentRaw === "1";
 
   const hasReviews =
     matchedData.review_count > 0 && matchedData.review_avg_rating !== null;
@@ -363,7 +404,7 @@ const ProfilePageContent = () => {
           <div className="flex-1 text-center md:text-left space-y-3">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
               <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight capitalize">
-                {matchedData?.name}
+                {matchedData?.name || matchedData?.fullName}
               </h1>
               {matchedData.is_profile_verified && (
                 <Badge className="bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 font-medium px-2 py-0.5 rounded-md text-xs flex items-center gap-1 shrink-0">
@@ -373,6 +414,11 @@ const ProfilePageContent = () => {
               {isAgencyEmployee && (
                 <Badge className="bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary/20 font-medium px-2 py-0.5 rounded-md text-xs shrink-0">
                   AGENCY LISTED
+                </Badge>
+              )}
+              {isInstitutionEmployee && (
+                <Badge className="bg-secondary/10 text-secondary border border-secondary/20 hover:bg-secondary/20 font-medium px-2 py-0.5 rounded-md text-xs shrink-0">
+                  INSTITUTION LISTED
                 </Badge>
               )}
             </div>
@@ -793,22 +839,7 @@ const ProfilePageContent = () => {
                         <p className="text-xs font-bold text-primary tracking-wider uppercase">
                           Representing Agency
                         </p>
-                        {/* <h3 className="text-xl font-black text-foreground">
-                          {agencyName || "Registered Partner Agency"}
-                        </h3>
-                        {agencyLocation && (
-                          <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1 font-medium">
-                            <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                            {agencyLocation}
-                          </p>
-                        )} */}
                       </div>
-                      {/* {agencyPhone && (
-                        <div className="flex items-center gap-2 bg-background/80 border border-border px-3.5 py-2 rounded-xl text-sm font-semibold text-foreground">
-                          <Phone className="w-4 h-4 text-primary shrink-0" />
-                          <span>{agencyPhone}</span>
-                        </div>
-                      )} */}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -846,76 +877,69 @@ const ProfilePageContent = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm pt-2">
                       <div className="space-y-2.5">
-                        {/* {agencyRegNumber && (
-                          <div className="flex justify-between border-b border-border/60 pb-2">
-                            <span className="text-muted-foreground font-medium text-xs">
-                              Registration No.
-                            </span>
-                            <span className="font-bold text-foreground text-xs">
-                              {agencyRegNumber}
-                            </span>
-                          </div>
-                        )} */}
-                        {/* {agencyKraPin && (
-                          <div className="flex justify-between border-b border-border/60 pb-2">
-                            <span className="text-muted-foreground font-medium text-xs">
-                              KRA PIN
-                            </span>
-                            <span className="font-bold text-foreground text-xs">
-                              {agencyKraPin}
-                            </span>
-                          </div>
-                        )} */}
-                        {/* {agencyEmail && (
-                          <div className="flex justify-between border-b border-border/60 pb-2">
-                            <span className="text-muted-foreground font-medium text-xs">
-                              Email
-                            </span>
-                            <span className="font-bold text-foreground text-xs">
-                              {agencyEmail}
-                            </span>
-                          </div>
-                        )} */}
                       </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
-                      {/* <div className="space-y-2">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
-                          Agency Training & Specialties
-                        </span>
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {agencyServices.length > 0 ? (
-                            agencyServices.map((area, idx) => (
-                              <span
-                                key={idx}
-                                className="text-xs font-semibold px-2.5 py-1 rounded-md bg-background border border-border text-foreground"
-                              >
-                                {area}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-xs text-muted-foreground italic">
-                              Professional household & childcare training
-                              provided
-                            </span>
-                          )}
-                        </div>
-                      </div> */}
+            {isInstitutionEmployee && (
+              <>
+                <hr className="border-border" />
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Building className="w-5 h-5 text-primary" />
+                      Associated Care Institution
+                    </h2>
+                  
+                  </div>
+
+                  <div className="bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent border border-primary/20 rounded-2xl p-6 space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border/80">
+                      <div className="space-y-1">
+                        
+                        <h3 className="text-xl font-black text-foreground">
+                          {institutionName || "Verified Care Institution"}
+                        </h3>
+                        {institutionLocation && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1 font-medium">
+                            <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                            {institutionLocation}
+                          </p>
+                        )}
+                      </div>
+                      
                     </div>
 
-                    {/* {agencyRegistrationDoc && (
-                      <div className="pt-2">
-                        <a
-                          href={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${agencyRegistrationDoc}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-xs font-bold text-primary hover:underline"
-                        >
-                          <FileText className="w-4 h-4" />
-                          View Agency Registration Certificate
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="p-4 bg-background/70 border border-border rounded-xl">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                          medical equipment
+                        </span>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-lg ${
+                              isHireEquipmentYes
+                                ? "bg-green-100 text-green-800 border border-green-200"
+                                : "bg-gray-100 text-gray-700 border border-gray-200"
+                            }`}
+                          >
+                            {isHireEquipmentYes ? (
+                              <>
+                                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                                Yes
+                              </>
+                            ) : (
+                              "No"
+                            )}
+                          </span>
+                        </div>
                       </div>
-                    )} */}
+
+             
+                    </div>
                   </div>
                 </div>
               </>
@@ -1068,7 +1092,7 @@ const ProfilePageContent = () => {
                 </div>
                 <div>
                   <h3 className="text-md font-bold text-foreground capitalize">
-                    {matchedData?.name}
+                    {matchedData?.name || matchedData?.fullName}
                   </h3>
                   <p className="text-[10px] font-bold text-primary tracking-wider uppercase mt-1">
                     {matchedData?.subRole?.replace("-", " ")}

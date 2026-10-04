@@ -4,10 +4,13 @@ import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
 import React from "react";
 
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 const MedicalInstitution = () => {
   return (
     <form>
-      {/* Agency Details */}
+      {/* Institution Details */}
       <div>
         <h2 className="formHeading">Institution Details</h2>
 
@@ -44,6 +47,32 @@ const MedicalInstitution = () => {
             // value={data.businessLocation}
             // onChange={handleChange}
           />
+        </div>
+
+        <div className="pb-6">
+          <Label className="mb-3 block font-medium text-gray-700">
+            Do you hire medical equipment?
+          </Label>
+          <RadioGroup className="flex gap-6 mt-1">
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="1" id="med_inst_eq_yes" />
+              <Label
+                htmlFor="med_inst_eq_yes"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                YES
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="0" id="med_inst_eq_no" />
+              <Label
+                htmlFor="med_inst_eq_no"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                NO
+              </Label>
+            </div>
+          </RadioGroup>
         </div>
 
         <div>

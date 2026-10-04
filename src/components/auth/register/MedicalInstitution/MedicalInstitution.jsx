@@ -70,7 +70,8 @@ const MedicalInstitution = ({
   }, [user]);
   const [formData, setFormData] = useState({
     institution: {
-      registrationDocument: null
+      registrationDocument: null,
+      do_you_hire_medical_equipment: ""
     },
     nurses: []
   });
@@ -103,6 +104,15 @@ const MedicalInstitution = ({
       fd.append("companyRegistrationNumber", inst.companyRegistrationNumber);
       fd.append("number", inst.phone);
       fd.append("businessLocation", inst.businessLocation);
+
+      const hireEquipValue =
+        inst.do_you_hire_medical_equipment === "1" ||
+        inst.do_you_hire_medical_equipment === 1 ||
+        String(inst.do_you_hire_medical_equipment).toLowerCase() === "yes"
+          ? 1
+          : 0;
+      fd.append("do_you_hire_medical_equipment", hireEquipValue);
+      fd.append("hire_equipment", hireEquipValue);
       if (inst.registrationDocument) {
         fd.append("registrationDocument", inst.registrationDocument);
       }

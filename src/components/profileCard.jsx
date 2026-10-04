@@ -150,8 +150,16 @@ const ProfileCard = ({ profile }) => {
 
               <p className="text-sm font-medium text-primary">
                 {profile.subRole}{" "}
-                <span className="text-purple-800">
-                  {profile.type === "agency-employee" && "(AGENCY LISTED)"}
+                <span className="text-purple-800 font-semibold">
+                  {(profile.type === "agency-employee" ||
+                    Boolean(profile.agency)) &&
+                    "(AGENCY LISTED)"}
+                  {(profile.type?.toLowerCase()?.startsWith("institution-") ||
+                    profile.type === "care-institution-specialist" ||
+                    Boolean(profile.care_institution) ||
+                    Boolean(profile.careInstitution) ||
+                    Boolean(profile.institution)) &&
+                    "(INSTITUTION LISTED)"}
                 </span>
               </p>
 {/* 

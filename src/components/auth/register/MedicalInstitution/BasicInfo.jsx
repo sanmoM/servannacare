@@ -12,9 +12,20 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { getExampleNumber } from "libphonenumber-js";
 import "react-phone-number-input/style.css";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const BasicInfo = ({ defaultValues = {}, onNext }) => {
   const [country, setCountry] = useState("KE");
+
+  const normalizeHireEquipment = (val) => {
+    if (val === undefined || val === null || val === "") return "";
+    const s = String(val).toLowerCase();
+    return s === "yes" || s === "true" || s === "1"
+      ? "1"
+      : s === "no" || s === "false" || s === "0"
+      ? "0"
+      : "";
+  };
 
   const [data, setData] = useState({
     companyName: defaultValues.companyName || "",
@@ -23,6 +34,10 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
     businessLocation: defaultValues.businessLocation || "",
     phone: defaultValues.phone || "",
     registrationDocument: defaultValues.registrationDocument || null,
+    do_you_hire_medical_equipment: normalizeHireEquipment(
+      defaultValues.do_you_hire_medical_equipment ??
+      defaultValues.hire_equipment
+    ),
   });
 
   const handleChange = (e) => {
@@ -49,16 +64,20 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
 
   useEffect(() => {
     if (defaultValues && Object.keys(defaultValues).length > 0) {
-      setData((prev) => ({ ...prev, ...defaultValues }));
-      
+      setData((prev) => ({
+        ...prev,
+        ...defaultValues,
+        do_you_hire_medical_equipment: normalizeHireEquipment(
+          defaultValues.do_you_hire_medical_equipment ??
+          defaultValues.hire_equipment
+        ),
+      }));
     }
   }, [defaultValues]);
 
- 
   const handleFileSelect = (file) => {
     setData((prev) => ({ ...prev, registrationDocument: file }));
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -91,6 +110,14 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
       return;
     }
 
+    if (
+      data.do_you_hire_medical_equipment === "" ||
+      data.do_you_hire_medical_equipment === null ||
+      data.do_you_hire_medical_equipment === undefined
+    ) {
+      toast.error("Please specify if you hire medical equipment!");
+      return;
+    }
 
     onNext(data);
   };
@@ -175,6 +202,41 @@ const BasicInfo = ({ defaultValues = {}, onNext }) => {
           value={data.businessLocation}
           onChange={handleChange}
         />
+
+        <div className="pt-4">
+          <Label className="mb-3 block font-medium text-gray-700">
+            Do you hire medical equipment?
+          </Label>
+          <RadioGroup
+            className="flex gap-6 mt-1"
+            value={data.do_you_hire_medical_equipment || ""}
+            onValueChange={(value) =>
+              setData((prev) => ({
+                ...prev,
+                do_you_hire_medical_equipment: value,
+              }))
+            }
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="1" id="hire_eq_yes" />
+              <Label
+                htmlFor="hire_eq_yes"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                YES
+              </Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="0" id="hire_eq_no" />
+              <Label
+                htmlFor="hire_eq_no"
+                className="text-gray-700 font-normal cursor-pointer"
+              >
+                NO
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
 
         <div className="mt-6">
           <FileUpload

@@ -8,7 +8,10 @@ import React, { useState } from "react";
 const UpdateReview = ({ data, }) => {
   
   const formatLabel = (key) =>
-    key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
+    key
+      .replace(/_/g, " ")
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
 
   
   const formatFileSize = (size) => {
@@ -70,11 +73,35 @@ const UpdateReview = ({ data, }) => {
             } else if (typeof value === "object" && value !== null) {
               return renderSection(key, value);
             } else {
+              let displayVal =
+                value !== null && value !== undefined && value !== ""
+                  ? String(value)
+                  : "N/A";
+              if (
+                key === "do_you_hire_medical_equipment" ||
+                key === "hire_equipment"
+              ) {
+                if (
+                  value === "1" ||
+                  value === 1 ||
+                  String(value).toLowerCase() === "yes"
+                ) {
+                  displayVal = "YES";
+                } else if (
+                  value === "0" ||
+                  value === 0 ||
+                  String(value).toLowerCase() === "no"
+                ) {
+                  displayVal = "NO";
+                } else {
+                  displayVal = "N/A";
+                }
+              }
               return (
                 <div key={key} className="flex items-center gap-2 flex-wrap">
                   <Label>{formatLabel(key)}:</Label>
                   <span className="text-sm text-gray-600">
-                    {value ? String(value) : "N/A"}
+                    {displayVal}
                   </span>
                 </div>
               );
