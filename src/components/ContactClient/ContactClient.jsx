@@ -9,6 +9,7 @@ import { useFetch } from "@/hooks/useFetch";
 import { postApi } from "@/lib/apiHandler";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { FaWhatsapp } from "react-icons/fa";
 const ContactClient = () => {
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [contacts, setcontacts] = useState(null);
@@ -121,6 +122,39 @@ const ContactClient = () => {
                 </div>)}
             </div>
           </div>
+        </div>
+
+        {/* WhatsApp Call to Action Banner */}
+        <div data-aos="fade-up" className="my-8 p-6 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 rounded-2xl shadow-lg text-white flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-4 text-center sm:text-left">
+            <div className="h-14 w-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0 shadow-inner">
+              <FaWhatsapp className="size-8 text-white drop-shadow-xs" />
+            </div>
+            <div>
+              <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                <span className="text-[11px] font-bold tracking-wider uppercase text-emerald-100">
+                  Instant WhatsApp Support
+                </span>
+              </div>
+              <h3 className="text-xl font-bold">Chat With Us on WhatsApp</h3>
+              <p className="text-emerald-100 text-sm mt-0.5 max-w-xl">
+                Need immediate care assistance or have questions? Click to chat directly with our team for prompt support.
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://wa.me/message/BCDIGKLB5F4OF1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="shrink-0 inline-flex items-center gap-2 bg-white hover:bg-emerald-50 text-emerald-700 px-6 py-3.5 rounded-full font-bold text-sm shadow-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <FaWhatsapp className="size-5 text-[#25D366]" />
+            <span>Open WhatsApp Chat</span>
+          </a>
         </div>
 
         <div className="py-10 flex flex-col gap-6 lg:flex-row lg:py12">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { File, MessageCircle, Send, X } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
 import { getApi, postApi } from "@/lib/apiHandler";
 import echoInstance from "@/lib/echo";
@@ -136,6 +137,21 @@ const ChatBot = () => {
               <X size={20} />
             </button>
           </div>
+
+          <a
+            href="https://wa.me/message/BCDIGKLB5F4OF1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 border-b border-emerald-200/60 text-emerald-800 text-xs font-medium transition-colors"
+          >
+            <span className="flex items-center gap-1.5">
+              <FaWhatsapp className="text-[#25D366] text-sm shrink-0" />
+              <span>Prefer WhatsApp? Chat directly</span>
+            </span>
+            <span className="text-[10px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded-full border border-emerald-300">
+              Open &rarr;
+            </span>
+          </a>
 
           <div ref={scrollRef} className="p-3 h-72 overflow-y-auto space-y-3 scrollbar-thin">
             {/* {messages.length === 0 && (

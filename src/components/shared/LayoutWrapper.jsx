@@ -6,6 +6,7 @@ import Footer from "@/components/shared/footer/Footer";
 import React from "react";
 import { Toaster } from "react-hot-toast";
 import ChatBot from "./chatbot/Chatbot";
+import WhatsAppCTA from "./WhatsAppCTA";
 
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
@@ -14,6 +15,7 @@ const LayoutWrapper = ({ children }) => {
   const shouldHideLayout = hideLayout.some((route) =>
     pathname.startsWith(route),
   );
+  const isDashboard = pathname.startsWith("/dashboard");
 
   return (
     <>
@@ -21,6 +23,7 @@ const LayoutWrapper = ({ children }) => {
       {!shouldHideLayout && <Navbar />}
       <div className="min-h-[60vh]">{children}</div>
       {!shouldHideLayout && <ChatBot />}
+      {!isDashboard && <WhatsAppCTA />}
       <Toaster position="top-right" reverseOrder={false} />
       {!shouldHideLayout && <Footer />}
     </>

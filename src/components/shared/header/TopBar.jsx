@@ -1,12 +1,12 @@
 import {
-  Facebook,
+  
   Instagram,
   Linkedin,
   Mail,
   Phone,
-  Twitter,
 } from "lucide-react";
 import { PiTiktokLogo } from "react-icons/pi";
+import { FaWhatsapp } from "react-icons/fa";
 import React from "react";
 import Container from "../Container";
 
@@ -14,18 +14,28 @@ const TopBar = () => {
   return (
     <div className="bg-primary py-4 text-gray-200 hidden md:block md:text-sm">
       <Container className={"flex justify-between items-center"}>
-        <div className="flex  gap-8">
+        <div className="flex flex-wrap items-center gap-6 lg:gap-8">
           <div className="flex gap-2 items-center">
-            <Mail />
+            <Mail size={16} />
             customersupport@cervannacare.com
           </div>
           <div className="flex gap-2 items-center">
-            <Phone />
+            <Phone size={16} />
             +254 700 225533
           </div>
+          
         </div>
 
         <div className="flex items-center space-x-5 mt-4 sm:mt-0">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://wa.me/message/BCDIGKLB5F4OF1"
+            aria-label="WhatsApp"
+            className="text-gray-200 hover:text-white transition-colors duration-200"
+          >
+            <FaWhatsapp size={20} />
+          </a>
           <a
             target="_blank"
             href="https://www.tiktok.com/@cervanna.care?_r=1&_t=ZS-94SWjmHqWzU"

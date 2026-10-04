@@ -7,6 +7,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { PiTiktokLogo } from "react-icons/pi";
+import { FaWhatsapp } from "react-icons/fa";
 import Container from "../Container";
 import Image from "next/image";
 import Link from "next/link";
@@ -110,13 +111,14 @@ const Footer = () => {
                 customersupport@cervannacare.com
               </a>
               <br />
-              Phone:
+              Phone:{" "}
               <a
                 href="tel:+254700225533"
                 className="text-white hover:underline"
               >
                 +254 700 225533
               </a>
+              
             </p>
           </div>
         </div>
@@ -128,6 +130,15 @@ const Footer = () => {
             CERVANNA CARE &copy; {new Date().getFullYear()}. ALL RIGHT RESERVED
           </p>
           <div className="flex items-center space-x-5 mt-4 sm:mt-0">
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://wa.me/message/BCDIGKLB5F4OF1"
+              aria-label="WhatsApp"
+              className="text-gray-200 hover:text-white transition-colors duration-200"
+            >
+              <FaWhatsapp size={20} />
+            </a>
             <a
               target="_blank"
               href="https://www.tiktok.com/@cervanna.care?_r=1&_t=ZS-94SWjmHqWzU"
