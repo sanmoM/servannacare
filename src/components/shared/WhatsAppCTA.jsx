@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, MessageCircle } from "lucide-react";
+import { X } from "lucide-react";
 
 export const WhatsAppIcon = ({ className = "size-6" }) => (
   <svg
@@ -16,7 +16,7 @@ export const WhatsAppIcon = ({ className = "size-6" }) => (
 
 const WHATSAPP_URL = "https://wa.me/message/BCDIGKLB5F4OF1";
 
-const WhatsAppCTA = () => {
+const WhatsAppCTA = ({ hasChatbot = true }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
@@ -39,10 +39,15 @@ const WhatsAppCTA = () => {
   };
 
   return (
-    <aside aria-label="WhatsApp Support" className="fixed bottom-6 left-4 sm:left-6 z-50 flex flex-col items-start gap-2 select-none">
+    <aside
+      aria-label="WhatsApp Support"
+      className={`fixed ${
+        hasChatbot ? "bottom-[90px]" : "bottom-6"
+      } right-6 z-50 flex flex-col items-end gap-2 select-none`}
+    >
       {/* Callout Prompt Bubble */}
       {showTooltip && (
-        <div className="relative animate-bounce-subtle bg-white text-gray-800 rounded-2xl p-3.5 shadow-2xl border border-gray-100 max-w-[260px] sm:max-w-[280px] transition-all">
+        <div className="relative animate-bounce-subtle bg-white text-gray-800 rounded-2xl p-3.5 shadow-2xl border border-gray-100 max-w-[260px] sm:max-w-[280px] transition-all text-left">
           <button
             onClick={handleDismiss}
             aria-label="Dismiss WhatsApp popup"
@@ -82,26 +87,15 @@ const WhatsAppCTA = () => {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with us on WhatsApp"
-        className="group relative flex items-center gap-2.5 bg-[#25D366] hover:bg-[#20bd5a] text-white p-3.5 sm:px-5 sm:py-3.5 rounded-full shadow-lg hover:shadow-2xl hover:shadow-[#25D366]/40 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 cursor-pointer"
+        className="group flex items-center gap-2.5 cursor-pointer"
       >
-        {/* Pulsing ring */}
-        <span className="absolute -inset-1 rounded-full bg-[#25D366] opacity-30 group-hover:opacity-50 animate-pulse pointer-events-none" />
+ 
 
-        {/* Live status dot on mobile */}
-        <span className="absolute top-1 right-1 sm:hidden flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-        </span>
+        {/* Circular WhatsApp Button stacked right above Chatbot button */}
+        <div className="relative w-[58px] h-[58px] rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white flex items-center justify-center shadow-lg hover:shadow-2xl hover:shadow-[#25D366]/40 transition-all duration-300 transform group-hover:scale-105 active:scale-95">
+     
 
-        <WhatsAppIcon className="size-6 sm:size-6 text-white shrink-0 drop-shadow-xs" />
-
-        <div className="hidden sm:flex flex-col text-left">
-          <span className="text-[10px] uppercase font-bold tracking-wider leading-none text-white/90">
-            Click to Chat
-          </span>
-          <span className="text-sm font-bold leading-tight tracking-wide text-white drop-shadow-xs">
-            WhatsApp Us
-          </span>
+          <WhatsAppIcon className="size-7 text-white shrink-0 drop-shadow-xs" />
         </div>
       </a>
     </aside>
