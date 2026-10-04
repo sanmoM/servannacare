@@ -65,17 +65,24 @@ const Review = ({ data }) => {
             } else if (typeof value === "object" && value !== null) {
               return renderSection(key, value);
             } else {
+              const displayValue = () => {
+                if (value === null || value === undefined || String(value) === "") return "N/A";
+                if (typeof value === "boolean") return value ? "Yes" : "No";
+                if (key === "placementFee") {
+                  const s = String(value).trim();
+                  if (s.includes("%") || s.toLowerCase().includes("ksh") || isNaN(s)) {
+                    return s;
+                  }
+                  return `KSh ${Number(s).toLocaleString()}`;
+                }
+                return String(value);
+              };
+
               return (
                 <div key={key} className="flex items-center gap-2 flex-wrap">
                   <Label className="font-medium text-gray-700">{formatLabel(key)}:</Label>
                   <span className="text-sm text-gray-600">
-                    {value !== null && value !== undefined && String(value) !== ""
-                      ? typeof value === "boolean"
-                        ? value
-                          ? "Yes"
-                          : "No"
-                        : String(value)
-                      : "N/A"}
+                    {displayValue()}
                   </span>
                 </div>
               );

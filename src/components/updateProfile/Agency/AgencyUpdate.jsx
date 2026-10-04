@@ -1,5 +1,6 @@
 import FileUpload from "@/components/auth/register/FileUpload";
 import Input from "@/components/shared/Input";
+import PlacementFeeInput from "@/components/shared/PlacementFeeInput";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -93,16 +94,12 @@ const AgencyUpdate = () => {
             </div>
           </div>
 
-          <div>
-            <div className="flex gap-6 sm:gap-4 mb-6 sm:flex-row flex-col">
-              <Input
-                type="number"
-                placeholder="Placement fee"
-                name="placementFee"
-                label="Placement Fee (KSh)"
-                // value={data.placementFee}
-                // onChange={handleChange}
-              />
+          <div className="space-y-6">
+            <PlacementFeeInput
+              name="placementFee"
+            />
+
+            <div className="flex gap-6 sm:gap-4 sm:flex-row flex-col">
               <Input
                 type="number"
                 placeholder="Replacement window"
@@ -111,17 +108,15 @@ const AgencyUpdate = () => {
                 // value={data.replacementWindow}
                 // onChange={handleChange}
               />
+              <Input
+                type="number"
+                placeholder="Number of replacements offered"
+                name="numberOfReplacement"
+                label="Number of replacements"
+                // value={data.numberOfReplacement}
+                // onChange={handleChange}
+              />
             </div>
-
-            <Input
-              type="number"
-              placeholder="Number of replacements offered"
-              name="numberOfReplacement"
-              label="Number of replacements"
-              className="sm:w-1/2"
-              //   value={data.numberOfReplacement}
-              //   onChange={handleChange}
-            />
           </div>
         </div>
         {/* submit button  */}

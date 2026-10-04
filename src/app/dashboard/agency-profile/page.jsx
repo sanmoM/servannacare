@@ -12,6 +12,9 @@ export default function AgencyProfile() {
 
   const [agencyData, setAgencyData] = useState(null);
 
+  console.log(agencyData?.agency);
+
+
   const { data, isLoading, error } = useFetch("/profile");
 
   useEffect(() => {

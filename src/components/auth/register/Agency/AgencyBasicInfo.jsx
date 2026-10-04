@@ -1,6 +1,7 @@
 "use client";
 
 import Input from "@/components/shared/Input";
+import PlacementFeeInput from "@/components/shared/PlacementFeeInput";
 import { Label } from "@/components/ui/label";
 import React, { useEffect, useState } from "react";
 import FileUpload from "../FileUpload";
@@ -42,7 +43,6 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
   useEffect(() => {
     if (defaultValues && Object.keys(defaultValues).length > 0) {
       setData((prev) => ({ ...prev, ...defaultValues }));
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }
   }, [defaultValues]);
 
@@ -245,16 +245,14 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
           </div>
         </div>
 
-        <div>
-          <div className="flex gap-6 sm:gap-4 mb-6 sm:flex-row flex-col">
-            <Input
-              type="number"
-              placeholder="Placement fee"
-              name="placementFee"
-              label="Placement Fee (KSh)"
-              value={data.placementFee}
-              onChange={handleChange}
-            />
+        <div className="space-y-6">
+          <PlacementFeeInput
+            name="placementFee"
+            value={data.placementFee}
+            onChange={handleChange}
+          />
+
+          <div className="flex gap-6 sm:gap-4 sm:flex-row flex-col">
             <Input
               type="number"
               placeholder="Replacement window"
@@ -263,17 +261,15 @@ const AgencyBasicInfo = ({ defaultValues = {}, onNext }) => {
               value={data.replacementWindow}
               onChange={handleChange}
             />
+            <Input
+              type="number"
+              placeholder="Number of replacements offered"
+              name="numberOfReplacement"
+              label="Number of replacements"
+              value={data.numberOfReplacement}
+              onChange={handleChange}
+            />
           </div>
-
-          <Input
-            type="number"
-            placeholder="Number of replacements offered"
-            name="numberOfReplacement"
-            label="Number of replacements"
-            className="sm:w-1/2"
-            value={data.numberOfReplacement}
-            onChange={handleChange}
-          />
         </div>
       </div>
 

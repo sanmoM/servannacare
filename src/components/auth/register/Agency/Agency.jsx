@@ -62,6 +62,7 @@ const Agency = () => {
     agency: {},
     allEmployees: []
   });
+  console.log(formData?.agency);
   const handleSignupSuccess = accountData => {
     setStarted(true);
   };

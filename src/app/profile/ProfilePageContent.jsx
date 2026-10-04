@@ -376,7 +376,7 @@ console.log(matchedData);
   return (
     <div className="bg-background min-h-screen pb-20">
       <PageBanner
-        title={`${matchedData.name}'s Profile`}
+        title={`${matchedData.name || matchedData.fullName}'s Profile`}
         image="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/cf136a11386527.560f6e447cc13.jpg"
       />
 
@@ -849,7 +849,11 @@ console.log(matchedData);
                         </span>
                         <p className="text-base font-bold text-foreground">
                           {agencyPlacementFee
-                            ? `KSh ${agencyPlacementFee}`
+                            ? String(agencyPlacementFee).includes("%") ||
+                              isNaN(agencyPlacementFee) ||
+                              String(agencyPlacementFee).toLowerCase().includes("ksh")
+                              ? agencyPlacementFee
+                              : `KSh ${Number(agencyPlacementFee).toLocaleString()}`
                             : "Standard Rate"}
                         </p>
                       </div>

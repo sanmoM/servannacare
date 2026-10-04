@@ -1,6 +1,7 @@
 "use client";
 
 import Input from "@/components/shared/Input";
+import PlacementFeeInput from "@/components/shared/PlacementFeeInput";
 import { Label } from "@/components/ui/label";
 import React, { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
@@ -36,6 +37,7 @@ const CreateBasicInfo = ({
     replacementWindow: agencyData?.replacementWindow || "",
     numberOfReplacement: agencyData?.numberOfReplacement || ""
   });
+  
   const train = ["Cooking", "House Keeping", "First Aid", "Childcare", "Communication", "None"];
   useEffect(() => {
     if (agencyData && Object.keys(agencyData).length > 0) {
@@ -227,13 +229,17 @@ const CreateBasicInfo = ({
           </div>
         </div>
 
-        <div>
-          <div className="flex gap-6 sm:gap-4 mb-6 sm:flex-row flex-col">
-            <Input type="number" placeholder="Placement fee" name="placementFee" label="Placement Fee (KSh)" value={data.placementFee} onChange={handleChange} />
-            <Input type="number" placeholder="Replacement window" name="replacementWindow" label="Replacement Window (months)" value={data.replacementWindow} onChange={handleChange} />
-          </div>
+        <div className="space-y-6">
+          <PlacementFeeInput
+            name="placementFee"
+            value={data.placementFee}
+            onChange={handleChange}
+          />
 
-          <Input type="number" placeholder="Number of replacements offered" name="numberOfReplacement" label="Number of replacements" className="sm:w-1/2" value={data.numberOfReplacement} onChange={handleChange} />
+          <div className="flex gap-6 sm:gap-4 sm:flex-row flex-col">
+            <Input type="number" placeholder="Replacement window" name="replacementWindow" label="Replacement Window (months)" value={data.replacementWindow} onChange={handleChange} />
+            <Input type="number" placeholder="Number of replacements offered" name="numberOfReplacement" label="Number of replacements" value={data.numberOfReplacement} onChange={handleChange} />
+          </div>
         </div>
       </div>
 
