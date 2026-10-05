@@ -20,7 +20,7 @@ const EventDetails = () => {
 
   useEffect(() => {
     if (data) {
-      setEvents(data?.data?.data ?? data);
+      setEvents(data?.data?.events ?? data?.data?.events);
     }
   }, [data]);
 

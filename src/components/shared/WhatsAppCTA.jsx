@@ -46,7 +46,7 @@ const WhatsAppCTA = ({ hasChatbot = true }) => {
       } right-6 z-50 flex flex-col items-end gap-2 select-none`}
     >
       {/* Callout Prompt Bubble */}
-      {showTooltip && (
+      {/* {showTooltip && (
         <div className="relative animate-bounce-subtle bg-white text-gray-800 rounded-2xl p-3.5 shadow-2xl border border-gray-100 max-w-[260px] sm:max-w-[280px] transition-all text-left">
           <button
             onClick={handleDismiss}
@@ -79,7 +79,7 @@ const WhatsAppCTA = ({ hasChatbot = true }) => {
             </p>
           </a>
         </div>
-      )}
+      )} */}
 
       {/* Main Floating Action Button */}
       <a

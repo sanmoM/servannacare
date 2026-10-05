@@ -58,7 +58,6 @@ const ProfilePageContent = () => {
       item.type?.toLowerCase() === type?.toLowerCase(),
   );
 
-console.log(matchedData);
 
   const handleBookNow = () => {
     if (loading || !matchedData) return;

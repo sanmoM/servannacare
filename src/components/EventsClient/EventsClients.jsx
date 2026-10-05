@@ -10,12 +10,13 @@ import React, { useEffect, useState } from "react";
 
 const EventsClient = () => {
   const [events, setevents] = useState(null);
+  console.log(events);
   
   const { data, isLoading, error } = useFetch("/events");
   
   useEffect(() => {
     if (data) {
-      setevents(data?.data?.data ?? data?.data?.data?.events);
+      setevents(data?.data?.events ?? data?.data?.events);
     }
   }, [data]);
 
@@ -30,7 +31,7 @@ const EventsClient = () => {
         title="Transformed For Better Event"
       />
       <Container className="py-10 lg:py-16">
-        <div className="pb-6">
+        {/* <div className="pb-6">
           <h4 className="md:text-sm mb-3  text-xs font-semibold text-primary">
             TFB Events
           </h4>
@@ -78,7 +79,7 @@ const EventsClient = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="py-10 lg:py-16">
           <h2 className="sectionHeading text-center mb-2">
