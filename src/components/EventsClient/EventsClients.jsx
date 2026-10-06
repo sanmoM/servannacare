@@ -1,132 +1,166 @@
 "use client";
-import Container from "@/components/shared/Container";
-import LoadingSpinner from "@/components/shared/LoadingSpin";
-import PageBanner from "@/components/shared/PageBanner";
-import { Button } from "@/components/ui/button";
-import { useFetch } from "@/hooks/useFetch";
+
+import React, { useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import {
+  Calendar,
+  Sparkles,
+  Heart,
+  Target,
+  Users2,
+  CheckCircle,
+  ArrowRight,
+  AlertCircle,
+} from "lucide-react";
+import Container from "@/components/shared/Container";
+import PageBanner from "@/components/shared/PageBanner";
+import LoadingSpinner from "@/components/shared/LoadingSpin";
+import { Button } from "@/components/ui/button";
+import { useFetch } from "@/hooks/useFetch";
+import EventsSection from "./EventsSection";
 
 const EventsClient = () => {
-  const [events, setevents] = useState(null);
-  console.log(events);
-  
   const { data, isLoading, error } = useFetch("/events");
-  
-  useEffect(() => {
-    if (data) {
-      setevents(data?.data?.events ?? data?.data?.events);
-    }
+
+  const resolvedEvents = useMemo(() => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.data)) return data.data;
+    if (Array.isArray(data?.data?.events)) return data.data.events;
+    if (Array.isArray(data?.events)) return data.events;
+    return [];
   }, [data]);
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <div>Error loading data</div>;
 
+  if (error) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
+        <AlertCircle className="w-12 h-12 text-rose-500 mb-3" />
+        <h2 className="text-xl font-bold text-gray-900">Failed to load events</h2>
+        <p className="text-sm text-gray-600 mt-1 max-w-md">
+          There was an issue fetching events from the server. Please check your connection or try again later.
+        </p>
+        <Button
+          onClick={() => window.location.reload()}
+          className="mt-4 bg-[#72275B] hover:bg-[#5b1f49] text-white cursor-pointer"
+        >
+          Reload Page
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div>
+    <div className="bg-[#FAF7F9]/40 min-h-screen">
+      
       <PageBanner
         image="https://www.goodwin.edu/landingpages/files/images/nursing-programs-main-header.jpg"
-        title="Transformed For Better Event"
+        title="Transformed For Better Movement"
+        height="h-[36vh]"
       />
-      <Container className="py-10 lg:py-16">
-        {/* <div className="pb-6">
-          <h4 className="md:text-sm mb-3  text-xs font-semibold text-primary">
-            TFB Events
-          </h4>
-          <h2 className="sectionHeading ">TRANSFORMED FOR BETTER EVENTS</h2>
-        </div>
-        <div className="lg:flex gap-6">
-          <div data-aos="fade-up" className="flex-1">
-            <Image
-              src={"https://servannacare.com/img/11.jpg"}
-              quality={100}
-              alt="event"
-              width={500}
-              height={400}
-              className="w-full rounded-xl"
-            />
-          </div>
-          <div data-aos="fade-up" className="flex-1 lg:mt-0 mt-6">
-            <div className="text-gray-700  text-sm">
-              <p>
-                Transformed for Better is Servanna’s mission-driven initiative
-                designed to educate employers on fostering positive and
-                effective working relationships with their domestic workers.
-              </p>
-              <p className="mt-4">
-                Through Transformed for Better, we aim to reshape the prevailing
-                narrative around domestic and childcare work...
-              </p>
-            </div>
-            <div className="space-y-3 mt-6">
-              <div>
-                <h4 className="subHeading">VISION</h4>
-                <p className="text-sm text-gray-700">
-                  To lead the movement in de-stigmatizing, humanizing, and
-                  professionalizing domestic work, fostering dignity and respect
-                  for all domestic workers.
-                </p>
-              </div>
-              <div>
-                <h4 className="subHeading">MISSION</h4>
-                <p className="text-sm text-gray-700">
-                  Educating employers and domestic workers on cultivating
-                  inclusive and supportive environments. Establishing a
-                  community dedicated to fostering positive transformations.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div> */}
 
-        <div className="py-10 lg:py-16">
-          <h2 className="sectionHeading text-center mb-2">
-            Transformed for Better Events
-          </h2>
-          <p className="text-sm text-gray-700 text-center">
-            A movement rooted in home transformation, empathy, and dignity.
-          </p>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {events?.map((event, indx) => {
-              const slug = event?.title?.toLowerCase().replace(/ /g, "-");
-              return (
-                <div
-                  key={indx}
-                  data-aos="fade-up"
-                  className="border mt-8 overflow-hidden rounded-xl"
-                >
-                  <div className="h-64">
-                    <Image
-                      src={`${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${event?.image}`}
-                      alt={event?.title}
-                      quality={100}
-                      width={400}
-                      height={300}
-                      className="w-full h-full"
-                    />
+     
+      <section className="border-b border-purple-100/60 bg-white py-12 lg:py-16">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      
+            <div data-aos="fade-right" className="lg:col-span-7 space-y-4">
+           
+
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-gray-900 leading-tight">
+                Shaping Homes of Empathy, Respect & Dignity
+              </h2>
+
+              <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+                <strong className="text-gray-900">Transformed for Better</strong> is
+                Servanna’s signature mission-driven initiative. We bring
+                together employers, house managers, and childcare specialists to
+                reshape how families view domestic care.
+              </p>
+
+              <p className="text-gray-600 text-sm leading-relaxed">
+                By investing in first-aid readiness, maternal and child
+                wellbeing, autism-inclusive caregiving, and financial
+                literacy, we transform domestic work from uncelebrated labor into
+                a respected and dignified profession.
+              </p>
+
+              {/* Pillars list */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
+                <div className="p-4 rounded-xl bg-purple-50/70 border border-purple-100">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Target className="w-4 h-4 text-[#72275B]" />
+                    <h4 className="text-sm font-bold text-[#72275B] uppercase tracking-wide">
+                      Our Vision
+                    </h4>
                   </div>
-                  <div className="p-4 py-6">
-                    <h2 className="subHeading">{event.title}</h2>
-                    <p className="text-gray-700 text-sm mt-2">
-                      {event?.description?.split(" ").length > 25
-                        ? event.description.split(" ").slice(0, 25).join(" ") +
-                          "..."
-                        : event.description}
+                  <p className="text-xs text-gray-700 leading-relaxed">
+                    To lead the continent in de-stigmatizing and professionalizing
+                    domestic work, ensuring every caregiver is valued and heard.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-xl bg-rose-50/70 border border-rose-100">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Users2 className="w-4 h-4 text-[#9b1c5c]" />
+                    <h4 className="text-sm font-bold text-[#9b1c5c] uppercase tracking-wide">
+                      Our Mission
+                    </h4>
+                  </div>
+                  <p className="text-xs text-gray-700 leading-relaxed">
+                    Equipping house managers with life-saving skills while
+                    guiding employers to build emotionally safe and cooperative
+                    homes.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          
+            <div data-aos="fade-left" className="lg:col-span-5">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl border border-gray-100 bg-white group">
+                <div className="relative aspect-4/3 w-full overflow-hidden">
+                  <Image
+                    src="/group.jpg"
+                    alt="Transformed For Better Movement"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                   
+                    <p className="text-base font-bold text-white mt-1">
+                      “When homes are transformed for better, society is
+                      transformed for good.”
                     </p>
-                    <div className="mt-8 flex justify-end">
-                      <Link href={`/event/${slug}?id=${event.id}`}>
-                        <Button className={"cursor-pointer"}>Read More</Button>
-                      </Link>
-                    </div>
                   </div>
                 </div>
-              );
-            })}
+
+                <div className="p-4 bg-white flex items-center justify-end text-xs text-gray-600">
+                 
+                  <Link
+                    href="/specialist"
+                    className="text-[#72275B] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>View Specialists</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </section>
+
+   
+      <EventsSection
+        events={resolvedEvents}
+        showHero={true}
+        showPartners={true}
+        showCta={true}
+      />
     </div>
   );
 };
