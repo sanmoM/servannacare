@@ -105,7 +105,7 @@ const VerifyOtpPage = () => {
           </div>
 
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-            Check your email
+            Check your email or Phone 
           </h2>
           <p className="text-gray-500 text-center mt-2 leading-relaxed">
             We've sent a secure code to <br />
